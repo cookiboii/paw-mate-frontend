@@ -1,0 +1,96 @@
+.home {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #fdfdfd;
+}
+
+.hero-section {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.home-buttons {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* 버튼 간격 띄우기 */
+  flex-wrap: wrap;
+}
+
+.home-btn {
+  padding: 12px 24px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.home-btn.login {
+  background-color: #4caf50;
+  color: white;
+}
+
+.home-btn.login:hover {
+  background-color: #45a049;
+}
+
+.home-btn.adopt {
+  background-color: #2196f3;
+  color: white;
+}
+
+.home-btn.adopt:hover {
+  background-color: #1976d2;
+}
+
+.dog {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 12px;
+  margin: 30px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 모달 오버레이: 화면 전체를 덮으며 반투명 검정 배경 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 모달 내용 컨테이너 */
+.modalContent {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* 닫기 버튼 */
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.3s;
+}
+
+.closeBtn:hover {
+  color: #333;
+}

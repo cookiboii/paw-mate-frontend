@@ -1,5 +1,6 @@
 import React from 'react';
-import '../styles/MyPage.css';
+import '../styles/MyPage.module.css';
+
 
 const MyPage = () => {
   return (
