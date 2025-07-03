@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from '../styles/ReportLostAnimal.module.css';
 
 const ReportLostAnimal = () => {
   const [form, setForm] = useState({
@@ -22,58 +23,50 @@ const ReportLostAnimal = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: 백엔드 API 연동 예정
     console.log('제보 정보:', form);
     alert('잃어버린 동물 제보가 접수되었습니다!');
   };
 
   return (
-    <section style={{ maxWidth: 700, margin: '2rem auto', padding: '1rem' }}>
-      <h2>잃어버린 동물 제보</h2>
+    <section className={styles.container}>
+      <h2 className={styles.title}>잃어버린 동물 제보</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <label>
-          동물 종류:
+        <div className={styles.formGroup}>
+          <label>동물 종류:</label>
           <input type="text" name="species" value={form.species} onChange={handleChange} required />
-        </label>
-        <br />
+        </div>
 
-        <label>
-          품종:
+        <div className={styles.formGroup}>
+          <label>품종:</label>
           <input type="text" name="breed" value={form.breed} onChange={handleChange} required />
-        </label>
-        <br />
+        </div>
 
-        <label>
-          색상:
+        <div className={styles.formGroup}>
+          <label>색상:</label>
           <input type="text" name="color" value={form.color} onChange={handleChange} required />
-        </label>
-        <br />
+        </div>
 
-        <label>
-          잃어버린 날짜:
+        <div className={styles.formGroup}>
+          <label>잃어버린 날짜:</label>
           <input type="date" name="lostDate" value={form.lostDate} onChange={handleChange} required />
-        </label>
-        <br />
+        </div>
 
-        <label>
-          잃어버린 위치:
+        <div className={styles.formGroup}>
+          <label>잃어버린 위치:</label>
           <input type="text" name="location" value={form.location} onChange={handleChange} required />
-        </label>
-        <br />
+        </div>
 
-        <label>
-          특이사항:
+        <div className={styles.formGroup}>
+          <label>특이사항:</label>
           <textarea name="note" value={form.note} onChange={handleChange} rows="3" />
-        </label>
-        <br />
+        </div>
 
-        <label>
-          이미지 업로드:
+        <div className={styles.formGroup}>
+          <label>이미지 업로드:</label>
           <input type="file" name="image" accept="image/*" onChange={handleChange} />
-        </label>
-        <br />
+        </div>
 
-        <button type="submit">제보하기</button>
+        <button type="submit" className={styles.button}>제보하기</button>
       </form>
     </section>
   );

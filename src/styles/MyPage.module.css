@@ -1,16 +1,42 @@
-.my-page {
-    padding: 40px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .my-page h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-  }
-  
-  .my-page p {
-    font-size: 16px;
-    color: #333;
-  }
-  
+.myPage {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.userInfo, .adoptionHistory {
+  margin-bottom: 30px;
+}
+
+.userInfo p, .adoptionHistory p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.adoptionTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.adoptionTable th, .adoptionTable td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.deleteButton {
+  background-color: #e74c3c;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.deleteButton:hover {
+  background-color: #c0392b;
+}

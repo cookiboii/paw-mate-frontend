@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="footer-content">
         <p>&copy; 2025 AdoptMate. All rights reserved.</p>
         <p>
-          <a href="https://github.com/cookiboii">My Github</a> | <a href="">이용약관</a>
+          <a href="https://github.com/cookiboii">My Github</a> | <a href="https://lolesports-devboi.tistory.com/category">My blog</a>
         </p>
       </div>
     </footer>
