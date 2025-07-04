@@ -1,9 +1,15 @@
 import axios from 'axios';
 
 export const loginUser = async ({ email, password }) => {
-  const response = await axios.post('/api/login', {
+  const response = await axios.post('/adoptmate/login', {
     email,
     password,
+    
   });
-  return response.data.data; // JWT 포함 응답
+
+  return response.data; 
+  // JWT 포함 응답
+
+  
 };
+

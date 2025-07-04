@@ -1,22 +1,49 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/Login.module.css";
+import { loginUser } from "../api/user";
+import { useAuth } from "../context/AuthContext";
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // AuthContext에서 로그인 메서드 사용
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로그인 로직 추가 (ex: axios.post...)
-    console.log("로그인 정보:", form);
+  
+    try {
+      const res = await loginUser(form);
+      console.log("서버 응답 전체 res:", res);
+      console.log("res.data:", res.data);
+  
+      const token = res.data?.token || res.data?.data?.token || res.data?.result?.token;
+  
+      if (!token) {
+        setError("로그인 응답에 토큰이 없습니다.");
+        return;
+      }
+  
+      console.log("받은 토큰:", token);
+  
+      login(token);
+      alert("로그인 성공!");
+      if (onLoginSuccess) onLoginSuccess();
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "로그인에 실패했습니다.");
+    }
   };
-
+  
+  
   return (
     <div className={styles.loginContainer}>
       <h2>로그인</h2>
@@ -37,10 +64,10 @@ const Login = () => {
           onChange={handleChange}
           required
         />
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <button type="submit">로그인</button>
       </form>
 
-      {/* ✅ 회원가입 링크 */}
       <p className={styles.signupPrompt}>
         아직 계정이 없으신가요?{" "}
         <span

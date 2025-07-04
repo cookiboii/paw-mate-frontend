@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
-import styles from '../styles/HomePage.module.css';
-import dog from '../assets/dog.jpg';
-import Login from './Login'; // 로그인 컴포넌트 import
+import React, { useState } from "react";
+import styles from "../styles/HomePage.module.css";
+import dog from "../assets/dog.jpg";
+import Login from "./Login";
+import { useAuth } from "../context/AuthContext";
 
 const HomePage = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const { isAuthenticated } = useAuth(); // 로그인 여부 체크
 
   const openLoginModal = () => setIsLoginOpen(true);
   const closeLoginModal = () => setIsLoginOpen(false);
+
+  const handleLoginSuccess = () => {
+    closeLoginModal();
+  };
 
   return (
     <div className={styles.home}>
@@ -18,22 +24,30 @@ const HomePage = () => {
         <img src={dog} alt="KindTail 입양 캠페인" className={styles.dog} />
 
         <div className={styles.homeButtons}>
-          {/* 로그인 버튼 클릭 시 모달 열기 */}
-          <button className={`${styles.homeBtn} ${styles.login}`} onClick={openLoginModal}>
-            로그인
-          </button>
-          <button className={`${styles.homeBtn} ${styles.adopt}`} onClick={() => window.location.href='/animals/1'}>
+          {!isAuthenticated && (
+            <button
+              className={`${styles.homeBtn} ${styles.login}`}
+              onClick={openLoginModal}
+            >
+              로그인
+            </button>
+          )}
+          <button
+            className={`${styles.homeBtn} ${styles.adopt}`}
+            onClick={() => (window.location.href = "/animals/1")}
+          >
             입양하러 가기
           </button>
         </div>
       </div>
 
-      {/* 로그인 모달 */}
       {isLoginOpen && (
         <div className={styles.modalOverlay} onClick={closeLoginModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeBtn} onClick={closeLoginModal}>×</button>
-            <Login />
+            <button className={styles.closeBtn} onClick={closeLoginModal}>
+              ×
+            </button>
+            <Login onLoginSuccess={handleLoginSuccess} />
           </div>
         </div>
       )}
