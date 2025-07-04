@@ -8,7 +8,7 @@ const Login = ({ onLoginSuccess }) => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth(); // AuthContext에서 로그인 메서드 사용
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,32 +18,45 @@ const Login = ({ onLoginSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const res = await loginUser(form);
-      console.log("서버 응답 전체 res:", res);
-      console.log("res.data:", res.data);
-  
+
       const token = res.data?.token || res.data?.data?.token || res.data?.result?.token;
-  
-      if (!token) {
-        setError("로그인 응답에 토큰이 없습니다.");
+      const role = res.data?.role || res.data?.data?.role || res.data?.result?.role;
+      const email = res.data?.email || res.data?.data?.email || res.data?.result?.email;
+
+      if (!token || !role) {
+        setError("로그인 응답에 토큰 또는 역할 정보가 없습니다.");
         return;
       }
-  
-      console.log("받은 토큰:", token);
-  
-      login(token);
-      alert("로그인 성공!");
+
+      const isAdmin = role === "ADMIN";
+
+      const userInfo = {
+        email,
+        role,
+        isAdmin,
+      };
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      console.log("✅ 로그인 성공:", userInfo);
+
+      login(token, userInfo);
+      alert(isAdmin ? "관리자 로그인 성공!" : "로그인 성공!");
+
       if (onLoginSuccess) onLoginSuccess();
-      navigate("/");
+
+      // 역할에 따라 페이지 이동
+      navigate(isAdmin ? "/admin" : "/");
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "로그인에 실패했습니다.");
     }
   };
-  
-  
+
   return (
     <div className={styles.loginContainer}>
       <h2>로그인</h2>
@@ -70,10 +83,7 @@ const Login = ({ onLoginSuccess }) => {
 
       <p className={styles.signupPrompt}>
         아직 계정이 없으신가요?{" "}
-        <span
-          className={styles.signupLink}
-          onClick={() => navigate("/register")}
-        >
+        <span className={styles.signupLink} onClick={() => navigate("/register")}>
           회원가입
         </span>
       </p>

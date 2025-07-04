@@ -1,11 +1,7 @@
 // src/api/animal.js
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
 export const registerAnimal = async (animalData) => {
-  const token = localStorage.getItem('token');
-  return axios.post('/adoptmate/animal', animalData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  return await axiosInstance.post('/animals/register', animalData);
 };
+

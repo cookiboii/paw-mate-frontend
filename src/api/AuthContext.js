@@ -1,47 +1,43 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import jwtDecode from "jwt-decode"; // ✅ 추가
+// src/context/AuthContext.js
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  const login = (token) => {
-    localStorage.setItem("token", token);
-    console.log(token);
-    
-    setIsAuthenticated(true);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    const email = localStorage.getItem('email'); // 옵션
 
-    try {
-      const decoded = jwtDecode(token); // ✅ JWT 디코딩
-      setUser(decoded); // 예: { email, role, isAdmin 등 }
-    } catch (e) {
-      console.error("토큰 디코딩 실패:", e);
+    if (token && role) {
+      setIsAuthenticated(true);
+      setUser({ role, email }); // ✅ role 복원
     }
+  }, []);
+
+  const login = (token, userInfo) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', userInfo.role);
+    localStorage.setItem('email', userInfo.email);
+    console.log("로그인된 userInfo:", userInfo);
+ // 옵션
+    setIsAuthenticated(true);
+    setUser(userInfo);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('email');
     setIsAuthenticated(false);
     setUser(null);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
-      try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
-      } catch (e) {
-        console.error("초기 토큰 디코딩 실패:", e);
-      }
-    }
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

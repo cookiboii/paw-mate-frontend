@@ -18,20 +18,13 @@ const HomePage = () => {
   return (
     <div className={styles.home}>
       <div className={styles.heroSection}>
-        <h1>KindTail: 유기동물에게 따뜻한 집을</h1>
-        <p>입양으로 사랑을, 제보로 희망을.</p>
+        <h1>🐶 유기동물에게 따뜻한 집을🦴</h1>
+        <p>😺입양으로 사랑을, 제보로 희망을.😺</p>
 
         <img src={dog} alt="KindTail 입양 캠페인" className={styles.dog} />
 
         <div className={styles.homeButtons}>
-          {!isAuthenticated && (
-            <button
-              className={`${styles.homeBtn} ${styles.login}`}
-              onClick={openLoginModal}
-            >
-              로그인
-            </button>
-          )}
+       
           <button
             className={`${styles.homeBtn} ${styles.adopt}`}
             onClick={() => (window.location.href = "/animals/1")}

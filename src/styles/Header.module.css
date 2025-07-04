@@ -1,90 +1,142 @@
 .header {
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  padding: 1rem 2rem;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 16px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
 .container {
-  max-width: 1400px;
+  width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 }
 
 .logo a {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #2c3e50;
   text-decoration: none;
-}
-
-.nav {
-  display: flex;
-  gap: 1.2rem;
+  color: #333;
 }
 
 .nav a {
+  margin-right: 16px;
   text-decoration: none;
   color: #333;
-  font-weight: 500;
-  padding: 6px 10px;
-  transition: color 0.2s ease-in-out;
-  border-radius: 6px;
 }
 
 .nav a:hover {
-  background-color: #f0f0f0;
-  color: #007bff;
+  text-decoration: underline;
 }
-.logoutBtn {
-  background: none;
+
+.adminSection {
+  margin-top: 12px;
+}
+
+.divider {
   border: none;
-  color: white;
+  border-top: 1px solid #ddd;
+  margin: 8px 0;
+}
+
+.adminMenu {
+  margin-top: 8px;
+}
+
+.adminLabel {
   cursor: pointer;
-  margin-left: 1rem;
-  font-size: 1rem;
+  user-select: none;
+  font-weight: 600;
+  color: #d2691e;
+  display: inline-block;
+}
+
+.adminLabel:focus {
+  outline: 2px solid #d2691e;
+  outline-offset: 2px;
+}
+
+.adminLinks {
+  list-style: none;
+  padding-left: 12px;
+  margin-top: 4px;
+}
+
+.adminLinks li {
+  margin-bottom: 4px;
+}
+
+.logoutBtn {
+  background-color: transparent;
+  border: 1px solid #d2691e;
+  color: #d2691e;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logoutBtn:hover {
+  background-color: #d2691e;
+  color: #fff;
 }
 
 .logoutModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 999;
+  align-items: center;
+  z-index: 1100;
 }
 
 .logoutModal {
   background-color: white;
-  padding: 2rem;
-  border-radius: 10px;
+  padding: 24px 32px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  width: 320px;
+  max-width: 90%;
   text-align: center;
-  min-width: 280px;
 }
 
-.modalButtons button {
-  margin: 0 10px;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 5px;
+.modalButtons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.confirmBtn, .cancelBtn {
+  padding: 8px 24px;
+  font-weight: 600;
+  border-radius: 4px;
   cursor: pointer;
+  border: none;
 }
 
 .confirmBtn {
-  background-color: #e74c3c;
+  background-color: #d2691e;
   color: white;
 }
 
+.confirmBtn:hover {
+  background-color: #b2520e;
+}
+
 .cancelBtn {
-  background-color: #bdc3c7;
-  color: black;
+  background-color: #eee;
+  color: #333;
+}
+
+.cancelBtn:hover {
+  background-color: #ccc;
 }
