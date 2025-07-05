@@ -11,7 +11,7 @@ const AdminLayout = ({ children }) => {
           <li><Link to="/admin">대시보드</Link></li>
           <li><Link to="/admin/animals">동물 관리</Link></li>
           <li><Link to="/admin/users">회원 관리</Link></li>
-          <li><Link to="/admin/reports">제보 확인</Link></li>
+      
         </ul>
       </nav>
 

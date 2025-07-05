@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';  // Navigate 추가
 import Layout from './components/Layout';
 
 import HomePage from './pages/HomePage';
@@ -6,12 +6,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 import AdminAnimalsPage from './pages/admin/AdminAnimalsPage';
-import AdminUsersPage from './pages/admin/AdminUsersPage';      // 추가
-  // 추가
+import AdminUsersPage from './pages/admin/AdminUsersPage';
 
 import AnimalDetail from './pages/AnimalDetail';
+import AnimalListPage from './pages/AnimalList'; // ✅ 추가된 부분
 import AdoptionReview from './pages/AdoptionReview';
-import ReportLostAnimal from './pages/ReportLostAnimal';
+import MyPage from './pages/MyPage';
 
 import AdminRoute from './components/AdminRoute';
 
@@ -26,32 +26,37 @@ const App = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
-            {/* 빈 /me 경로는 주석 처리하거나 필요시 연결하세요 */}
-            {/* <Route path="/me" /> */}
 
+            {/* 유기동물 상세 및 목록 */}
+            <Route path="/animals" element={<AnimalListPage />} /> {/* ✅ 동물 목록 */}
             <Route path="/animals/:id" element={<AnimalDetail />} />
-            <Route path="/adoption-review" element={<AdoptionReview />} />
-            <Route path="/report-lost-animal" element={<ReportLostAnimal />} />
 
-           {/* 관리자 전용 라우트는 AdminRoute로 감싸서 보호 */}
-  <Route
-    path="/admin/animals"
-    element={
-      <AdminRoute>
-        <AdminAnimalsPage />
-      </AdminRoute>
-    }
-  />
-  <Route
-    path="/admin/users"
-    element={
-      <AdminRoute>
-        <AdminUsersPage />
-      </AdminRoute>
-    }
-  />
-        
+            <Route path="/review" element={<AdoptionReview />} />
+            <Route path="/mypage" element={<MyPage />} />
+
+            {/* /admin 기본 경로 → /admin/animals로 리다이렉트 */}
+            <Route path="/admin" element={<Navigate to="/admin/animals" replace />} />
+
+            {/* 관리자 전용 라우트 */}
+            <Route
+              path="/animals/register"
+              element={
+                <AdminRoute>
+                  <AdminAnimalsPage />
+
+                    
+
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <AdminRoute>
+                  <AdminUsersPage />
+                </AdminRoute>
+              }
+            />
           </Routes>
         </Layout>
       </Router>

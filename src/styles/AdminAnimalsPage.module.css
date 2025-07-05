@@ -1,0 +1,63 @@
+.container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  
+  .input {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  .button {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: #45a049;
+  }
+  
+  .message {
+    font-weight: bold;
+    color: #2e7d32;
+    margin-bottom: 1rem;
+  }
+  
+  .listTitle {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .animalList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .animalItem {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+  }
+  

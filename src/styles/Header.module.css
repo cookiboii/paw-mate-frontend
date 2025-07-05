@@ -140,3 +140,27 @@
 .cancelBtn:hover {
   background-color: #ccc;
 }
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* 각 메뉴 간 간격 */
+}
+
+.nav a {
+  margin-right: 0; /* gap으로 대체했으므로 제거 */
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+  color: #d2691e;
+}
+
+.nav .active {
+  color: #d2691e;
+  font-weight: 700;
+}

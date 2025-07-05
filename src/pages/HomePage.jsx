@@ -25,12 +25,7 @@ const HomePage = () => {
 
         <div className={styles.homeButtons}>
        
-          <button
-            className={`${styles.homeBtn} ${styles.adopt}`}
-            onClick={() => (window.location.href = "/animals/1")}
-          >
-            입양하러 가기
-          </button>
+        
         </div>
       </div>
 

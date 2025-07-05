@@ -1,115 +1,138 @@
-import React, { useEffect, useState } from 'react';
-import AdminLayout from '../admin/AdminLayout';
-import axios from 'axios';
-
+import React, { useState } from 'react';
+import { registerAnimal } from '../../api/animal';
+import { useAuth } from '../../context/AuthContext';
+import { Navigate } from 'react-router-dom';
+import styles from '../../styles/AdminAnimalsPage.module.css';
 
 const AdminAnimalsPage = () => {
-  const [animals, setAnimals] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { isAuthenticated, user } = useAuth();
 
-  const [showForm, setShowForm] = useState(false);
-  const [editAnimalId, setEditAnimalId] = useState(null);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role?.toUpperCase() !== 'ADMIN') return <Navigate to="/" replace />;
 
-  const fetchAnimals = () => {
-    setLoading(true);
-    axios.get('/api/admin/animals')
-      .then(res => {
-        setAnimals(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('동물 목록을 불러오는데 실패했습니다.');
-        setLoading(false);
+  const [animal, setAnimal] = useState({
+    species: '',
+    breed: '',
+    color: '',
+    status: '',
+    gender: '',
+    age: 0,
+    image: '',
+  });
+
+  const [message, setMessage] = useState('');
+  const [preview, setPreview] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAnimal({ ...animal, [name]: value });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAnimal((prev) => ({ ...prev, image: reader.result }));
+      setPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+
+    try {
+      await registerAnimal(animal, token);
+      setMessage('✅ 동물 등록 성공');
+      setAnimal({
+        species: '',
+        breed: '',
+        color: '',
+        status: '',
+        gender: '',
+        age: 0,
+        image: '',
       });
-  };
-
-  useEffect(() => {
-    fetchAnimals();
-  }, []);
-
-  const handleDelete = (id) => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
-
-    axios.delete(`/api/admin/animals/${id}`)
-      .then(() => {
-        fetchAnimals();
-      })
-      .catch(() => {
-        alert('삭제 실패');
-      });
-  };
-
-  const handleEdit = (id) => {
-    setEditAnimalId(id);
-    setShowForm(true);
-  };
-
-  const handleAddNew = () => {
-    setEditAnimalId(null);
-    setShowForm(true);
-  };
-
-  const handleFormSuccess = () => {
-    setShowForm(false);
-    fetchAnimals();
-  };
-
-  const handleFormCancel = () => {
-    setShowForm(false);
+      setPreview(null);
+    } catch (err) {
+      setMessage('❌ 등록 실패: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   return (
-    <AdminLayout>
-      <h1>🐶 동물 관리</h1>
-
-      {showForm ? (
-        <AnimalForm
-          animalId={editAnimalId}
-          onSuccess={handleFormSuccess}
-          onCancel={handleFormCancel}
+    <div className={styles.container}>
+      <h2 className={styles.title}>동물 등록 (관리자 전용)</h2>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <input
+          name="species"
+          value={animal.species}
+          onChange={handleChange}
+          placeholder="종 (예: 개, 고양이)"
+          required
+          className={styles.input}
         />
-      ) : (
-        <>
-          <button onClick={handleAddNew}>동물 등록</button>
-
-          {loading && <p>로딩 중...</p>}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-
-          {!loading && !error && (
-            <table border="1" cellPadding="8" cellSpacing="0" style={{ width: '100%', textAlign: 'left' }}>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>이름</th>
-                  <th>종류</th>
-                  <th>성별</th>
-                  <th>나이</th>
-                  <th>상태</th>
-                  <th>액션</th>
-                </tr>
-              </thead>
-              <tbody>
-                {animals.map(animal => (
-                  <tr key={animal.id}>
-                    <td>{animal.id}</td>
-                    <td>{animal.name}</td>
-                    <td>{animal.species}</td>
-                    <td>{animal.gender}</td>
-                    <td>{animal.age}</td>
-                    <td>{animal.status}</td>
-                    <td>
-                      <button onClick={() => handleEdit(animal.id)}>수정</button>
-                      <button onClick={() => handleDelete(animal.id)} style={{ marginLeft: '8px' }}>삭제</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </>
-      )}
-    </AdminLayout>
+        <input
+          name="breed"
+          value={animal.breed}
+          onChange={handleChange}
+          placeholder="품종 (예: 푸들)"
+          required
+          className={styles.input}
+        />
+        <input
+          name="color"
+          value={animal.color}
+          onChange={handleChange}
+          placeholder="색상 (예: 흰색)"
+          required
+          className={styles.input}
+        />
+        <input
+          name="status"
+          value={animal.status}
+          onChange={handleChange}
+          placeholder="상태 (예: 보호 중)"
+          required
+          className={styles.input}
+        />
+        <select
+          name="gender"
+          value={animal.gender}
+          onChange={handleChange}
+          required
+          className={styles.input}
+        >
+          <option value="">성별 선택</option>
+          <option value="MALE">수컷</option>
+          <option value="FEMALE">암컷</option>
+        </select>
+        <input
+          name="age"
+          type="number"
+          value={animal.age}
+          onChange={handleChange}
+          placeholder="나이 (숫자)"
+          required
+          className={styles.input}
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className={styles.input}
+        />
+        {preview && (
+          <div className={styles.preview}>
+            <img src={preview} alt="미리보기" width="150" />
+          </div>
+        )}
+        <button type="submit" className={styles.button}>등록하기</button>
+      </form>
+      {message && <p className={styles.message}>{message}</p>}
+    </div>
   );
 };
 
