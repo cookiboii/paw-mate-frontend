@@ -64,7 +64,7 @@ const AnimalDetail = () => {
           {/* 관리자 전용 수정, 삭제 버튼 */}
           {isAdmin && (
             <div className={styles.adminButtons}>
-              <Link to={`/admin/animals/edit/${id}`}>
+              <Link to={`/animals/edit/${id}`}>
                 <button className={styles.editButton}>수정</button>
               </Link>
               <button
@@ -85,7 +85,7 @@ const AnimalDetail = () => {
 
       {isAdmin && (
         <div className={styles.registerBtnWrapper}>
-          <Link to="/admin/animals">
+          <Link to="/animals">
             <button className={styles.registerBtn}>동물 관리로 돌아가기</button>
           </Link>
         </div>

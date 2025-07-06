@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';  // Navigate 추가
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 
 import HomePage from './pages/HomePage';
@@ -7,9 +7,10 @@ import Register from './pages/Register';
 
 import AdminAnimalsPage from './pages/admin/AdminAnimalsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AnimalStatusEditPage from './pages/admin/AnimalStatusEditPage'; // ✅ 추가
 
 import AnimalDetail from './pages/AnimalDetail';
-import AnimalListPage from './pages/AnimalList'; // ✅ 추가된 부분
+import AnimalListPage from './pages/AnimalList';
 import AdoptionReview from './pages/AdoptionReview';
 import MyPage from './pages/MyPage';
 
@@ -28,7 +29,7 @@ const App = () => {
             <Route path="/register" element={<Register />} />
 
             {/* 유기동물 상세 및 목록 */}
-            <Route path="/animals" element={<AnimalListPage />} /> {/* ✅ 동물 목록 */}
+            <Route path="/animals" element={<AnimalListPage />} />
             <Route path="/animals/:id" element={<AnimalDetail />} />
 
             <Route path="/review" element={<AdoptionReview />} />
@@ -43,9 +44,14 @@ const App = () => {
               element={
                 <AdminRoute>
                   <AdminAnimalsPage />
-
-                    
-
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/animals/edit/:id"
+              element={
+                <AdminRoute>
+                  <AnimalStatusEditPage />
                 </AdminRoute>
               }
             />

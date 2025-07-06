@@ -4,6 +4,17 @@ import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import styles from '../../styles/AdminAnimalsPage.module.css';
 
+const STATUS_OPTIONS = [
+  { key: 'WAITING', label: '입양대기' },
+  { key: 'PROTECTED', label: '보호중' },
+  { key: 'ADOPTED', label: '입양완료' },
+];
+
+const GENDER_OPTIONS = [
+  { key: 'MALE', label: '수컷' },
+  { key: 'FEMALE', label: '암컷' },
+];
+
 const AdminAnimalsPage = () => {
   const { isAuthenticated, user } = useAuth();
 
@@ -91,7 +102,6 @@ const AdminAnimalsPage = () => {
           className={styles.input}
         />
 
-        {/* status select로 변경 */}
         <select
           name="status"
           value={animal.status}
@@ -100,9 +110,11 @@ const AdminAnimalsPage = () => {
           className={styles.input}
         >
           <option value="">상태 선택</option>
-          <option value="WAITING">입양대기</option>
-          <option value="PROTECTED">보호중</option>
-          <option value="ADOPTED">입양완료</option>
+          {STATUS_OPTIONS.map(({ key, label }) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
         </select>
 
         <select
@@ -113,8 +125,11 @@ const AdminAnimalsPage = () => {
           className={styles.input}
         >
           <option value="">성별 선택</option>
-          <option value="MALE">수컷</option>
-          <option value="FEMALE">암컷</option>
+          {GENDER_OPTIONS.map(({ key, label }) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
         </select>
 
         <input
