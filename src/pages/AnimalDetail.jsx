@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/AnimalDetail.module.css';
 
 const AnimalDetail = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +14,6 @@ const AnimalDetail = () => {
 
   const isAdmin = isAuthenticated && user?.role === 'ADMIN';
 
-  // 로그인하지 않은 사용자는 로그인 페이지로 이동
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -37,6 +37,28 @@ const AnimalDetail = () => {
     fetchAnimal();
   }, [id]);
 
+  const handleDelete = async () => {
+    const token = localStorage.getItem('token');
+    const confirmed = window.confirm('정말로 이 동물 정보를 삭제하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/animals/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('삭제에 실패했습니다.');
+
+      alert('삭제가 완료되었습니다.');
+      navigate('/animals');
+    } catch (err) {
+      alert('❌ 오류: ' + err.message);
+    }
+  };
+
   if (loading) return <p className={styles.message}>동물 정보를 불러오는 중입니다...</p>;
   if (error) return <p className={styles.error}>오류 발생: {error}</p>;
 
@@ -52,7 +74,6 @@ const AnimalDetail = () => {
             className={styles.image}
           />
           <div className={styles.info}>
-            <p><strong>이름:</strong> {animal.name}</p>
             <p><strong>종:</strong> {animal.species}</p>
             <p><strong>품종:</strong> {animal.breed}</p>
             <p><strong>나이:</strong> {animal.age}살</p>
@@ -61,7 +82,6 @@ const AnimalDetail = () => {
             <p><strong>상태:</strong> {animal.status}</p>
           </div>
 
-          {/* 관리자 전용 수정, 삭제 버튼 */}
           {isAdmin && (
             <div className={styles.adminButtons}>
               <Link to={`/animals/edit/${id}`}>
@@ -69,10 +89,7 @@ const AnimalDetail = () => {
               </Link>
               <button
                 className={styles.deleteButton}
-                onClick={() => {
-                  // 삭제 로직 함수 호출 등 구현 필요
-                  alert('삭제 기능은 구현해야 합니다.');
-                }}
+                onClick={handleDelete}
               >
                 삭제
               </button>
