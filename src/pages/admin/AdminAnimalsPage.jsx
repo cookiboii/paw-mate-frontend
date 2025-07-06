@@ -90,14 +90,21 @@ const AdminAnimalsPage = () => {
           required
           className={styles.input}
         />
-        <input
+
+        {/* status select로 변경 */}
+        <select
           name="status"
           value={animal.status}
           onChange={handleChange}
-          placeholder="상태 (예: 보호 중)"
           required
           className={styles.input}
-        />
+        >
+          <option value="">상태 선택</option>
+          <option value="WAITING">입양대기</option>
+          <option value="PROTECTED">보호중</option>
+          <option value="ADOPTED">입양완료</option>
+        </select>
+
         <select
           name="gender"
           value={animal.gender}
@@ -109,6 +116,7 @@ const AdminAnimalsPage = () => {
           <option value="MALE">수컷</option>
           <option value="FEMALE">암컷</option>
         </select>
+
         <input
           name="age"
           type="number"
@@ -118,6 +126,7 @@ const AdminAnimalsPage = () => {
           required
           className={styles.input}
         />
+
         <input
           type="file"
           accept="image/*"
@@ -129,7 +138,10 @@ const AdminAnimalsPage = () => {
             <img src={preview} alt="미리보기" width="150" />
           </div>
         )}
-        <button type="submit" className={styles.button}>등록하기</button>
+
+        <button type="submit" className={styles.button}>
+          등록하기
+        </button>
       </form>
       {message && <p className={styles.message}>{message}</p>}
     </div>
