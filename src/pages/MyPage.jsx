@@ -1,38 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/MyPage.module.css';
-
+import axios from '../api/axiosInstance';
+import AdminUsersPage from './admin/AdminUsersPage';
 
 const MyPage = () => {
-  // 예시 사용자 정보 상태 (실제 API 호출 후 세팅)
   const [userInfo, setUserInfo] = useState(null);
-  const [adoptionList, setAdoptionList] = useState([]);
+  const token = localStorage.getItem('token');
 
-  // 예시: 컴포넌트 마운트 시 사용자 정보와 입양 내역 불러오기
   useEffect(() => {
-    // TODO: API 호출해서 사용자 정보 가져오기
-    setUserInfo({
-      name: '홍길동',
-      email: 'user@example.com',
-      joinedDate: '2023-01-15',
-    });
+    if (!token) return;
 
-    // TODO: API 호출해서 입양 신청 내역 가져오기
-    setAdoptionList([
-      { id: 1, petName: '초코', date: '2023-06-20', status: '승인 대기 중' },
-      { id: 2, petName: '몽실', date: '2023-05-10', status: '입양 완료' },
-    ]);
+    axios.get(`http://localhost:8000/adoptmate/myInfo`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    })
+    .then(res => {
+      const { name, email, role } = res.data; // ✅ 이 부분 수정
+      setUserInfo({ name, email, role });
+       console.log(res);
+       
+    })
+    .catch(() => {
+      alert('사용자 정보를 불러오지 못했습니다.');
+    });
   }, []);
 
-  // 회원 탈퇴 클릭 핸들러 (예: API 호출 후 로그아웃 등 처리)
   const handleDeleteAccount = () => {
-    if (window.confirm('정말 회원 탈퇴 하시겠습니까?')) {
-      // TODO: API 호출로 회원 탈퇴 처리
-      alert('회원 탈퇴가 완료되었습니다.');
-      // TODO: 로그아웃 처리 및 페이지 이동 등
+    if (window.confirm('정말 탈퇴하시겠습니까?')) {
+      axios.delete('/members/delete', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+      .then(() => {
+        alert('회원 탈퇴가 완료되었습니다.');
+        localStorage.removeItem('token');
+        window.location.href = '/';
+      })
+      .catch(() => {
+        alert('회원 탈퇴에 실패했습니다.');
+      });
     }
   };
 
   if (!userInfo) return <div>로딩 중...</div>;
+  if ( userInfo.role ==='ADMIN') {
+      return <AdminUsersPage/>
+  }
 
   return (
     <section className={styles.myPage}>
@@ -42,33 +57,7 @@ const MyPage = () => {
         <h3>회원 정보</h3>
         <p><strong>이름:</strong> {userInfo.name}</p>
         <p><strong>이메일:</strong> {userInfo.email}</p>
-        <p><strong>가입일:</strong> {userInfo.joinedDate}</p>
-      </div>
-
-      <div className={styles.adoptionHistory}>
-        <h3>입양 신청 내역</h3>
-        {adoptionList.length === 0 ? (
-          <p>신청 내역이 없습니다.</p>
-        ) : (
-          <table className={styles.adoptionTable}>
-            <thead>
-              <tr>
-                <th>반려동물 이름</th>
-                <th>신청 날짜</th>
-                <th>상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              {adoptionList.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.petName}</td>
-                  <td>{item.date}</td>
-                  <td>{item.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        <p><strong>권한:</strong> {userInfo.role}</p> {/* 권한도 출력 */}
       </div>
 
       <button className={styles.deleteButton} onClick={handleDeleteAccount}>

@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const isAdmin = isAuthenticated && user?.role === 'ADMIN';
+  const isAdmin = isAuthenticated && user?.role?.toUpperCase() === 'ADMIN'; // 대소문자 대응
 
   return (
     <header className={styles.header}>
@@ -19,19 +19,22 @@ const Header = () => {
             <li><Link to="/">홈</Link></li>
             <li><Link to="/animals">동물 목록</Link></li>
 
-            {/* ✅ 관리자 전용 */}
-            {isAdmin && (
-              <li><Link to="/animals/register">동물 등록</Link></li>
-            )}
-
             {/* ✅ 로그인 사용자만 입양 후기 접근 */}
             {isAuthenticated && (
               <li><Link to="/review">입양 후기</Link></li>
             )}
 
+            {/* ✅ 관리자 전용 메뉴 */}
+            {isAdmin && (
+              <>
+                <li><Link to="/admin/animals">동물 등록</Link></li>
+                <li><Link to="/admin/users">회원 관리</Link></li>
+              </>
+            )}
+
             {isAuthenticated ? (
               <>
-                <li><Link to="/mypage">마이페이지</Link></li>
+                {!isAdmin && <li><Link to="/mypage">마이페이지</Link></li>}
                 <li>
                   <button onClick={logout} className={styles.logoutBtn}>
                     로그아웃

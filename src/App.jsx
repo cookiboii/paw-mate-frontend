@@ -7,7 +7,7 @@ import Register from './pages/Register';
 
 import AdminAnimalsPage from './pages/admin/AdminAnimalsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
-import AnimalStatusEditPage from './pages/admin/AnimalStatusEditPage'; // ✅ 추가
+import AnimalStatusEditPage from './pages/admin/AnimalStatusEditPage';
 
 import AnimalDetail from './pages/AnimalDetail';
 import AnimalListPage from './pages/AnimalList';
@@ -15,55 +15,75 @@ import AdoptionReview from './pages/AdoptionReview';
 import MyPage from './pages/MyPage';
 
 import AdminRoute from './components/AdminRoute';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-import { AuthProvider } from './context/AuthContext';
+const AppRoutes = () => {
+  const { user } = useAuth();
+
+  return (
+    <Routes>
+      {/* 일반 사용자 라우트 */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      <Route path="/animals" element={<AnimalListPage />} />
+      <Route path="/animals/:id" element={<AnimalDetail />} />
+      <Route path="/review" element={<AdoptionReview />} />
+
+      <Route
+        path="/mypage"
+        element={
+          user?.role === 'ADMIN' ? <Navigate to="/admin/users" replace /> : <MyPage />
+        }
+      />
+
+      {/* 관리자 기본 경로 리디렉션 */}
+      <Route path="/admin" element={<Navigate to="/admin" replace />} />
+
+      {/* 관리자 전용 라우트 */}
+      <Route
+        path="/admin/animals"
+        element={
+          <AdminRoute>
+            <AdminAnimalsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/animals/register"
+        element={
+          <AdminRoute>
+            <AdminAnimalsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/animals/edit/:id"
+        element={
+          <AdminRoute>
+            <AnimalStatusEditPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <AdminRoute>
+            <AdminUsersPage />
+          </AdminRoute>
+        }
+      />
+    </Routes>
+  );
+};
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
         <Layout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* 유기동물 상세 및 목록 */}
-            <Route path="/animals" element={<AnimalListPage />} />
-            <Route path="/animals/:id" element={<AnimalDetail />} />
-
-            <Route path="/review" element={<AdoptionReview />} />
-            <Route path="/mypage" element={<MyPage />} />
-
-            {/* /admin 기본 경로 → /admin/animals로 리다이렉트 */}
-            <Route path="/admin" element={<Navigate to="/admin/animals" replace />} />
-
-            {/* 관리자 전용 라우트 */}
-            <Route
-              path="/animals/register"
-              element={
-                <AdminRoute>
-                  <AdminAnimalsPage />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/animals/edit/:id"
-              element={
-                <AdminRoute>
-                  <AnimalStatusEditPage />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/users"
-              element={
-                <AdminRoute>
-                  <AdminUsersPage />
-                </AdminRoute>
-              }
-            />
-          </Routes>
+          <AppRoutes />
         </Layout>
       </Router>
     </AuthProvider>
