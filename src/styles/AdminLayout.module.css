@@ -1,0 +1,39 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f9f9f9;
+  }
+  
+  .sidebar {
+    width: 220px;
+    padding: 20px;
+    background-color: #ffffff;  /* 흰 배경으로 변경 */
+    color: #333;                /* 본문 색상 */
+  }
+  
+  .sidebar h3 {
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar li {
+    margin-bottom: 12px;
+  }
+  
+  .sidebar a {
+    color: #333; /* ✅ 기본 링크 색상 - 짙은 회색 */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .sidebar a:hover {
+    color: #fda085; /* ✅ hover 시 강조 색상 - 버튼과 통일 */
+  }
+  

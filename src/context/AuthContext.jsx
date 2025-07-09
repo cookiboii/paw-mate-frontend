@@ -27,6 +27,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('role');
     setIsAuthenticated(false);
     setUser(null); // ✅ 로그아웃 시 초기화
+  
+  
   };
 
   return (

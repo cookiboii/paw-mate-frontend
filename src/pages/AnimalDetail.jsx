@@ -3,6 +3,13 @@ import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/AnimalDetail.module.css';
 
+// 상태 ENUM 정의
+const AnimalStatus = {
+  WAITING: 'WAITING',
+  PROTECTED: 'PROTECTED',
+  ADOPTED: 'ADOPTED',
+};
+
 const AnimalDetail = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
@@ -62,6 +69,9 @@ const AnimalDetail = () => {
   if (loading) return <p className={styles.message}>동물 정보를 불러오는 중입니다...</p>;
   if (error) return <p className={styles.error}>오류 발생: {error}</p>;
 
+  // PROTECTED 상태일 때만 입양 가능
+  const canAdopt = animal?.status === AnimalStatus.PROTECTED;
+
   return (
     <section className={styles.detailContainer}>
       <h2 className={styles.title}>유기동물 상세 정보</h2>
@@ -82,6 +92,21 @@ const AnimalDetail = () => {
             <p><strong>상태:</strong> {animal.status}</p>
           </div>
 
+          {/* ✅ 일반 사용자: 입양 신청 버튼 조건 */}
+          {!isAdmin && canAdopt && (
+            <div className={styles.adoptBtnWrapper}>
+              <Link to={`/adopt/${id}`}>
+                <button className={styles.adoptBtn}>입양 신청하기</button>
+              </Link>
+            </div>
+          )}
+
+          {/* ✅ 일반 사용자: 이미 입양 완료 안내 */}
+          {!isAdmin && animal.status === AnimalStatus.ADOPTED && (
+            <p className={styles.message}>😿 이미 입양이 완료된 동물입니다.</p>
+          )}
+
+          {/* ✅ 관리자 전용 버튼 */}
           {isAdmin && (
             <div className={styles.adminButtons}>
               <Link to={`/animals/edit/${id}`}>
@@ -100,6 +125,7 @@ const AnimalDetail = () => {
         <p className={styles.message}>동물 정보를 찾을 수 없습니다.</p>
       )}
 
+      {/* ✅ 관리자: 목록으로 돌아가기 */}
       {isAdmin && (
         <div className={styles.registerBtnWrapper}>
           <Link to="/animals">

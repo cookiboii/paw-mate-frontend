@@ -1,63 +1,53 @@
+/* -----------------------------
+   AdminAnimalsPage.module.css
+------------------------------ */
+
 .container {
-    padding: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .title {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
-  }
-  
-  .input {
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-  
-  .button {
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button:hover {
-    background-color: #45a049;
-  }
-  
-  .message {
-    font-weight: bold;
-    color: #2e7d32;
-    margin-bottom: 1rem;
-  }
-  
-  .listTitle {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-  }
-  
-  .animalList {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .animalItem {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #ddd;
-  }
-  
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--bg-color);
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--font-color);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.button {
+  background-color: #fda085; /* ✅ 배경색 추가 */
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.preview {
+  text-align: center;
+}
+
+.message {
+  margin-top: 15px;
+  text-align: center;
+}

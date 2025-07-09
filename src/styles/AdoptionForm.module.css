@@ -1,0 +1,86 @@
+.container {
+    max-width: 500px;
+    margin: 80px auto;
+    padding: 40px 30px;
+    background-color: #fefefe;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #444;
+  }
+  
+  textarea {
+    margin-top: 8px;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-height: 120px;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+  }
+  
+  textarea:focus {
+    border-color: #fda085;
+    outline: none;
+  }
+  
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .submitButton {
+    padding: 12px;
+    background-color: #fda085;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submitButton:hover {
+    background-color: #fda085;
+  }
+  
+  @media (max-width: 600px) {
+    .container {
+      padding: 20px 15px;
+      margin: 40px 16px;
+    }
+  
+    textarea {
+      font-size: 14px;
+    }
+  
+    .submitButton {
+      font-size: 15px;
+      padding: 10px;
+    }
+  }
+  

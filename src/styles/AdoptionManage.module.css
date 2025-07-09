@@ -1,0 +1,30 @@
+h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f1f1f1;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  

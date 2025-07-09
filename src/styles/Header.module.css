@@ -1,166 +1,75 @@
 .header {
   background-color: #ffffff;
   border-bottom: 1px solid #e5e5e5;
-  padding: 16px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 14px 24px;
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .container {
-  width: 90%;
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .logo a {
   font-size: 1.8rem;
-  font-weight: bold;
+  font-weight: 700;
+  color: #3a3a3a;
   text-decoration: none;
-  color: #333;
-}
-
-.nav a {
-  margin-right: 16px;
-  text-decoration: none;
-  color: #333;
-}
-
-.nav a:hover {
-  text-decoration: underline;
-}
-
-.adminSection {
-  margin-top: 12px;
-}
-
-.divider {
-  border: none;
-  border-top: 1px solid #ddd;
-  margin: 8px 0;
-}
-
-.adminMenu {
-  margin-top: 8px;
-}
-
-.adminLabel {
-  cursor: pointer;
   user-select: none;
-  font-weight: 600;
-  color: #d2691e;
-  display: inline-block;
+  transition: color 0.3s ease;
 }
 
-.adminLabel:focus {
-  outline: 2px solid #d2691e;
-  outline-offset: 2px;
+.logo a:hover {
+  color: #ff6f61;
 }
 
-.adminLinks {
+.nav {
+  flex-grow: 1;
+  margin-left: 40px;
+}
+
+.navList {
+  display: flex;
   list-style: none;
-  padding-left: 12px;
-  margin-top: 4px;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
 }
 
-.adminLinks li {
-  margin-bottom: 4px;
+.navLink {
+  color: #555;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navLink:hover {
+  background-color: #ff6f61;
+  color: white;
 }
 
 .logoutBtn {
   background-color: transparent;
-  border: 1px solid #d2691e;
-  color: #d2691e;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+  border: 1px solid #ff6f61;
+  color: #ff6f61;
   font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .logoutBtn:hover {
-  background-color: #d2691e;
-  color: #fff;
-}
-
-.logoutModalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1100;
-}
-
-.logoutModal {
-  background-color: white;
-  padding: 24px 32px;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  width: 320px;
-  max-width: 90%;
-  text-align: center;
-}
-
-.modalButtons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.confirmBtn, .cancelBtn {
-  padding: 8px 24px;
-  font-weight: 600;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-}
-
-.confirmBtn {
-  background-color: #d2691e;
+  background-color: #ff6f61;
   color: white;
-}
-
-.confirmBtn:hover {
-  background-color: #b2520e;
-}
-
-.cancelBtn {
-  background-color: #eee;
-  color: #333;
-}
-
-.cancelBtn:hover {
-  background-color: #ccc;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 16px; /* 각 메뉴 간 간격 */
-}
-
-.nav a {
-  margin-right: 0; /* gap으로 대체했으므로 제거 */
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.nav a:hover {
-  text-decoration: underline;
-  color: #d2691e;
-}
-
-.nav .active {
-  color: #d2691e;
-  font-weight: 700;
 }

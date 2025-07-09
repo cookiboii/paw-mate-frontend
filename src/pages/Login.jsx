@@ -49,7 +49,6 @@ const Login = ({ onLoginSuccess }) => {
 
       if (onLoginSuccess) onLoginSuccess();
 
-      // 역할에 따라 페이지 이동
       navigate(isAdmin ? "/admin" : "/");
     } catch (err) {
       console.error(err);
@@ -59,7 +58,7 @@ const Login = ({ onLoginSuccess }) => {
 
   return (
     <div className={styles.loginContainer}>
-      <h2>로그인</h2>
+      <h2 className={styles.title}>로그인</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="email"
@@ -68,6 +67,7 @@ const Login = ({ onLoginSuccess }) => {
           value={form.email}
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="password"
@@ -76,9 +76,10 @@ const Login = ({ onLoginSuccess }) => {
           value={form.password}
           onChange={handleChange}
           required
+          className={styles.input}
         />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">로그인</button>
+        {error && <p style={{ color: "red", marginTop: "-10px" }}>{error}</p>}
+        <button type="submit" className={styles.submitButton}>로그인</button>
       </form>
 
       <p className={styles.signupPrompt}>

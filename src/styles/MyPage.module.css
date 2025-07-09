@@ -1,42 +1,142 @@
 .myPage {
   max-width: 600px;
   margin: 40px auto;
-  padding: 20px;
-  background: #fafafa;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  background-color: var(--bg-color, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--font-color, #333);
 }
 
-.userInfo, .adoptionHistory {
+.myPage h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.userInfo {
+  margin-bottom: 40px;
+}
+
+.userInfo h3 {
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--font-color, #333);
+}
+
+.userInfo p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.userInfo strong {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.passwordForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   margin-bottom: 30px;
 }
 
-.userInfo p, .adoptionHistory p {
-  font-size: 16px;
-  line-height: 1.5;
+.passwordForm h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--font-color, #333);
 }
 
-.adoptionTable {
-  width: 100%;
-  border-collapse: collapse;
+.passwordForm p {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
 }
 
-.adoptionTable th, .adoptionTable td {
+.passwordForm strong {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.passwordForm input {
   padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
+  font-size: 1rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 8px;
+  font-family: inherit;
+  outline-offset: 2px;
+  outline-color: var(--main-color, #fda085);
+}
+
+.info {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--sub-color, #888);
+}
+
+.updateButton {
+  padding: 12px;
+  background-color: var(--main-color, #fda085);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.updateButton:hover {
+  background-color: #fb927e;
 }
 
 .deleteButton {
-  background-color: #e74c3c;
-  color: white;
-  padding: 12px 20px;
+  padding: 12px;
+  width: 100%;
+  background-color: #eee;
+  color: #555;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.25s ease;
 }
 
 .deleteButton:hover {
-  background-color: #c0392b;
+  background-color: #ddd;
+}
+
+.adoptionSection {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+}
+
+.adoptionList {
+  list-style: none;
+  padding-left: 0;
+}
+
+.adoptionItem {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.adoptionItem:last-child {
+  border-bottom: none;
+}
+
+.adoptionItem img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 12px;
 }

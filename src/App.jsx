@@ -8,11 +8,17 @@ import Register from './pages/Register';
 import AdminAnimalsPage from './pages/admin/AdminAnimalsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AnimalStatusEditPage from './pages/admin/AnimalStatusEditPage';
+import AdminAdoptionsPage from './pages/admin/AdminAdoptionsPage'; // 👈 추가
+
 
 import AnimalDetail from './pages/AnimalDetail';
 import AnimalListPage from './pages/AnimalList';
 import AdoptionReview from './pages/AdoptionReview';
 import MyPage from './pages/MyPage';
+import AdoptionForm from './pages/AdoptionForm'; // ✅ 입양 신청 폼
+
+ // ✅ 입양 신청 폼
+   // ✅ 내 입양 신청 목록
 
 import AdminRoute from './components/AdminRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -30,6 +36,8 @@ const AppRoutes = () => {
       <Route path="/animals" element={<AnimalListPage />} />
       <Route path="/animals/:id" element={<AnimalDetail />} />
       <Route path="/review" element={<AdoptionReview />} />
+      <Route path="/adopt/:animalId" element={<AdoptionForm />} />
+  
 
       <Route
         path="/mypage"
@@ -39,7 +47,7 @@ const AppRoutes = () => {
       />
 
       {/* 관리자 기본 경로 리디렉션 */}
-      <Route path="/admin" element={<Navigate to="/admin" replace />} />
+      <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
 
       {/* 관리자 전용 라우트 */}
       <Route
@@ -59,10 +67,10 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/admin/animals/edit/:id"
+        path="/animals/edit/:id"
         element={
           <AdminRoute>
-            <AnimalStatusEditPage />
+                <AnimalStatusEditPage />
           </AdminRoute>
         }
       />
@@ -74,6 +82,16 @@ const AppRoutes = () => {
           </AdminRoute>
         }
       />
+      <Route
+  path="/admin/adoptions"
+  element={
+    <AdminRoute>
+      <AdminAdoptionsPage />
+    </AdminRoute>
+  }
+/>
+
+ 
     </Routes>
   );
 };
