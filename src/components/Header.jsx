@@ -18,10 +18,10 @@ const Header = () => {
           <ul className={styles.navList}>
             <li><Link to="/" className={styles.navLink}>홈</Link></li>
             <li><Link to="/animals" className={styles.navLink}>동물 목록</Link></li>
-
+            <li><Link to="/reviews" className={styles.navLink}>입양 후기</Link></li> 
             {isAuthenticated && (
               <>
-                <li><Link to="/review" className={styles.navLink}>입양 후기</Link></li>
+                <li><Link to="/review" className={styles.navLink}>후기작성</Link></li>
               </>
             )}
 

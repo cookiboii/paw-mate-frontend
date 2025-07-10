@@ -1,37 +1,88 @@
 import React, { useState } from 'react';
 import styles from '../styles/AdoptionReview.module.css';
+import axios from '../api/axiosInstance';
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const AdoptionReview = () => {
-  const [form, setForm] = useState({ author: '', content: '', image: null });
-  const [reviews, setReviews] = useState([]);
+  const { isAuthenticated } = useAuth();
 
-  const handleChange = (e) => {
+  const [form, setForm] = useState({
+    content: '',
+    imageBase64: '',  // base64로 저장
+    title: '',
+  });
+
+  const [preview, setPreview] = useState(null);
+
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+
+  // 파일을 base64 문자열로 변환하는 함수
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handleChange = async (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
-      setForm((prev) => ({ ...prev, image: files[0] || null }));
+      const file = files[0];
+      if (file) {
+        const base64 = await toBase64(file);
+        setForm((prev) => ({ ...prev, imageBase64: base64 }));
+        setPreview(base64);
+      } else {
+        setForm((prev) => ({ ...prev, imageBase64: '' }));
+        setPreview(null);
+      }
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.author || !form.content) return alert('모든 항목을 입력해주세요');
 
-    // 리뷰에 이미지 파일도 포함해서 저장
-    setReviews((prev) => [...prev, { ...form, date: new Date().toLocaleDateString() }]);
-    setForm({ author: '', content: '', image: null });
+    if (!form.content || !form.title) {
+      return alert('제목과 내용을 모두 입력해주세요.');
+    }
+
+    try {
+      await axios.post(
+        '/post/create',
+        {
+          title: form.title,
+          content: form.content,
+          img: form.imageBase64,  // base64 문자열 전달
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      alert('후기가 등록되었습니다.');
+      setForm({ title: '', content: '', imageBase64: '' });
+      setPreview(null);
+    } catch (error) {
+      console.error('후기 등록 실패:', error);
+      alert('등록 중 오류가 발생했습니다.');
+    }
   };
 
   return (
     <section className={styles.container}>
-      <h2>입양 후기</h2>
+      <h2>입양 후기 작성</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="text"
-          name="author"
-          placeholder="작성자 이름"
-          value={form.author}
+          name="title"
+          placeholder="제목"
+          value={form.title}
           onChange={handleChange}
           required
         />
@@ -49,35 +100,15 @@ const AdoptionReview = () => {
           accept="image/*"
           onChange={handleChange}
         />
-        {/* 선택한 이미지 미리보기 */}
-        {form.image && (
+        {preview && (
           <img
-            src={URL.createObjectURL(form.image)}
-            alt="선택한 이미지"
+            src={preview}
+            alt="미리보기"
             style={{ maxWidth: '300px', marginTop: '10px' }}
           />
         )}
         <button type="submit">후기 등록</button>
       </form>
-
-      <div className={styles.reviewList}>
-        {reviews.map((review, idx) => (
-          <div key={idx} className={styles.review}>
-            <p className={styles.meta}>
-              <strong>{review.author}</strong> | {review.date}
-            </p>
-            <p>{review.content}</p>
-            {review.image && (
-              <img
-                src={URL.createObjectURL(review.image)}
-                alt="후기 이미지"
-                className={styles.reviewImage}
-                style={{ maxWidth: '300px', marginTop: '10px' }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
     </section>
   );
 };

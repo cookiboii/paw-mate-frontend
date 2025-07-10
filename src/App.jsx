@@ -9,7 +9,7 @@ import AdminAnimalsPage from './pages/admin/AdminAnimalsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AnimalStatusEditPage from './pages/admin/AnimalStatusEditPage';
 import AdminAdoptionsPage from './pages/admin/AdminAdoptionsPage'; // 👈 추가
-
+import AdoptionReviewListPage from './pages/AdoptionReviewListPage'; //
 
 import AnimalDetail from './pages/AnimalDetail';
 import AnimalListPage from './pages/AnimalList';
@@ -37,7 +37,7 @@ const AppRoutes = () => {
       <Route path="/animals/:id" element={<AnimalDetail />} />
       <Route path="/review" element={<AdoptionReview />} />
       <Route path="/adopt/:animalId" element={<AdoptionForm />} />
-  
+      <Route path="/reviews" element={<AdoptionReviewListPage />} />
 
       <Route
         path="/mypage"
