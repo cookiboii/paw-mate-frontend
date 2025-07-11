@@ -7,6 +7,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
+  console.log('✅ 현재 토큰:', token); 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;  // 토큰 자동 포함
   }

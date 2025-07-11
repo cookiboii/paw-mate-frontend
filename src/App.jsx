@@ -16,9 +16,8 @@ import AnimalListPage from './pages/AnimalList';
 import AdoptionReview from './pages/AdoptionReview';
 import MyPage from './pages/MyPage';
 import AdoptionForm from './pages/AdoptionForm'; // ✅ 입양 신청 폼
-
- // ✅ 입양 신청 폼
-   // ✅ 내 입양 신청 목록
+import AdoptionReviewDetail from './pages/AdoptionReviewDetail';
+import AdoptionReviewEdit from './pages/AdoptionReviewEdit';
 
 import AdminRoute from './components/AdminRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -32,12 +31,14 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
+     
       <Route path="/animals" element={<AnimalListPage />} />
       <Route path="/animals/:id" element={<AnimalDetail />} />
       <Route path="/review" element={<AdoptionReview />} />
       <Route path="/adopt/:animalId" element={<AdoptionForm />} />
       <Route path="/reviews" element={<AdoptionReviewListPage />} />
+      <Route path="/reviews/:id" element={<AdoptionReviewDetail />} />
+      <Route path="/reviews/:id/edit" element={<AdoptionReviewEdit />} />
 
       <Route
         path="/mypage"
