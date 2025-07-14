@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axiosInstance';
 import styles from '../styles/AdoptionReviewDetail.module.css';
-
+import CommentSection from '../components/CommentSection';
 const AdoptionReviewDetail = () => {
   const { id } = useParams();
   const [review, setReview] = useState(null);
@@ -21,9 +21,7 @@ const AdoptionReviewDetail = () => {
         const reviewData = reviewRes.data.result;
         const userData = userRes.data;
 
-        // 로그 1: API 응답 원본 출력
-        console.log('📦 리뷰 응답 원본:', reviewData);
-        console.log('👤 사용자 응답 원본:', userData);
+       
 
         // 이메일, 역할 정제 및 저장
         if (reviewData) {
@@ -66,14 +64,7 @@ const AdoptionReviewDetail = () => {
   const isAuthor = currentUser.email === review.email;
   const isAdmin = currentUser.role === 'ADMIN';
 
-  // 로그 2: 비교 결과 출력
-  console.log('🟡 비교 디버깅 --------------------------');
-  console.log(`✅ 사용자 이메일: "${currentUser.email}"`);
-  console.log(`✅ 작성자 이메일: "${review.email}"`);
-  console.log(`✅ 사용자 역할: "${currentUser.role}"`);
-  console.log('📌 isAuthor 평가 결과:', isAuthor);
-  console.log('📌 isAdmin 평가 결과:', isAdmin);
-  console.log('----------------------------------------');
+
 
   return (
     <div className={styles.container}>
@@ -88,6 +79,7 @@ const AdoptionReviewDetail = () => {
           <button onClick={handleDelete}>삭제</button>
         </div>
       )}
+         <CommentSection postId={id} />
     </div>
   );
 };
