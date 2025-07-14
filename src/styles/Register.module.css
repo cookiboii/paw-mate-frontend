@@ -39,10 +39,17 @@
 
 .form p {
   margin: 0;
-  color: #61e5ff;
   font-weight: 600;
   font-size: 0.9rem;
   text-align: center;
+}
+
+.form p.error {
+  color: #ff4d4f;
+}
+
+.form p.success {
+  color: #28a745;
 }
 
 .form button {
@@ -59,4 +66,41 @@
 
 .form button:hover {
   background-color: #e55b4f;
+}
+
+/* ✅ 인증 코드 입력 영역 버튼 및 input 통일 */
+.emailVerifyContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emailVerifyContainer input {
+  padding: 12px 14px;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.emailVerifyContainer input:focus {
+  outline: none;
+  border-color: #ff6f61;
+  box-shadow: 0 0 6px rgba(255, 111, 97, 0.4);
+}
+
+.emailVerifyContainer button {
+  background-color: #999;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 0;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.emailVerifyContainer button:hover {
+  background-color: #777;
 }
