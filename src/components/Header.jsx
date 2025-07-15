@@ -1,11 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from '../styles/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const isAdmin = isAuthenticated && user?.role?.toUpperCase() === 'ADMIN';
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();       // 상태 초기화
+    navigate('/');  // 메인 페이지로 이동
+  };
 
   return (
     <header className={styles.header}>
@@ -27,8 +33,7 @@ const Header = () => {
 
             {isAdmin && (
               <>
-              
-                <li><Link to="/admin/users" className={styles.navLink}>관리자용 </Link></li>
+                <li><Link to="/admin/users" className={styles.navLink}>관리자용</Link></li>
                 <li><Link to="/admin/adoptions" className={styles.navLink}>입양 신청 관리</Link></li>
               </>
             )}
@@ -37,7 +42,7 @@ const Header = () => {
               <>
                 {!isAdmin && <li><Link to="/mypage" className={styles.navLink}>마이페이지</Link></li>}
                 <li>
-                  <button onClick={logout} className={styles.logoutBtn}>
+                  <button onClick={handleLogout} className={styles.logoutBtn}>
                     로그아웃
                   </button>
                 </li>

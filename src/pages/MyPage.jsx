@@ -14,6 +14,7 @@ const MyPage = () => {
   });
   const [adoptionList, setAdoptionList] = useState([]);
   const token = localStorage.getItem('token');
+  const provider = localStorage.getItem('provider'); // 여기서 provider 확인
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -35,7 +36,6 @@ const MyPage = () => {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
-      console.log('입양 내역 데이터:', res.data.result); 
       setAdoptionList(res.data.result);
     })
     .catch(() => {
@@ -100,41 +100,43 @@ const MyPage = () => {
         <p><strong>이메일:</strong> {userInfo.email}</p>
       </div>
 
-      <form className={styles.passwordForm} onSubmit={handleChangePassword}>
-        <h3>비밀번호 변경</h3>
-        <p>
-          <strong>현재 비밀번호:</strong>
-          <input
-            type="password"
-            name="passwd"
-            value={form.passwd}
-            onChange={handleChange}
-            required
-          />
-        </p>
-        <p>
-          <strong>새 비밀번호:</strong>
-          <input
-            type="password"
-            name="new_passwd"
-            value={form.new_passwd}
-            onChange={handleChange}
-            required
-          />
-          <span className={styles.info}>영문, 숫자, 특수문자 포함 8자 이상</span>
-        </p>
-        <p>
-          <strong>새 비밀번호 확인:</strong>
-          <input
-            type="password"
-            name="new_passwd_confirm"
-            value={form.new_passwd_confirm}
-            onChange={handleChange}
-            required
-          />
-        </p>
-        <button type="submit" className={styles.updateButton}>비밀번호 변경</button>
-      </form>
+      {provider !== 'KAKAO' && (
+        <form className={styles.passwordForm} onSubmit={handleChangePassword}>
+          <h3>비밀번호 변경</h3>
+          <p>
+            <strong>현재 비밀번호:</strong>
+            <input
+              type="password"
+              name="passwd"
+              value={form.passwd}
+              onChange={handleChange}
+              required
+            />
+          </p>
+          <p>
+            <strong>새 비밀번호:</strong>
+            <input
+              type="password"
+              name="new_passwd"
+              value={form.new_passwd}
+              onChange={handleChange}
+              required
+            />
+            <span className={styles.info}>영문, 숫자, 특수문자 포함 8자 이상</span>
+          </p>
+          <p>
+            <strong>새 비밀번호 확인:</strong>
+            <input
+              type="password"
+              name="new_passwd_confirm"
+              value={form.new_passwd_confirm}
+              onChange={handleChange}
+              required
+            />
+          </p>
+          <button type="submit" className={styles.updateButton}>비밀번호 변경</button>
+        </form>
+      )}
 
       <button className={styles.deleteButton} onClick={handleDeleteAccount}>
         회원 탈퇴
@@ -153,10 +155,8 @@ const MyPage = () => {
                   alt={adoption.animalName}
                 />
                 <div>
-                
                   <p><strong>신청일:</strong> {adoption.applyDate}</p>
                   <p><strong>상태:</strong> {adoption.status}</p>
-               
                 </div>
               </li>
             ))}

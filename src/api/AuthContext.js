@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('email');
     setIsAuthenticated(false);
     setUser(null);
+    navigator('/');
   };
 
   return (

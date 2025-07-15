@@ -31,7 +31,7 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-     
+    
       <Route path="/animals" element={<AnimalListPage />} />
       <Route path="/animals/:id" element={<AnimalDetail />} />
       <Route path="/review" element={<AdoptionReview />} />

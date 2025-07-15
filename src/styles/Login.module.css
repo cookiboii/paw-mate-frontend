@@ -70,3 +70,25 @@
 .signupLink:hover {
   color: #e55b4f;
 }
+/* 기존 스타일 유지 */
+
+.kakaoLoginWrapper {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.kakaoButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.kakaoButton:hover {
+  transform: scale(1.05);
+}
+
+
+
