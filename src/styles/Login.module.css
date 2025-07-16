@@ -1,94 +1,106 @@
 .loginContainer {
-  max-width: 360px;
-  margin: 40px auto;
-  padding: 32px 28px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .title {
   text-align: center;
-  font-size: 2rem;
+  font-size: 24px;
   margin-bottom: 24px;
-  color: #222;
-  font-weight: 700;
+  font-weight: 600;
+  color: #1f2937;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .input {
-  padding: 12px 14px;
-  font-size: 1rem;
-  border: 1.5px solid #ccc;
-  border-radius: 6px;
-  transition: border-color 0.3s ease;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
 }
 
 .input:focus {
   outline: none;
   border-color: #ff6f61;
-  box-shadow: 0 0 6px rgba(255, 111, 97, 0.4);
 }
 
 .submitButton {
+  padding: 12px;
   background-color: #ff6f61;
   color: white;
-  font-weight: 600;
-  padding: 14px 0;
-  font-size: 1.1rem;
   border: none;
   border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
 .submitButton:hover {
-  background-color: #e55b4f;
+  background-color: #1e40af;
 }
 
-.signupPrompt {
-  margin-top: 20px;
-  font-size: 0.9rem;
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: -10px;
   text-align: center;
-  color: #555;
 }
 
-.signupLink {
+.extraActions {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.link {
   color: #ff6f61;
   cursor: pointer;
-  font-weight: 600;
-  transition: color 0.3s ease;
+  font-size: 14px;
+  text-decoration: underline;
 }
 
-.signupLink:hover {
-  color: #e55b4f;
+.divider {
+  text-align: center;
+  margin: 24px 0;
+  font-size: 14px;
+  color: #6b7280;
 }
-/* 기존 스타일 유지 */
 
 .kakaoLoginWrapper {
-  margin-top: 20px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .kakaoButton {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
-  display: inline-block;
-  transition: transform 0.2s ease;
 }
 
-.kakaoButton:hover {
-  transform: scale(1.05);
+.kakaoLoginImg {
+  width: 100%;
+  max-width: 200px;
 }
 
+.signupPrompt {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: center;
+  color: #374151;
+}
 
-
+.signupLink {
+  color:#ff6f61;
+  font-weight: 500;
+  cursor: pointer;
+}

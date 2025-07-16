@@ -21,7 +21,7 @@ import AdoptionReviewEdit from './pages/AdoptionReviewEdit';
 
 import AdminRoute from './components/AdminRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
-
+import ForgotPassword from "./pages/ForgotPassword";
 const AppRoutes = () => {
   const { user } = useAuth();
 
@@ -31,7 +31,7 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-    
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/animals" element={<AnimalListPage />} />
       <Route path="/animals/:id" element={<AnimalDetail />} />
       <Route path="/review" element={<AdoptionReview />} />

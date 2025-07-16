@@ -15,14 +15,12 @@ const Login = ({ onLoginSuccess }) => {
   const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}`;
 
-  // 일반 로그인 폼 변경
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setError("");
   };
 
-  // 일반 로그인 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -37,15 +35,11 @@ const Login = ({ onLoginSuccess }) => {
       }
 
       const userInfo = { email, role };
-
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
-
       login(token, userInfo);
       alert("로그인 성공!");
-
       if (onLoginSuccess) onLoginSuccess();
-
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -53,42 +47,24 @@ const Login = ({ onLoginSuccess }) => {
     }
   };
 
-  // 카카오 로그인 팝업 메시지 수신 처리
   useEffect(() => {
     const handleMessage = (event) => {
-      // 보안 체크: 반드시 여러분 앱의 프론트 URL로 변경하세요!
       if (event.origin === "http://localhost:5173") return;
 
       const { type, token, id, role, provider } = event.data;
-
       if (type === "OAUTH_SUCCESS") {
-        const userInfo = {
-          email: id,
-          role,
-          provider,
-        };
-
-        // 토큰과 역할 localStorage에 저장
+        const userInfo = { email: id, role, provider };
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
         localStorage.setItem("provider", provider);
-
-        // 로그인 컨텍스트 업데이트
         login(token, userInfo);
-
         alert("카카오 로그인 성공!");
-
         if (onLoginSuccess) onLoginSuccess();
-
         navigate("/");
       }
     };
-
     window.addEventListener("message", handleMessage);
-
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
+    return () => window.removeEventListener("message", handleMessage);
   }, [login, navigate, onLoginSuccess]);
 
   return (
@@ -113,31 +89,33 @@ const Login = ({ onLoginSuccess }) => {
           required
           className={styles.input}
         />
-        {error && <p style={{ color: "red", marginTop: "-10px" }}>{error}</p>}
+        {error && <p className={styles.error}>{error}</p>}
         <button type="submit" className={styles.submitButton}>로그인</button>
-
-        {/* 카카오 로그인 버튼: 새 팝업 창으로 열기 */}
-        <div className={styles.kakaoLoginWrapper}>
-          <button
-            type="button"
-            onClick={() => {
-              window.open(
-                kakaoAuthUrl,
-                "kakao-login-popup",
-                "width=500,height=600,scrollbars=yes,resizable=yes"
-              );
-            }}
-            className={styles.kakaoButton}
-          >
-<img 
-  src={kakaoLoginImg} 
-  alt="카카오 로그인" 
-  className={styles.kakaoLoginImg}
-/>
-
-          </button>
-        </div>
       </form>
+
+      <div className={styles.extraActions}>
+        <span onClick={() => navigate("/forgot-password")} className={styles.link}>
+          비밀번호를 잊으셨나요?
+        </span>
+      </div>
+
+      <div className={styles.divider}>또는</div>
+
+      <div className={styles.kakaoLoginWrapper}>
+        <button
+          type="button"
+          onClick={() =>
+            window.open(
+              kakaoAuthUrl,
+              "kakao-login-popup",
+              "width=500,height=600,scrollbars=yes,resizable=yes"
+            )
+          }
+          className={styles.kakaoButton}
+        >
+          <img src={kakaoLoginImg} alt="카카오 로그인" className={styles.kakaoLoginImg} />
+        </button>
+      </div>
 
       <p className={styles.signupPrompt}>
         아직 계정이 없으신가요?{" "}
