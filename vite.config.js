@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
-  base: '/paw-mate-frontend/', 
   plugins: [react()],
+  base: '/paw-mate-frontend/',  // ← 깃허브 리포지토리 이름으로 꼭 설정!
 })
