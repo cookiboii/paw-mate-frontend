@@ -26,7 +26,7 @@ const AppRoutes = () => {
   const { user } = useAuth();
 
   return (
-    <Routes>
+    <Routes basename={process.env.PUBLIC_URL}>
       {/* 일반 사용자 라우트 */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
