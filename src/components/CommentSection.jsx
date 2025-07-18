@@ -2,27 +2,34 @@ import React, { useEffect, useState } from 'react';
 import axios from '../api/axiosInstance';
 import styles from '../styles/CommentSection.module.css';
 import Spinner from '../components/Spinner';
-import { useAuth } from '../context/AuthContext'; // ✅ AuthContext 연동
 
 const CommentSection = ({ postId }) => {
-  const { user, isAuthenticated } = useAuth(); // ✅ 유저 정보 가져오기
+  const [userInfo, setUserInfo] = useState(null);
   const [comments, setComments] = useState([]);
   const [contentMap, setContentMap] = useState({});
   const [editModeMap, setEditModeMap] = useState({});
   const [loadingMap, setLoadingMap] = useState({});
 
   useEffect(() => {
-    fetchComments();
-  }, [postId]);
+    const fetchInitialData = async () => {
+      try {
+        const [userRes, commentsRes] = await Promise.all([
+          axios.get('/adoptmate/myInfo'),
+          axios.get(`/comment/${postId}`)
+        ]);
 
-  const fetchComments = async () => {
-    try {
-      const res = await axios.get(`/comment/${postId}`);
-      setComments(res.data.result || []);
-    } catch (err) {
-      console.error('댓글 불러오기 실패:', err);
-    }
-  };
+        setUserInfo({
+          email: (userRes.data.email || '').trim().toLowerCase(),
+          role: (userRes.data.role || '').toUpperCase()
+        });
+        setComments(commentsRes.data.result || []);
+      } catch (err) {
+        console.error('초기 데이터 로딩 실패:', err);
+      }
+    };
+
+    fetchInitialData();
+  }, [postId]);
 
   const handleChange = (id, value) => {
     setContentMap((prev) => ({ ...prev, [id]: value }));
@@ -39,7 +46,8 @@ const CommentSection = ({ postId }) => {
     try {
       await axios.post(`/comment/${postId}`, { content, parentId });
       setContentMap((prev) => ({ ...prev, [key]: '' }));
-      fetchComments();
+      const { data } = await axios.get(`/comment/${postId}`);
+      setComments(data.result || []);
     } catch (err) {
       console.error('댓글 등록 실패:', err);
     } finally {
@@ -53,7 +61,8 @@ const CommentSection = ({ postId }) => {
 
     try {
       await axios.delete(`/comment/${commentId}`);
-      fetchComments();
+      const { data } = await axios.get(`/comment/${postId}`);
+      setComments(data.result || []);
     } catch (err) {
       console.error('댓글 삭제 실패:', err);
     } finally {
@@ -75,7 +84,8 @@ const CommentSection = ({ postId }) => {
     try {
       await axios.put(`/comment/update/${commentId}`, { content: updatedContent });
       setEditModeMap((prev) => ({ ...prev, [commentId]: false }));
-      fetchComments();
+      const { data } = await axios.get(`/comment/${postId}`);
+      setComments(data.result || []);
     } catch (err) {
       console.error('댓글 수정 실패:', err);
     } finally {
@@ -85,8 +95,8 @@ const CommentSection = ({ postId }) => {
 
   const renderComments = (commentList) =>
     commentList.map((comment) => {
-      const isAuthor = user?.email === comment.authorEmail; // ✅ 작성자 여부
-      const isAdmin = user?.role === 'ADMIN'; // ✅ 관리자 여부
+      const isAuthor = userInfo?.email === comment.authorEmail;
+      const isAdmin = userInfo?.role === 'ADMIN';
 
       return (
         <div key={comment.id} className={styles.commentBox}>
@@ -119,8 +129,7 @@ const CommentSection = ({ postId }) => {
             )}
           </div>
 
-          {/* 대댓글 작성 */}
-          {isAuthenticated && (
+          {userInfo && (
             <form className={styles.replyForm} onSubmit={(e) => handleSubmit(e, comment.id)}>
               <input
                 type="text"
@@ -132,7 +141,6 @@ const CommentSection = ({ postId }) => {
             </form>
           )}
 
-          {/* 자식 댓글 재귀 렌더링 */}
           {comment.children && comment.children.length > 0 && (
             <div className={styles.childComments}>{renderComments(comment.children)}</div>
           )}
@@ -143,7 +151,7 @@ const CommentSection = ({ postId }) => {
   return (
     <div className={styles.commentSection}>
       <h3>댓글</h3>
-      {isAuthenticated && (
+      {userInfo && (
         <form onSubmit={(e) => handleSubmit(e)} className={styles.commentForm}>
           <input
             type="text"
