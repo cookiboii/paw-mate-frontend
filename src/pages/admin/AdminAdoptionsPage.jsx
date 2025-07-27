@@ -40,8 +40,18 @@ const AdminAdoptionsPage = () => {
           }
         }
       );
+
       alert(`입양 신청이 ${status === 'APPROVED' ? '승인' : '거절'}되었습니다.`);
-      fetchAdoptions();
+
+      if (status === 'APPROVED') {
+        // 승인 시: 해당 항목 리스트에서 제거
+        setAdoptions(prev =>
+          prev.filter(adoption => adoption.adoptionId !== adoptionId)
+        );
+      } else {
+        // 거절 시: 전체 새로고침
+        fetchAdoptions();
+      }
     } catch (err) {
       console.error('❌ 상태 변경 실패:', err);
       alert('상태 변경에 실패했습니다.');
@@ -58,7 +68,6 @@ const AdminAdoptionsPage = () => {
           <thead>
             <tr>
               <th>신청자</th>
-           
               <th>신청일</th>
               <th>인터뷰 내용</th>
               <th>상태</th>
@@ -69,7 +78,6 @@ const AdminAdoptionsPage = () => {
             {adoptions.map(adoption => (
               <tr key={adoption.adoptionId}>
                 <td>{adoption.memberName}</td>
-              
                 <td>{new Date(adoption.applyDate).toLocaleString()}</td>
                 <td>{adoption.interviewer}</td>
                 <td>{adoption.status || 'PENDING'}</td>
