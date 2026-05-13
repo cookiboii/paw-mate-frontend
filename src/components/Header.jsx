@@ -22,22 +22,22 @@ const Header = () => {
 
         <nav className={styles.nav}>
           <ul className={styles.navList}>
-            <li><Link to="/" className={styles.navLink}>홈</Link></li>
             <li><Link to="/animals" className={styles.navLink}>동물 목록</Link></li>
             <li><Link to="/reviews" className={styles.navLink}>입양 후기</Link></li> 
             {isAuthenticated && (
-              <>
-                <li><Link to="/review" className={styles.navLink}>후기작성</Link></li>
-              </>
+              <li><Link to="/review" className={styles.navLink}>후기작성</Link></li>
             )}
-
             {isAdmin && (
               <>
-                <li><Link to="/admin/users" className={styles.navLink}>관리자용</Link></li>
+                <li><Link to="/admin/users" className={styles.navLink}>사용자 관리</Link></li>
                 <li><Link to="/admin/adoptions" className={styles.navLink}>입양 신청 관리</Link></li>
               </>
             )}
+          </ul>
+        </nav>
 
+        <div className={styles.userActions}>
+          <ul className={styles.navList}>
             {isAuthenticated ? (
               <>
                 {!isAdmin && <li><Link to="/mypage" className={styles.navLink}>마이페이지</Link></li>}
@@ -50,11 +50,11 @@ const Header = () => {
             ) : (
               <>
                 <li><Link to="/login" className={styles.navLink}>로그인</Link></li>
-                <li><Link to="/register" className={styles.navLink}>회원가입</Link></li>
+                <li><Link to="/register" className={styles.primaryBtn}>회원가입</Link></li>
               </>
             )}
           </ul>
-        </nav>
+        </div>
       </div>
     </header>
   );
