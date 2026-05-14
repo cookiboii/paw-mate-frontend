@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../styles/Header.module.css';
 import { useAuth } from '../context/AuthContext';
@@ -7,14 +7,23 @@ const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const isAdmin = isAuthenticated && user?.role?.toUpperCase() === 'ADMIN';
   const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = () => {
-    logout();       // 상태 초기화
-    navigate('/');  // 메인 페이지로 이동
+    logout();
+    navigate('/');
   };
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${isScrolled ? styles.headerScrolled : ''}`}>
       <div className={styles.container}>
         <div className={styles.logo}>
           <Link to="/">🐾 AdoptMate</Link>
@@ -50,7 +59,7 @@ const Header = () => {
             ) : (
               <>
                 <li><Link to="/login" className={styles.navLink}>로그인</Link></li>
-                <li><Link to="/register" className={styles.primaryBtn}>회원가입</Link></li>
+                <li><Link to="/register" className="btn-primary">회원가입</Link></li>
               </>
             )}
           </ul>

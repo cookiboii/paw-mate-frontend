@@ -84,42 +84,45 @@ const AnimalDetail = () => {
             className={styles.image}
           />
           <div className={styles.info}>
-            <p><strong>종:</strong> {animal.species}</p>
-            <p><strong>품종:</strong> {animal.breed}</p>
-            <p><strong>나이:</strong> {animal.age}살</p>
-            <p><strong>성별:</strong> {animal.gender}</p>
-            <p><strong>색상:</strong> {animal.color}</p>
-            <p><strong>상태:</strong> {animal.status}</p>
+            <p><strong>종</strong> <span>{animal.species}</span></p>
+            <p><strong>품종</strong> <span>{animal.breed}</span></p>
+            <p><strong>나이</strong> <span>{animal.age}살</span></p>
+            <p><strong>성별</strong> <span>{animal.gender === 'M' ? '수컷' : animal.gender === 'F' ? '암컷' : animal.gender}</span></p>
+            <p><strong>색상</strong> <span>{animal.color}</span></p>
+            <p><strong>상태</strong> <span className={styles.statusBadge}>{animal.status}</span></p>
+
+            {/* ✅ 일반 사용자: 입양 신청 버튼 조건 */}
+            {!isAdmin && canAdopt && (
+              <div className={styles.adoptBtnWrapper}>
+                <Link to={`/adopt/${id}`} className="btn-primary" style={{width: '100%'}}>
+                  입양 신청하기
+                </Link>
+              </div>
+            )}
+
+            {/* ✅ 일반 사용자: 이미 입양 완료 안내 */}
+            {!isAdmin && animal.status === AnimalStatus.ADOPTED && (
+              <p className={styles.message}>😿 이미 입양이 완료된 동물입니다.</p>
+            )}
+
+            {/* ✅ 관리자 전용 버튼 */}
+            {isAdmin && (
+              <div className={styles.adminButtons}>
+                <button
+                  className={styles.editButton}
+                  onClick={() => navigate(`/animals/edit/${id}`)}
+                >
+                  상태 수정
+                </button>
+                <button
+                  className={styles.deleteButton}
+                  onClick={handleDelete}
+                >
+                  삭제
+                </button>
+              </div>
+            )}
           </div>
-
-          {/* ✅ 일반 사용자: 입양 신청 버튼 조건 */}
-          {!isAdmin && canAdopt && (
-            <div className={styles.adoptBtnWrapper}>
-              <Link to={`/adopt/${id}`}>
-                <button className={styles.adoptBtn}>입양 신청하기</button>
-              </Link>
-            </div>
-          )}
-
-          {/* ✅ 일반 사용자: 이미 입양 완료 안내 */}
-          {!isAdmin && animal.status === AnimalStatus.ADOPTED && (
-            <p className={styles.message}>😿 이미 입양이 완료된 동물입니다.</p>
-          )}
-
-          {/* ✅ 관리자 전용 버튼 */}
-          {isAdmin && (
-            <div className={styles.adminButtons}>
-              <Link to={`/animals/edit/${id}`}>
-                <button className={styles.editButton}>수정</button>
-              </Link>
-              <button
-                className={styles.deleteButton}
-                onClick={handleDelete}
-              >
-                삭제
-              </button>
-            </div>
-          )}
         </div>
       ) : (
         <p className={styles.message}>동물 정보를 찾을 수 없습니다.</p>
@@ -128,8 +131,8 @@ const AnimalDetail = () => {
       {/* ✅ 관리자: 목록으로 돌아가기 */}
       {isAdmin && (
         <div className={styles.registerBtnWrapper}>
-          <Link to="/animals">
-            <button className={styles.registerBtn}>동물 관리로 돌아가기</button>
+          <Link to="/animals" className="btn-secondary">
+            동물 목록으로 돌아가기
           </Link>
         </div>
       )}

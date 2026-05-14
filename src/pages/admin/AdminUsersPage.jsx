@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../admin/AdminLayout';
 import axiosInstance from '../../api/axiosInstance';
+import styles from '../../styles/AdminUsersPage.module.css';
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -17,27 +18,29 @@ const AdminUsersPage = () => {
 
   return (
     <AdminLayout>
-      <h1>👥 회원 관리</h1>
-      <table border="1" cellPadding="8" cellSpacing="0" style={{ width: '100%', textAlign: 'left' }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>이메일</th>
-            <th>이름</th>
-            <th>역할</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.email}</td>
-              <td>{user.name}</td>
-              <td>{user.role}</td>
+      <div className={styles.container}>
+        <h1 className={styles.title}>👥 회원 관리</h1>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>이메일</th>
+              <th>이름</th>
+              <th>역할</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.email}</td>
+                <td>{user.name}</td>
+                <td>{user.role}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </AdminLayout>
   );
 };

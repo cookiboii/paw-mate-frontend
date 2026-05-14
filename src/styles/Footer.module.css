@@ -1,9 +1,9 @@
 .footer {
   margin-top: auto;
-  padding: 64px 0 32px;
-  background-color: var(--surface-color);
-  border-top: 1px solid var(--border-color);
-  color: var(--text-muted);
+  padding: 80px 0 40px;
+  background-color: #1c1c1e; /* Very Dark, almost black, premium feel */
+  border-top: 1px solid rgba(0,0,0,0.1);
+  color: #a1a1aa; /* Soft gray for text */
 }
 
 .container {
@@ -16,29 +16,31 @@
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 48px;
-  margin-bottom: 48px;
+  margin-bottom: 64px;
 }
 
 .brand h3 {
   color: var(--primary-color);
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.8rem;
+  font-weight: 800;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .brand p {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #d4d4d8;
 }
 
 .links h4 {
-  color: var(--text-primary);
-  font-size: 1.05rem;
+  color: #ffffff;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
 }
 
 .links ul {
@@ -47,11 +49,11 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .links a {
-  color: var(--text-muted);
+  color: #a1a1aa;
   font-size: 0.95rem;
   transition: color var(--transition-fast);
 }
@@ -64,34 +66,40 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 32px;
-  border-top: 1px solid var(--border-color);
+  padding-top: 40px;
+  border-top: 1px solid rgba(255,255,255,0.1);
   font-size: 0.9rem;
 }
 
 .legalLinks {
   display: flex;
-  gap: 24px;
+  gap: 32px;
 }
 
 .legalLinks a {
-  color: var(--text-muted);
+  color: #a1a1aa;
   transition: color var(--transition-fast);
 }
 
 .legalLinks a:hover {
-  color: var(--primary-color);
+  color: #ffffff;
 }
 
 @media (max-width: 768px) {
   .topSection {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+@media (max-width: 576px) {
+  .topSection {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 40px;
   }
   
   .bottomSection {
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
     text-align: center;
   }
 }
