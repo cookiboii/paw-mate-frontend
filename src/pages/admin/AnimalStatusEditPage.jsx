@@ -19,7 +19,7 @@ const AnimalStatusEditPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const isAdmin = isAuthenticated && user?.role === 'ADMIN';
+  const isAdmin = isAuthenticated && user?.role?.toUpperCase() === 'ADMIN';
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;

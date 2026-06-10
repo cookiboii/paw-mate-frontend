@@ -3,18 +3,13 @@ import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null); // ✅ 추가
-
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem('token');
+  });
+  const [user, setUser] = useState(() => {
     const role = localStorage.getItem('role');
-    if (token && role) {
-      setIsAuthenticated(true);
-      setUser({ role }); // ✅ 저장된 role 복원
-    }
-  }, []);
+    return role ? { role } : null;
+  });
 
   const login = (token, userInfo) => {
     localStorage.setItem('token', token);

@@ -88,7 +88,7 @@ const MyPage = () => {
   };
 
   if (!userInfo) return <div>로딩 중...</div>;
-  if (userInfo.role === 'ADMIN') return <AdminUsersPage />;
+  if (userInfo.role?.toUpperCase() === 'ADMIN') return <AdminUsersPage />;
 
   return (
     <section className={styles.myPage}>

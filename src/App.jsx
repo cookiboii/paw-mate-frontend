@@ -45,7 +45,7 @@ const AppRoutes = () => {
       {/* 마이페이지: ADMIN이면 관리 페이지로 이동 */}
       <Route
         path="/mypage"
-        element={user?.role === 'ADMIN' ? <Navigate to="/admin/users" replace /> : <MyPage />}
+        element={user?.role?.toUpperCase() === 'ADMIN' ? <Navigate to="/admin/users" replace /> : <MyPage />}
       />
 
       {/* 관리자 라우트 */}
