@@ -1,32 +1,76 @@
 .registerContainer {
-  max-width: 420px;
-  margin: 80px auto;
+  max-width: 480px;
+  margin: 60px auto;
   padding: 48px 40px;
   background-color: var(--surface-color);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(0, 0, 0, 0.04);
   animation: slideUpFade var(--transition-normal);
 }
 
-.registerContainer h2 {
+.header {
   text-align: center;
-  font-size: 2rem;
   margin-bottom: 32px;
+}
+
+.title {
+  font-size: 2rem;
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
-.form input {
-  padding: 16px;
-  font-size: 1.05rem;
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 16px;
+  color: var(--text-light);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  font-size: 1rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
@@ -34,29 +78,135 @@
   color: var(--text-primary);
 }
 
-.form input:focus {
+.input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 4px var(--primary-light);
   background: var(--surface-color);
 }
 
-.form p {
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-align: center;
+.input:focus + .inputIcon {
+  color: var(--primary-color);
 }
 
-.form p.error {
+.passwordToggle {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+.passwordToggle:hover {
+  color: var(--text-primary);
+}
+
+.verifyRow {
+  display: flex;
+  gap: 10px;
+}
+
+.verifyRow .inputWrapper {
+  flex: 1;
+}
+
+.verifyRowButton {
+  background-color: var(--surface-color);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 0 18px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.verifyRowButton:hover:not(:disabled) {
+  background-color: var(--bg-color);
+  border-color: var(--text-muted);
+}
+
+.verifyRowButton:disabled {
+  background-color: var(--border-color);
+  color: var(--text-light);
+  cursor: not-allowed;
+}
+
+.verifyActiveButton {
+  background: linear-gradient(135deg, var(--secondary-color), #48cae4) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.verifyActiveButton:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.timerBadge {
+  position: absolute;
+  right: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--danger-color);
+  pointer-events: none;
+}
+
+.requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 10px 14px;
+  background-color: var(--bg-color);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.requirementItem {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color var(--transition-fast);
+}
+
+.requirementItem.valid {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.requirementIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.helperText {
+  font-size: 0.82rem;
+  margin-top: 4px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.helperText.error {
   color: var(--danger-color);
 }
 
-.form p.success {
+.helperText.success {
   color: var(--success-color);
 }
 
-.form button {
+.submitButton {
   background: linear-gradient(135deg, var(--primary-color), #f4a261);
   color: white;
   font-weight: 700;
@@ -67,50 +217,55 @@
   cursor: pointer;
   transition: all var(--transition-normal);
   box-shadow: var(--shadow-glow-primary);
-  margin-top: 8px;
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 
-.form button:hover {
+.submitButton:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(231, 111, 81, 0.3);
 }
 
-/* ✅ 인증 코드 입력 영역 버튼 및 input 통일 */
-.emailVerifyContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.submitButton:disabled {
+  background: var(--border-color);
+  color: var(--text-light);
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
-.emailVerifyContainer input {
-  padding: 16px;
-  font-size: 1.05rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  background: var(--bg-color);
+.loginPrompt {
+  margin-top: 24px;
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--text-muted);
 }
 
-.emailVerifyContainer input:focus {
-  outline: none;
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 4px var(--secondary-light);
-  background: var(--surface-color);
-}
-
-.emailVerifyContainer button {
-  background-color: var(--surface-color);
-  color: var(--text-primary);
-  font-weight: 600;
-  padding: 14px;
-  font-size: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+.loginLink {
+  color: var(--primary-color);
+  font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  margin-left: 8px;
+  text-decoration: none;
 }
 
-.emailVerifyContainer button:hover {
-  background-color: var(--bg-color);
-  border-color: var(--text-muted);
+.loginLink:hover {
+  text-decoration: underline;
+  color: var(--primary-hover);
+}
+
+/* Animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }

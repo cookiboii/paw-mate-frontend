@@ -18,104 +18,215 @@
 
 .card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
   background-color: var(--surface-color);
   border-radius: var(--radius-xl);
-  padding: 32px;
-  box-shadow: var(--shadow-md);
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
   border: 1px solid rgba(0,0,0,0.03);
-  align-items: center;
+  align-items: stretch;
 }
 
 .image {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   object-fit: cover;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  border: 4px solid var(--surface-color);
 }
 
 .info {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+/* Header Area for breed & status */
+.headerArea {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 20px;
+}
+
+.breed {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  width: fit-content;
+}
+
+.badgeWaiting {
+  background-color: var(--secondary-light);
+  color: var(--secondary-color);
+  border: 1px solid rgba(42, 157, 143, 0.2);
+}
+
+.badgeProtected {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  border: 1px solid rgba(231, 111, 81, 0.2);
+}
+
+.badgeAdopted {
+  background-color: #f4f4f5;
+  color: #71717a;
+  border: 1px solid rgba(113, 113, 122, 0.2);
+}
+
+/* Info Grid Layout (2x2) */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
-.info p {
-  font-size: 1.15rem;
-  color: var(--text-muted);
+.infoCard {
+  background-color: var(--bg-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
   display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 8px;
+  align-items: center;
+  gap: 14px;
+  transition: all var(--transition-fast);
 }
 
-.info p strong {
+.infoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--surface-color);
+  border-color: var(--border-color);
+}
+
+.cardIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background-color: #ffffff;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+/* Make gender icon use secondary color if female or custom colors */
+.infoCard:nth-child(even) .cardIcon {
+  color: var(--secondary-color);
+}
+
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardLabel {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.cardValue {
+  font-size: 1.05rem;
   color: var(--text-primary);
   font-weight: 700;
 }
 
-.statusBadge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  font-size: 0.9rem;
-  font-weight: 700;
+/* Status Banner */
+.statusBanner {
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.bannerProtected {
   background-color: var(--primary-light);
   color: var(--primary-color);
+  border: 1px solid rgba(231, 111, 81, 0.1);
 }
 
+.bannerWaiting {
+  background-color: var(--secondary-light);
+  color: var(--secondary-color);
+  border: 1px solid rgba(42, 157, 143, 0.1);
+}
+
+.bannerAdopted {
+  background-color: #f4f4f5;
+  color: #71717a;
+  border: 1px solid rgba(113, 113, 122, 0.1);
+}
+
+.bannerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* Button wrappers & styles */
 .adoptBtnWrapper {
-  margin-top: 32px;
-  text-align: center;
-}
-
-.message {
-  color: var(--text-muted);
-  text-align: center;
-  margin-top: 40px;
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-.error {
-  color: var(--danger-color);
-  text-align: center;
-  margin-top: 40px;
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin-top: 12px;
 }
 
 .adminButtons {
   display: flex;
-  gap: 16px;
-  margin-top: 32px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .editButton {
   flex: 1;
   background-color: var(--surface-color);
   color: var(--text-primary);
-  padding: 12px 24px;
+  padding: 14px 24px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
+
 .editButton:hover {
   background-color: var(--bg-color);
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
 }
 
 .deleteButton {
   flex: 1;
   background-color: #fff0f0;
   color: var(--danger-color);
-  padding: 12px 24px;
+  padding: 14px 24px;
   border: 1px solid transparent;
   border-radius: var(--radius-full);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -123,6 +234,7 @@
 .deleteButton:hover {
   background-color: var(--danger-color);
   color: white;
+  transform: translateY(-1px);
 }
 
 .registerBtnWrapper {
@@ -130,8 +242,30 @@
   text-align: center;
 }
 
-@media (max-width: 768px) {
+/* Responsive design */
+@media (max-width: 992px) {
   .card {
     grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 32px;
+  }
+  
+  .image {
+    aspect-ratio: 16/10;
+    max-height: 380px;
+  }
+}
+
+@media (max-width: 576px) {
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .breed {
+    font-size: 1.8rem;
+  }
+  
+  .adminButtons {
+    flex-direction: column;
   }
 }
