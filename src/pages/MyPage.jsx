@@ -21,7 +21,7 @@ const MyPage = () => {
   useEffect(() => {
     if (!token) return;
 
-    axios.get(`http://localhost:8000/adoptmate/myInfo`, {
+    axios.get(`/adoptmate/myInfo`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
@@ -32,7 +32,7 @@ const MyPage = () => {
       alert('사용자 정보를 불러오지 못했습니다.');
     });
 
-    axios.get('http://localhost:8000/adoptions/myAdoption', {
+    axios.get('/adoptions/myAdoption', {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
@@ -45,7 +45,7 @@ const MyPage = () => {
 
   const handleDeleteAccount = () => {
     if (window.confirm('정말 탈퇴하시겠습니까?')) {
-      axios.delete('http://localhost:8000/adoptmate/delete', {
+      axios.delete('/adoptmate/delete', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(() => {
@@ -71,7 +71,7 @@ const MyPage = () => {
       return;
     }
 
-    axios.post('http://localhost:8000/adoptmate/password', {
+    axios.post('/adoptmate/password', {
       currentPassword: form.passwd,
       newPassword: form.new_passwd
     }, {

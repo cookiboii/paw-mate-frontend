@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/AnimalList.module.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 const AnimalList = () => {
   const [animals, setAnimals] = useState([]);
   const [page, setPage] = useState(0);
@@ -11,7 +13,7 @@ const AnimalList = () => {
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/animals/list?page=${page}&size=${pageSize}`);
+        const res = await fetch(`${API_BASE_URL}/animals/list?page=${page}&size=${pageSize}`);
         if (!res.ok) throw new Error('동물 목록을 불러오지 못했습니다.');
         const data = await res.json();
         setAnimals(data.content);

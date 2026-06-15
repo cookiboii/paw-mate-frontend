@@ -49,7 +49,7 @@ const Login = ({ onLoginSuccess }) => {
 
   useEffect(() => {
     const handleMessage = (event) => {
-      if (event.origin === "http://localhost:5173") return;
+      if (event.origin === window.location.origin) return;
 
       const { type, token, id, role, provider } = event.data;
       if (type === "OAUTH_SUCCESS") {

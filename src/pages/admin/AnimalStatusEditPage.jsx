@@ -3,6 +3,8 @@ import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../styles/AnimalStatusEditPage.module.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 // ✅ 백엔드 Enum 값과 매핑되는 선택지
 const STATUS_OPTIONS = [
   { label: '대기중', value: 'WAITING' },
@@ -27,7 +29,7 @@ const AnimalStatusEditPage = () => {
   useEffect(() => {
     const fetchAnimalStatus = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/animals/${id}`);
+        const res = await fetch(`${API_BASE_URL}/animals/${id}`);
         if (!res.ok) throw new Error('동물 정보를 불러올 수 없습니다.');
         const data = await res.json();
         setStatus(data.result.status); // status: WAITING, PROTECTED, ADOPTED 중 하나
@@ -50,7 +52,7 @@ const AnimalStatusEditPage = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch(`http://localhost:8000/animals/${id}/status`, {
+      const res = await fetch(`${API_BASE_URL}/animals/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

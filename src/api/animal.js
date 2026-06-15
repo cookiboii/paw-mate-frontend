@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/animals'; // ✅ 백엔드 주소 (Controller prefix 기준)
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = `${API_BASE}/animals`; // ✅ 백엔드 주소 (Controller prefix 기준)
 
 /**
  * 🔐 관리자 전용 동물 등록 API

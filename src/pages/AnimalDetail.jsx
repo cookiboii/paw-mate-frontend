@@ -3,6 +3,8 @@ import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/AnimalDetail.module.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 // 상태 ENUM 정의
 const AnimalStatus = {
   WAITING: 'WAITING',
@@ -63,7 +65,7 @@ const AnimalDetail = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:8000/animals/${id}`);
+        const response = await fetch(`${API_BASE_URL}/animals/${id}`);
         if (!response.ok) throw new Error('동물 정보를 불러올 수 없습니다.');
         const data = await response.json();
         setAnimal(data.result);
@@ -94,7 +96,7 @@ const AnimalDetail = () => {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/animals/delete/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/animals/delete/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

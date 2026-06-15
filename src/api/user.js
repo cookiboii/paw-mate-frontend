@@ -1,7 +1,8 @@
 // src/api/user.js
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000/adoptmate"; // 주소는 환경에 따라 조정
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const BASE_URL = `${API_BASE}/adoptmate`; // 주소는 환경에 따라 조정
 
 
 // 회원가입
