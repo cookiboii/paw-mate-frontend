@@ -3,7 +3,7 @@ import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../styles/AnimalStatusEditPage.module.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://192.168.219.104:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://211.241.113.119:8000';
 
 // ✅ 백엔드 Enum 값과 매핑되는 선택지
 const STATUS_OPTIONS = [

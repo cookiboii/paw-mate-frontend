@@ -3,7 +3,7 @@ import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/AnimalDetail.module.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://192.168.219.104:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://211.241.113.119:8000';
 
 // 상태 ENUM 정의
 const AnimalStatus = {

@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://192.168.219.104:8000', // API 서버 주소
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://211.241.113.119:8000', // API 서버 주소
 });
 
 axiosInstance.interceptors.request.use(config => {
