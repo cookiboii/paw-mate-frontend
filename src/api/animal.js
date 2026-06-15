@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://211.241.113.119:8000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/proxy';
 const API_BASE_URL = `${API_BASE}/animals`; // ✅ 백엔드 주소 (Controller prefix 기준)
 
 /**
