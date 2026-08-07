@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msild8sz2d1b10c6.sel3.cloudtype.app';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 const API_BASE_URL = `${API_BASE}/animals`; // ✅ 백엔드 주소 (Controller prefix 기준)
 
 /**

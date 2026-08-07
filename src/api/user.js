@@ -1,7 +1,7 @@
 // src/api/user.js
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://port-0-paw-mate-backend-msild8sz2d1b10c6.sel3.cloudtype.app";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app";
 const BASE_URL = `${API_BASE}/adoptmate`; // 주소는 환경에 따라 조정
 
 
