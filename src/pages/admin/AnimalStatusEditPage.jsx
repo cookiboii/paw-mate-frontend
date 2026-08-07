@@ -3,7 +3,7 @@ import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../styles/AnimalStatusEditPage.module.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msild8sz2d1b10c6.sel3.cloudtype.app';
 
 // ✅ 백엔드 Enum 값과 매핑되는 선택지
 const STATUS_OPTIONS = [
