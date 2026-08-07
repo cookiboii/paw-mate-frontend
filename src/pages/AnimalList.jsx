@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/AnimalList.module.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/proxy';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const AnimalList = () => {
   const [animals, setAnimals] = useState([]);
