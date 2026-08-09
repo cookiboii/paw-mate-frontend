@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
+import { fetchAnimalList } from "../api/animal";
 
 import dog1 from "../assets/dog1.jpg";
 import dog2 from "../assets/dog2.jpg";
@@ -16,6 +17,8 @@ const HomePage = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState(0);
+  const [recentAnimals, setRecentAnimals] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
   const navigate = useNavigate();
 
   const closeLoginModal = () => setIsLoginOpen(false);
@@ -28,10 +31,32 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const res = await fetchAnimalList(0, 4);
+        if (res.isSuccess && res.result) {
+          setRecentAnimals(res.result.content || []);
+        }
+      } catch (error) {
+        console.error("Failed to load recent animals:", error);
+      }
+    };
+    loadData();
+  }, []);
+
   const goToSlide = (index) => setCurrent(index);
 
   return (
     <div className={styles.homeContainer}>
+      <div className="marquee-container">
+        <div className="marquee-content">
+          <span>🎉 방금 '뽀삐'가 새로운 가족을 만났어요!</span>
+          <span>🐾 오늘 5마리의 천사들이 가족의 품으로 갔습니다.</span>
+          <span>✨ 당신의 따뜻한 손길을 기다리는 아이들이 있습니다.</span>
+          <span>🎉 방금 '뽀삐'가 새로운 가족을 만났어요!</span>
+        </div>
+      </div>
       {/* 1. Hero Section */}
       <section className={styles.heroSection}>
         <div className={`${styles.heroContent} animate-slide-up`}>
@@ -75,19 +100,28 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 2. Stats Section */}
-      <section className={styles.statsSection}>
-        <div className={styles.statCard}>
-          <h3>1,240+</h3>
-          <p>새로운 가족을 만난 아이들</p>
+
+      {/* 2. New Arrivals Section */}
+      <section className={styles.newArrivalsSection}>
+        <div className={`${styles.sectionHeader} animate-slide-up`}>
+          <h2>방금 들어온 새로운 가족</h2>
+          <p>가장 최근에 파우메이트와 함께하게 된 아이들입니다.</p>
         </div>
-        <div className={styles.statCard}>
-          <h3>85+</h3>
-          <p>현재 가족을 기다리는 아이들</p>
-        </div>
-        <div className={styles.statCard}>
-          <h3>98%</h3>
-          <p>입양 후 만족도</p>
+        <div className={styles.animalGrid}>
+          {recentAnimals.map(animal => (
+            <div key={animal.animalId} className={styles.animalCard} onClick={() => navigate(`/animals/${animal.animalId}`)}>
+              <div className={styles.animalBadge}>NEW</div>
+              <img src={animal.profileImageUrl || dog1} alt={animal.name} className={styles.animalImage} />
+              <div className={styles.animalInfo}>
+                <h4>{animal.name}</h4>
+                <p>{animal.species} - {animal.breed}</p>
+                <div className={styles.animalMeta}>
+                  <span>나이: {animal.age || 0}살</span>
+                  <span style={{ color: "var(--primary-color)", fontWeight: "600" }}>자세히 보기 &rarr;</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -120,6 +154,32 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* 5. Testimonials Section */}
+      {testimonials.length > 0 && (
+        <section className={styles.testimonialsSection}>
+          <div className={`${styles.sectionHeader} animate-slide-up`}>
+            <h2>입양 가족들의 따뜻한 이야기</h2>
+            <p>파우메이트를 통해 새로운 가족을 만난 분들의 생생한 후기입니다.</p>
+          </div>
+          <div className={styles.testimonialsGrid}>
+            {testimonials.map(review => (
+              <div key={review.id} className={styles.testimonialCard}>
+                <div className={styles.quoteIcon}>"</div>
+                <div className={styles.stars}>{"★".repeat(review.rating)}</div>
+                <p className={styles.testimonialText}>"{review.text}"</p>
+                <div className={styles.reviewer}>
+                  <div className={styles.reviewerAvatar}>{review.name[0]}</div>
+                  <div className={styles.reviewerInfo}>
+                    <h5>{review.name}</h5>
+                    <span>{review.role}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 4. CTA Section */}
       <section className={styles.ctaSection}>

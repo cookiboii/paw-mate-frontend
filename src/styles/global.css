@@ -2,32 +2,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Premium Warm Color Palette (Terracotta & Sage) */
-  --primary-color: #e76f51; /* Terracotta */
-  --primary-hover: #d55d40;
-  --primary-light: rgba(231, 111, 81, 0.1);
+  /* Comfortable & Relaxing Palette (Earthy Green & Oatmeal) */
+  --primary-color: #657963; /* Muted Moss Green */
+  --primary-hover: #546552;
+  --primary-light: rgba(101, 121, 99, 0.1);
   
-  --secondary-color: #2a9d8f; /* Sage Green */
-  --secondary-hover: #21867a;
-  --secondary-light: rgba(42, 157, 143, 0.1);
+  --secondary-color: #dcb897; /* Warm Soft Oak/Camel */
+  --secondary-hover: #c4a181;
+  --secondary-light: rgba(220, 184, 151, 0.15);
   
-  --bg-color: #fcfbf9; /* Soft Warm Cream */
+  --bg-color: #f9f8f6; /* Very Soft Oatmeal/Ivory */
   --surface-color: #ffffff; /* White */
   
-  --text-primary: #1d1d1f; /* Almost Black */
-  --text-muted: #6e6e73; /* Soft Gray */
-  --text-light: #86868b;
+  --text-primary: #2d302d; /* Softened Black/Dark Gray-Green */
+  --text-muted: #757a75; /* Soft Gray */
+  --text-light: #949994;
   
-  --border-color: #e5e5e8;
-  --danger-color: #ff3b30;
-  --success-color: #34c759;
-  --warning-color: #ffcc00;
+  --border-color: #e2dfda; /* Warm Gray Border */
+  --danger-color: #e07a5f; /* Softer Muted Red/Terracotta */
+  --success-color: #81b29a; /* Muted Green */
+  --warning-color: #f2cc8f; /* Muted Yellow */
 
   /* Premium Soft Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
-  --shadow-glow-primary: 0 8px 24px rgba(231, 111, 81, 0.25);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.09);
+  --shadow-glow-primary: 0 8px 24px rgba(101, 121, 99, 0.25);
   
   /* Modern Border Radii */
   --radius-sm: 8px;
@@ -148,7 +148,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* Premium Primary Button */
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), #f4a261);
+  background: linear-gradient(135deg, var(--primary-color), #768a74);
   color: #fff;
   padding: 14px 28px;
   border-radius: var(--radius-full);
@@ -164,7 +164,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(231, 111, 81, 0.35);
+  box-shadow: 0 12px 30px rgba(101, 121, 99, 0.35);
   filter: brightness(1.05);
 }
 
@@ -201,4 +201,61 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .card-base:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-lg);
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  background: var(--secondary-light);
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 25s linear infinite;
+  color: var(--secondary-hover);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+}
+
+.marquee-content span {
+  margin: 0 40px;
+}
+
+/* Shimmer Effect */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  animation: shimmerAnim 3s infinite;
+}
+
+@keyframes shimmerAnim {
+  0% { transform: translateX(-100%) rotate(30deg); }
+  100% { transform: translateX(100%) rotate(30deg); }
 }
