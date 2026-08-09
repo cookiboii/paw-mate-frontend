@@ -49,14 +49,6 @@ const HomePage = () => {
 
   return (
     <div className={styles.homeContainer}>
-      <div className="marquee-container">
-        <div className="marquee-content">
-          <span>🎉 방금 '뽀삐'가 새로운 가족을 만났어요!</span>
-          <span>🐾 오늘 5마리의 천사들이 가족의 품으로 갔습니다.</span>
-          <span>✨ 당신의 따뜻한 손길을 기다리는 아이들이 있습니다.</span>
-          <span>🎉 방금 '뽀삐'가 새로운 가족을 만났어요!</span>
-        </div>
-      </div>
       {/* 1. Hero Section */}
       <section className={styles.heroSection}>
         <div className={`${styles.heroContent} animate-slide-up`}>
