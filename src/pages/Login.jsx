@@ -49,7 +49,9 @@ const Login = ({ onLoginSuccess }) => {
 
   useEffect(() => {
     const handleMessage = (event) => {
-      if (event.origin === window.location.origin) return;
+      // 백엔드 주소에서 온 메시지만 허용하도록 보안 강화 (가짜 도메인에서 오는 토큰 탈취 방지)
+      const BACKEND_ORIGIN = new URL(import.meta.env.VITE_API_BASE_URL).origin;
+      if (event.origin !== BACKEND_ORIGIN) return;
 
       const { type, token, id, role, provider } = event.data;
       if (type === "OAUTH_SUCCESS") {
