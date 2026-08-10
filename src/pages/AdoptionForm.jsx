@@ -19,7 +19,7 @@ const AdoptionForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`/adoptions/animals/${animalId}/`, {
+      const res = await axios.post(`/adoptions/animals/${animalId}`, {
         interview,
       });
 

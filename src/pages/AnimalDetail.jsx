@@ -118,7 +118,7 @@ const AnimalDetail = () => {
     if (!confirmed) return;
 
     try {
-      await axios.post(`/adoptions/animals/${id}/`, {
+      await axios.post(`/adoptions/animals/${id}`, {
         interview: '빠른 입양 신청을 희망합니다.',
       });
       alert('입양 신청이 완료되었습니다!');
