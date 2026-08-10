@@ -48,6 +48,18 @@ const AdminAdoptionsPage = () => {
         setAdoptions(prev =>
           prev.filter(adoption => adoption.adoptionId !== adoptionId)
         );
+        
+        // 백엔드 응답에 animalId가 포함되어 있다면, 동물의 상태도 '입양완료(ADOPTED)'로 자동 변경
+        const targetAdoption = adoptions.find(a => a.adoptionId === adoptionId);
+        if (targetAdoption && targetAdoption.animalId) {
+          try {
+            await axios.put(`/animals/${targetAdoption.animalId}/status`, { status: 'ADOPTED' }, {
+              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+          } catch (statusErr) {
+            console.error('동물 상태 ADOPTED 변경 실패:', statusErr);
+          }
+        }
       } else {
         // 거절 시: 전체 새로고침
         fetchAdoptions();
