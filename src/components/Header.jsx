@@ -38,6 +38,7 @@ const Header = () => {
             )}
             {isAdmin && (
               <>
+                <li><Link to="/admin/animals" className={styles.navLink}>동물 등록</Link></li>
                 <li><Link to="/admin/users" className={styles.navLink}>사용자 관리</Link></li>
                 <li><Link to="/admin/adoptions" className={styles.navLink}>입양 신청 관리</Link></li>
               </>
