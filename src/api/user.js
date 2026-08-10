@@ -11,7 +11,7 @@ export const registerUser = async ({ name, email, password }) => {
     name: name,
     email,
     password,
-
+    role: 'USER',
   });
 };
 
