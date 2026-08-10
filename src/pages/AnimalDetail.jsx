@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
@@ -109,6 +110,23 @@ const AnimalDetail = () => {
       navigate('/animals');
     } catch (err) {
       alert('❌ 오류: ' + err.message);
+    }
+  };
+
+  const handleAdopt = async () => {
+    const confirmed = window.confirm('정말로 이 동물을 입양 신청하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      await axios.post(`/adoptions/animals/${id}/`, {
+        interview: '빠른 입양 신청을 희망합니다.',
+      });
+      alert('입양 신청이 완료되었습니다!');
+      // Navigate to mypage or just stay (could refresh)
+      navigate('/mypage');
+    } catch (err) {
+      console.error(err);
+      alert('신청 중 오류가 발생했습니다.');
     }
   };
 
@@ -231,9 +249,9 @@ const AnimalDetail = () => {
             {/* 일반 사용자: 입양 신청 버튼 조건 */}
             {!isAdmin && canAdopt && (
               <div className={styles.adoptBtnWrapper}>
-                <Link to={`/adopt/${id}`} className="btn-primary" style={{width: '100%', textDecoration: 'none'}}>
+                <button onClick={handleAdopt} className="btn-primary" style={{width: '100%'}}>
                   입양 신청하기
-                </Link>
+                </button>
               </div>
             )}
 
