@@ -10,8 +10,7 @@ const AdminRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user?.role?.toUpperCase() !== 'ADMIN') {
-    // 관리자 권한 없으면 홈으로 리다이렉트
+  if (user?.role?.toUpperCase() !== 'ADMIN' && user?.role?.toUpperCase() !== 'ROLE_ADMIN') {
     return <Navigate to="/" replace />;
   }
 

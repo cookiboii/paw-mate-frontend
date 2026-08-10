@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const isAdmin = isAuthenticated && user?.role?.toUpperCase() === 'ADMIN';
+  const isAdmin = isAuthenticated && (user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN');
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
 
