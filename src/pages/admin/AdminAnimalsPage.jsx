@@ -19,7 +19,7 @@ const AdminAnimalsPage = () => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user?.role?.toUpperCase() !== 'ADMIN') return <Navigate to="/" replace />;
+  if (user?.role?.toUpperCase() !== 'ADMIN' && user?.role?.toUpperCase() !== 'ROLE_ADMIN') return <Navigate to="/" replace />;
 
   const [animal, setAnimal] = useState({
     species: '',
