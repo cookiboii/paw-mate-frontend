@@ -11,9 +11,21 @@ const Login = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app";
   const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID;
   const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
-  const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}`;
+  const BACKEND_ORIGIN = API_BASE_URL ? new URL(API_BASE_URL).origin : window.location.origin;
+  const kakaoAuthUrl = (() => {
+    if (!KAKAO_CLIENT_ID || !KAKAO_REDIRECT_URI) return "";
+
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: KAKAO_CLIENT_ID,
+      redirect_uri: KAKAO_REDIRECT_URI,
+    });
+
+    return `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+  })();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,9 +61,13 @@ const Login = ({ onLoginSuccess }) => {
 
   useEffect(() => {
     const handleMessage = (event) => {
-      // 백엔드 주소에서 온 메시지만 허용하도록 보안 강화 (가짜 도메인에서 오는 토큰 탈취 방지)
-      const BACKEND_ORIGIN = new URL(import.meta.env.VITE_API_BASE_URL).origin;
-      if (event.origin !== BACKEND_ORIGIN) return;
+      if (!event || !event.data || typeof event.data !== "object") return;
+
+      const allowedOrigins = new Set([BACKEND_ORIGIN, window.location.origin]);
+      if (!allowedOrigins.has(event.origin)) {
+        console.warn("Blocked OAuth message from unexpected origin:", event.origin);
+        return;
+      }
 
       const { type, token, id, role, provider } = event.data;
       if (type === "OAUTH_SUCCESS") {
@@ -65,9 +81,10 @@ const Login = ({ onLoginSuccess }) => {
         navigate("/");
       }
     };
+
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [login, navigate, onLoginSuccess]);
+  }, [BACKEND_ORIGIN, login, navigate, onLoginSuccess]);
 
   return (
     <div className={styles.loginContainer}>
@@ -106,13 +123,22 @@ const Login = ({ onLoginSuccess }) => {
       <div className={styles.kakaoLoginWrapper}>
         <button
           type="button"
-          onClick={() =>
-            window.open(
+          onClick={() => {
+            if (!KAKAO_CLIENT_ID || !KAKAO_REDIRECT_URI) {
+              alert("카카오 로그인 설정이 비어 있습니다. 관리자에게 문의하세요.");
+              return;
+            }
+
+            const popup = window.open(
               kakaoAuthUrl,
               "kakao-login-popup",
               "width=500,height=600,scrollbars=yes,resizable=yes"
-            )
-          }
+            );
+
+            if (!popup) {
+              alert("팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용한 뒤 다시 시도해주세요.");
+            }
+          }}
           className={styles.kakaoButton}
         >
           <img src={kakaoLoginImg} alt="카카오 로그인" className={styles.kakaoLoginImg} />
