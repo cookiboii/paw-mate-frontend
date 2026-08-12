@@ -43,13 +43,11 @@ const AdminAdoptionsPage = () => {
 
       alert(`입양 신청이 ${status === 'APPROVED' ? '승인' : '거절'}되었습니다.`);
 
+      // 프론트엔드에서는 전체 목록을 다시 불러와 최신 상태(자동 반려된 타 신청자 등)를 반영합니다.
+      fetchAdoptions();
+
+      // [선택 사항] 만약 백엔드에서 동물 상태 자동 변경을 구현하지 않았다면, 여기서 강제로 변경 시도
       if (status === 'APPROVED') {
-        // 승인 시: 해당 항목 리스트에서 제거
-        setAdoptions(prev =>
-          prev.filter(adoption => adoption.adoptionId !== adoptionId)
-        );
-        
-        // 백엔드 응답에 animalId가 포함되어 있다면, 동물의 상태도 '입양완료(ADOPTED)'로 자동 변경
         const targetAdoption = adoptions.find(a => a.adoptionId === adoptionId);
         if (targetAdoption && targetAdoption.animalId) {
           try {
@@ -57,12 +55,9 @@ const AdminAdoptionsPage = () => {
               headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
           } catch (statusErr) {
-            console.error('동물 상태 ADOPTED 변경 실패:', statusErr);
+            console.log('백엔드에서 이미 처리했거나 권한 부족:', statusErr.message);
           }
         }
-      } else {
-        // 거절 시: 전체 새로고침
-        fetchAdoptions();
       }
     } catch (err) {
       console.error('❌ 상태 변경 실패:', err);
