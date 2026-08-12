@@ -14,7 +14,7 @@ const Login = ({ onLoginSuccess }) => {
   const { login } = useAuth();
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app";
-  const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID || "da2f30037a9b059ce7e222e04cdcd3fa";
+  const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID || "QKusibOT6eZblB1r9klNGruBOgkkQoII";
   const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI || `${API_BASE_URL}/adoptmate/kakao`;
   const BACKEND_ORIGIN = API_BASE_URL ? new URL(API_BASE_URL).origin : window.location.origin;
 
