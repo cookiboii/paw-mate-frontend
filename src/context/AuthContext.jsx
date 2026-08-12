@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createContext, useContext, useState } from 'react';
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -8,25 +8,31 @@ export const AuthProvider = ({ children }) => {
   });
   const [user, setUser] = useState(() => {
     const role = localStorage.getItem('role');
-    return role ? { role } : null;
+    const email = localStorage.getItem('email');
+    const name = localStorage.getItem('name');
+    const provider = localStorage.getItem('provider');
+    return role ? { role, email, name, provider } : null;
   });
 
-  const login = (token, userInfo) => {
+  const login = (token, userInfo = {}) => {
     localStorage.setItem('token', token);
-    localStorage.setItem('role', userInfo.role); // ✅ role 저장
+    if (userInfo.role) localStorage.setItem('role', userInfo.role);
+    if (userInfo.email) localStorage.setItem('email', userInfo.email);
+    if (userInfo.name) localStorage.setItem('name', userInfo.name);
+    if (userInfo.provider) localStorage.setItem('provider', userInfo.provider);
     setIsAuthenticated(true);
-    setUser(userInfo); // ✅ user 상태 저장
+    setUser(userInfo);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('email');
+    localStorage.removeItem('name');
     localStorage.removeItem('provider');
+    localStorage.removeItem('refreshToken');
     setIsAuthenticated(false);
     setUser(null);
-   
-  
-  
   };
 
   return (
@@ -37,3 +43,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+

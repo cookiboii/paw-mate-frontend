@@ -17,6 +17,7 @@ import MyPage from './pages/MyPage';
 import AdoptionForm from './pages/AdoptionForm';
 import AdoptionReviewDetail from './pages/AdoptionReviewDetail';
 import AdoptionReviewEdit from './pages/AdoptionReviewEdit';
+import KakaoCallback from './pages/KakaoCallback';
 
 import AdminRoute from './components/AdminRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -34,6 +35,8 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/adoptmate/kakao" element={<KakaoCallback />} />
+      <Route path="/oauth/kakao/callback" element={<KakaoCallback />} />
       <Route path="/animals" element={<AnimalListPage />} />
       <Route path="/animals/:id" element={<AnimalDetail />} />
       <Route path="/review" element={<AdoptionReview />} />
