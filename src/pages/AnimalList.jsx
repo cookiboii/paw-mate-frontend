@@ -50,7 +50,7 @@ const AnimalList = () => {
                   <div className={styles.info}>
                     <h3 className={styles.breed}>{animal.breed}</h3>
                     <div className={styles.meta}>
-                      <span>{animal.age}살</span>
+                      <span>{Math.max(0, Number(animal.age) || 0)}살</span>
                       <span className={styles.dot}>•</span>
                       <span>{animal.gender === 'M' ? '수컷' : animal.gender === 'F' ? '암컷' : '성별미상'}</span>
                     </div>

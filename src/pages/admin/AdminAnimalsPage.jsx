@@ -27,7 +27,7 @@ const AdminAnimalsPage = () => {
     color: '',
     status: '',
     gender: '',
-    age: 0,
+    age: '',
     image: '',
   });
 
@@ -36,7 +36,18 @@ const AdminAnimalsPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setAnimal({ ...animal, [name]: value });
+    if (name === 'age') {
+      if (value === '') {
+        setAnimal((prev) => ({ ...prev, age: '' }));
+      } else {
+        const parsed = parseInt(value, 10);
+        if (!isNaN(parsed) && parsed >= 0) {
+          setAnimal((prev) => ({ ...prev, age: parsed }));
+        }
+      }
+      return;
+    }
+    setAnimal((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
@@ -55,8 +66,14 @@ const AdminAnimalsPage = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
 
+    const ageNum = parseInt(animal.age, 10);
+    if (isNaN(ageNum) || ageNum < 0) {
+      setMessage('❌ 나이는 0 이상의 숫자로 입력해주세요.');
+      return;
+    }
+
     try {
-      await registerAnimal(animal, token);
+      await registerAnimal({ ...animal, age: ageNum }, token);
       setMessage('✅ 동물 등록 성공');
       setAnimal({
         species: '',
@@ -64,7 +81,7 @@ const AdminAnimalsPage = () => {
         color: '',
         status: '',
         gender: '',
-        age: 0,
+        age: '',
         image: '',
       });
       setPreview(null);
@@ -135,9 +152,16 @@ const AdminAnimalsPage = () => {
         <input
           name="age"
           type="number"
+          min="0"
+          step="1"
           value={animal.age}
           onChange={handleChange}
-          placeholder="나이 (숫자)"
+          onKeyDown={(e) => {
+            if (['-', '+', 'e', 'E', '.'].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
+          placeholder="나이 (0 이상의 숫자, 예: 2)"
           required
           className={styles.input}
         />

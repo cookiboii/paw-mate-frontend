@@ -108,7 +108,7 @@ const HomePage = () => {
                 <h4>{animal.name}</h4>
                 <p>{animal.species} - {animal.breed}</p>
                 <div className={styles.animalMeta}>
-                  <span>나이: {animal.age || 0}살</span>
+                  <span>나이: {Math.max(0, Number(animal.age) || 0)}살</span>
                   <span style={{ color: "var(--primary-color)", fontWeight: "600" }}>자세히 보기 &rarr;</span>
                 </div>
               </div>

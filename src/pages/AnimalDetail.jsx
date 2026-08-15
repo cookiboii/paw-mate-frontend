@@ -215,7 +215,7 @@ const AnimalDetail = () => {
                 <span className={styles.cardIcon}><CalendarIcon /></span>
                 <div className={styles.cardMeta}>
                   <span className={styles.cardLabel}>나이</span>
-                  <span className={styles.cardValue}>{animal.age}살</span>
+                  <span className={styles.cardValue}>{Math.max(0, Number(animal.age) || 0)}살</span>
                 </div>
               </div>
 
