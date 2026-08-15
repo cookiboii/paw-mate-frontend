@@ -4,6 +4,7 @@ import styles from '../../styles/AdminAdoptionsPage.module.css';
 
 const AdminAdoptionsPage = () => {
   const [adoptions, setAdoptions] = useState([]);
+  const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
     fetchAdoptions();
@@ -17,7 +18,7 @@ const AdminAdoptionsPage = () => {
         }
       });
       console.log('✅ 입양 목록 응답:', res.data.result);
-      setAdoptions(res.data.result);
+      setAdoptions(res.data.result || []);
     } catch (err) {
       alert('입양 신청 목록을 불러오지 못했습니다.');
     }
@@ -30,6 +31,13 @@ const AdminAdoptionsPage = () => {
       return;
     }
 
+    const actionText = status === 'APPROVED' ? '승인' : '거절';
+    if (!window.confirm(`해당 입양 신청을 ${actionText}하시겠습니까?`)) {
+      return;
+    }
+
+    setProcessingId(adoptionId);
+
     try {
       await axios.put(
         `/adoptions/${adoptionId}/status`,
@@ -41,12 +49,19 @@ const AdminAdoptionsPage = () => {
         }
       );
 
-      alert(`입양 신청이 ${status === 'APPROVED' ? '승인' : '거절'}되었습니다.`);
+      alert(`입양 신청이 ${actionText}되었습니다.`);
 
-      // 프론트엔드에서는 전체 목록을 다시 불러와 최신 상태(자동 반려된 타 신청자 등)를 반영합니다.
+      // 버튼을 즉시 가리기 위해 로컬 상태 업데이트 (낙관적 UI 반영)
+      setAdoptions(prev =>
+        prev.map(item =>
+          item.adoptionId === adoptionId ? { ...item, status: status } : item
+        )
+      );
+
+      // 최신 목록 동기화
       fetchAdoptions();
 
-      // [선택 사항] 만약 백엔드에서 동물 상태 자동 변경을 구현하지 않았다면, 여기서 강제로 변경 시도
+      // [선택 사항] 백엔드 연동 지원
       if (status === 'APPROVED') {
         const targetAdoption = adoptions.find(a => a.adoptionId === adoptionId);
         if (targetAdoption && targetAdoption.animalId) {
@@ -62,14 +77,32 @@ const AdminAdoptionsPage = () => {
     } catch (err) {
       console.error('❌ 상태 변경 실패:', err);
       alert('상태 변경에 실패했습니다.');
+    } finally {
+      setProcessingId(null);
     }
+  };
+
+  const isPending = (status) => {
+    const s = (status || 'PENDING').toUpperCase();
+    return s === 'PENDING';
+  };
+
+  const renderStatus = (status) => {
+    const s = (status || 'PENDING').toUpperCase();
+    if (s === 'APPROVED') {
+      return <span className={`${styles.statusBadge} ${styles.badgeApproved}`}>승인 완료</span>;
+    }
+    if (s === 'REJECTED') {
+      return <span className={`${styles.statusBadge} ${styles.badgeRejected}`}>거절됨</span>;
+    }
+    return <span className={`${styles.statusBadge} ${styles.badgePending}`}>신청 대기</span>;
   };
 
   return (
     <div className={styles.container}>
       <h2>입양 신청 관리</h2>
       {adoptions.length === 0 ? (
-        <p>입양 신청 내역이 없습니다.</p>
+        <p className={styles.empty}>입양 신청 내역이 없습니다.</p>
       ) : (
         <table className={styles.table}>
           <thead>
@@ -85,22 +118,30 @@ const AdminAdoptionsPage = () => {
             {adoptions.map(adoption => (
               <tr key={adoption.adoptionId}>
                 <td>{adoption.memberName}</td>
-                <td>{new Date(adoption.applyDate).toLocaleString()}</td>
-                <td>{adoption.interviewer}</td>
-                <td>{adoption.status || 'PENDING'}</td>
+                <td>{adoption.applyDate ? new Date(adoption.applyDate).toLocaleString() : '-'}</td>
+                <td>{adoption.interviewer || adoption.interview || '-'}</td>
+                <td>{renderStatus(adoption.status)}</td>
                 <td>
-                  <button
-                    className={styles.accept}
-                    onClick={() => updateStatus(adoption.adoptionId, 'APPROVED')}
-                  >
-                    승인
-                  </button>
-                  <button
-                    className={styles.reject}
-                    onClick={() => updateStatus(adoption.adoptionId, 'REJECTED')}
-                  >
-                    거절
-                  </button>
+                  {isPending(adoption.status) ? (
+                    <div className={styles.buttonGroup}>
+                      <button
+                        className={styles.accept}
+                        onClick={() => updateStatus(adoption.adoptionId, 'APPROVED')}
+                        disabled={processingId === adoption.adoptionId}
+                      >
+                        {processingId === adoption.adoptionId ? '처리중' : '승인'}
+                      </button>
+                      <button
+                        className={styles.reject}
+                        onClick={() => updateStatus(adoption.adoptionId, 'REJECTED')}
+                        disabled={processingId === adoption.adoptionId}
+                      >
+                        거절
+                      </button>
+                    </div>
+                  ) : (
+                    <span className={styles.completedText}>처리 완료</span>
+                  )}
                 </td>
               </tr>
             ))}
