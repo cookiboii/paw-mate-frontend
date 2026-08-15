@@ -76,7 +76,7 @@ const AdoptionReview = () => {
 
   return (
     <section className={styles.container}>
-      <h2>입양 후기 작성</h2>
+      <h2>입양 후기및 유기동물 제보</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="text"
@@ -88,7 +88,7 @@ const AdoptionReview = () => {
         />
         <textarea
           name="content"
-          placeholder="후기를 입력해주세요"
+          placeholder="내용을 입력해주세요"
           value={form.content}
           onChange={handleChange}
           rows={4}
