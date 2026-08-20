@@ -15,7 +15,7 @@ const AdoptionForm = () => {
 
   const [animal, setAnimal] = useState(null);
   const [phone, setPhone] = useState('');
-  const [housingType, setHousingType] = useState('아파트');
+  const [housingType, setHousingType] = useState('APARTMENT');
   const [hasPet, setHasPet] = useState('없음');
   const [interview, setInterview] = useState('');
   const [agreed, setAgreed] = useState(false);
@@ -62,17 +62,17 @@ const AdoptionForm = () => {
 
     setIsSubmitting(true);
 
-    // 상세 내용 조합
-    const formattedInterview = `[연락처]: ${phone || '미기재'}
-[주거형태]: ${housingType}
-[반려동물 유무]: ${hasPet}
-[입양 동기 및 각오]:
-${interview}`;
+    // 백엔드 엔티티 및 DTO 요구 필드(phone, housingType, hasPet, reason/interview) 전송
+    const payload = {
+      phone: phone.trim(),
+      housingType: housingType,
+      hasPet: hasPet,
+      reason: interview.trim(),
+      interview: interview.trim(), // 백엔드 DTO 필드명이 interview인 경우도 완벽 호환
+    };
 
     try {
-      await axios.post(`/adoptions/animals/${animalId}`, {
-        interview: formattedInterview,
-      });
+      await axios.post(`/adoptions/animals/${animalId}`, payload);
 
       // 동물 상태를 '대기중(WAITING)'으로 자동 업데이트 시도
       try {
@@ -86,8 +86,14 @@ ${interview}`;
       showToast('🎉 입양 신청이 성공적으로 접수되었습니다! 담당자가 검토 후 연락드립니다.', 'success');
       navigate(`/animals/${animalId}`);
     } catch (err) {
-      console.error(err);
-      showToast('신청 중 오류가 발생했습니다. 다시 시도해 주세요.', 'error');
+      console.error('입양 신청 에러:', err);
+      if (err.response?.status === 401) {
+        showToast('로그인이 만료되었습니다. 다시 로그인해 주세요.', 'error');
+        navigate('/login');
+      } else {
+        const errorMsg = err.response?.data?.message || err.response?.data?.error || '신청 중 오류가 발생했습니다. 다시 시도해 주세요.';
+        showToast(errorMsg, 'error');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -148,11 +154,11 @@ ${interview}`;
                 onChange={(e) => setHousingType(e.target.value)} 
                 className={styles.select}
               >
-                <option value="아파트">아파트</option>
-                <option value="단독주택">단독주택</option>
-                <option value="빌라/다세대">빌라/다세대</option>
-                <option value="원룸/오피스텔">원룸/오피스텔</option>
-                <option value="기타">기타</option>
+                <option value="APARTMENT">아파트</option>
+                <option value="DETACHED_HOUSE">단독주택</option>
+                <option value="VILLA">빌라/다세대</option>
+                <option value="ONE_ROOM">원룸/오피스텔</option>
+                <option value="ETC">기타</option>
               </select>
             </div>
 
