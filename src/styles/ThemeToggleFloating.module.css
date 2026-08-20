@@ -1,0 +1,69 @@
+.floatingBtn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg), 0 0 15px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 999;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(8px);
+}
+
+.floatingBtn:hover {
+  transform: scale(1.08) rotate(15deg);
+  background: var(--bg-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 24px rgba(231, 111, 81, 0.25);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+}
+
+/* Tooltip on Hover */
+.tooltip {
+  position: absolute;
+  right: 64px;
+  background: var(--text-primary);
+  color: var(--bg-color);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  transform: translateX(8px);
+}
+
+.floatingBtn:hover .tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+  .floatingBtn {
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+  
+  .tooltip {
+    display: none;
+  }
+}

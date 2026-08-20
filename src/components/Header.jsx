@@ -73,11 +73,6 @@ const Header = () => {
         {/* 데스크톱 유저 액션 */}
         <div className={styles.userActions}>
           <ul className={styles.navList}>
-            <li>
-              <button onClick={toggleTheme} className={styles.themeToggleBtn} aria-label="Toggle theme">
-                {theme === 'light' ? '🌙' : '☀️'}
-              </button>
-            </li>
             {isAuthenticated ? (
               <>
                 {!isAdmin && (
@@ -104,9 +99,6 @@ const Header = () => {
 
         {/* 모바일 햄버거 버튼 */}
         <div className={styles.mobileControls}>
-          <button onClick={toggleTheme} className={styles.themeToggleBtn} aria-label="Toggle theme">
-            {theme === 'light' ? '🌙' : '☀️'}
-          </button>
           <button 
             className={`${styles.hamburgerBtn} ${isMobileMenuOpen ? styles.hamburgerOpen : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -132,6 +124,31 @@ const Header = () => {
           </button>
         </div>
 
+        {/* 📌 모바일 상단 사용자 프로필 / 로그인 안내 카드 */}
+        <div className={styles.drawerProfileCard}>
+          {isAuthenticated ? (
+            <div className={styles.userCardContent}>
+              <div className={styles.userCardAvatar}>
+                {user?.name?.charAt(0) || 'U'}
+              </div>
+              <div className={styles.userCardInfo}>
+                <span className={styles.userCardName}>{user?.name || '회원'} 님</span>
+                <span className={styles.userCardRole}>
+                  {isAdmin ? '👑 관리자' : '일반 회원'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.guestCardContent}>
+              <p>로그인하고 더 많은 기능을 이용해보세요!</p>
+              <div className={styles.guestBtnGroup}>
+                <Link to="/login" className={styles.guestLoginBtn}>로그인</Link>
+                <Link to="/register" className={styles.guestRegisterBtn}>회원가입</Link>
+              </div>
+            </div>
+          )}
+        </div>
+
         <nav className={styles.drawerNav}>
           <ul className={styles.drawerList}>
             <li><Link to="/guide" className={styles.drawerLink}>📖 입양 안내</Link></li>
@@ -141,9 +158,17 @@ const Header = () => {
               <li><Link to="/review" className={styles.drawerLink}>✏️ 후기작성</Link></li>
             )}
             
+            {isAuthenticated && !isAdmin && (
+              <li>
+                <Link to="/mypage" className={styles.drawerLink}>
+                  👤 마이페이지 {favorites.length > 0 && <span className={styles.drawerFavBadge}>❤️ {favorites.length}</span>}
+                </Link>
+              </li>
+            )}
+
             {isAdmin && (
               <div className={styles.adminSection}>
-                <span className={styles.drawerSectionTitle}>관리자 메뉴</span>
+                <span className={styles.drawerSectionTitle}>관리자 전용 메뉴</span>
                 <li><Link to="/admin/animals" className={styles.drawerLink}>🐶 동물 등록</Link></li>
                 <li><Link to="/admin/users" className={styles.drawerLink}>👥 사용자 관리</Link></li>
                 <li><Link to="/admin/adoptions" className={styles.drawerLink}>📋 입양 신청 관리</Link></li>
@@ -152,25 +177,13 @@ const Header = () => {
           </ul>
         </nav>
 
-        <div className={styles.drawerFooter}>
-          {isAuthenticated ? (
-            <div className={styles.drawerUserBox}>
-              {!isAdmin && (
-                <Link to="/mypage" className={styles.drawerMypageBtn}>
-                  👤 마이페이지 {favorites.length > 0 && `(❤️ ${favorites.length})`}
-                </Link>
-              )}
-              <button onClick={handleLogout} className={styles.drawerLogoutBtn}>
-                로그아웃
-              </button>
-            </div>
-          ) : (
-            <div className={styles.drawerAuthBox}>
-              <Link to="/login" className={styles.drawerLoginBtn}>로그인</Link>
-              <Link to="/register" className="btn-primary" style={{textAlign: 'center', width: '100%'}}>회원가입</Link>
-            </div>
-          )}
-        </div>
+        {isAuthenticated && (
+          <div className={styles.drawerFooter}>
+            <button onClick={handleLogout} className={styles.drawerLogoutBtn}>
+              로그아웃
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

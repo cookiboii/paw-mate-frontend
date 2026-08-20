@@ -21,6 +21,7 @@ import KakaoCallback from './pages/KakaoCallback';
 
 import AdminRoute from './components/AdminRoute';
 import ToastContainer from './components/ToastContainer';
+import ThemeToggleFloating from './components/ThemeToggleFloating';
 import NotFound from './pages/NotFound';
 import AdoptionGuide from './pages/AdoptionGuide';
 import FAQ from './pages/FAQ';
@@ -119,6 +120,7 @@ const App = () => {
           <FavoritesProvider>
             <Layout>
               <ToastContainer />
+              <ThemeToggleFloating />
               <AppRoutes />
             </Layout>
           </FavoritesProvider>

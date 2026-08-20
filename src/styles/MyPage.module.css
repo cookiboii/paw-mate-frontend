@@ -187,8 +187,8 @@
 }
 
 .favCard:hover {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
 }
 
 .favImageWrapper {
@@ -304,8 +304,8 @@
 }
 
 .adoptionItem:hover {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
 }
 
 .adoptionImage {

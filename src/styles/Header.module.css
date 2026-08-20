@@ -223,9 +223,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 20px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--border-color);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .drawerLogo {
@@ -241,6 +241,101 @@
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
+}
+
+/* 📌 모바일 상단 사용자/게스트 프로필 카드 */
+.drawerProfileCard {
+  background: var(--bg-color);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.userCardContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userCardAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userCardInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userCardName {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.userCardRole {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.guestCardContent p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.guestBtnGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.guestLoginBtn {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.guestRegisterBtn {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.drawerFavBadge {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-left: 6px;
 }
 
 .drawerNav {

@@ -147,8 +147,8 @@
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
 }
 
 .imageWrapper {
@@ -170,15 +170,11 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out, transform 0.4s ease;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .lazyImage.loaded {
   opacity: 1;
-}
-
-.card:hover .lazyImage {
-  transform: scale(1.05);
 }
 
 .badge {
