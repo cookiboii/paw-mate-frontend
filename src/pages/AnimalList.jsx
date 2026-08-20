@@ -4,8 +4,7 @@ import styles from '../styles/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import { useFavorites } from '../context/FavoritesContext';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
+import axios from '../api/axiosInstance';
 
 const AnimalList = () => {
   const [animals, setAnimals] = useState([]);
@@ -25,18 +24,18 @@ const AnimalList = () => {
     const fetchAnimals = async () => {
       setIsLoading(true);
       try {
-        let url = `${API_BASE_URL}/animals/list?page=${page}&size=${pageSize}`;
+        let url = `/animals/list?page=${page}&size=${pageSize}`;
         if (speciesFilter !== 'ALL') {
           url += `&species=${encodeURIComponent(speciesFilter)}`;
         }
         
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('동물 목록을 불러오지 못했습니다.');
-        const data = await res.json();
-        setAnimals(data.content || []);
-        setTotalPages(data.totalPages || 1);
+        const res = await axios.get(url);
+        // CommonResDto result or direct Page response
+        const pageData = res.data.result || res.data;
+        setAnimals(pageData.content || []);
+        setTotalPages(pageData.totalPages || 1);
       } catch (err) {
-        console.error(err);
+        console.error('동물 목록 조회 실패:', err);
       } finally {
         setIsLoading(false);
       }

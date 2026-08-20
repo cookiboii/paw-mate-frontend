@@ -231,16 +231,20 @@ const MyPage = () => {
               ) : (
                 <ul className={styles.adoptionGrid}>
                   {adoptionList.map((adoption, index) => (
-                    <li key={index} className={styles.adoptionItem}>
+                    <li key={adoption.adoptionId || index} className={styles.adoptionItem}>
                       <img
                         src={adoption.animalImage || '/default-animal.jpg'}
-                        alt={adoption.animalName}
+                        alt={adoption.animalBreed || adoption.animalName}
                         className={styles.adoptionImage}
                       />
                       <div className={styles.adoptionInfo}>
-                        <h4>{adoption.animalName || '이름 없음'}</h4>
-                        <span className={styles.statusBadge}>{adoption.status}</span>
-                        <p className={styles.date}>신청일: {adoption.applyDate}</p>
+                        <h4>{adoption.animalBreed || adoption.animalName || '품종 미기재'}</h4>
+                        <span className={styles.statusBadge}>
+                          {adoption.status === 'APPROVED' ? '입양 승인 🎉' : adoption.status === 'REJECTED' ? '반려됨' : '심사 대기중'}
+                        </span>
+                        <p className={styles.date}>
+                          신청일: {adoption.applyDate ? new Date(adoption.applyDate).toLocaleDateString() : '-'}
+                        </p>
                       </div>
                     </li>
                   ))}

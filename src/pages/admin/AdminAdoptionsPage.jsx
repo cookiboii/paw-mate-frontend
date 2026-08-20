@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../../api/axiosInstance';
+import { useToast } from '../../context/ToastContext';
 import styles from '../../styles/AdminAdoptionsPage.module.css';
 
 const AdminAdoptionsPage = () => {
   const [adoptions, setAdoptions] = useState([]);
   const [processingId, setProcessingId] = useState(null);
+  const [filterStatus, setFilterStatus] = useState('ALL');
+  const [selectedAdoption, setSelectedAdoption] = useState(null); // 상세 모달용
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchAdoptions();
@@ -12,22 +16,17 @@ const AdminAdoptionsPage = () => {
 
   const fetchAdoptions = async () => {
     try {
-      const res = await axios.get('/adoptions/all', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      console.log('✅ 입양 목록 응답:', res.data.result);
-      setAdoptions(res.data.result || []);
+      const res = await axios.get('/adoptions/all');
+      const data = res.data.result || res.data || [];
+      setAdoptions(data);
     } catch (err) {
-      alert('입양 신청 목록을 불러오지 못했습니다.');
+      showToast('입양 신청 목록을 불러오지 못했습니다.', 'error');
     }
   };
 
   const updateStatus = async (adoptionId, status) => {
     if (!adoptionId) {
-      console.error('❌ adoptionId is undefined');
-      alert('올바르지 않은 신청 항목입니다.');
+      showToast('올바르지 않은 신청 항목입니다.', 'error');
       return;
     }
 
@@ -39,44 +38,28 @@ const AdminAdoptionsPage = () => {
     setProcessingId(adoptionId);
 
     try {
-      await axios.put(
-        `/adoptions/${adoptionId}/status`,
-        { adoptionStatus: status },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
+      // 📌 API 명세서 Body: AdoptionUpdateRequestDto { adoptionStatus }
+      await axios.put(`/adoptions/${adoptionId}/status`, { 
+        adoptionStatus: status 
+      });
 
-      alert(`입양 신청이 ${actionText}되었습니다.`);
+      showToast(`입양 신청이 성공적으로 ${actionText}되었습니다.`, 'success');
 
-      // 버튼을 즉시 가리기 위해 로컬 상태 업데이트 (낙관적 UI 반영)
+      // 낙관적 UI 업데이트
       setAdoptions(prev =>
         prev.map(item =>
           item.adoptionId === adoptionId ? { ...item, status: status } : item
         )
       );
 
-      // 최신 목록 동기화
-      fetchAdoptions();
-
-      // [선택 사항] 백엔드 연동 지원
-      if (status === 'APPROVED') {
-        const targetAdoption = adoptions.find(a => a.adoptionId === adoptionId);
-        if (targetAdoption && targetAdoption.animalId) {
-          try {
-            await axios.put(`/animals/${targetAdoption.animalId}/status`, { status: 'ADOPTED' }, {
-              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
-          } catch (statusErr) {
-            console.log('백엔드에서 이미 처리했거나 권한 부족:', statusErr.message);
-          }
-        }
+      if (selectedAdoption?.adoptionId === adoptionId) {
+        setSelectedAdoption(prev => ({ ...prev, status }));
       }
+
+      fetchAdoptions();
     } catch (err) {
-      console.error('❌ 상태 변경 실패:', err);
-      alert('상태 변경에 실패했습니다.');
+      console.error('상태 변경 실패:', err);
+      showToast('상태 변경에 실패했습니다: ' + (err.response?.data?.message || err.message), 'error');
     } finally {
       setProcessingId(null);
     }
@@ -87,66 +70,201 @@ const AdminAdoptionsPage = () => {
     return s === 'PENDING';
   };
 
-  const renderStatus = (status) => {
+  const renderStatusBadge = (status) => {
     const s = (status || 'PENDING').toUpperCase();
     if (s === 'APPROVED') {
       return <span className={`${styles.statusBadge} ${styles.badgeApproved}`}>승인 완료</span>;
     }
     if (s === 'REJECTED') {
-      return <span className={`${styles.statusBadge} ${styles.badgeRejected}`}>거절됨</span>;
+      return <span className={`${styles.statusBadge} ${styles.badgeRejected}`}>반려됨</span>;
     }
-    return <span className={`${styles.statusBadge} ${styles.badgePending}`}>신청 대기</span>;
+    return <span className={`${styles.statusBadge} ${styles.badgePending}`}>심사 대기</span>;
   };
+
+  const filteredAdoptions = adoptions.filter(item => {
+    if (filterStatus === 'ALL') return true;
+    return (item.status || 'PENDING').toUpperCase() === filterStatus;
+  });
 
   return (
     <div className={styles.container}>
-      <h2>입양 신청 관리</h2>
-      {adoptions.length === 0 ? (
-        <p className={styles.empty}>입양 신청 내역이 없습니다.</p>
+      <div className={styles.header}>
+        <div>
+          <h2 className={styles.title}>📋 입양 신청 관리</h2>
+          <p className={styles.subtitle}>접수된 입양 신청서를 검토하고 승인 또는 반려 처리합니다.</p>
+        </div>
+
+        {/* 필터 탭 */}
+        <div className={styles.filterTabs}>
+          {['ALL', 'PENDING', 'APPROVED', 'REJECTED'].map(st => (
+            <button
+              key={st}
+              className={`${styles.filterTab} ${filterStatus === st ? styles.activeTab : ''}`}
+              onClick={() => setFilterStatus(st)}
+            >
+              {st === 'ALL' ? '전체' : st === 'PENDING' ? '심사대기' : st === 'APPROVED' ? '승인' : '반려'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {filteredAdoptions.length === 0 ? (
+        <div className={styles.emptyCard}>
+          <span>🐾</span>
+          <p>해당 조건의 입양 신청 내역이 없습니다.</p>
+        </div>
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>신청자</th>
-              <th>신청일</th>
-              <th>인터뷰 내용</th>
-              <th>상태</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {adoptions.map(adoption => (
-              <tr key={adoption.adoptionId}>
-                <td>{adoption.memberName}</td>
-                <td>{adoption.applyDate ? new Date(adoption.applyDate).toLocaleString() : '-'}</td>
-                <td>{adoption.interviewer || adoption.interview || '-'}</td>
-                <td>{renderStatus(adoption.status)}</td>
-                <td>
-                  {isPending(adoption.status) ? (
-                    <div className={styles.buttonGroup}>
-                      <button
-                        className={styles.accept}
-                        onClick={() => updateStatus(adoption.adoptionId, 'APPROVED')}
-                        disabled={processingId === adoption.adoptionId}
-                      >
-                        {processingId === adoption.adoptionId ? '처리중' : '승인'}
-                      </button>
-                      <button
-                        className={styles.reject}
-                        onClick={() => updateStatus(adoption.adoptionId, 'REJECTED')}
-                        disabled={processingId === adoption.adoptionId}
-                      >
-                        거절
-                      </button>
-                    </div>
-                  ) : (
-                    <span className={styles.completedText}>처리 완료</span>
-                  )}
-                </td>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>입양 대상 동물</th>
+                <th>신청자 정보</th>
+                <th>연락처</th>
+                <th>주거 / 반려동물</th>
+                <th>신청일</th>
+                <th>상태</th>
+                <th style={{textAlign: 'center'}}>관리 / 심사</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredAdoptions.map(adoption => (
+                <tr key={adoption.adoptionId}>
+                  {/* 동물 정보 */}
+                  <td>
+                    <div className={styles.animalCell}>
+                      {adoption.animalImage && (
+                        <img src={adoption.animalImage} alt="동물" className={styles.animalThumb} />
+                      )}
+                      <div>
+                        <strong>{adoption.animalBreed || '동물 ID: ' + adoption.animalId}</strong>
+                        <span className={styles.cellSubText}>#{adoption.animalId}</span>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* 신청자 이름 */}
+                  <td>
+                    <strong>{adoption.userName || adoption.memberName || '신청자'}</strong>
+                  </td>
+
+                  {/* 연락처 */}
+                  <td>
+                    <span className={styles.phoneText}>{adoption.phone || '-'}</span>
+                  </td>
+
+                  {/* 주거 형태 & 반려동물 */}
+                  <td>
+                    <div>{adoption.housingType || '미기재'}</div>
+                    <span className={styles.cellSubText}>반려동물: {adoption.hasPet || '없음'}</span>
+                  </td>
+
+                  {/* 신청일 */}
+                  <td>
+                    {adoption.applyDate ? new Date(adoption.applyDate).toLocaleDateString() : '-'}
+                  </td>
+
+                  {/* 상태 뱃지 */}
+                  <td>{renderStatusBadge(adoption.status)}</td>
+
+                  {/* 관리 버튼 */}
+                  <td style={{textAlign: 'center'}}>
+                    <div className={styles.actionCell}>
+                      <button 
+                        className={styles.viewDetailBtn}
+                        onClick={() => setSelectedAdoption(adoption)}
+                      >
+                        신청서 보기
+                      </button>
+
+                      {isPending(adoption.status) && (
+                        <div className={styles.buttonGroup}>
+                          <button
+                            className={styles.acceptBtn}
+                            onClick={() => updateStatus(adoption.adoptionId, 'APPROVED')}
+                            disabled={processingId === adoption.adoptionId}
+                          >
+                            승인
+                          </button>
+                          <button
+                            className={styles.rejectBtn}
+                            onClick={() => updateStatus(adoption.adoptionId, 'REJECTED')}
+                            disabled={processingId === adoption.adoptionId}
+                          >
+                            거절
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* 📌 입양 신청서 상세 모달 */}
+      {selectedAdoption && (
+        <div className={styles.modalOverlay} onClick={() => setSelectedAdoption(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3>🐾 입양 신청서 상세 보기</h3>
+              <button className={styles.closeBtn} onClick={() => setSelectedAdoption(null)}>✕</button>
+            </div>
+
+            <div className={styles.modalBody}>
+              <div className={styles.modalSection}>
+                <h4>신청자 정보</h4>
+                <div className={styles.modalGrid}>
+                  <div><strong>이름:</strong> {selectedAdoption.userName || selectedAdoption.memberName}</div>
+                  <div><strong>연락처:</strong> {selectedAdoption.phone || '미기재'}</div>
+                  <div><strong>주거형태:</strong> {selectedAdoption.housingType || '미기재'}</div>
+                  <div><strong>반려동물 유무:</strong> {selectedAdoption.hasPet || '미기재'}</div>
+                </div>
+              </div>
+
+              <div className={styles.modalSection}>
+                <h4>입양 동기 및 돌봄 계획</h4>
+                <div className={styles.reasonBox}>
+                  {selectedAdoption.reason || selectedAdoption.interview || '작성된 내용이 없습니다.'}
+                </div>
+              </div>
+
+              <div className={styles.modalStatusRow}>
+                <span>현재 상태: {renderStatusBadge(selectedAdoption.status)}</span>
+                {selectedAdoption.applyDate && (
+                  <span>신청일시: {new Date(selectedAdoption.applyDate).toLocaleString()}</span>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              {isPending(selectedAdoption.status) ? (
+                <>
+                  <button
+                    className={styles.acceptBtn}
+                    onClick={() => updateStatus(selectedAdoption.adoptionId, 'APPROVED')}
+                    disabled={processingId === selectedAdoption.adoptionId}
+                  >
+                    입양 승인
+                  </button>
+                  <button
+                    className={styles.rejectBtn}
+                    onClick={() => updateStatus(selectedAdoption.adoptionId, 'REJECTED')}
+                    disabled={processingId === selectedAdoption.adoptionId}
+                  >
+                    입양 거절
+                  </button>
+                </>
+              ) : (
+                <button className="btn-secondary" onClick={() => setSelectedAdoption(null)}>
+                  닫기
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

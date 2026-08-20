@@ -3,9 +3,8 @@ import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
+import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
 // 상태 ENUM 정의
 const AnimalStatus = {
@@ -69,10 +68,9 @@ const AnimalDetail = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_BASE_URL}/animals/${id}`);
-        if (!response.ok) throw new Error('동물 정보를 불러올 수 없습니다.');
-        const data = await response.json();
-        setAnimal(data.result);
+        const res = await axios.get(`/animals/${id}`);
+        const data = res.data.result || res.data;
+        setAnimal(data);
       } catch (err) {
         console.warn("백엔드 연결 실패 - 미리보기용 데모 데이터를 로드합니다.", err);
         setAnimal({
@@ -95,24 +93,15 @@ const AnimalDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    const token = localStorage.getItem('token');
     const confirmed = window.confirm('정말로 이 동물 정보를 삭제하시겠습니까?');
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/animals/delete/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('삭제에 실패했습니다.');
-
+      await axios.delete(`/animals/delete/${id}`);
       showToast('동물 정보가 삭제되었습니다.', 'info');
       navigate('/animals');
     } catch (err) {
-      showToast('삭제 실패: ' + err.message, 'error');
+      showToast('삭제 실패: ' + (err.response?.data?.message || err.message), 'error');
     }
   };
 
