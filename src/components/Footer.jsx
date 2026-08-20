@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from '../styles/Footer.module.css';
 
 const Footer = () => {
@@ -9,19 +10,17 @@ const Footer = () => {
             <h3>🐾 AdoptMate</h3>
             <p>유기동물 입양은 생명을 살리는 일입니다.<br />따뜻한 가족이 되어주세요.</p>
             <div className={styles.socialIcons}>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.icon}>GitHub</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.icon}>Instagram</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.icon}>Blog</a>
+              <a href="https://github.com/cookiboii" target="_blank" rel="noopener noreferrer" className={styles.icon}>GitHub</a>
+              <a href="https://lolesports-devboi.tistory.com/category" target="_blank" rel="noopener noreferrer" className={styles.icon}>Blog</a>
             </div>
           </div>
           
           <div className={styles.linksColumn}>
             <h4>서비스</h4>
             <ul>
-              <li><a href="#">입양 안내</a></li>
-              <li><a href="#">동물 목록</a></li>
-              <li><a href="#">입양 후기</a></li>
-              <li><a href="#">봉사활동</a></li>
+              <li><Link to="/guide">입양 안내</Link></li>
+              <li><Link to="/animals">동물 목록</Link></li>
+              <li><Link to="/reviews">입양 후기</Link></li>
             </ul>
           </div>
           

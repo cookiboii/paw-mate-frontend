@@ -33,6 +33,7 @@ const Header = () => {
 
         <nav className={styles.nav}>
           <ul className={styles.navList}>
+            <li><Link to="/guide" className={styles.navLink}>입양 안내</Link></li>
             <li><Link to="/animals" className={styles.navLink}>동물 목록</Link></li>
             <li><Link to="/reviews" className={styles.navLink}>입양 후기</Link></li> 
             {isAuthenticated && (

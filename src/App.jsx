@@ -22,6 +22,7 @@ import KakaoCallback from './pages/KakaoCallback';
 import AdminRoute from './components/AdminRoute';
 import ToastContainer from './components/ToastContainer';
 import NotFound from './pages/NotFound';
+import AdoptionGuide from './pages/AdoptionGuide';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
@@ -36,6 +37,7 @@ const AppRoutes = () => {
     <Routes>
       {/* 일반 사용자용 라우트 */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/guide" element={<AdoptionGuide />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

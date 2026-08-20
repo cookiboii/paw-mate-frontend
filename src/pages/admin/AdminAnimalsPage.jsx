@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { registerAnimal } from '../../api/animal';
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import styles from '../../styles/AdminAnimalsPage.module.css';
+import { useToast } from '../../context/ToastContext';
+import FloatingInput from '../../components/FloatingInput';
 
 const STATUS_OPTIONS = [
   { key: 'WAITING', label: '입양대기' },
@@ -17,6 +19,8 @@ const GENDER_OPTIONS = [
 
 const AdminAnimalsPage = () => {
   const { isAuthenticated, user } = useAuth();
+  const { showToast } = useToast();
+  const fileInputRef = useRef(null);
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (user?.role?.toUpperCase() !== 'ADMIN' && user?.role?.toUpperCase() !== 'ROLE_ADMIN') return <Navigate to="/" replace />;
@@ -31,8 +35,8 @@ const AdminAnimalsPage = () => {
     image: '',
   });
 
-  const [message, setMessage] = useState('');
   const [preview, setPreview] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,16 +54,46 @@ const AdminAnimalsPage = () => {
     setAnimal((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFile = (file) => {
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAnimal((prev) => ({ ...prev, image: reader.result }));
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      showToast('이미지 파일만 업로드 가능합니다.', 'error');
+    }
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    handleFile(file);
+  };
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setAnimal((prev) => ({ ...prev, image: reader.result }));
-      setPreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
+
+  const removeImage = (e) => {
+    e.stopPropagation();
+    setAnimal((prev) => ({ ...prev, image: '' }));
+    setPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e) => {
@@ -68,13 +102,13 @@ const AdminAnimalsPage = () => {
 
     const ageNum = parseInt(animal.age, 10);
     if (isNaN(ageNum) || ageNum < 0) {
-      setMessage('❌ 나이는 0 이상의 숫자로 입력해주세요.');
+      showToast('나이는 0 이상의 숫자로 입력해주세요.', 'error');
       return;
     }
 
     try {
       await registerAnimal({ ...animal, age: ageNum }, token);
-      setMessage('✅ 동물 등록 성공');
+      showToast('동물이 성공적으로 등록되었습니다!', 'success');
       setAnimal({
         species: '',
         breed: '',
@@ -86,103 +120,141 @@ const AdminAnimalsPage = () => {
       });
       setPreview(null);
     } catch (err) {
-      setMessage('❌ 등록 실패: ' + (err.response?.data?.message || err.message));
+      showToast('등록 실패: ' + (err.response?.data?.message || err.message), 'error');
     }
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>동물 등록 (관리자 전용)</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <input
-          name="species"
-          value={animal.species}
-          onChange={handleChange}
-          placeholder="종 (예: 개, 고양이)"
-          required
-          className={styles.input}
-        />
-        <input
-          name="breed"
-          value={animal.breed}
-          onChange={handleChange}
-          placeholder="품종 (예: 푸들)"
-          required
-          className={styles.input}
-        />
-        <input
-          name="color"
-          value={animal.color}
-          onChange={handleChange}
-          placeholder="색상 (예: 흰색)"
-          required
-          className={styles.input}
-        />
+    <div className={styles.pageWrapper}>
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <h2>🐾 유기동물 신규 등록</h2>
+          <p>파우메이트에 새로운 동물을 등록하여 가족을 찾아주세요.</p>
+        </div>
 
-        <select
-          name="status"
-          value={animal.status}
-          onChange={handleChange}
-          required
-          className={styles.input}
-        >
-          <option value="">상태 선택</option>
-          {STATUS_OPTIONS.map(({ key, label }) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
+        <form onSubmit={handleSubmit} className={styles.formContent}>
+          <div className={styles.formLayout}>
+            {/* 좌측: 정보 입력 폼 */}
+            <div className={styles.inputSection}>
+              <div className={styles.gridRow}>
+                <FloatingInput
+                  label="종 (예: 개, 고양이)"
+                  name="species"
+                  value={animal.species}
+                  onChange={handleChange}
+                  required
+                />
+                <FloatingInput
+                  label="품종 (예: 푸들)"
+                  name="breed"
+                  value={animal.breed}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-        <select
-          name="gender"
-          value={animal.gender}
-          onChange={handleChange}
-          required
-          className={styles.input}
-        >
-          <option value="">성별 선택</option>
-          {GENDER_OPTIONS.map(({ key, label }) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
+              <div className={styles.gridRow}>
+                <FloatingInput
+                  label="색상 (예: 흰색)"
+                  name="color"
+                  value={animal.color}
+                  onChange={handleChange}
+                  required
+                />
+                <FloatingInput
+                  label="나이 (추정나이)"
+                  name="age"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={animal.age}
+                  onChange={handleChange}
+                  onKeyDown={(e) => {
+                    if (['-', '+', 'e', 'E', '.'].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  required
+                />
+              </div>
 
-        <input
-          name="age"
-          type="number"
-          min="0"
-          step="1"
-          value={animal.age}
-          onChange={handleChange}
-          onKeyDown={(e) => {
-            if (['-', '+', 'e', 'E', '.'].includes(e.key)) {
-              e.preventDefault();
-            }
-          }}
-          placeholder="나이 (0 이상의 숫자, 예: 2)"
-          required
-          className={styles.input}
-        />
+              <div className={styles.gridRow}>
+                <div className={styles.selectGroup}>
+                  <label className={styles.selectLabel}>성별</label>
+                  <select
+                    name="gender"
+                    value={animal.gender}
+                    onChange={handleChange}
+                    required
+                    className={styles.select}
+                  >
+                    <option value="" disabled>선택하세요</option>
+                    {GENDER_OPTIONS.map(({ key, label }) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className={styles.selectGroup}>
+                  <label className={styles.selectLabel}>상태</label>
+                  <select
+                    name="status"
+                    value={animal.status}
+                    onChange={handleChange}
+                    required
+                    className={styles.select}
+                  >
+                    <option value="" disabled>선택하세요</option>
+                    {STATUS_OPTIONS.map(({ key, label }) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className={styles.input}
-        />
-        {preview && (
-          <div className={styles.preview}>
-            <img src={preview} alt="미리보기" width="150" />
+            {/* 우측: 사진 업로드 */}
+            <div className={styles.uploadSection}>
+              <label className={styles.uploadLabel}>동물 프로필 사진</label>
+              <div 
+                className={`${styles.uploadBox} ${isDragging ? styles.dragging : ''} ${preview ? styles.hasPreview : ''}`}
+                onClick={() => !preview && fileInputRef.current?.click()}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                />
+                
+                {preview ? (
+                  <div className={styles.previewContainer}>
+                    <img src={preview} alt="미리보기" className={styles.previewImage} />
+                    <button type="button" className={styles.removeBtn} onClick={removeImage}>
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className={styles.uploadPlaceholder}>
+                    <span className={styles.uploadIcon}>📷</span>
+                    <p>사진 <strong>클릭</strong> 또는<br/><strong>드래그 앤 드롭</strong></p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        )}
 
-        <button type="submit" className={styles.button}>
-          등록하기
-        </button>
-      </form>
-      {message && <p className={styles.message}>{message}</p>}
+          <div className={styles.formFooter}>
+            <button type="submit" className="btn-primary">
+              동물 등록 완료하기
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

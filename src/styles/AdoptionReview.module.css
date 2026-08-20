@@ -1,116 +1,177 @@
-.container {
-  max-width: 800px;
-  margin: 60px auto;
-  padding: 40px 32px;
-  background-color: var(--surface-color);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  color: var(--text-primary);
+.pageWrapper {
+  padding: 60px 24px;
+  background-color: var(--bg-color);
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   animation: slideUpFade var(--transition-normal);
-  border: 1px solid rgba(0,0,0,0.03);
 }
 
-h2 {
+.card {
+  width: 100%;
+  max-width: 760px;
+  background: var(--surface-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 40px;
   text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 40px;
-  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+.cardHeader h2 {
+  font-size: 2rem;
   font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
   letter-spacing: -0.5px;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 48px;
-  padding-bottom: 48px;
-  border-bottom: 1px solid var(--border-color);
+.cardHeader p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
 }
 
-.form input[type="text"],
-.form textarea,
-.form input[type="file"] {
+.form {
+  padding: 40px;
+}
+
+.fieldGroup {
+  margin-bottom: 32px;
+}
+
+.label {
+  display: block;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
   font-size: 1.05rem;
+}
+
+/* Textarea */
+.textarea {
+  width: 100%;
   padding: 16px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  background: var(--bg-color);
+  background-color: var(--surface-color);
   color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: all var(--transition-fast);
 }
 
-.form input[type="text"]:focus,
-.form textarea:focus {
+.textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px var(--primary-light);
-  background: var(--surface-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  background-color: var(--bg-color);
 }
 
-.form textarea {
-  resize: vertical;
-  min-height: 120px;
-  max-height: 240px;
-}
-
-.form button {
-  background: linear-gradient(135deg, var(--primary-color), #f4a261);
-  color: white;
-  font-weight: 700;
-  padding: 16px 0;
-  border: none;
-  border-radius: var(--radius-md);
+/* Upload Box */
+.uploadBox {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-color);
+  transition: all var(--transition-fast);
   cursor: pointer;
-  font-size: 1.1rem;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-glow-primary);
-  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
 }
 
-.form button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(231, 111, 81, 0.3);
+.uploadBox:not(.hasPreview):hover,
+.uploadBox.dragging {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light);
 }
 
-.reviewList {
+.uploadBox.hasPreview {
+  border-style: solid;
+  cursor: default;
+}
+
+.uploadPlaceholder {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--text-muted);
 }
 
-.review {
-  background-color: var(--surface-color);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
-  transition: all var(--transition-normal);
-}
-
-.review:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-.meta {
-  font-size: 0.95rem;
-  color: var(--primary-color);
+.uploadIcon {
+  font-size: 3rem;
   margin-bottom: 16px;
-  font-weight: 700;
+  opacity: 0.8;
 }
 
-.review p {
-  line-height: 1.7;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  margin: 0;
+.uploadPlaceholder p {
+  line-height: 1.5;
+  font-size: 1rem;
 }
 
-.reviewImage {
-  margin-top: 24px;
-  max-width: 100%;
-  border-radius: var(--radius-md);
-  object-fit: cover;
-  box-shadow: var(--shadow-sm);
+.uploadPlaceholder strong {
+  color: var(--primary-color);
+}
+
+.previewContainer {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  background-color: #000;
+}
+
+.previewImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.removeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.removeBtn:hover {
+  background-color: var(--danger-color);
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 16px;
+}
+
+@media (max-width: 576px) {
+  .cardHeader {
+    padding: 32px 24px;
+  }
+  
+  .form {
+    padding: 32px 24px;
+  }
 }
