@@ -23,6 +23,8 @@ import AdminRoute from './components/AdminRoute';
 import ToastContainer from './components/ToastContainer';
 import NotFound from './pages/NotFound';
 import AdoptionGuide from './pages/AdoptionGuide';
+import FAQ from './pages/FAQ';
+import TermsOfService from './pages/TermsOfService';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
@@ -38,6 +40,8 @@ const AppRoutes = () => {
       {/* 일반 사용자용 라우트 */}
       <Route path="/" element={<HomePage />} />
       <Route path="/guide" element={<AdoptionGuide />} />
+      <Route path="/faq" element={<FAQ />} />
+      <Route path="/terms" element={<TermsOfService />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

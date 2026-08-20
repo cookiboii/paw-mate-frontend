@@ -14,7 +14,7 @@
 
 .topSection {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 2fr;
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 40px;
   margin-bottom: 60px;
 }
@@ -59,7 +59,7 @@
   transform: translateY(-2px);
 }
 
-.linksColumn h4, .newsletterColumn h4 {
+.linksColumn h4 {
   color: var(--text-primary);
   font-size: 1.1rem;
   font-weight: 700;
@@ -84,48 +84,6 @@
 
 .linksColumn a:hover {
   color: var(--primary-color);
-}
-
-.newsletterColumn p {
-  font-size: 0.95rem;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-
-.subscribeForm {
-  display: flex;
-  gap: 8px;
-}
-
-.subscribeInput {
-  flex: 1;
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background-color: var(--bg-color);
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-
-.subscribeInput:focus {
-  border-color: var(--primary-color);
-}
-
-.subscribeBtn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.subscribeBtn:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-2px);
 }
 
 .bottomSection {
@@ -163,7 +121,7 @@
     grid-template-columns: 1fr 1fr;
   }
   
-  .brandColumn, .newsletterColumn {
+  .brandColumn {
     grid-column: span 2;
   }
   
@@ -179,7 +137,7 @@
     grid-template-columns: 1fr;
   }
   
-  .brandColumn, .newsletterColumn {
+  .brandColumn {
     grid-column: span 1;
   }
 }

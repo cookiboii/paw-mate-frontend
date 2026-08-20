@@ -1,0 +1,132 @@
+.container {
+  max-width: 900px;
+  margin: 60px auto 100px;
+  padding: 0 24px;
+  animation: slideUpFade var(--transition-normal);
+}
+
+.card {
+  background-color: var(--surface-color);
+  padding: 48px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 48px;
+}
+
+/* FAQ Styles */
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faqItem {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+  background-color: var(--bg-color);
+}
+
+.faqItem:hover {
+  border-color: var(--primary-color);
+}
+
+.faqItem.active {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.faqQuestion {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  background-color: transparent;
+}
+
+.arrow {
+  color: var(--primary-color);
+  font-size: 0.8rem;
+  transition: transform var(--transition-fast);
+}
+
+.faqAnswer {
+  padding: 0 24px 24px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  animation: slideDownFade 0.3s ease-out;
+}
+
+/* Terms Styles */
+.content {
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section h2 {
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.section p {
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 32px 24px;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+  }
+}

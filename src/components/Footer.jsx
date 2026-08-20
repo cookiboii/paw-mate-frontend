@@ -27,20 +27,9 @@ const Footer = () => {
           <div className={styles.linksColumn}>
             <h4>고객지원</h4>
             <ul>
-              <li><a href="#">자주 묻는 질문</a></li>
-              <li><a href="#">공지사항</a></li>
-              <li><a href="#">1:1 문의</a></li>
-              <li><a href="#">이용약관</a></li>
+              <li><Link to="/faq">자주 묻는 질문</Link></li>
+              <li><Link to="/terms">이용약관</Link></li>
             </ul>
-          </div>
-          
-          <div className={styles.newsletterColumn}>
-            <h4>뉴스레터 구독</h4>
-            <p>매월 파우메이트의 새로운 소식을 받아보세요.</p>
-            <div className={styles.subscribeForm}>
-              <input type="email" placeholder="이메일 주소" className={styles.subscribeInput} />
-              <button className={styles.subscribeBtn}>구독</button>
-            </div>
           </div>
         </div>
 
@@ -49,9 +38,9 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} Paw Mate. All rights reserved.
           </div>
           <div className={styles.legalLinks}>
-            <a href="#">개인정보처리방침</a>
+            <Link to="/terms">개인정보처리방침</Link>
             <span className={styles.separator}>|</span>
-            <a href="#">이용약관</a>
+            <Link to="/terms">이용약관</Link>
           </div>
         </div>
       </div>
