@@ -21,6 +21,7 @@ import KakaoCallback from './pages/KakaoCallback';
 
 import AdminRoute from './components/AdminRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -100,11 +101,13 @@ const AppRoutes = () => {
 // 👇 최상위 App 컴포넌트 (절대 Router를 여기서 쓰면 안됨!)
 const App = () => {
   return (
-    <AuthProvider>
-      <Layout>
-        <AppRoutes />
-      </Layout>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Layout>
+          <AppRoutes />
+        </Layout>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

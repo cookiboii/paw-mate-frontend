@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../styles/Header.module.css';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const isAdmin = isAuthenticated && (user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN');
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,6 +50,11 @@ const Header = () => {
 
         <div className={styles.userActions}>
           <ul className={styles.navList}>
+            <li>
+              <button onClick={toggleTheme} className={styles.themeToggleBtn} aria-label="Toggle theme">
+                {theme === 'light' ? '🌙' : '☀️'}
+              </button>
+            </li>
             {isAuthenticated ? (
               <>
                 {!isAdmin && <li><Link to="/mypage" className={styles.navLink}>마이페이지</Link></li>}

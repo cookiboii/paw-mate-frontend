@@ -42,6 +42,33 @@
   --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+[data-theme="dark"] {
+  --primary-color: #81b29a;
+  --primary-hover: #9bbfa8;
+  --primary-light: rgba(129, 178, 154, 0.15);
+  
+  --secondary-color: #f2cc8f;
+  --secondary-hover: #f4d9a8;
+  --secondary-light: rgba(242, 204, 143, 0.15);
+  
+  --bg-color: #1a1c1a; 
+  --surface-color: #242624; 
+  
+  --text-primary: #e6e8e6; 
+  --text-muted: #a3a6a3; 
+  --text-light: #7a7d7a;
+  
+  --border-color: #383d38; 
+  --danger-color: #e07a5f; 
+  --success-color: #81b29a; 
+  --warning-color: #f2cc8f; 
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow-primary: 0 8px 24px rgba(129, 178, 154, 0.15);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -258,4 +285,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @keyframes shimmerAnim {
   0% { transform: translateX(-100%) rotate(30deg); }
   100% { transform: translateX(100%) rotate(30deg); }
+}
+
+/* -------------------------------------
+   Responsive Design Media Queries
+-------------------------------------- */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 24px 16px;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+    margin-bottom: 24px;
+  }
+  
+  .card-base {
+    padding: 24px;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
 }

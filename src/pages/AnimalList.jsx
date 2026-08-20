@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/AnimalList.module.css';
+import Skeleton from '../components/Skeleton';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
@@ -8,10 +9,12 @@ const AnimalList = () => {
   const [animals, setAnimals] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const pageSize = 5;
 
   useEffect(() => {
     const fetchAnimals = async () => {
+      setIsLoading(true);
       try {
         const res = await fetch(`${API_BASE_URL}/animals/list?page=${page}&size=${pageSize}`);
         if (!res.ok) throw new Error('동물 목록을 불러오지 못했습니다.');
@@ -20,6 +23,8 @@ const AnimalList = () => {
         setTotalPages(data.totalPages);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchAnimals();
@@ -36,7 +41,19 @@ const AnimalList = () => {
       </div>
       
       <div className={styles.container}>
-        {animals.length === 0 ? (
+        {isLoading ? (
+          <ul className={styles.list}>
+            {Array.from({ length: pageSize }).map((_, index) => (
+              <li key={`skeleton-${index}`} className={styles.card}>
+                <Skeleton type="rect" />
+                <div className={styles.info}>
+                  <Skeleton type="title" width="60%" />
+                  <Skeleton type="text" width="40%" />
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : animals.length === 0 ? (
           <div className={styles.emptyState}>등록된 유기동물이 없습니다.</div>
         ) : (
           <ul className={styles.list}>
