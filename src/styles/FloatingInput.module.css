@@ -1,0 +1,99 @@
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 24px 16px 8px; /* Extra padding on top for floating label */
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 1.05rem;
+  transition: all var(--transition-fast);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  background: var(--surface-color);
+}
+
+.input.hasIcon {
+  padding-left: 48px;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  transition: color var(--transition-fast);
+}
+
+.input:focus ~ .inputIcon,
+.inputGroup:focus-within .inputIcon {
+  color: var(--primary-color);
+}
+
+.label {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  transition: all 0.2s ease-out;
+  pointer-events: none;
+  transform-origin: left top;
+}
+
+.label.labelWithIcon {
+  left: 48px;
+}
+
+/* Float up state */
+.label.floating {
+  transform: translateY(-8px) scale(0.75);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.label.labelWithIcon.floating {
+  transform: translateY(-8px) translateX(-32px) scale(0.75);
+}
+
+.hasError .input {
+  border-color: var(--danger-color);
+}
+
+.hasError .input:focus {
+  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15); /* light danger color */
+}
+
+.hasError .label.floating {
+  color: var(--danger-color);
+}
+
+.errorMessage {
+  color: var(--danger-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-left: 4px;
+  animation: slideUpFade var(--transition-fast);
+}

@@ -4,6 +4,7 @@ import styles from "../styles/Login.module.css";
 import { loginUser } from "../api/user";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
+import FloatingInput from "../components/FloatingInput";
 import kakaoLoginImg from "../assets/kakao_login_medium_narrow.png";
 import axios from "../api/axiosInstance";
 
@@ -165,23 +166,21 @@ const Login = ({ onLoginSuccess }) => {
     <div className={styles.loginContainer}>
       <h2 className={styles.title}>로그인</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <input
+        <FloatingInput
+          label="이메일"
           type="email"
           name="email"
-          placeholder="이메일"
           value={form.email}
           onChange={handleChange}
           required
-          className={styles.input}
         />
-        <input
+        <FloatingInput
+          label="비밀번호"
           type="password"
           name="password"
-          placeholder="비밀번호"
           value={form.password}
           onChange={handleChange}
           required
-          className={styles.input}
         />
         {error && <p className={styles.error}>{error}</p>}
         <button type="submit" className={styles.submitButton}>로그인</button>

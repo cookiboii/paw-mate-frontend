@@ -4,6 +4,7 @@ import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
 import { fetchAnimalList } from "../api/animal";
+import useScrollReveal from "../hooks/useScrollReveal";
 
 import dog1 from "../assets/dog1.jpg";
 import dog2 from "../assets/dog2.jpg";
@@ -20,6 +21,12 @@ const HomePage = () => {
   const [recentAnimals, setRecentAnimals] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const navigate = useNavigate();
+
+  // Scroll Reveal Refs
+  const newArrivalsRef = useScrollReveal();
+  const howItWorksRef = useScrollReveal();
+  const testimonialsRef = useScrollReveal();
+  const ctaRef = useScrollReveal();
 
   const closeLoginModal = () => setIsLoginOpen(false);
   const handleLoginSuccess = () => closeLoginModal();
@@ -94,8 +101,8 @@ const HomePage = () => {
 
 
       {/* 2. New Arrivals Section */}
-      <section className={styles.newArrivalsSection}>
-        <div className={`${styles.sectionHeader} animate-slide-up`}>
+      <section className={styles.newArrivalsSection} ref={newArrivalsRef}>
+        <div className={styles.sectionHeader}>
           <h2>방금 들어온 새로운 가족</h2>
           <p>가장 최근에 파우메이트와 함께하게 된 아이들입니다.</p>
         </div>
@@ -118,8 +125,8 @@ const HomePage = () => {
       </section>
 
       {/* 3. How it works Section */}
-      <section className={styles.howItWorks}>
-        <div className={`${styles.sectionHeader} animate-slide-up`}>
+      <section className={styles.howItWorks} ref={howItWorksRef}>
+        <div className={styles.sectionHeader}>
           <h2>입양은 이렇게 진행됩니다</h2>
           <p>신중한 입양을 위해 꼼꼼한 절차를 거치고 있습니다.</p>
         </div>
@@ -149,8 +156,8 @@ const HomePage = () => {
 
       {/* 5. Testimonials Section */}
       {testimonials.length > 0 && (
-        <section className={styles.testimonialsSection}>
-          <div className={`${styles.sectionHeader} animate-slide-up`}>
+        <section className={styles.testimonialsSection} ref={testimonialsRef}>
+          <div className={styles.sectionHeader}>
             <h2>입양 가족들의 따뜻한 이야기</h2>
             <p>파우메이트를 통해 새로운 가족을 만난 분들의 생생한 후기입니다.</p>
           </div>
@@ -174,7 +181,7 @@ const HomePage = () => {
       )}
 
       {/* 4. CTA Section */}
-      <section className={styles.ctaSection}>
+      <section className={styles.ctaSection} ref={ctaRef}>
         <div className={styles.ctaContent}>
           <h2>망설이지 마세요.<br/>아이들은 당신을 기다립니다.</h2>
           <p>지금 바로 AdoptMate와 함께 새로운 가족을 맞이할 준비를 시작해보세요.</p>

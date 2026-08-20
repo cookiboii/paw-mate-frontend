@@ -3,6 +3,7 @@ import styles from "../styles/Register.module.css";
 import { registerUser } from "../api/user";
 import axios from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import FloatingInput from "../components/FloatingInput";
 
 // Inline SVG Icons
 const UserIcon = () => (
@@ -212,19 +213,15 @@ const Register = () => {
       <form onSubmit={handleSubmit} className={styles.form}>
         {/* 이름 입력 */}
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>이름</label>
-          <div className={styles.inputWrapper}>
-            <span className={styles.inputIcon}><UserIcon /></span>
-            <input
-              type="text"
-              name="name"
-              placeholder="이름을 입력해주세요"
-              value={form.name}
-              onChange={handleChange}
-              className={styles.input}
-              required
-            />
-          </div>
+          <FloatingInput
+            label="이름"
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            icon={<UserIcon />}
+          />
           {form.name && !nameRegex.test(form.name) && (
             <p className={`${styles.helperText} ${styles.error}`}>
               <AlertIcon /> 이름은 한글 또는 영문 2자 이상이어야 합니다.
@@ -234,21 +231,17 @@ const Register = () => {
 
         {/* 이메일 입력 */}
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>이메일 주소</label>
           <div className={styles.verifyRow}>
-            <div className={styles.inputWrapper}>
-              <span className={styles.inputIcon}><MailIcon /></span>
-              <input
-                type="email"
-                name="email"
-                placeholder="email@example.com"
-                value={form.email}
-                onChange={handleChange}
-                className={styles.input}
-                disabled={emailVerified}
-                required
-              />
-            </div>
+            <FloatingInput
+              label="이메일 주소"
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              disabled={emailVerified}
+              required
+              icon={<MailIcon />}
+            />
             <button
               type="button"
               onClick={handleEmailSend}
@@ -275,22 +268,20 @@ const Register = () => {
         {/* 이메일 인증 번호 입력 */}
         {emailSent && !emailVerified && (
           <div className={styles.fieldGroup}>
-            <label className={styles.label}>인증 코드</label>
             <div className={styles.verifyRow}>
-              <div className={styles.inputWrapper}>
-                <span className={styles.inputIcon}><LockIcon /></span>
-                <input
-                  type="text"
-                  placeholder="인증 코드 입력"
-                  value={emailCode}
-                  onChange={(e) => setEmailCode(e.target.value)}
-                  className={styles.input}
-                  required
-                />
+              <FloatingInput
+                label="인증 코드"
+                type="text"
+                name="emailCode"
+                value={emailCode}
+                onChange={(e) => setEmailCode(e.target.value)}
+                required
+                icon={<LockIcon />}
+              >
                 {isTimerActive && (
                   <span className={styles.timerBadge}>{formatTimer(timer)}</span>
                 )}
-              </div>
+              </FloatingInput>
               <button
                 type="button"
                 onClick={handleEmailVerify}
@@ -305,18 +296,15 @@ const Register = () => {
 
         {/* 비밀번호 입력 */}
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>비밀번호</label>
-          <div className={styles.inputWrapper}>
-            <span className={styles.inputIcon}><LockIcon /></span>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="비밀번호 입력"
-              value={form.password}
-              onChange={handleChange}
-              className={styles.input}
-              required
-            />
+          <FloatingInput
+            label="비밀번호"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            icon={<LockIcon />}
+          >
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -325,7 +313,7 @@ const Register = () => {
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
-          </div>
+          </FloatingInput>
           {form.password && (
             <div className={styles.requirements}>
               <div className={`${styles.requirementItem} ${hasLetter ? styles.valid : ""}`}>
@@ -346,18 +334,15 @@ const Register = () => {
 
         {/* 비밀번호 확인 입력 */}
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>비밀번호 확인</label>
-          <div className={styles.inputWrapper}>
-            <span className={styles.inputIcon}><LockIcon /></span>
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              placeholder="비밀번호 재입력"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              className={styles.input}
-              required
-            />
+          <FloatingInput
+            label="비밀번호 확인"
+            type={showConfirmPassword ? "text" : "password"}
+            name="confirmPassword"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            required
+            icon={<LockIcon />}
+          >
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -366,7 +351,7 @@ const Register = () => {
             >
               {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
-          </div>
+          </FloatingInput>
           {form.confirmPassword && (
             <div className={`${styles.helperText} ${isConfirmPasswordValid ? styles.success : styles.error}`}>
               {isConfirmPasswordValid ? (
