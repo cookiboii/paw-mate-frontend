@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "../styles/Login.module.css";
 import { loginUser } from "../api/user";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import kakaoLoginImg from "../assets/kakao_login_medium_narrow.png";
 import axios from "../api/axiosInstance";
 
@@ -12,6 +13,7 @@ const Login = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
+  const { addToast } = useToast();
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app";
   const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID || "16a5cc3c2d930524373be21f6bf96353";
@@ -50,12 +52,14 @@ const Login = ({ onLoginSuccess }) => {
 
       const userInfo = { email, role, name, provider: "LOCAL" };
       login(token, userInfo);
-      alert("로그인 성공!");
+      addToast("로그인 성공!", "success");
       if (onLoginSuccess) onLoginSuccess();
       navigate("/");
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || err.response?.data?.statusMessage || "로그인에 실패했습니다.");
+      const errMsg = err.response?.data?.message || err.response?.data?.statusMessage || "로그인에 실패했습니다.";
+      setError(errMsg);
+      addToast(errMsg, "error");
     }
   };
 
@@ -70,7 +74,7 @@ const Login = ({ onLoginSuccess }) => {
     if (urlToken) {
       const userInfo = { email: urlEmail, role: urlRole, name: urlName, provider: "KAKAO" };
       login(urlToken, userInfo);
-      alert("카카오 로그인 성공!");
+      addToast("카카오 로그인 성공!", "success");
       if (onLoginSuccess) onLoginSuccess();
       navigate("/", { replace: true });
       return;
@@ -89,7 +93,7 @@ const Login = ({ onLoginSuccess }) => {
           const name = resData?.name || resData?.result?.name;
           if (token) {
             login(token, { email, role, name, provider: "KAKAO" });
-            alert("카카오 로그인 성공!");
+            addToast("카카오 로그인 성공!", "success");
             if (onLoginSuccess) onLoginSuccess();
             navigate("/", { replace: true });
           }
@@ -97,9 +101,10 @@ const Login = ({ onLoginSuccess }) => {
         .catch((err) => {
           console.error("Kakao code login error:", err);
           setError("카카오 로그인 처리 중 오류가 발생했습니다.");
+          addToast("카카오 로그인 처리 중 오류가 발생했습니다.", "error");
         });
     }
-  }, [searchParams, login, navigate, onLoginSuccess]);
+  }, [searchParams, login, navigate, onLoginSuccess, addToast]);
 
   // Window postMessage listener (e.g. popup callback)
   useEffect(() => {
@@ -133,7 +138,7 @@ const Login = ({ onLoginSuccess }) => {
           name
         };
         login(token, userInfo);
-        alert("카카오 로그인 성공!");
+        addToast("카카오 로그인 성공!", "success");
         if (onLoginSuccess) onLoginSuccess();
         navigate("/");
       }
@@ -141,7 +146,7 @@ const Login = ({ onLoginSuccess }) => {
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [BACKEND_ORIGIN, login, navigate, onLoginSuccess]);
+  }, [BACKEND_ORIGIN, login, navigate, onLoginSuccess, addToast]);
 
   const handleKakaoLogin = () => {
     const popup = window.open(

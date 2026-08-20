@@ -20,8 +20,10 @@ import AdoptionReviewEdit from './pages/AdoptionReviewEdit';
 import KakaoCallback from './pages/KakaoCallback';
 
 import AdminRoute from './components/AdminRoute';
+import ToastContainer from './components/ToastContainer';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -102,11 +104,14 @@ const AppRoutes = () => {
 const App = () => {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Layout>
-          <AppRoutes />
-        </Layout>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <Layout>
+            <ToastContainer />
+            <AppRoutes />
+          </Layout>
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 };
