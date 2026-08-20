@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axios from '../api/axiosInstance';
+import { useToast } from '../context/ToastContext';
+import { useFavorites } from '../context/FavoritesContext';
 import styles from '../styles/AnimalDetail.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
@@ -49,6 +50,8 @@ const PaletteIcon = () => (
 const AnimalDetail = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
+  const { showToast } = useToast();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
 
   const [animal, setAnimal] = useState(null);
@@ -106,14 +109,12 @@ const AnimalDetail = () => {
 
       if (!response.ok) throw new Error('삭제에 실패했습니다.');
 
-      alert('삭제가 완료되었습니다.');
+      showToast('동물 정보가 삭제되었습니다.', 'info');
       navigate('/animals');
     } catch (err) {
-      alert('❌ 오류: ' + err.message);
+      showToast('삭제 실패: ' + err.message, 'error');
     }
   };
-
-
 
   const getGenderText = (gender) => {
     if (!gender) return "정보 없음";
@@ -172,38 +173,56 @@ const AnimalDetail = () => {
   if (loading) return <p className={styles.message}>동물 정보를 불러오는 중입니다...</p>;
   if (error) return <p className={styles.error}>오류 발생: {error}</p>;
 
-  // PROTECTED 상태일 때만 입양 가능
   const canAdopt = animal?.status === AnimalStatus.PROTECTED;
+  const favorite = animal ? isFavorite(animal.id) : false;
 
   return (
     <section className={styles.detailContainer}>
-      <h2 className={styles.title}>유기동물 상세 정보</h2>
+      <div className={styles.topNavigation}>
+        <Link to="/animals" className={styles.backLink}>
+          ← 전체 동물 목록으로
+        </Link>
+      </div>
 
       {animal ? (
         <div className={styles.card}>
-          <img
-            src={animal.image || '/default-animal.jpg'}
-            alt="동물 사진"
-            className={styles.image}
-            loading="lazy"
-            onLoad={(e) => {
-              e.target.style.opacity = 1;
-            }}
-            style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }}
-          />
+          <div className={styles.imageContainer}>
+            <img
+              src={animal.image || '/default-animal.jpg'}
+              alt="동물 사진"
+              className={styles.image}
+              loading="lazy"
+              onLoad={(e) => {
+                e.target.style.opacity = 1;
+              }}
+              style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }}
+            />
+            {/* 찜하기 플로팅 버튼 */}
+            <button 
+              className={`${styles.favBtn} ${favorite ? styles.favActive : ''}`}
+              onClick={() => toggleFavorite(animal)}
+              aria-label="관심 동물 찜하기"
+              title={favorite ? "관심 목록에서 제거" : "관심 동물로 등록"}
+            >
+              {favorite ? '❤️ 찜됨' : '🤍 찜하기'}
+            </button>
+          </div>
+
           <div className={styles.info}>
             <div className={styles.headerArea}>
-              <h3 className={styles.breed}>{animal.breed}</h3>
-              <span className={getStatusBadgeClass(animal.status)}>
-                {getStatusLabel(animal.status)}
-              </span>
+              <div>
+                <span className={getStatusBadgeClass(animal.status)}>
+                  {getStatusLabel(animal.status)}
+                </span>
+                <h2 className={styles.breed}>{animal.breed}</h2>
+              </div>
             </div>
 
             <div className={styles.infoGrid}>
               <div className={styles.infoCard}>
                 <span className={styles.cardIcon}><PawIcon /></span>
                 <div className={styles.cardMeta}>
-                  <span className={styles.cardLabel}>종 종류</span>
+                  <span className={styles.cardLabel}>종류</span>
                   <span className={styles.cardValue}>{animal.species}</span>
                 </div>
               </div>
@@ -236,11 +255,11 @@ const AnimalDetail = () => {
             {/* 상태에 따른 맞춤 안내 배너 */}
             {getStatusBanner(animal.status)}
 
-            {/* 일반 사용자: 입양 신청 버튼 조건 */}
+            {/* 일반 사용자: 입양 신청 버튼 */}
             {!isAdmin && canAdopt && (
               <div className={styles.adoptBtnWrapper}>
-                <button onClick={() => navigate(`/adopt/${id}`)} className="btn-primary" style={{width: '100%'}}>
-                  입양 신청하기
+                <button onClick={() => navigate(`/adopt/${id}`)} className="btn-primary" style={{width: '100%', padding: '16px', fontSize: '1.1rem'}}>
+                  🐾 입양 신청서 작성하기
                 </button>
               </div>
             )}
@@ -267,13 +286,6 @@ const AnimalDetail = () => {
       ) : (
         <p className={styles.message}>동물 정보를 찾을 수 없습니다.</p>
       )}
-
-      {/* 목록으로 돌아가기 버튼 (모든 사용자 노출) */}
-      <div className={styles.registerBtnWrapper}>
-        <Link to="/animals" className="btn-secondary">
-          동물 목록으로 돌아가기
-        </Link>
-      </div>
     </section>
   );
 };

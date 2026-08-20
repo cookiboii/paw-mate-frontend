@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import styles from '../styles/MyPage.module.css';
 import axios from '../api/axiosInstance';
 import AdminUsersPage from './admin/AdminUsersPage';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { useFavorites } from '../context/FavoritesContext';
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
-  const [activeTab, setActiveTab] = useState('profile'); // profile, password, adoptions
+  const [activeTab, setActiveTab] = useState('profile'); // profile, favorites, password, adoptions
   const [form, setForm] = useState({
     passwd: '',
     new_passwd: '',
@@ -15,9 +17,11 @@ const MyPage = () => {
   });
   const [adoptionList, setAdoptionList] = useState([]);
   const token = localStorage.getItem('token');
-  const provider = localStorage.getItem('provider'); // 여기서 provider 확인
+  const provider = localStorage.getItem('provider');
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { showToast } = useToast();
+  const { favorites, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     if (!token) return;
@@ -30,32 +34,32 @@ const MyPage = () => {
       setUserInfo({ name, email, role });
     })
     .catch(() => {
-      alert('사용자 정보를 불러오지 못했습니다.');
+      showToast('사용자 정보를 불러오지 못했습니다.', 'error');
     });
 
     axios.get('/adoptions/myAdoption', {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
-      setAdoptionList(res.data.result);
+      setAdoptionList(res.data.result || []);
     })
     .catch(() => {
-      alert('입양 내역을 불러오지 못했습니다.');
+      console.warn('입양 내역을 불러오지 못했습니다.');
     });
-  }, []);
+  }, [token, showToast]);
 
   const handleDeleteAccount = () => {
-    if (window.confirm('정말 탈퇴하시겠습니까?')) {
+    if (window.confirm('정말 탈퇴하시겠습니까? 탈퇴 시 모든 정보가 삭제됩니다.')) {
       axios.delete('/adoptmate/delete', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(() => {
-        alert('회원 탈퇴가 완료되었습니다.');
+        showToast('회원 탈퇴가 완료되었습니다.', 'info');
         logout();
         navigate('/');
       })
       .catch(() => {
-        alert('회원 탈퇴에 실패했습니다.');
+        showToast('회원 탈퇴에 실패했습니다.', 'error');
       });
     }
   };
@@ -68,7 +72,7 @@ const MyPage = () => {
     e.preventDefault();
 
     if (form.new_passwd !== form.new_passwd_confirm) {
-      alert('새 비밀번호가 일치하지 않습니다.');
+      showToast('새 비밀번호가 일치하지 않습니다.', 'error');
       return;
     }
 
@@ -79,16 +83,16 @@ const MyPage = () => {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(() => {
-      alert('비밀번호가 변경되었습니다. 다시 로그인 해주세요.');
+      showToast('비밀번호가 변경되었습니다. 다시 로그인 해주세요.', 'success');
       logout();
       navigate('/');
     })
     .catch(() => {
-      alert('비밀번호 변경에 실패했습니다.');
+      showToast('비밀번호 변경에 실패했습니다.', 'error');
     });
   };
 
-  if (!userInfo) return <div>로딩 중...</div>;
+  if (!userInfo) return <div style={{textAlign: 'center', padding: '100px'}}>로딩 중...</div>;
   if (userInfo.role?.toUpperCase() === 'ADMIN') return <AdminUsersPage />;
 
   return (
@@ -106,6 +110,18 @@ const MyPage = () => {
           >
             👤 내 프로필
           </button>
+          <button 
+            className={`${styles.navItem} ${activeTab === 'favorites' ? styles.active : ''}`}
+            onClick={() => setActiveTab('favorites')}
+          >
+            ❤️ 관심 동물 ({favorites.length})
+          </button>
+          <button 
+            className={`${styles.navItem} ${activeTab === 'adoptions' ? styles.active : ''}`}
+            onClick={() => setActiveTab('adoptions')}
+          >
+            🐾 입양 신청 내역
+          </button>
           {provider !== 'KAKAO' && (
             <button 
               className={`${styles.navItem} ${activeTab === 'password' ? styles.active : ''}`}
@@ -114,16 +130,11 @@ const MyPage = () => {
               🔒 보안 설정
             </button>
           )}
-          <button 
-            className={`${styles.navItem} ${activeTab === 'adoptions' ? styles.active : ''}`}
-            onClick={() => setActiveTab('adoptions')}
-          >
-            🐾 입양 내역
-          </button>
         </nav>
       </aside>
 
       <main className={styles.contentArea}>
+        {/* 내 프로필 탭 */}
         {activeTab === 'profile' && (
           <section className={styles.card}>
             <div className={styles.cardHeader}>
@@ -152,6 +163,94 @@ const MyPage = () => {
           </section>
         )}
 
+        {/* 관심 동물 찜 목록 탭 */}
+        {activeTab === 'favorites' && (
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h3>❤️ 관심 동물 목록 ({favorites.length})</h3>
+              <p>찜해둔 아이들을 확인하고 입양 신청서를 작성해 보세요.</p>
+            </div>
+            <div className={styles.cardBody}>
+              {favorites.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <span>🐾</span>
+                  <p>아직 관심 동물로 등록한 아이가 없습니다.</p>
+                  <Link to="/animals" className="btn-primary" style={{display: 'inline-block', marginTop: '16px'}}>
+                    동물 둘러보기
+                  </Link>
+                </div>
+              ) : (
+                <div className={styles.favoritesGrid}>
+                  {favorites.map((animal) => (
+                    <div key={animal.id} className={styles.favCard}>
+                      <div className={styles.favImageWrapper}>
+                        <img 
+                          src={animal.image || '/default-animal.jpg'} 
+                          alt={animal.breed || animal.species} 
+                          className={styles.favImage}
+                        />
+                        <button 
+                          className={styles.favRemoveBtn}
+                          onClick={() => toggleFavorite(animal)}
+                          title="관심 목록에서 제거"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <div className={styles.favInfo}>
+                        <h4>{animal.breed || animal.species}</h4>
+                        <p className={styles.favMeta}>
+                          {animal.age ? `${animal.age}살 • ` : ''}
+                          {animal.gender === 'M' || animal.gender === 'MALE' ? '수컷' : animal.gender === 'F' || animal.gender === 'FEMALE' ? '암컷' : '성별미상'}
+                        </p>
+                        <Link to={`/animals/${animal.id}`} className="btn-primary" style={{display: 'block', textAlign: 'center', marginTop: '12px', padding: '10px'}}>
+                          상세보기
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* 입양 신청 내역 탭 */}
+        {activeTab === 'adoptions' && (
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h3>입양 신청 내역</h3>
+              <p>파우메이트를 통해 신청한 입양 상태를 확인합니다.</p>
+            </div>
+            <div className={styles.cardBody}>
+              {adoptionList.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <span>🐾</span>
+                  <p>아직 입양 신청 내역이 없습니다.</p>
+                </div>
+              ) : (
+                <ul className={styles.adoptionGrid}>
+                  {adoptionList.map((adoption, index) => (
+                    <li key={index} className={styles.adoptionItem}>
+                      <img
+                        src={adoption.animalImage || '/default-animal.jpg'}
+                        alt={adoption.animalName}
+                        className={styles.adoptionImage}
+                      />
+                      <div className={styles.adoptionInfo}>
+                        <h4>{adoption.animalName || '이름 없음'}</h4>
+                        <span className={styles.statusBadge}>{adoption.status}</span>
+                        <p className={styles.date}>신청일: {adoption.applyDate}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* 보안 설정 탭 */}
         {activeTab === 'password' && provider !== 'KAKAO' && (
           <section className={styles.card}>
             <div className={styles.cardHeader}>
@@ -194,40 +293,6 @@ const MyPage = () => {
                 비밀번호 변경
               </button>
             </form>
-          </section>
-        )}
-
-        {activeTab === 'adoptions' && (
-          <section className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h3>입양 신청 내역</h3>
-              <p>파우메이트를 통해 신청한 입양 상태를 확인합니다.</p>
-            </div>
-            <div className={styles.cardBody}>
-              {adoptionList.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <span>🐾</span>
-                  <p>아직 입양 신청 내역이 없습니다.</p>
-                </div>
-              ) : (
-                <ul className={styles.adoptionGrid}>
-                  {adoptionList.map((adoption, index) => (
-                    <li key={index} className={styles.adoptionItem}>
-                      <img
-                        src={adoption.animalImage || '/default-animal.jpg'}
-                        alt={adoption.animalName}
-                        className={styles.adoptionImage}
-                      />
-                      <div className={styles.adoptionInfo}>
-                        <h4>{adoption.animalName || '이름 없음'}</h4>
-                        <span className={styles.statusBadge}>{adoption.status}</span>
-                        <p className={styles.date}>신청일: {adoption.applyDate}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
           </section>
         )}
       </main>

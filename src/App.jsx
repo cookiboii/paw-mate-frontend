@@ -28,6 +28,7 @@ import TermsOfService from './pages/TermsOfService';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
+import { FavoritesProvider } from './context/FavoritesContext';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -115,10 +116,12 @@ const App = () => {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
-          <Layout>
-            <ToastContainer />
-            <AppRoutes />
-          </Layout>
+          <FavoritesProvider>
+            <Layout>
+              <ToastContainer />
+              <AppRoutes />
+            </Layout>
+          </FavoritesProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>
