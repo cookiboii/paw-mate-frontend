@@ -13,7 +13,7 @@ const AnimalList = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   // 필터 및 검색 상태
-  const [speciesFilter, setSpeciesFilter] = useState('ALL'); // 'ALL', '개', '고양이', '기타'
+  const [speciesFilter, setSpeciesFilter] = useState('ALL'); // 'ALL', '강아지', '고양이', '기타'
   const [genderFilter, setGenderFilter] = useState('ALL'); // 'ALL', 'MALE', 'FEMALE'
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -24,13 +24,16 @@ const AnimalList = () => {
     const fetchAnimals = async () => {
       setIsLoading(true);
       try {
-        let url = `/animals/list?page=${page}&size=${pageSize}`;
-        if (speciesFilter !== 'ALL') {
-          url += `&species=${encodeURIComponent(speciesFilter)}`;
+        let res;
+        // 📌 API 명세서 반영:
+        // 전체 조회: GET /animals/list?page=0&size=10
+        // 종별 조회: GET /animals/species?species={species}&page=0&size=10
+        if (speciesFilter === 'ALL') {
+          res = await axios.get(`/animals/list?page=${page}&size=${pageSize}`);
+        } else {
+          res = await axios.get(`/animals/species?species=${encodeURIComponent(speciesFilter)}&page=${page}&size=${pageSize}`);
         }
         
-        const res = await axios.get(url);
-        // CommonResDto result or direct Page response
         const pageData = res.data.result || res.data;
         setAnimals(pageData.content || []);
         setTotalPages(pageData.totalPages || 1);
@@ -98,16 +101,21 @@ const AnimalList = () => {
         </div>
 
         <div className={styles.filterControls}>
-          {/* 종 필터 */}
+          {/* 종 필터 (신규 /animals/species 엔드포인트 연동) */}
           <div className={styles.filterGroup}>
             <span className={styles.filterLabel}>종:</span>
-            {['ALL', '개', '고양이', '기타'].map(type => (
+            {[
+              { key: 'ALL', label: '전체' },
+              { key: '강아지', label: '강아지 🐶' },
+              { key: '고양이', label: '고양이 🐱' },
+              { key: '기타', label: '기타 🐾' },
+            ].map(({ key, label }) => (
               <button
-                key={type}
-                className={`${styles.filterChip} ${speciesFilter === type ? styles.activeChip : ''}`}
-                onClick={() => handleSpeciesChange(type)}
+                key={key}
+                className={`${styles.filterChip} ${speciesFilter === key ? styles.activeChip : ''}`}
+                onClick={() => handleSpeciesChange(key)}
               >
-                {type === 'ALL' ? '전체' : type}
+                {label}
               </button>
             ))}
           </div>
