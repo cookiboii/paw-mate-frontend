@@ -27,11 +27,42 @@
 .title {
   font-size: 3rem;
   font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-  position: relative;
-  z-index: 1;
-  letter-spacing: -1px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* Filter Chips */
+.filterContainer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.filterChip {
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.filterChip:hover {
+  background-color: var(--bg-color);
+  transform: translateY(-2px);
+}
+
+.filterChip.activeChip {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(231, 111, 81, 0.3);
 }
 
 .subtitle {
@@ -94,19 +125,26 @@
 .imageWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 4/3;
+  padding-top: 60%;
   overflow: hidden;
+  background-color: var(--border-color); /* Skeleton placeholder color */
 }
 
-.imageWrapper img {
-  width: 100%;
-  height: 100%;
+.lazyImage {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease;
 }
 
-.card:hover .imageWrapper img {
-  transform: scale(1.08);
+.lazyImage.loaded {
+  opacity: 1;
+}
+
+.imageWrapper:hover .lazyImage.loaded {
+  transform: scale(1.05);
 }
 
 .badge {

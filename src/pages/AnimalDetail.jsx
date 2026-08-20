@@ -185,6 +185,11 @@ const AnimalDetail = () => {
             src={animal.image || '/default-animal.jpg'}
             alt="동물 사진"
             className={styles.image}
+            loading="lazy"
+            onLoad={(e) => {
+              e.target.style.opacity = 1;
+            }}
+            style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }}
           />
           <div className={styles.info}>
             <div className={styles.headerArea}>

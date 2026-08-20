@@ -21,6 +21,7 @@ import KakaoCallback from './pages/KakaoCallback';
 
 import AdminRoute from './components/AdminRoute';
 import ToastContainer from './components/ToastContainer';
+import NotFound from './pages/NotFound';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
@@ -96,6 +97,8 @@ const AppRoutes = () => {
           </AdminRoute>
         }
       />
+      {/* Catch-all 404 Route */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

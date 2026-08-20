@@ -1,131 +1,167 @@
-.myPage {
-  max-width: 800px;
-  margin: 60px auto;
-  padding: 48px 40px;
-  background-color: var(--surface-color);
-  border: 1px solid rgba(0,0,0,0.03);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  color: var(--text-primary);
-  animation: slideUpFade var(--transition-normal);
-}
-
-.myPage h2 {
-  text-align: center;
-  margin-bottom: 40px;
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-.userInfo {
-  margin-bottom: 48px;
-  padding: 32px;
-  background: var(--bg-color);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-}
-
-.userInfo h3 {
-  margin-bottom: 24px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 12px;
-}
-
-.userInfo p {
-  margin: 16px 0;
-  font-size: 1.05rem;
+.dashboardContainer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 40px auto 80px;
+  padding: 0 24px;
+  min-height: 60vh;
 }
 
-.userInfo strong {
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.passwordForm {
+/* Sidebar Styles */
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  margin-bottom: 40px;
 }
 
-.passwordForm h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 16px;
+.userProfile {
+  background-color: var(--surface-color);
+  border-radius: var(--radius-xl);
+  padding: 32px 24px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.userProfile h4 {
+  font-size: 1.25rem;
   color: var(--text-primary);
+  margin-bottom: 8px;
+  font-weight: 700;
 }
 
-.passwordForm p {
+.roleBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--bg-color);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.navMenu {
   display: flex;
   flex-direction: column;
-  font-size: 1.05rem;
+  gap: 8px;
 }
 
-.passwordForm strong {
-  margin-bottom: 8px;
+.navItem {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 16px 24px;
+  border-radius: var(--radius-lg);
+  font-size: 1.05rem;
   font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navItem:hover {
+  background-color: var(--surface-color);
   color: var(--text-primary);
 }
 
-.passwordForm input {
-  padding: 16px;
-  font-size: 1.05rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background: var(--bg-color);
-  transition: all var(--transition-fast);
-}
-
-.passwordForm input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px var(--primary-light);
-  background: var(--surface-color);
-}
-
-.info {
-  margin-top: 8px;
-  font-size: 0.95rem;
-  color: var(--text-muted);
-}
-
-.updateButton {
-  padding: 16px;
-  background: linear-gradient(135deg, var(--primary-color), #f4a261);
+.navItem.active {
+  background-color: var(--primary-color);
   color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-glow-primary);
+  box-shadow: 0 4px 12px rgba(231, 111, 81, 0.2);
 }
 
-.updateButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(231, 111, 81, 0.3);
+/* Content Area Styles */
+.contentArea {
+  flex: 1;
+}
+
+.card {
+  background-color: var(--surface-color);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  animation: slideUpFade 0.4s ease-out;
+}
+
+.cardHeader {
+  padding: 32px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cardHeader h3 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.cardHeader p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.cardBody {
+  padding: 32px;
+}
+
+.infoRow {
+  display: flex;
+  padding: 16px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.label {
+  width: 140px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.cardFooter {
+  padding: 24px 32px;
+  background-color: var(--bg-color);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
 }
 
 .deleteButton {
-  padding: 16px;
-  width: 100%;
-  background-color: #fff0f0;
+  background: transparent;
+  border: 1px solid var(--danger-color);
   color: var(--danger-color);
-  border: 1px solid transparent;
+  padding: 10px 20px;
   border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-normal);
-  margin-top: 24px;
+  transition: all var(--transition-fast);
 }
 
 .deleteButton:hover {
@@ -133,45 +169,141 @@
   color: white;
 }
 
-.adoptionSection {
-  margin-top: 48px;
+/* Password Form */
+.passwordForm {
   padding: 32px;
-  background-color: var(--surface-color);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
 }
 
-.adoptionSection h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
+.formGroup {
   margin-bottom: 24px;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 12px;
 }
 
-.adoptionList {
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.formGroup input {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-color);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast);
+}
+
+.formGroup input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.helpText {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Adoptions List */
+.adoptionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
   list-style: none;
-  padding-left: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .adoptionItem {
-  display: flex;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform var(--transition-fast);
 }
 
-.adoptionItem:last-child {
-  border-bottom: none;
+.adoptionItem:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
 }
 
-.adoptionItem img {
-  width: 100px;
-  height: 100px;
-  border-radius: var(--radius-md);
+.adoptionImage {
+  width: 100%;
+  height: 200px;
   object-fit: cover;
-  margin-right: 24px;
-  box-shadow: var(--shadow-sm);
+  background-color: var(--border-color);
+}
+
+.adoptionInfo {
+  padding: 20px;
+}
+
+.adoptionInfo h4 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+.emptyState span {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 16px;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+  
+  .navMenu {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  
+  .navItem {
+    white-space: nowrap;
+  }
 }

@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
+  const [activeTab, setActiveTab] = useState('profile'); // profile, password, adoptions
   const [form, setForm] = useState({
     passwd: '',
     new_passwd: '',
@@ -91,79 +92,146 @@ const MyPage = () => {
   if (userInfo.role?.toUpperCase() === 'ADMIN') return <AdminUsersPage />;
 
   return (
-    <section className={styles.myPage}>
-      <h2>마이페이지</h2>
+    <div className={styles.dashboardContainer}>
+      <aside className={styles.sidebar}>
+        <div className={styles.userProfile}>
+          <div className={styles.avatar}>{userInfo.name?.charAt(0) || 'U'}</div>
+          <h4>{userInfo.name}</h4>
+          <span className={styles.roleBadge}>{userInfo.role === 'USER' ? '일반 회원' : userInfo.role}</span>
+        </div>
+        <nav className={styles.navMenu}>
+          <button 
+            className={`${styles.navItem} ${activeTab === 'profile' ? styles.active : ''}`}
+            onClick={() => setActiveTab('profile')}
+          >
+            👤 내 프로필
+          </button>
+          {provider !== 'KAKAO' && (
+            <button 
+              className={`${styles.navItem} ${activeTab === 'password' ? styles.active : ''}`}
+              onClick={() => setActiveTab('password')}
+            >
+              🔒 보안 설정
+            </button>
+          )}
+          <button 
+            className={`${styles.navItem} ${activeTab === 'adoptions' ? styles.active : ''}`}
+            onClick={() => setActiveTab('adoptions')}
+          >
+            🐾 입양 내역
+          </button>
+        </nav>
+      </aside>
 
-      <div className={styles.userInfo}>
-        <h3>회원 정보</h3>
-        <p><strong>이름:</strong> {userInfo.name}</p>
-        <p><strong>이메일:</strong> {userInfo.email}</p>
-      </div>
-
-      {provider !== 'KAKAO' && (
-        <form className={styles.passwordForm} onSubmit={handleChangePassword}>
-          <h3>비밀번호 변경</h3>
-          <p>
-            <strong>현재 비밀번호:</strong>
-            <input
-              type="password"
-              name="passwd"
-              value={form.passwd}
-              onChange={handleChange}
-              required
-            />
-          </p>
-          <p>
-            <strong>새 비밀번호:</strong>
-            <input
-              type="password"
-              name="new_passwd"
-              value={form.new_passwd}
-              onChange={handleChange}
-              required
-            />
-            <span className={styles.info}>영문, 숫자, 특수문자 포함 8자 이상</span>
-          </p>
-          <p>
-            <strong>새 비밀번호 확인:</strong>
-            <input
-              type="password"
-              name="new_passwd_confirm"
-              value={form.new_passwd_confirm}
-              onChange={handleChange}
-              required
-            />
-          </p>
-          <button type="submit" className={styles.updateButton}>비밀번호 변경</button>
-        </form>
-      )}
-
-      <button className={styles.deleteButton} onClick={handleDeleteAccount}>
-        회원 탈퇴
-      </button>
-
-      <div className={styles.adoptionSection}>
-        <h3>입양 신청 내역</h3>
-        {adoptionList.length === 0 ? (
-          <p>입양 신청 내역이 없습니다.</p>
-        ) : (
-          <ul className={styles.adoptionList}>
-            {adoptionList.map((adoption, index) => (
-              <li key={index} className={styles.adoptionItem}>
-                <img
-                  src={adoption.animalImage || '/default-animal.jpg'}
-                  alt={adoption.animalName}
-                />
-                <div>
-                  <p><strong>신청일:</strong> {adoption.applyDate}</p>
-                  <p><strong>상태:</strong> {adoption.status}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <main className={styles.contentArea}>
+        {activeTab === 'profile' && (
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h3>내 프로필</h3>
+              <p>기본 회원 정보를 확인하고 관리하세요.</p>
+            </div>
+            <div className={styles.cardBody}>
+              <div className={styles.infoRow}>
+                <span className={styles.label}>이름</span>
+                <span className={styles.value}>{userInfo.name}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.label}>이메일</span>
+                <span className={styles.value}>{userInfo.email}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.label}>가입 유형</span>
+                <span className={styles.value}>{provider || 'LOCAL'}</span>
+              </div>
+            </div>
+            <div className={styles.cardFooter}>
+              <button className={styles.deleteButton} onClick={handleDeleteAccount}>
+                회원 탈퇴
+              </button>
+            </div>
+          </section>
         )}
-      </div>
-    </section>
+
+        {activeTab === 'password' && provider !== 'KAKAO' && (
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h3>보안 설정</h3>
+              <p>주기적인 비밀번호 변경으로 계정을 안전하게 보호하세요.</p>
+            </div>
+            <form className={styles.passwordForm} onSubmit={handleChangePassword}>
+              <div className={styles.formGroup}>
+                <label>현재 비밀번호</label>
+                <input
+                  type="password"
+                  name="passwd"
+                  value={form.passwd}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>새 비밀번호</label>
+                <input
+                  type="password"
+                  name="new_passwd"
+                  value={form.new_passwd}
+                  onChange={handleChange}
+                  required
+                />
+                <span className={styles.helpText}>영문, 숫자, 특수문자 포함 8자 이상</span>
+              </div>
+              <div className={styles.formGroup}>
+                <label>새 비밀번호 확인</label>
+                <input
+                  type="password"
+                  name="new_passwd_confirm"
+                  value={form.new_passwd_confirm}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn-primary" style={{marginTop: '16px'}}>
+                비밀번호 변경
+              </button>
+            </form>
+          </section>
+        )}
+
+        {activeTab === 'adoptions' && (
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h3>입양 신청 내역</h3>
+              <p>파우메이트를 통해 신청한 입양 상태를 확인합니다.</p>
+            </div>
+            <div className={styles.cardBody}>
+              {adoptionList.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <span>🐾</span>
+                  <p>아직 입양 신청 내역이 없습니다.</p>
+                </div>
+              ) : (
+                <ul className={styles.adoptionGrid}>
+                  {adoptionList.map((adoption, index) => (
+                    <li key={index} className={styles.adoptionItem}>
+                      <img
+                        src={adoption.animalImage || '/default-animal.jpg'}
+                        alt={adoption.animalName}
+                        className={styles.adoptionImage}
+                      />
+                      <div className={styles.adoptionInfo}>
+                        <h4>{adoption.animalName || '이름 없음'}</h4>
+                        <span className={styles.statusBadge}>{adoption.status}</span>
+                        <p className={styles.date}>신청일: {adoption.applyDate}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
   );
 };
 
