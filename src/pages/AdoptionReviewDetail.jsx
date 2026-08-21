@@ -19,12 +19,12 @@ const AdoptionReviewDetail = () => {
     const fetchData = async () => {
       try {
         const [reviewRes, userRes] = await Promise.all([
-          axios.get(`/post/${id}`),
-          axios.get('/adoptmate/myInfo'),
+          axios.get(`/post/${id}`).catch(() => null),
+          axios.get('/adoptmate/myInfo').catch(() => null),
         ]);
 
-        const reviewData = reviewRes.data.result;
-        const userData = userRes.data;
+        const reviewData = reviewRes?.data?.result || reviewRes?.data;
+        const userData = userRes?.data?.result || userRes?.data;
 
         if (reviewData) {
           setReview({
@@ -33,10 +33,12 @@ const AdoptionReviewDetail = () => {
           });
         }
 
-        setCurrentUser({
-          email: (userData?.email || '').trim().toLowerCase(),
-          role: (userData?.role || '').trim().toUpperCase(),
-        });
+        if (userData) {
+          setCurrentUser({
+            email: (userData?.email || '').trim().toLowerCase(),
+            role: (userData?.role || '').trim().toUpperCase(),
+          });
+        }
 
         setIsLoaded(true);
       } catch (err) {

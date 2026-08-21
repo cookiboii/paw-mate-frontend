@@ -14,15 +14,18 @@ const CommentSection = ({ postId }) => {
     const fetchInitialData = async () => {
       try {
         const [userRes, commentsRes] = await Promise.all([
-          axios.get('/adoptmate/myInfo'),
-          axios.get(`/comment/${postId}`)
+          axios.get('/adoptmate/myInfo').catch(() => null),
+          axios.get(`/comment/${postId}`).catch(() => null)
         ]);
 
-        setUserInfo({
-          email: (userRes.data.email || '').trim().toLowerCase(),
-          role: (userRes.data.role || '').toUpperCase()
-        });
-        setComments(commentsRes.data.result || []);
+        const user = userRes?.data?.result || userRes?.data;
+        if (user) {
+          setUserInfo({
+            email: (user.email || '').trim().toLowerCase(),
+            role: (user.role || '').toUpperCase()
+          });
+        }
+        setComments(commentsRes?.data?.result || commentsRes?.data || []);
       } catch (err) {
         console.error('초기 데이터 로딩 실패:', err);
       }
@@ -47,7 +50,7 @@ const CommentSection = ({ postId }) => {
       await axios.post(`/comment/${postId}`, { content, parentId });
       setContentMap((prev) => ({ ...prev, [key]: '' }));
       const { data } = await axios.get(`/comment/${postId}`);
-      setComments(data.result || []);
+      setComments(data?.result || data || []);
     } catch (err) {
       console.error('댓글 등록 실패:', err);
     } finally {
@@ -62,7 +65,7 @@ const CommentSection = ({ postId }) => {
     try {
       await axios.delete(`/comment/${commentId}`);
       const { data } = await axios.get(`/comment/${postId}`);
-      setComments(data.result || []);
+      setComments(data?.result || data || []);
     } catch (err) {
       console.error('댓글 삭제 실패:', err);
     } finally {
@@ -82,10 +85,14 @@ const CommentSection = ({ postId }) => {
     setLoadingMap((prev) => ({ ...prev, [commentId]: true }));
 
     try {
-      await axios.put(`/comment/update/${commentId}`, { content: updatedContent });
+      // 📌 백엔드 CommentUpdateDto: commentId, content
+      await axios.put(`/comment/update/${commentId}`, {
+        commentId: Number(commentId),
+        content: updatedContent
+      });
       setEditModeMap((prev) => ({ ...prev, [commentId]: false }));
       const { data } = await axios.get(`/comment/${postId}`);
-      setComments(data.result || []);
+      setComments(data?.result || data || []);
     } catch (err) {
       console.error('댓글 수정 실패:', err);
     } finally {

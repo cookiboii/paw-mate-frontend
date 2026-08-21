@@ -41,10 +41,12 @@ const Login = ({ onLoginSuccess }) => {
     e.preventDefault();
     try {
       const res = await loginUser(form);
-      const token = res.data?.token || res.data?.data?.token || res.data?.result?.token || res.token || res.result?.token;
-      const role = res.data?.role || res.data?.data?.role || res.data?.result?.role || res.role || res.result?.role || "USER";
-      const email = res.data?.email || res.data?.data?.email || res.data?.result?.email || res.email || res.result?.email || form.email;
-      const name = res.data?.name || res.data?.data?.name || res.data?.result?.name || res.name;
+      const resData = res.data?.result || res.data?.data || res.data || {};
+      const token = resData.token;
+      const refreshToken = resData.refreshToken;
+      const role = resData.role || "USER";
+      const email = resData.email || form.email;
+      const name = resData.name;
 
       if (!token) {
         setError("로그인 응답에 토큰이 없습니다.");
@@ -52,13 +54,13 @@ const Login = ({ onLoginSuccess }) => {
       }
 
       const userInfo = { email, role, name, provider: "LOCAL" };
-      login(token, userInfo);
+      login(token, userInfo, refreshToken);
       addToast("로그인 성공!", "success");
       if (onLoginSuccess) onLoginSuccess();
       navigate("/");
     } catch (err) {
       console.error(err);
-      const errMsg = err.response?.data?.message || err.response?.data?.statusMessage || "로그인에 실패했습니다.";
+      const errMsg = err.response?.data?.statusMessage || err.response?.data?.message || "로그인에 실패했습니다.";
       setError(errMsg);
       addToast(errMsg, "error");
     }

@@ -6,6 +6,12 @@ import styles from '../../styles/AdminAnimalsPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import FloatingInput from '../../components/FloatingInput';
 
+const SPECIES_OPTIONS = [
+  { key: 'DOG', label: '강아지 (DOG)' },
+  { key: 'CAT', label: '고양이 (CAT)' },
+  { key: 'ETC', label: '기타 (ETC)' },
+];
+
 const STATUS_OPTIONS = [
   { key: 'WAITING', label: '입양대기' },
   { key: 'PROTECTED', label: '보호중' },
@@ -137,15 +143,23 @@ const AdminAnimalsPage = () => {
             {/* 좌측: 정보 입력 폼 */}
             <div className={styles.inputSection}>
               <div className={styles.gridRow}>
+                <div className={styles.selectGroup}>
+                  <label className={styles.selectLabel}>종 (Species)</label>
+                  <select
+                    name="species"
+                    value={animal.species}
+                    onChange={handleChange}
+                    required
+                    className={styles.select}
+                  >
+                    <option value="" disabled>선택하세요</option>
+                    {SPECIES_OPTIONS.map(({ key, label }) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
+                </div>
                 <FloatingInput
-                  label="종 (예: 개, 고양이)"
-                  name="species"
-                  value={animal.species}
-                  onChange={handleChange}
-                  required
-                />
-                <FloatingInput
-                  label="품종 (예: 푸들)"
+                  label="품종 (예: 골든 리트리버, 코숏)"
                   name="breed"
                   value={animal.breed}
                   onChange={handleChange}

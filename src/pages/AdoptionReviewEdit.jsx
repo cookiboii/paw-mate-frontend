@@ -42,20 +42,27 @@ const AdoptionReviewEdit = () => {
       }
 
       try {
-        const userRes = await axios.get('/adoptmate/myInfo');
-        const reviewRes = await axios.get(`/post/${id}`);
-        const review = reviewRes.data.result;
+        const [userRes, reviewRes] = await Promise.all([
+          axios.get('/adoptmate/myInfo'),
+          axios.get(`/post/${id}`),
+        ]);
+        const user = userRes.data.result || userRes.data;
+        const review = reviewRes.data.result || reviewRes.data;
 
-        // 작성자 확인
-        if (userRes.data.email !== review.email) {
-          showToast('작성자만 수정할 수 있습니다.', 'error');
+        // 작성자 확인 (대소문자/공백 무시)
+        const userEmail = (user?.email || '').trim().toLowerCase();
+        const authorEmail = (review?.email || '').trim().toLowerCase();
+        const userRole = (user?.role || '').trim().toUpperCase();
+
+        if (userEmail !== authorEmail && userRole !== 'ADMIN') {
+          showToast('작성자 또는 관리자만 수정할 수 있습니다.', 'error');
           navigate(`/reviews/${id}`);
           return;
         }
 
         setForm({
-          title: review.title,
-          content: review.content,
+          title: review.title || '',
+          content: review.content || '',
           imageBase64: review.img || ''
         });
 

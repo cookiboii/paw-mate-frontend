@@ -7,7 +7,7 @@ import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
 
 const AdoptionReview = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const fileInputRef = useRef(null);
@@ -82,18 +82,15 @@ const AdoptionReview = () => {
     }
 
     try {
+      // 📌 백엔드 PostCreateRequestDto: title, content, img, name, dateTime
       await axios.post(
         '/post/create',
         {
           title: form.title,
           content: form.content,
           img: form.imageBase64,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-          },
+          name: user?.name || '익명',
+          dateTime: new Date().toISOString(),
         }
       );
       showToast('후기가 성공적으로 등록되었습니다!', 'success');
@@ -102,7 +99,7 @@ const AdoptionReview = () => {
       navigate('/reviews'); // 작성 후 목록으로 이동
     } catch (error) {
       console.error('후기 등록 실패:', error);
-      showToast('등록 중 오류가 발생했습니다.', 'error');
+      showToast('등록 중 오류가 발생했습니다: ' + (error.response?.data?.statusMessage || error.response?.data?.message || '다시 시도해 주세요.'), 'error');
     }
   };
 

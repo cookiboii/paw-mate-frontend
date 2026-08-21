@@ -54,6 +54,18 @@ const AdoptionForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
+    if (!phoneRegex.test(phone.trim())) {
+      showToast('올바른 연락처 형식(예: 010-1234-5678)을 입력해 주세요.', 'error');
+      return;
+    }
+
+    if (interview.trim().length < 10) {
+      showToast('입양 동기 및 계획을 10자 이상 작성해 주세요.', 'error');
+      return;
+    }
+
     if (!agreed) {
       showToast('입양 필수 동의 사항에 체크해 주세요.', 'error');
       return;
@@ -62,26 +74,16 @@ const AdoptionForm = () => {
 
     setIsSubmitting(true);
 
-    // 백엔드 엔티티 및 DTO 요구 필드(phone, housingType, hasPet, reason/interview) 전송
+    // 백엔드 AdoptionCreateRequest DTO: phone, housingType, hasPet, reason
     const payload = {
       phone: phone.trim(),
       housingType: housingType,
       hasPet: hasPet,
       reason: interview.trim(),
-      interview: interview.trim(), // 백엔드 DTO 필드명이 interview인 경우도 완벽 호환
     };
 
     try {
       await axios.post(`/adoptions/animals/${animalId}`, payload);
-
-      // 동물 상태를 '대기중(WAITING)'으로 자동 업데이트 시도
-      try {
-        await axios.put(`/animals/${animalId}/status`, { status: 'WAITING' }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-      } catch (statusErr) {
-        console.warn('동물 상태 변경 실패 (서버 권한 필요):', statusErr);
-      }
 
       showToast('🎉 입양 신청이 성공적으로 접수되었습니다! 담당자가 검토 후 연락드립니다.', 'success');
       navigate(`/animals/${animalId}`);
@@ -91,7 +93,7 @@ const AdoptionForm = () => {
         showToast('로그인이 만료되었습니다. 다시 로그인해 주세요.', 'error');
         navigate('/login');
       } else {
-        const errorMsg = err.response?.data?.message || err.response?.data?.error || '신청 중 오류가 발생했습니다. 다시 시도해 주세요.';
+        const errorMsg = err.response?.data?.statusMessage || err.response?.data?.message || err.response?.data?.error || '신청 중 오류가 발생했습니다. 다시 시도해 주세요.';
         showToast(errorMsg, 'error');
       }
     } finally {

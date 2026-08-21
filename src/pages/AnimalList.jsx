@@ -101,14 +101,14 @@ const AnimalList = () => {
         </div>
 
         <div className={styles.filterControls}>
-          {/* 종 필터 (신규 /animals/species 엔드포인트 연동) */}
+          {/* 종 필터 (신규 /animals/species 엔드포인트 연동: DOG, CAT, ETC) */}
           <div className={styles.filterGroup}>
             <span className={styles.filterLabel}>종:</span>
             {[
               { key: 'ALL', label: '전체' },
-              { key: '강아지', label: '강아지 🐶' },
-              { key: '고양이', label: '고양이 🐱' },
-              { key: '기타', label: '기타 🐾' },
+              { key: 'DOG', label: '강아지 🐶' },
+              { key: 'CAT', label: '고양이 🐱' },
+              { key: 'ETC', label: '기타 🐾' },
             ].map(({ key, label }) => (
               <button
                 key={key}
@@ -175,7 +175,9 @@ const AnimalList = () => {
                         onLoad={(e) => e.target.classList.add(styles.loaded)}
                       />
                     </Link>
-                    <span className={styles.badge}>{animal.species}</span>
+                    <span className={styles.badge}>
+                      {animal.species === 'DOG' ? '강아지 🐶' : animal.species === 'CAT' ? '고양이 🐱' : animal.species === 'ETC' ? '기타 🐾' : animal.species}
+                    </span>
                     
                     {/* 찜하기(하트) 버튼 */}
                     <button

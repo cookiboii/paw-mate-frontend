@@ -30,7 +30,8 @@ const MyPage = () => {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
-      const { name, email, role } = res.data;
+      const data = res.data.result || res.data || {};
+      const { name, email, role } = data;
       setUserInfo({ name, email, role });
     })
     .catch(() => {

@@ -42,9 +42,8 @@ const HomePage = () => {
     const loadData = async () => {
       try {
         const res = await fetchAnimalList(0, 4);
-        if (res.isSuccess && res.result) {
-          setRecentAnimals(res.result.content || []);
-        }
+        const list = res?.result?.content || res?.content || res?.result || [];
+        setRecentAnimals(Array.isArray(list) ? list : []);
       } catch (error) {
         console.error("Failed to load recent animals:", error);
       }
@@ -108,12 +107,12 @@ const HomePage = () => {
         </div>
         <div className={styles.animalGrid}>
           {recentAnimals.map(animal => (
-            <div key={animal.animalId} className={styles.animalCard} onClick={() => navigate(`/animals/${animal.animalId}`)}>
+            <div key={animal.id || animal.animalId} className={styles.animalCard} onClick={() => navigate(`/animals/${animal.id || animal.animalId}`)}>
               <div className={styles.animalBadge}>NEW</div>
-              <img src={animal.profileImageUrl || dog1} alt={animal.name} className={styles.animalImage} />
+              <img src={animal.image || animal.profileImageUrl || dog1} alt={animal.breed || animal.species} className={styles.animalImage} />
               <div className={styles.animalInfo}>
-                <h4>{animal.name}</h4>
-                <p>{animal.species} - {animal.breed}</p>
+                <h4>{animal.breed || animal.name || animal.species}</h4>
+                <p>{animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : animal.species} {animal.breed ? `- ${animal.breed}` : ''}</p>
                 <div className={styles.animalMeta}>
                   <span>나이: {Math.max(0, Number(animal.age) || 0)}살</span>
                   <span style={{ color: "var(--primary-color)", fontWeight: "600" }}>자세히 보기 &rarr;</span>

@@ -212,7 +212,9 @@ const AnimalDetail = () => {
                 <span className={styles.cardIcon}><PawIcon /></span>
                 <div className={styles.cardMeta}>
                   <span className={styles.cardLabel}>종류</span>
-                  <span className={styles.cardValue}>{animal.species}</span>
+                  <span className={styles.cardValue}>
+                    {animal.species === 'DOG' ? '강아지 (Dog)' : animal.species === 'CAT' ? '고양이 (Cat)' : animal.species === 'ETC' ? '기타 (ETC)' : animal.species}
+                  </span>
                 </div>
               </div>
 
