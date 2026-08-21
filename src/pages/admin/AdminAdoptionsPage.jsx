@@ -4,8 +4,10 @@ import { useToast } from '../../context/ToastContext';
 import styles from '../../styles/AdminAdoptionsPage.module.css';
 import ConfirmModal from '../../components/ConfirmModal';
 import { formatDateTime, formatDate } from '../../utils/date';
+import usePageTitle from '../../hooks/usePageTitle';
 
 const AdminAdoptionsPage = () => {
+  usePageTitle('입양 신청 관리 (Admin)');
   const [adoptions, setAdoptions] = useState([]);
   const [processingId, setProcessingId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('ALL');

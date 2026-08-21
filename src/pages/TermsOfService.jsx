@@ -1,7 +1,9 @@
 import React from 'react';
 import styles from '../styles/StaticPage.module.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 const TermsOfService = () => {
+  usePageTitle('이용약관 & 개인정보처리방침');
   return (
     <div className={styles.container}>
       <div className={styles.card}>

@@ -1,7 +1,9 @@
 import React from 'react';
 import EmptyState from '../components/EmptyState';
+import usePageTitle from '../hooks/usePageTitle';
 
 const NotFound = () => {
+  usePageTitle('404 페이지를 찾을 수 없습니다');
   return (
     <div style={{ padding: '40px 24px', minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
       <EmptyState

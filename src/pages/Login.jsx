@@ -7,8 +7,10 @@ import { useToast } from "../context/ToastContext";
 import FloatingInput from "../components/FloatingInput";
 import kakaoLoginImg from "../assets/kakao_login_medium_narrow.png";
 import axios from "../api/axiosInstance";
+import usePageTitle from "../hooks/usePageTitle";
 
 const Login = ({ onLoginSuccess }) => {
+  usePageTitle('로그인');
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();

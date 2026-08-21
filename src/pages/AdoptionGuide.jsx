@@ -1,8 +1,10 @@
 import React from 'react';
 import styles from '../styles/AdoptionGuide.module.css';
 import useScrollReveal from '../hooks/useScrollReveal';
+import usePageTitle from '../hooks/usePageTitle';
 
 const AdoptionGuide = () => {
+  usePageTitle('입양 절차 안내');
   const step1Ref = useScrollReveal();
   const step2Ref = useScrollReveal();
   const step3Ref = useScrollReveal();

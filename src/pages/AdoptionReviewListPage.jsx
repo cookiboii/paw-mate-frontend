@@ -3,8 +3,10 @@ import styles from '../styles/AdoptionReviewListPage.module.css';
 import axios from '../api/axiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
+import usePageTitle from '../hooks/usePageTitle';
 
 // 카테고리 접두사 파싱
 export const CATEGORIES = [
@@ -32,6 +34,7 @@ export function getCleanTitle(title = '') {
 }
 
 const AdoptionReviewListPage = () => {
+  usePageTitle('따뜻한 입양 후기 & 제보');
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -151,7 +154,16 @@ const AdoptionReviewListPage = () => {
               >
                 <div className={styles.imageWrapper}>
                   {review.img ? (
-                    <img src={review.img} alt={cleanTitle} className={styles.thumbnail} loading="lazy" />
+                    <img
+                      src={review.img}
+                      alt={cleanTitle}
+                      className={styles.thumbnail}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                      }}
+                    />
                   ) : (
                     <div className={`${styles.noImagePlaceholder} ${cat === 'REPORT' ? styles.reportPlaceholder : ''}`}>
                       <span>{cat === 'REPORT' ? '🚨' : '💌'}</span>

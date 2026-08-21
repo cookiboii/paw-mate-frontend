@@ -4,8 +4,10 @@ import axios from "../api/axiosInstance";
 import styles from "../styles/ForgotPassword.module.css";
 import FloatingInput from "../components/FloatingInput";
 import { useToast } from "../context/ToastContext";
+import usePageTitle from "../hooks/usePageTitle";
 
 const ForgotPassword = () => {
+  usePageTitle('비밀번호 찾기');
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");

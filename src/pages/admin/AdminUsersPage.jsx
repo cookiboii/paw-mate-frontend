@@ -2,10 +2,12 @@ import React, { useEffect, useState, useMemo } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import styles from '../../styles/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
+import usePageTitle from '../../hooks/usePageTitle';
 
 const ITEMS_PER_PAGE = 10;
 
 const AdminUsersPage = () => {
+  usePageTitle('회원 관리 (Admin)');
   const [users, setUsers] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL'); // ALL, ADMIN, USER

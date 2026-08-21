@@ -23,6 +23,8 @@ import AdminRoute from './components/AdminRoute';
 import AdminLayout from './pages/admin/AdminLayout';
 import ToastContainer from './components/ToastContainer';
 import ThemeToggleFloating from './components/ThemeToggleFloating';
+import ScrollToTop from './components/ScrollToTop';
+import ErrorBoundary from './components/ErrorBoundary';
 import NotFound from './pages/NotFound';
 import AdoptionGuide from './pages/AdoptionGuide';
 import FAQ from './pages/FAQ';
@@ -96,22 +98,25 @@ const AppRoutes = () => {
   );
 };
 
-// 👇 최상위 App 컴포넌트 (절대 Router를 여기서 쓰면 안됨!)
+// 👇 최상위 App 컴포넌트
 const App = () => {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <FavoritesProvider>
-            <Layout>
-              <ToastContainer />
-              <ThemeToggleFloating />
-              <AppRoutes />
-            </Layout>
-          </FavoritesProvider>
-        </AuthProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <FavoritesProvider>
+              <ScrollToTop />
+              <Layout>
+                <ToastContainer />
+                <ThemeToggleFloating />
+                <AppRoutes />
+              </Layout>
+            </FavoritesProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 

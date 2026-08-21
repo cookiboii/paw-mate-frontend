@@ -6,8 +6,10 @@ import styles from '../../styles/AdminAnimalsPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import FloatingInput from '../../components/FloatingInput';
 import { SPECIES_OPTIONS, STATUS_OPTIONS, GENDER_OPTIONS } from '../../constants/animal';
+import usePageTitle from '../../hooks/usePageTitle';
 
 const AdminAnimalsPage = () => {
+  usePageTitle('유기동물 신규 등록 (Admin)');
   const { isAuthenticated, user } = useAuth();
   const { showToast } = useToast();
   const fileInputRef = useRef(null);

@@ -6,6 +6,7 @@ import Login from "./Login";
 import { fetchAnimalList } from "../api/animal";
 import EmptyState from '../components/EmptyState';
 import useScrollReveal from "../hooks/useScrollReveal";
+import usePageTitle from "../hooks/usePageTitle";
 
 import dog1 from "../assets/dog1.jpg";
 import dog2 from "../assets/dog2.jpg";
@@ -16,6 +17,7 @@ import cat from "../assets/cat.jpg";
 const images = [dog1, dog2, dog3, dog4, cat];
 
 const HomePage = () => {
+  usePageTitle('사지 말고 입양하세요 🐾');
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState(0);

@@ -7,6 +7,7 @@ import { useToast } from '../context/ToastContext';
 import Spinner from '../components/Spinner';
 import ConfirmModal from '../components/ConfirmModal';
 import { formatDate } from '../utils/date';
+import usePageTitle from '../hooks/usePageTitle';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
 
 const AdoptionReviewDetail = () => {
@@ -19,6 +20,9 @@ const AdoptionReviewDetail = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const cleanTitle = review ? getCleanTitle(review.title) : '';
+  usePageTitle(cleanTitle || '후기 상세');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +80,6 @@ const AdoptionReviewDetail = () => {
   const isAdmin = currentUser.role === 'ADMIN';
 
   const cat = getCategoryFromTitle(review.title);
-  const cleanTitle = getCleanTitle(review.title);
   const catInfo = CATEGORIES.find(c => c.key === cat) || CATEGORIES[1];
   const isReport = cat === 'REPORT';
 

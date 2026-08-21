@@ -6,6 +6,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
 import { CATEGORY_PREFIX } from './AdoptionReviewListPage';
+import usePageTitle from '../hooks/usePageTitle';
 
 const CATEGORY_OPTIONS = [
   { key: 'REVIEW', label: '💌 입양 후기', desc: '입양 후 반려동물과의 소중한 이야기를 공유해요', prefix: CATEGORY_PREFIX.REVIEW },
@@ -13,6 +14,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 const AdoptionReview = () => {
+  usePageTitle('후기 / 제보 작성');
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();

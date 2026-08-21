@@ -6,8 +6,10 @@ import axios from '../../api/axiosInstance';
 import styles from '../../styles/AnimalStatusEditPage.module.css';
 import Spinner from '../../components/Spinner';
 import { STATUS_OPTIONS } from '../../constants/animal';
+import usePageTitle from '../../hooks/usePageTitle';
 
 const AnimalStatusEditPage = () => {
+  usePageTitle('동물 보호 상태 변경 (Admin)');
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();

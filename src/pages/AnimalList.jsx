@@ -5,9 +5,11 @@ import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
+import usePageTitle from '../hooks/usePageTitle';
 import axios from '../api/axiosInstance';
 
 const AnimalList = () => {
+  usePageTitle('가족을 기다리는 아이들');
   const [animals, setAnimals] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -73,6 +75,13 @@ const AnimalList = () => {
 
   const handleSpeciesChange = (type) => {
     setSpeciesFilter(type);
+    setPage(0);
+  };
+
+  const handleResetFilters = () => {
+    setSpeciesFilter('ALL');
+    setGenderFilter('ALL');
+    setSearchQuery('');
     setPage(0);
   };
 
@@ -159,7 +168,9 @@ const AnimalList = () => {
           <EmptyState 
             icon="🐕"
             title="조건에 맞는 아이가 없습니다."
-            description="현재 조건에 부합하는 유기동물이 없습니다. 검색어나 필터를 변경해 보세요."
+            description="현재 조건에 부합하는 유기동물이 없습니다. 검색어나 필터를 초기화해 보세요."
+            actionLabel="검색 & 필터 초기화"
+            onAction={handleResetFilters}
           />
         ) : (
           <ul className={styles.list}>
@@ -175,6 +186,10 @@ const AnimalList = () => {
                         loading="lazy"
                         className={styles.lazyImage}
                         onLoad={(e) => e.target.classList.add(styles.loaded)}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/default-animal.jpg';
+                        }}
                       />
                     </Link>
                     <span className={styles.badge}>

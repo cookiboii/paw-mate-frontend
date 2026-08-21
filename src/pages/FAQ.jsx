@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import styles from '../styles/StaticPage.module.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 const FAQ = () => {
+  usePageTitle('자주 묻는 질문 (FAQ)');
   const [openIndex, setOpenIndex] = useState(null);
 
   const faqs = [

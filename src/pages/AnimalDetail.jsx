@@ -7,6 +7,7 @@ import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
 import { AnimalStatus, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
+import usePageTitle from '../hooks/usePageTitle';
 
 // Inline SVG Icons
 const PawIcon = () => (
@@ -53,6 +54,8 @@ const AnimalDetail = () => {
   const [error, setError] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  usePageTitle(animal ? `${animal.breed || animal.species} - 입양 상세 정보` : '동물 상세 정보');
 
   const isAdmin = isAuthenticated && user?.role?.toUpperCase() === 'ADMIN';
 
@@ -172,6 +175,10 @@ const AnimalDetail = () => {
                 loading="lazy"
                 onLoad={(e) => {
                   e.target.style.opacity = 1;
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/default-animal.jpg';
                 }}
                 style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }}
               />

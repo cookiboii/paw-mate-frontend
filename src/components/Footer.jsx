@@ -31,11 +31,20 @@ const Footer = () => {
               <li><Link to="/terms">이용약관</Link></li>
             </ul>
           </div>
+
+          <div className={styles.linksColumn}>
+            <h4>긴급 제보 & 상담</h4>
+            <ul className={styles.contactList}>
+              <li style={{ color: 'var(--primary-color)', fontWeight: '700', fontSize: '1.05rem' }}>📞 1577-0954</li>
+              <li style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>동물보호 상담센터 (평일 09:00~18:00)</li>
+              <li style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>응급 구조 신고: 국번없이 120 / 112</li>
+            </ul>
+          </div>
         </div>
 
         <div className={styles.bottomSection}>
           <div className={styles.copyright}>
-            &copy; {new Date().getFullYear()} Paw Mate. All rights reserved.
+            &copy; {new Date().getFullYear()} AdoptMate Platform. All rights reserved.
           </div>
           <div className={styles.legalLinks}>
             <Link to="/terms">개인정보처리방침</Link>

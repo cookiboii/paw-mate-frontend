@@ -5,8 +5,10 @@ import { useToast } from '../context/ToastContext';
 import axios from '../api/axiosInstance';
 import { fetchAnimalById } from '../api/animal';
 import styles from '../styles/AdoptionForm.module.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 const AdoptionForm = () => {
+  usePageTitle('입양 신청서 작성');
   const { animalId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();

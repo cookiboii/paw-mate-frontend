@@ -4,6 +4,7 @@ import { registerUser } from "../api/auth";
 import axios from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
+import usePageTitle from "../hooks/usePageTitle";
 
 // Inline SVG Icons
 const UserIcon = () => (
@@ -56,6 +57,7 @@ const AlertIcon = () => (
 );
 
 const Register = () => {
+  usePageTitle('회원가입');
   const [form, setForm] = useState({
     name: "",
     email: "",

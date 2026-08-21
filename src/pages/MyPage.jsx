@@ -9,8 +9,10 @@ import { useFavorites } from '../context/FavoritesContext';
 import Spinner from '../components/Spinner';
 import ConfirmModal from '../components/ConfirmModal';
 import { formatDate } from '../utils/date';
+import usePageTitle from '../hooks/usePageTitle';
 
 const MyPage = () => {
+  usePageTitle('마이페이지');
   const [userInfo, setUserInfo] = useState(null);
   const [activeTab, setActiveTab] = useState('profile'); // profile, favorites, password, adoptions
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
