@@ -5,6 +5,7 @@ import styles from '../styles/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
 import Spinner from '../components/Spinner';
+import ConfirmModal from '../components/ConfirmModal';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
 
 const AdoptionReviewDetail = () => {
@@ -15,6 +16,8 @@ const AdoptionReviewDetail = () => {
   const [review, setReview] = useState(null);
   const [currentUser, setCurrentUser] = useState({ email: '', role: '' });
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,15 +54,18 @@ const AdoptionReviewDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    if (window.confirm('정말 이 글을 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.')) {
-      try {
-        await axios.delete(`/post/${id}`);
-        showToast('게시글이 성공적으로 삭제되었습니다.', 'success');
-        navigate('/reviews');
-      } catch (err) {
-        showToast('삭제에 실패했습니다. 다시 시도해주세요.', 'error');
-        console.error(err);
-      }
+    setIsDeleting(true);
+    try {
+      await axios.delete(`/post/${id}`);
+      setIsDeleteModalOpen(false);
+      showToast('게시글이 성공적으로 삭제되었습니다.', 'success');
+      // 토스트가 보일 시간을 주고 이동
+      setTimeout(() => navigate('/reviews'), 800);
+    } catch (err) {
+      showToast('삭제에 실패했습니다. 다시 시도해주세요.', 'error');
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -117,8 +123,12 @@ const AdoptionReviewDetail = () => {
                   수정
                 </button>
               )}
-              <button className={styles.deleteBtn} onClick={handleDelete}>
-                삭제
+              <button
+                className={styles.deleteBtn}
+                onClick={() => setIsDeleteModalOpen(true)}
+                disabled={isDeleting}
+              >
+                {isDeleting ? '삭제 중...' : '삭제'}
               </button>
             </div>
           )}
@@ -147,6 +157,18 @@ const AdoptionReviewDetail = () => {
       <div className={styles.commentWrapper}>
         <CommentSection postId={id} />
       </div>
+
+      {/* 커스텀 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        title="게시글 삭제"
+        message="정말 이 글을 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다."
+        confirmText={isDeleting ? '삭제 중...' : '삭제하기'}
+        cancelText="취소"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+      />
     </div>
   );
 };

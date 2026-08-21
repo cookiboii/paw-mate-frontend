@@ -54,6 +54,7 @@
 }
 
 .faqQuestion {
+  width: 100%;
   padding: 20px 24px;
   display: flex;
   justify-content: space-between;
@@ -63,20 +64,44 @@
   color: var(--text-primary);
   font-size: 1.05rem;
   background-color: transparent;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+  transition: color var(--transition-fast);
+}
+
+.faqItem.active .faqQuestion {
+  color: var(--primary-color);
 }
 
 .arrow {
   color: var(--primary-color);
   font-size: 0.8rem;
-  transition: transform var(--transition-fast);
+  transition: transform var(--transition-normal);
+  flex-shrink: 0;
+  margin-left: 12px;
 }
 
+/* 아코디언 열렸을 때 화살표 180도 회전 */
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+/* max-height 트랜지션으로 부드러운 열기/닫기 */
 .faqAnswer {
-  padding: 0 24px 24px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              padding   0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 24px;
   color: var(--text-muted);
   line-height: 1.6;
   font-size: 0.95rem;
-  animation: slideDownFade 0.3s ease-out;
+}
+
+.faqAnswerOpen {
+  max-height: 400px;
+  padding: 0 24px 24px;
 }
 
 /* Terms Styles */

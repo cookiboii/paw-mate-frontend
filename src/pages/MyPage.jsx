@@ -6,10 +6,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
+import Spinner from '../components/Spinner';
+import ConfirmModal from '../components/ConfirmModal';
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [activeTab, setActiveTab] = useState('profile'); // profile, favorites, password, adoptions
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [form, setForm] = useState({
     passwd: '',
     new_passwd: '',
@@ -50,19 +53,22 @@ const MyPage = () => {
   }, [token, showToast]);
 
   const handleDeleteAccount = () => {
-    if (window.confirm('정말 탈퇴하시겠습니까? 탈퇴 시 모든 정보가 삭제됩니다.')) {
-      axios.delete('/adoptmate/delete', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(() => {
-        showToast('회원 탈퇴가 완료되었습니다.', 'info');
-        logout();
-        navigate('/');
-      })
-      .catch(() => {
-        showToast('회원 탈퇴에 실패했습니다.', 'error');
-      });
-    }
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteAccount = () => {
+    setIsDeleteModalOpen(false);
+    axios.delete('/adoptmate/delete', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(() => {
+      showToast('회원 탈퇴가 완료되었습니다.', 'info');
+      logout();
+      navigate('/');
+    })
+    .catch(() => {
+      showToast('회원 탈퇴에 실패했습니다.', 'error');
+    });
   };
 
   const handleChange = (e) => {
@@ -93,10 +99,11 @@ const MyPage = () => {
     });
   };
 
-  if (!userInfo) return <div style={{textAlign: 'center', padding: '100px'}}>로딩 중...</div>;
+  if (!userInfo) return <div style={{display:'flex',justifyContent:'center',alignItems:'center',minHeight:'50vh'}}><Spinner /></div>;
   if (userInfo.role?.toUpperCase() === 'ADMIN') return <AdminUsersPage />;
 
   return (
+    <>
     <div className={styles.dashboardContainer}>
       <aside className={styles.sidebar}>
         <div className={styles.userProfile}>
@@ -240,8 +247,14 @@ const MyPage = () => {
                       />
                       <div className={styles.adoptionInfo}>
                         <h4>{adoption.animalBreed || adoption.animalName || '품종 미기재'}</h4>
-                        <span className={styles.statusBadge}>
-                          {adoption.status === 'APPROVED' ? '입양 승인 🎉' : adoption.status === 'REJECTED' ? '반려됨' : '심사 대기중'}
+                        <span className={`${styles.statusBadge} ${
+                          adoption.status === 'APPROVED' ? styles.statusApproved :
+                          adoption.status === 'REJECTED' ? styles.statusRejected :
+                          styles.statusPending
+                        }`}>
+                          {adoption.status === 'APPROVED' ? '🎉 입양 승인' :
+                           adoption.status === 'REJECTED' ? '❌ 반려됨' :
+                           '⏳ 심사 대기중'}
                         </span>
                         <p className={styles.date}>
                           신청일: {adoption.applyDate ? new Date(adoption.applyDate).toLocaleDateString() : '-'}
@@ -302,6 +315,19 @@ const MyPage = () => {
         )}
       </main>
     </div>
+
+    {/* 커스텀 회원 탈퇴 확인 모달 */}
+    <ConfirmModal
+      isOpen={isDeleteModalOpen}
+      title="회원 탈퇴"
+      message="정말 탈퇴하시겠습니까? 탈퇴 시 모든 정보가 삭제되며 복구할 수 없습니다."
+      confirmText="탈퇴하기"
+      cancelText="취소"
+      variant="danger"
+      onConfirm={confirmDeleteAccount}
+      onCancel={() => setIsDeleteModalOpen(false)}
+    />
+  </>
   );
 };
 

@@ -12,6 +12,8 @@ const FAQ = () => {
     { q: '자원봉사는 어떻게 신청하나요?', a: '현재 자원봉사 프로그램은 개편 중이며, 추후 홈페이지를 통해 재공지될 예정입니다.' }
   ];
 
+  const toggle = (idx) => setOpenIndex(openIndex === idx ? null : idx);
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -19,23 +21,36 @@ const FAQ = () => {
         <p className={styles.subtitle}>파우메이트 이용 시 궁금하신 점을 확인해 보세요.</p>
         
         <div className={styles.faqList}>
-          {faqs.map((faq, idx) => (
-            <div 
-              key={idx} 
-              className={`${styles.faqItem} ${openIndex === idx ? styles.active : ''}`}
-              onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-            >
-              <div className={styles.faqQuestion}>
-                <span>Q. {faq.q}</span>
-                <span className={styles.arrow}>{openIndex === idx ? '▲' : '▼'}</span>
-              </div>
-              {openIndex === idx && (
-                <div className={styles.faqAnswer}>
+          {faqs.map((faq, idx) => {
+            const isOpen = openIndex === idx;
+            return (
+              <div
+                key={idx}
+                className={`${styles.faqItem} ${isOpen ? styles.active : ''}`}
+              >
+                {/* 버튼으로 변경 — 키보드 접근성 */}
+                <button
+                  className={styles.faqQuestion}
+                  onClick={() => toggle(idx)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${idx}`}
+                  id={`faq-btn-${idx}`}
+                >
+                  <span>Q. {faq.q}</span>
+                  <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}>▼</span>
+                </button>
+                {/* max-height 트랜지션으로 부드럽게 열기/닫기 */}
+                <div
+                  id={`faq-answer-${idx}`}
+                  role="region"
+                  aria-labelledby={`faq-btn-${idx}`}
+                  className={`${styles.faqAnswer} ${isOpen ? styles.faqAnswerOpen : ''}`}
+                >
                   <p>{faq.a}</p>
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

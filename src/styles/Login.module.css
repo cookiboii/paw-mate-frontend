@@ -41,9 +41,10 @@
   background: var(--surface-color);
 }
 
+/* 🎨 팔레트 일치 — green 그라디언트로 수정 */
 .submitButton {
   padding: 16px;
-  background: linear-gradient(135deg, var(--primary-color), #f4a261);
+  background: linear-gradient(135deg, var(--primary-color), #768a74);
   color: white;
   border: none;
   border-radius: var(--radius-md);
@@ -57,7 +58,8 @@
 
 .submitButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(231, 111, 81, 0.3);
+  box-shadow: 0 12px 24px rgba(101, 121, 99, 0.35);
+  filter: brightness(1.05);
 }
 
 .error {
