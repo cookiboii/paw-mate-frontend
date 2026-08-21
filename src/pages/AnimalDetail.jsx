@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
+import ConfirmModal from '../components/ConfirmModal';
 
 // 상태 ENUM 정의
 const AnimalStatus = {
@@ -56,12 +57,13 @@ const AnimalDetail = () => {
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isAdmin = isAuthenticated && user?.role?.toUpperCase() === 'ADMIN';
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  // ⚠️ 강제 리다이렉트 제거 — 비로그인 유저도 상세 페이지 열람 가능
+  // 단, 입양 신청 및 찜하기는 로그인 필요
 
   useEffect(() => {
     const fetchAnimal = async () => {
@@ -93,16 +95,25 @@ const AnimalDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    const confirmed = window.confirm('정말로 이 동물 정보를 삭제하시겠습니까?');
-    if (!confirmed) return;
-
+    setIsDeleting(true);
     try {
       await axios.delete(`/animals/delete/${id}`);
+      setIsDeleteModalOpen(false);
       showToast('동물 정보가 삭제되었습니다.', 'info');
-      navigate('/animals');
+      setTimeout(() => navigate('/animals'), 800);
     } catch (err) {
       showToast('삭제 실패: ' + (err.response?.data?.message || err.message), 'error');
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleFavClick = () => {
+    if (!isAuthenticated) {
+      showToast('찜하기는 로그인 후 이용할 수 있습니다. 🔒', 'info');
+      return;
+    }
+    toggleFavorite(animal);
   };
 
   const getGenderText = (gender) => {
@@ -166,118 +177,148 @@ const AnimalDetail = () => {
   const favorite = animal ? isFavorite(animal.id) : false;
 
   return (
-    <section className={styles.detailContainer}>
-      <div className={styles.topNavigation}>
-        <Link to="/animals" className={styles.backLink}>
-          ← 전체 동물 목록으로
-        </Link>
-      </div>
-
-      {animal ? (
-        <div className={styles.card}>
-          <div className={styles.imageContainer}>
-            <img
-              src={animal.image || '/default-animal.jpg'}
-              alt="동물 사진"
-              className={styles.image}
-              loading="lazy"
-              onLoad={(e) => {
-                e.target.style.opacity = 1;
-              }}
-              style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }}
-            />
-            {/* 찜하기 플로팅 버튼 */}
-            <button 
-              className={`${styles.favBtn} ${favorite ? styles.favActive : ''}`}
-              onClick={() => toggleFavorite(animal)}
-              aria-label="관심 동물 찜하기"
-              title={favorite ? "관심 목록에서 제거" : "관심 동물로 등록"}
-            >
-              {favorite ? '❤️ 찜됨' : '🤍 찜하기'}
-            </button>
-          </div>
-
-          <div className={styles.info}>
-            <div className={styles.headerArea}>
-              <div>
-                <span className={getStatusBadgeClass(animal.status)}>
-                  {getStatusLabel(animal.status)}
-                </span>
-                <h2 className={styles.breed}>{animal.breed}</h2>
-              </div>
-            </div>
-
-            <div className={styles.infoGrid}>
-              <div className={styles.infoCard}>
-                <span className={styles.cardIcon}><PawIcon /></span>
-                <div className={styles.cardMeta}>
-                  <span className={styles.cardLabel}>종류</span>
-                  <span className={styles.cardValue}>
-                    {animal.species === 'DOG' ? '강아지 (Dog)' : animal.species === 'CAT' ? '고양이 (Cat)' : animal.species === 'ETC' ? '기타 (ETC)' : animal.species}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.infoCard}>
-                <span className={styles.cardIcon}><GenderIcon /></span>
-                <div className={styles.cardMeta}>
-                  <span className={styles.cardLabel}>성별</span>
-                  <span className={styles.cardValue}>{getGenderText(animal.gender)}</span>
-                </div>
-              </div>
-
-              <div className={styles.infoCard}>
-                <span className={styles.cardIcon}><CalendarIcon /></span>
-                <div className={styles.cardMeta}>
-                  <span className={styles.cardLabel}>나이</span>
-                  <span className={styles.cardValue}>{Math.max(0, Number(animal.age) || 0)}살</span>
-                </div>
-              </div>
-
-              <div className={styles.infoCard}>
-                <span className={styles.cardIcon}><PaletteIcon /></span>
-                <div className={styles.cardMeta}>
-                  <span className={styles.cardLabel}>털 색상</span>
-                  <span className={styles.cardValue}>{animal.color}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 상태에 따른 맞춤 안내 배너 */}
-            {getStatusBanner(animal.status)}
-
-            {/* 일반 사용자: 입양 신청 버튼 */}
-            {!isAdmin && canAdopt && (
-              <div className={styles.adoptBtnWrapper}>
-                <button onClick={() => navigate(`/adopt/${id}`)} className="btn-primary" style={{width: '100%', padding: '16px', fontSize: '1.1rem'}}>
-                  🐾 입양 신청서 작성하기
-                </button>
-              </div>
-            )}
-
-            {/* 관리자 전용 버튼 */}
-            {isAdmin && (
-              <div className={styles.adminButtons}>
-                <button
-                  className={styles.editButton}
-                  onClick={() => navigate(`/animals/edit/${id}`)}
-                >
-                  상태 수정
-                </button>
-                <button
-                  className={styles.deleteButton}
-                  onClick={handleDelete}
-                >
-                  삭제
-                </button>
-              </div>
-            )}
-          </div>
+    <>
+      <section className={styles.detailContainer}>
+        <div className={styles.topNavigation}>
+          <Link to="/animals" className={styles.backLink}>
+            ← 전체 동물 목록으로
+          </Link>
         </div>
-      ) : (
-        <p className={styles.message}>동물 정보를 찾을 수 없습니다.</p>
-      )}
-    </section>
+
+        {animal ? (
+          <div className={styles.card}>
+            <div className={styles.imageContainer}>
+              <img
+                src={animal.image || '/default-animal.jpg'}
+                alt={`${animal.breed || animal.species} 사진`}
+                className={styles.image}
+                loading="lazy"
+                onLoad={(e) => {
+                  e.target.style.opacity = 1;
+                }}
+                style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }}
+              />
+              {/* 찜하기 플로팅 버튼 */}
+              <button
+                className={`${styles.favBtn} ${favorite ? styles.favActive : ''} ${!isAuthenticated ? styles.favLocked : ''}`}
+                onClick={handleFavClick}
+                aria-label={!isAuthenticated ? '로그인 후 찜하기 가능' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
+                aria-pressed={isAuthenticated ? favorite : undefined}
+                title={!isAuthenticated ? '로그인 후 찜하기 가능합니다' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
+              >
+                {!isAuthenticated ? '🔒 찜하기' : favorite ? '❤️ 찜됨' : '🤍 찜하기'}
+              </button>
+            </div>
+
+            <div className={styles.info}>
+              <div className={styles.headerArea}>
+                <div>
+                  <span className={getStatusBadgeClass(animal.status)}>
+                    {getStatusLabel(animal.status)}
+                  </span>
+                  <h2 className={styles.breed}>{animal.breed}</h2>
+                </div>
+              </div>
+
+              <div className={styles.infoGrid}>
+                <div className={styles.infoCard}>
+                  <span className={styles.cardIcon}><PawIcon /></span>
+                  <div className={styles.cardMeta}>
+                    <span className={styles.cardLabel}>종류</span>
+                    <span className={styles.cardValue}>
+                      {animal.species === 'DOG' ? '강아지 (Dog)' : animal.species === 'CAT' ? '고양이 (Cat)' : animal.species === 'ETC' ? '기타 (ETC)' : animal.species}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.infoCard}>
+                  <span className={styles.cardIcon}><GenderIcon /></span>
+                  <div className={styles.cardMeta}>
+                    <span className={styles.cardLabel}>성별</span>
+                    <span className={styles.cardValue}>{getGenderText(animal.gender)}</span>
+                  </div>
+                </div>
+
+                <div className={styles.infoCard}>
+                  <span className={styles.cardIcon}><CalendarIcon /></span>
+                  <div className={styles.cardMeta}>
+                    <span className={styles.cardLabel}>나이</span>
+                    <span className={styles.cardValue}>{Math.max(0, Number(animal.age) || 0)}살</span>
+                  </div>
+                </div>
+
+                <div className={styles.infoCard}>
+                  <span className={styles.cardIcon}><PaletteIcon /></span>
+                  <div className={styles.cardMeta}>
+                    <span className={styles.cardLabel}>털 색상</span>
+                    <span className={styles.cardValue}>{animal.color}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 상태에 따른 맞춤 안내 배너 */}
+              {getStatusBanner(animal.status)}
+
+              {/* 일반 사용자: 입양 신청 버튼 */}
+              {!isAdmin && canAdopt && (
+                <div className={styles.adoptBtnWrapper}>
+                  {isAuthenticated ? (
+                    <button
+                      onClick={() => navigate(`/adopt/${id}`)}
+                      className="btn-primary"
+                      style={{width: '100%', padding: '16px', fontSize: '1.1rem'}}
+                    >
+                      🐾 입양 신청서 작성하기
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => showToast('입양 신청은 로그인 후 이용할 수 있습니다.', 'info')}
+                      className="btn-secondary"
+                      style={{width: '100%', padding: '16px', fontSize: '1.1rem'}}
+                    >
+                      🔒 로그인 후 입양 신청 가능
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* 관리자 전용 버튼 */}
+              {isAdmin && (
+                <div className={styles.adminButtons}>
+                  <button
+                    className={styles.editButton}
+                    onClick={() => navigate(`/animals/edit/${id}`)}
+                  >
+                    상태 수정
+                  </button>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? '삭제 중...' : '삭제'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className={styles.message}>동물 정보를 찾을 수 없습니다.</p>
+        )}
+      </section>
+
+      {/* 커스텀 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        title="동물 정보 삭제"
+        message="정말로 이 동물 정보를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+        confirmText={isDeleting ? '삭제 중...' : '삭제하기'}
+        cancelText="취소"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+      />
+    </>
   );
 };
 

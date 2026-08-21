@@ -245,6 +245,19 @@
   100% { transform: scale(1.15); }
 }
 
+/* 비로그인 잠금 상태 */
+.favLocked {
+  background: rgba(0, 0, 0, 0.25) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  cursor: not-allowed;
+  filter: grayscale(0.3);
+}
+
+.favLocked:hover {
+  transform: none !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
 .info {
   padding: 24px;
   flex: 1;

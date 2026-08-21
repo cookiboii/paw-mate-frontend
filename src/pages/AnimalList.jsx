@@ -4,6 +4,7 @@ import styles from '../styles/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import { useFavorites } from '../context/FavoritesContext';
+import { useAuth } from '../context/AuthContext';
 import axios from '../api/axiosInstance';
 
 const AnimalList = () => {
@@ -18,6 +19,7 @@ const AnimalList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { isAuthenticated } = useAuth();
   const pageSize = 6;
 
   useEffect(() => {
@@ -181,17 +183,17 @@ const AnimalList = () => {
                     
                     {/* 찜하기(하트) 버튼 */}
                     <button
-                      className={`${styles.favBtn} ${favorite ? styles.favActive : ''}`}
+                      className={`${styles.favBtn} ${favorite ? styles.favActive : ''} ${!isAuthenticated ? styles.favLocked : ''}`}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         toggleFavorite(animal);
                       }}
-                      aria-label={favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
-                      aria-pressed={favorite}
-                      title={favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
+                      aria-label={!isAuthenticated ? '로그인 후 찜하기 가능' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
+                      aria-pressed={isAuthenticated ? favorite : undefined}
+                      title={!isAuthenticated ? '로그인 후 찜하기 가능합니다' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
                     >
-                      {favorite ? '❤️' : '🤍'}
+                      {!isAuthenticated ? '🔒' : favorite ? '❤️' : '🤍'}
                     </button>
                   </div>
                   <div className={styles.info}>
