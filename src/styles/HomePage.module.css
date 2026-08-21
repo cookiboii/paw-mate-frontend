@@ -32,7 +32,7 @@
   font-size: 0.9rem;
   margin-bottom: 24px;
   letter-spacing: 0.5px;
-  border: 1px solid rgba(231, 111, 81, 0.2);
+  border: 1px solid rgba(101, 121, 99, 0.25);
 }
 
 .heroContent h1 {
@@ -71,7 +71,12 @@
   right: -10%;
   width: 120%;
   height: 120%;
-  background: radial-gradient(circle, rgba(231, 111, 81, 0.15) 0%, rgba(42, 157, 143, 0.05) 50%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(101, 121, 99, 0.18) 0%,
+    rgba(220, 184, 151, 0.08) 50%,
+    rgba(255, 255, 255, 0) 70%
+  );
   z-index: -1;
   filter: blur(40px);
   animation: float 8s ease-in-out infinite;
@@ -136,6 +141,48 @@
 .activeDot {
   background-color: #fff;
   transform: scale(1.5);
+}
+
+/* 슬라이더 화살표 버튼 */
+.sliderArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.slider:hover .sliderArrow {
+  opacity: 1;
+}
+
+.sliderArrow:hover {
+  background: #ffffff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.sliderArrowLeft {
+  left: 16px;
+}
+
+.sliderArrowRight {
+  right: 16px;
 }
 
 /* 2. Stats Section */
@@ -285,7 +332,7 @@
 
 /* 4. CTA Section */
 .ctaSection {
-  background: linear-gradient(135deg, var(--primary-color) 0%, #d55d40 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #4a5e48 100%);
   padding: 120px 24px;
   text-align: center;
   position: relative;
@@ -468,6 +515,62 @@
 .animalCard:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
+}
+
+/* 스켈레톤 카드 */
+.animalCardSkeleton {
+  background: var(--surface-color);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+.skeletonImage {
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(90deg, var(--bg-color) 25%, var(--border-color) 50%, var(--bg-color) 75%);
+  background-size: 200% 100%;
+  animation: shimmerSlide 1.5s infinite;
+}
+
+.skeletonContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeletonLine {
+  height: 18px;
+  background: linear-gradient(90deg, var(--bg-color) 25%, var(--border-color) 50%, var(--bg-color) 75%);
+  background-size: 200% 100%;
+  animation: shimmerSlide 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmerSlide {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 빈 상태 */
+.animalEmptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 24px;
+  color: var(--text-muted);
+}
+
+.animalEmptyState span {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.animalEmptyState p {
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 .animalImage {

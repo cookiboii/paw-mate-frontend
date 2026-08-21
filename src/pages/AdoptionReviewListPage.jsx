@@ -166,6 +166,11 @@ const AdoptionReviewListPage = () => {
                   <p>{review.content?.slice(0, 65) ?? '내용 없음'}...</p>
                   <div className={styles.cardMeta}>
                     <span className={styles.authorName}>✍️ {review.name || '익명'}</span>
+                    {review.createdAt && (
+                      <span className={styles.cardDate}>
+                        {new Date(review.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}
+                      </span>
+                    )}
                   </div>
                 </div>
               </Link>

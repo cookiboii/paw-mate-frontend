@@ -220,14 +220,22 @@
 .cardMeta {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding-top: 12px;
   border-top: 1px solid var(--border-color);
   margin-top: auto;
+  gap: 8px;
 }
 
 .authorName {
   font-size: 0.82rem;
   color: var(--text-muted);
+}
+
+.cardDate {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  white-space: nowrap;
 }
 
 /* 빈 상태 */

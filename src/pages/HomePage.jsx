@@ -19,7 +19,9 @@ const HomePage = () => {
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState(0);
   const [recentAnimals, setRecentAnimals] = useState([]);
+  const [isLoadingAnimals, setIsLoadingAnimals] = useState(true);
   const [testimonials, setTestimonials] = useState([]);
+  const [isPaused, setIsPaused] = useState(false);
   const navigate = useNavigate();
 
   // Scroll Reveal Refs
@@ -33,25 +35,32 @@ const HomePage = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
+      if (!isPaused) {
+        setCurrent((prev) => (prev + 1) % images.length);
+      }
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isPaused]);
 
   useEffect(() => {
     const loadData = async () => {
+      setIsLoadingAnimals(true);
       try {
         const res = await fetchAnimalList(0, 4);
         const list = res?.result?.content || res?.content || res?.result || [];
         setRecentAnimals(Array.isArray(list) ? list : []);
       } catch (error) {
         console.error("Failed to load recent animals:", error);
+      } finally {
+        setIsLoadingAnimals(false);
       }
     };
     loadData();
   }, []);
 
   const goToSlide = (index) => setCurrent(index);
+  const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
+  const nextSlide = () => setCurrent((prev) => (prev + 1) % images.length);
 
   return (
     <div className={styles.homeContainer}>
@@ -76,21 +85,47 @@ const HomePage = () => {
           </div>
         </div>
         <div className={styles.heroVisual}>
-          <div className={styles.slider}>
+          <div
+            className={styles.slider}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            role="region"
+            aria-label="입양 동물 슬라이더"
+          >
             {images.map((img, idx) => (
               <img
                 key={idx}
                 src={img}
-                alt={`입양 동물 ${idx + 1}`}
+                alt={`입양 동물 슬라이드 ${idx + 1} / ${images.length}`}
                 className={`${styles.slide} ${idx === current ? styles.active : ""}`}
               />
             ))}
-            <div className={styles.dots}>
+            {/* 화살표 네비게이션 */}
+            <button
+              className={`${styles.sliderArrow} ${styles.sliderArrowLeft}`}
+              onClick={(e) => { e.stopPropagation(); prevSlide(); }}
+              aria-label="이전 슬라이드"
+            >
+              &#8249;
+            </button>
+            <button
+              className={`${styles.sliderArrow} ${styles.sliderArrowRight}`}
+              onClick={(e) => { e.stopPropagation(); nextSlide(); }}
+              aria-label="다음 슬라이드"
+            >
+              &#8250;
+            </button>
+            <div className={styles.dots} role="tablist" aria-label="슬라이드 네비게이션">
               {images.map((_, idx) => (
                 <span
                   key={idx}
+                  role="tab"
+                  aria-selected={idx === current}
+                  aria-label={`슬라이드 ${idx + 1}번으로 이동`}
                   className={`${styles.dot} ${idx === current ? styles.activeDot : ""}`}
                   onClick={() => goToSlide(idx)}
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && goToSlide(idx)}
                 />
               ))}
             </div>
@@ -106,20 +141,37 @@ const HomePage = () => {
           <p>가장 최근에 파우메이트와 함께하게 된 아이들입니다.</p>
         </div>
         <div className={styles.animalGrid}>
-          {recentAnimals.map(animal => (
-            <div key={animal.id || animal.animalId} className={styles.animalCard} onClick={() => navigate(`/animals/${animal.id || animal.animalId}`)}>
-              <div className={styles.animalBadge}>NEW</div>
-              <img src={animal.image || animal.profileImageUrl || dog1} alt={animal.breed || animal.species} className={styles.animalImage} />
-              <div className={styles.animalInfo}>
-                <h4>{animal.breed || animal.name || animal.species}</h4>
-                <p>{animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : animal.species} {animal.breed ? `- ${animal.breed}` : ''}</p>
-                <div className={styles.animalMeta}>
-                  <span>나이: {Math.max(0, Number(animal.age) || 0)}살</span>
-                  <span style={{ color: "var(--primary-color)", fontWeight: "600" }}>자세히 보기 &rarr;</span>
+          {isLoadingAnimals ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={`skeleton-${i}`} className={styles.animalCardSkeleton}>
+                <div className={styles.skeletonImage} />
+                <div className={styles.skeletonContent}>
+                  <div className={styles.skeletonLine} style={{ width: '60%' }} />
+                  <div className={styles.skeletonLine} style={{ width: '40%', height: '14px' }} />
                 </div>
               </div>
+            ))
+          ) : recentAnimals.length === 0 ? (
+            <div className={styles.animalEmptyState}>
+              <span>🐾</span>
+              <p>아직 등록된 동물이 없습니다.</p>
             </div>
-          ))}
+          ) : (
+            recentAnimals.map(animal => (
+              <div key={animal.id || animal.animalId} className={styles.animalCard} onClick={() => navigate(`/animals/${animal.id || animal.animalId}`)}>
+                <div className={styles.animalBadge}>NEW</div>
+                <img src={animal.image || animal.profileImageUrl || dog1} alt={`${animal.breed || animal.species} - ${animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : '기타'}`} className={styles.animalImage} />
+                <div className={styles.animalInfo}>
+                  <h4>{animal.breed || animal.name || animal.species}</h4>
+                  <p>{animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : animal.species} {animal.breed ? `- ${animal.breed}` : ''}</p>
+                  <div className={styles.animalMeta}>
+                    <span>나이: {Math.max(0, Number(animal.age) || 0)}살</span>
+                    <span style={{ color: "var(--primary-color)", fontWeight: "600" }}>자세히 보기 &rarr;</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 

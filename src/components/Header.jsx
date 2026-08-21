@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import styles from '../styles/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -54,17 +54,17 @@ const Header = () => {
         {/* 데스크톱 네비게이션 */}
         <nav className={styles.nav}>
           <ul className={styles.navList}>
-            <li><Link to="/guide" className={styles.navLink}>입양 안내</Link></li>
-            <li><Link to="/animals" className={styles.navLink}>동물 목록</Link></li>
-            <li><Link to="/reviews" className={styles.navLink}>입양 후기</Link></li> 
+            <li><NavLink to="/guide" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>입양 안내</NavLink></li>
+            <li><NavLink to="/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>동물 목록</NavLink></li>
+            <li><NavLink to="/reviews" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>입양 후기</NavLink></li>
             {isAuthenticated && (
-              <li><Link to="/review" className={styles.navLink}>후기작성</Link></li>
+              <li><NavLink to="/review" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>후기작성</NavLink></li>
             )}
             {isAdmin && (
               <>
-                <li><Link to="/admin/animals" className={styles.navLink}>동물 등록</Link></li>
-                <li><Link to="/admin/users" className={styles.navLink}>사용자 관리</Link></li>
-                <li><Link to="/admin/adoptions" className={styles.navLink}>입양 신청 관리</Link></li>
+                <li><NavLink to="/admin/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>동물 등록</NavLink></li>
+                <li><NavLink to="/admin/users" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>사용자 관리</NavLink></li>
+                <li><NavLink to="/admin/adoptions" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>입양 신청 관리</NavLink></li>
               </>
             )}
           </ul>
@@ -77,9 +77,9 @@ const Header = () => {
               <>
                 {!isAdmin && (
                   <li>
-                    <Link to="/mypage" className={styles.navLink}>
+                    <NavLink to="/mypage" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>
                       마이페이지 {favorites.length > 0 && <span className={styles.favBadge}>{favorites.length}</span>}
-                    </Link>
+                    </NavLink>
                   </li>
                 )}
                 <li>
@@ -90,7 +90,7 @@ const Header = () => {
               </>
             ) : (
               <>
-                <li><Link to="/login" className={styles.navLink}>로그인</Link></li>
+                <li><NavLink to="/login" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>로그인</NavLink></li>
                 <li><Link to="/register" className="btn-primary">회원가입</Link></li>
               </>
             )}
@@ -151,27 +151,27 @@ const Header = () => {
 
         <nav className={styles.drawerNav}>
           <ul className={styles.drawerList}>
-            <li><Link to="/guide" className={styles.drawerLink}>📖 입양 안내</Link></li>
-            <li><Link to="/animals" className={styles.drawerLink}>🐾 동물 목록</Link></li>
-            <li><Link to="/reviews" className={styles.drawerLink}>💌 입양 후기</Link></li>
+            <li><NavLink to="/guide" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>📖 입양 안내</NavLink></li>
+            <li><NavLink to="/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>🐾 동물 목록</NavLink></li>
+            <li><NavLink to="/reviews" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>💌 입양 후기</NavLink></li>
             {isAuthenticated && (
-              <li><Link to="/review" className={styles.drawerLink}>✏️ 후기작성</Link></li>
+              <li><NavLink to="/review" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>✏️ 후기작성</NavLink></li>
             )}
             
             {isAuthenticated && !isAdmin && (
               <li>
-                <Link to="/mypage" className={styles.drawerLink}>
+                <NavLink to="/mypage" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
                   👤 마이페이지 {favorites.length > 0 && <span className={styles.drawerFavBadge}>❤️ {favorites.length}</span>}
-                </Link>
+                </NavLink>
               </li>
             )}
 
             {isAdmin && (
               <div className={styles.adminSection}>
                 <span className={styles.drawerSectionTitle}>관리자 전용 메뉴</span>
-                <li><Link to="/admin/animals" className={styles.drawerLink}>🐶 동물 등록</Link></li>
-                <li><Link to="/admin/users" className={styles.drawerLink}>👥 사용자 관리</Link></li>
-                <li><Link to="/admin/adoptions" className={styles.drawerLink}>📋 입양 신청 관리</Link></li>
+                <li><NavLink to="/admin/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>🐶 동물 등록</NavLink></li>
+                <li><NavLink to="/admin/users" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>👥 사용자 관리</NavLink></li>
+                <li><NavLink to="/admin/adoptions" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>📋 입양 신청 관리</NavLink></li>
               </div>
             )}
           </ul>

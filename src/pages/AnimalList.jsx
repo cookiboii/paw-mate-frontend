@@ -169,7 +169,7 @@ const AnimalList = () => {
                     <Link to={`/animals/${animal.id}`} className={styles.imageLink}>
                       <img 
                         src={animal.image || '/default-animal.jpg'} 
-                        alt={animal.species}
+                        alt={`${animal.breed || animal.species} - ${animal.gender === 'M' || animal.gender === 'MALE' ? '수컷' : '암컷'} ${Math.max(0, Number(animal.age) || 0)}살`}
                         loading="lazy"
                         className={styles.lazyImage}
                         onLoad={(e) => e.target.classList.add(styles.loaded)}
@@ -187,8 +187,9 @@ const AnimalList = () => {
                         e.stopPropagation();
                         toggleFavorite(animal);
                       }}
-                      aria-label="관심 동물 찜하기"
-                      title={favorite ? "관심 목록에서 제거" : "관심 동물로 등록"}
+                      aria-label={favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
+                      aria-pressed={favorite}
+                      title={favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
                     >
                       {favorite ? '❤️' : '🤍'}
                     </button>
