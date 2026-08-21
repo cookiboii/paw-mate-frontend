@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from '../../api/axiosInstance';
 import { useToast } from '../../context/ToastContext';
 import styles from '../../styles/AdminAdoptionsPage.module.css';
+import ConfirmModal from '../../components/ConfirmModal';
+import { formatDateTime, formatDate } from '../../utils/date';
 
 const AdminAdoptionsPage = () => {
   const [adoptions, setAdoptions] = useState([]);
   const [processingId, setProcessingId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [selectedAdoption, setSelectedAdoption] = useState(null); // 상세 모달용
+  const [confirmState, setConfirmState] = useState({ isOpen: false, adoptionId: null, status: null });
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -24,16 +27,18 @@ const AdminAdoptionsPage = () => {
     }
   };
 
-  const updateStatus = async (adoptionId, status) => {
+  const requestStatusUpdate = (adoptionId, status) => {
     if (!adoptionId) {
       showToast('올바르지 않은 신청 항목입니다.', 'error');
       return;
     }
+    setConfirmState({ isOpen: true, adoptionId, status });
+  };
 
+  const handleConfirmStatus = async () => {
+    const { adoptionId, status } = confirmState;
+    setConfirmState({ isOpen: false, adoptionId: null, status: null });
     const actionText = status === 'APPROVED' ? '승인' : '거절';
-    if (!window.confirm(`해당 입양 신청을 ${actionText}하시겠습니까?`)) {
-      return;
-    }
 
     setProcessingId(adoptionId);
 
@@ -161,7 +166,7 @@ const AdminAdoptionsPage = () => {
 
                   {/* 신청일 */}
                   <td>
-                    {adoption.applyDate ? new Date(adoption.applyDate).toLocaleDateString() : '-'}
+                    {formatDate(adoption.applyDate)}
                   </td>
 
                   {/* 상태 뱃지 */}
@@ -181,14 +186,14 @@ const AdminAdoptionsPage = () => {
                         <div className={styles.buttonGroup}>
                           <button
                             className={styles.acceptBtn}
-                            onClick={() => updateStatus(adoption.adoptionId, 'APPROVED')}
+                            onClick={() => requestStatusUpdate(adoption.adoptionId, 'APPROVED')}
                             disabled={processingId === adoption.adoptionId}
                           >
                             승인
                           </button>
                           <button
                             className={styles.rejectBtn}
-                            onClick={() => updateStatus(adoption.adoptionId, 'REJECTED')}
+                            onClick={() => requestStatusUpdate(adoption.adoptionId, 'REJECTED')}
                             disabled={processingId === adoption.adoptionId}
                           >
                             거절
@@ -234,7 +239,7 @@ const AdminAdoptionsPage = () => {
               <div className={styles.modalStatusRow}>
                 <span>현재 상태: {renderStatusBadge(selectedAdoption.status)}</span>
                 {selectedAdoption.applyDate && (
-                  <span>신청일시: {new Date(selectedAdoption.applyDate).toLocaleString()}</span>
+                  <span>신청일시: {formatDateTime(selectedAdoption.applyDate)}</span>
                 )}
               </div>
             </div>
@@ -244,14 +249,14 @@ const AdminAdoptionsPage = () => {
                 <>
                   <button
                     className={styles.acceptBtn}
-                    onClick={() => updateStatus(selectedAdoption.adoptionId, 'APPROVED')}
+                    onClick={() => requestStatusUpdate(selectedAdoption.adoptionId, 'APPROVED')}
                     disabled={processingId === selectedAdoption.adoptionId}
                   >
                     입양 승인
                   </button>
                   <button
                     className={styles.rejectBtn}
-                    onClick={() => updateStatus(selectedAdoption.adoptionId, 'REJECTED')}
+                    onClick={() => requestStatusUpdate(selectedAdoption.adoptionId, 'REJECTED')}
                     disabled={processingId === selectedAdoption.adoptionId}
                   >
                     입양 거절
@@ -266,6 +271,22 @@ const AdminAdoptionsPage = () => {
           </div>
         </div>
       )}
+
+      {/* 커스텀 승인/거절 확인 모달 */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title={confirmState.status === 'APPROVED' ? '입양 승인 확인' : '입양 거절 확인'}
+        message={
+          confirmState.status === 'APPROVED'
+            ? '해당 입양 신청을 승인하시겠습니까? 승인 후 입양 절차가 진행됩니다.'
+            : '해당 입양 신청을 거절하시겠습니까? 거절 사유가 신청자에게 안내됩니다.'
+        }
+        confirmText={confirmState.status === 'APPROVED' ? '승인하기' : '거절하기'}
+        cancelText="취소"
+        variant={confirmState.status === 'APPROVED' ? 'default' : 'danger'}
+        onConfirm={handleConfirmStatus}
+        onCancel={() => setConfirmState({ isOpen: false, adoptionId: null, status: null })}
+      />
     </div>
   );
 };

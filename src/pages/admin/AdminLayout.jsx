@@ -1,22 +1,45 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import styles from '../../styles/AdminLayout.module.css';
-
 
 const AdminLayout = ({ children }) => {
   return (
     <div className={styles.container}>
       <nav className={styles.sidebar}>
-        <h3>관리자 메뉴</h3>
-        <ul>
-        
-          <li><Link to="/admin/animals">동물 관리</Link></li>
-          <li><Link to="/admin/users">회원 관리</Link></li>
+        <div className={styles.sidebarHeader}>
+          <span className={styles.adminBadge}>ADMIN PANEL</span>
+          <h3>관리자 센터</h3>
+        </div>
+        <ul className={styles.navList}>
+          <li>
+            <NavLink
+              to="/admin/animals"
+              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
+            >
+              🐾 동물 등록
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/admin/users"
+              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
+            >
+              👥 사용자 관리
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/admin/adoptions"
+              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
+            >
+              📋 입양 신청 관리
+            </NavLink>
+          </li>
         </ul>
       </nav>
 
       <main className={styles.mainContent}>
-        {children}
+        {children || <Outlet />}
       </main>
     </div>
   );

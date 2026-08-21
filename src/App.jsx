@@ -20,6 +20,7 @@ import AdoptionReviewEdit from './pages/AdoptionReviewEdit';
 import KakaoCallback from './pages/KakaoCallback';
 
 import AdminRoute from './components/AdminRoute';
+import AdminLayout from './pages/admin/AdminLayout';
 import ToastContainer from './components/ToastContainer';
 import ThemeToggleFloating from './components/ThemeToggleFloating';
 import NotFound from './pages/NotFound';
@@ -63,24 +64,23 @@ const AppRoutes = () => {
         element={(user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN') ? <Navigate to="/admin/users" replace /> : <MyPage />}
       />
 
-      {/* 관리자 라우트 */}
-      <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
+      {/* 🔐 관리자 라우트 (AdminLayout 공통 사이드바 중첩 라우트) */}
       <Route
-        path="/admin/animals"
+        path="/admin"
         element={
           <AdminRoute>
-            <AdminAnimalsPage />
+            <AdminLayout />
           </AdminRoute>
         }
-      />
-      <Route
-        path="/admin/animals/register"
-        element={
-          <AdminRoute>
-            <AdminAnimalsPage />
-          </AdminRoute>
-        }
-      />
+      >
+        <Route index element={<Navigate to="/admin/users" replace />} />
+        <Route path="users" element={<AdminUsersPage />} />
+        <Route path="animals" element={<AdminAnimalsPage />} />
+        <Route path="animals/register" element={<AdminAnimalsPage />} />
+        <Route path="adoptions" element={<AdminAdoptionsPage />} />
+      </Route>
+
+      {/* 레거시 동물 상태 수정 라우트 */}
       <Route
         path="/animals/edit/:id"
         element={
@@ -89,22 +89,7 @@ const AppRoutes = () => {
           </AdminRoute>
         }
       />
-      <Route
-        path="/admin/users"
-        element={
-          <AdminRoute>
-            <AdminUsersPage />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin/adoptions"
-        element={
-          <AdminRoute>
-            <AdminAdoptionsPage />
-          </AdminRoute>
-        }
-      />
+
       {/* Catch-all 404 Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>

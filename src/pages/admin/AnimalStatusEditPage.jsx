@@ -4,12 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import axios from '../../api/axiosInstance';
 import styles from '../../styles/AnimalStatusEditPage.module.css';
-
-const STATUS_OPTIONS = [
-  { label: '대기중 (WAITING)', value: 'WAITING' },
-  { label: '임시보호중 (PROTECTED)', value: 'PROTECTED' },
-  { label: '입양완료 (ADOPTED)', value: 'ADOPTED' },
-];
+import Spinner from '../../components/Spinner';
+import { STATUS_OPTIONS } from '../../constants/animal';
 
 const AnimalStatusEditPage = () => {
   const { id } = useParams();
@@ -56,7 +52,7 @@ const AnimalStatusEditPage = () => {
     }
   };
 
-  if (loading) return <div className={styles.container}><p>불러오는 중...</p></div>;
+  if (loading) return <div className={styles.container} style={{display: 'flex', justifyContent: 'center', padding: '60px'}}><Spinner /></div>;
 
   return (
     <section className={styles.container}>
@@ -75,7 +71,7 @@ const AnimalStatusEditPage = () => {
         >
           <option value="" disabled>상태 선택</option>
           {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={option.key} value={option.key}>
               {option.label}
             </option>
           ))}

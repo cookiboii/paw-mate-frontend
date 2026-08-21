@@ -5,23 +5,7 @@ import { Navigate } from 'react-router-dom';
 import styles from '../../styles/AdminAnimalsPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import FloatingInput from '../../components/FloatingInput';
-
-const SPECIES_OPTIONS = [
-  { key: 'DOG', label: '강아지 (DOG)' },
-  { key: 'CAT', label: '고양이 (CAT)' },
-  { key: 'ETC', label: '기타 (ETC)' },
-];
-
-const STATUS_OPTIONS = [
-  { key: 'WAITING', label: '입양대기' },
-  { key: 'PROTECTED', label: '보호중' },
-  { key: 'ADOPTED', label: '입양완료' },
-];
-
-const GENDER_OPTIONS = [
-  { key: 'MALE', label: '수컷' },
-  { key: 'FEMALE', label: '암컷' },
-];
+import { SPECIES_OPTIONS, STATUS_OPTIONS, GENDER_OPTIONS } from '../../constants/animal';
 
 const AdminAnimalsPage = () => {
   const { isAuthenticated, user } = useAuth();
@@ -113,7 +97,7 @@ const AdminAnimalsPage = () => {
     }
 
     try {
-      await registerAnimal({ ...animal, age: ageNum }, token);
+      await registerAnimal({ ...animal, age: ageNum });
       showToast('동물이 성공적으로 등록되었습니다!', 'success');
       setAnimal({
         species: '',

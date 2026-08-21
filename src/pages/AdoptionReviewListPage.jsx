@@ -4,6 +4,7 @@ import axios from '../api/axiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
 import { useAuth } from '../context/AuthContext';
+import { formatDate } from '../utils/date';
 
 // 카테고리 접두사 파싱
 export const CATEGORIES = [
@@ -168,7 +169,7 @@ const AdoptionReviewListPage = () => {
                     <span className={styles.authorName}>✍️ {review.name || '익명'}</span>
                     {review.createdAt && (
                       <span className={styles.cardDate}>
-                        {new Date(review.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        {formatDate(review.createdAt)}
                       </span>
                     )}
                   </div>

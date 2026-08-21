@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "../styles/Register.module.css";
-import { registerUser } from "../api/user";
+import { registerUser } from "../api/auth";
 import axios from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";

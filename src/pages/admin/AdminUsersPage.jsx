@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import AdminLayout from '../admin/AdminLayout';
 import axiosInstance from '../../api/axiosInstance';
 import styles from '../../styles/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
@@ -68,8 +67,7 @@ const AdminUsersPage = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className={styles.container}>
+    <div className={styles.container}>
         <div className={styles.header}>
           <h1 className={styles.title}>👥 회원 관리</h1>
           <p className={styles.subtitle}>파우메이트에 가입된 모든 유저를 관리합니다.</p>
@@ -220,7 +218,6 @@ const AdminUsersPage = () => {
           </div>
         )}
       </div>
-    </AdminLayout>
   );
 };
 

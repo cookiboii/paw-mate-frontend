@@ -6,6 +6,7 @@ import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
 import Spinner from '../components/Spinner';
 import ConfirmModal from '../components/ConfirmModal';
+import { formatDate } from '../utils/date';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
 
 const AdoptionReviewDetail = () => {
@@ -106,7 +107,7 @@ const AdoptionReviewDetail = () => {
                 </span>
                 {review.createAt && (
                   <span className={styles.dateText}>
-                    {new Date(review.createAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {formatDate(review.createAt, { year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
                 )}
               </div>

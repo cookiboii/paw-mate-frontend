@@ -5,15 +5,9 @@ const API_BASE_URL = '/animals';
 /**
  * 🔐 관리자 전용 동물 등록 API
  * @param {Object} animalData - 동물 등록 폼 데이터
- * @param {string} token - JWT 토큰
  */
-export const registerAnimal = async (animalData, token) => {
-  const response = await axios.post(`${API_BASE_URL}/register`, animalData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json', 
-    },
-  });
+export const registerAnimal = async (animalData) => {
+  const response = await axios.post(`${API_BASE_URL}/register`, animalData);
   return response.data;
 };
 

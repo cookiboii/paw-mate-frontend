@@ -4,6 +4,7 @@ import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
 import { fetchAnimalList } from "../api/animal";
+import EmptyState from '../components/EmptyState';
 import useScrollReveal from "../hooks/useScrollReveal";
 
 import dog1 from "../assets/dog1.jpg";
@@ -152,9 +153,14 @@ const HomePage = () => {
               </div>
             ))
           ) : recentAnimals.length === 0 ? (
-            <div className={styles.animalEmptyState}>
-              <span>🐾</span>
-              <p>아직 등록된 동물이 없습니다.</p>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <EmptyState
+                icon="🐾"
+                title="아직 등록된 동물이 없습니다."
+                description="새로운 가족을 기다리는 아이들이 곧 등록될 예정입니다."
+                actionLabel="동물 목록 둘러보기"
+                actionPath="/animals"
+              />
             </div>
           ) : (
             recentAnimals.map(animal => (

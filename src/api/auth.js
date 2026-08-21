@@ -1,13 +1,50 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
+/**
+ * 📝 회원가입 API
+ * @param {Object} userData - { name, email, password }
+ */
+export const registerUser = async ({ name, email, password }) => {
+  return await axiosInstance.post('/adoptmate/register', {
+    name,
+    email,
+    password,
+    role: 'USER',
+  });
+};
 
+/**
+ * 🔑 로그인 API
+ * @param {Object} credentials - { email, password }
+ */
 export const loginUser = async ({ email, password }) => {
-  const response = await axios.post(`${API_BASE}/adoptmate/login`, {
+  return await axiosInstance.post('/adoptmate/login', {
     email,
     password,
   });
-
-  return response.data;
 };
 
+/**
+ * 👤 내 정보 조회 API
+ */
+export const fetchMyInfo = async () => {
+  const response = await axiosInstance.get('/adoptmate/myInfo');
+  return response.data.result || response.data;
+};
+
+/**
+ * 🔒 비밀번호 변경 API
+ */
+export const changePassword = async ({ currentPassword, newPassword }) => {
+  return await axiosInstance.post('/adoptmate/password', {
+    currentPassword,
+    newPassword,
+  });
+};
+
+/**
+ * 🚪 회원 탈퇴 API
+ */
+export const deleteAccount = async () => {
+  return await axiosInstance.delete('/adoptmate/delete');
+};

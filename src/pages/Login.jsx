@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "../styles/Login.module.css";
-import { loginUser } from "../api/user";
+import { loginUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import FloatingInput from "../components/FloatingInput";

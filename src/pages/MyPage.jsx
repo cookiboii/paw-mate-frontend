@@ -8,6 +8,7 @@ import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import Spinner from '../components/Spinner';
 import ConfirmModal from '../components/ConfirmModal';
+import { formatDate } from '../utils/date';
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -29,27 +30,23 @@ const MyPage = () => {
   useEffect(() => {
     if (!token) return;
 
-    axios.get(`/adoptmate/myInfo`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => {
-      const data = res.data.result || res.data || {};
-      const { name, email, role } = data;
-      setUserInfo({ name, email, role });
-    })
-    .catch(() => {
-      showToast('사용자 정보를 불러오지 못했습니다.', 'error');
-    });
+    axios.get(`/adoptmate/myInfo`)
+      .then(res => {
+        const data = res.data.result || res.data || {};
+        const { name, email, role } = data;
+        setUserInfo({ name, email, role });
+      })
+      .catch(() => {
+        showToast('사용자 정보를 불러오지 못했습니다.', 'error');
+      });
 
-    axios.get('/adoptions/myAdoption', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => {
-      setAdoptionList(res.data.result || []);
-    })
-    .catch(() => {
-      console.warn('입양 내역을 불러오지 못했습니다.');
-    });
+    axios.get('/adoptions/myAdoption')
+      .then(res => {
+        setAdoptionList(res.data.result || []);
+      })
+      .catch(() => {
+        console.warn('입양 내역을 불러오지 못했습니다.');
+      });
   }, [token, showToast]);
 
   const handleDeleteAccount = () => {
@@ -58,17 +55,15 @@ const MyPage = () => {
 
   const confirmDeleteAccount = () => {
     setIsDeleteModalOpen(false);
-    axios.delete('/adoptmate/delete', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(() => {
-      showToast('회원 탈퇴가 완료되었습니다.', 'info');
-      logout();
-      navigate('/');
-    })
-    .catch(() => {
-      showToast('회원 탈퇴에 실패했습니다.', 'error');
-    });
+    axios.delete('/adoptmate/delete')
+      .then(() => {
+        showToast('회원 탈퇴가 완료되었습니다.', 'info');
+        logout();
+        navigate('/');
+      })
+      .catch(() => {
+        showToast('회원 탈퇴에 실패했습니다.', 'error');
+      });
   };
 
   const handleChange = (e) => {
@@ -86,13 +81,11 @@ const MyPage = () => {
     axios.post('/adoptmate/password', {
       currentPassword: form.passwd,
       newPassword: form.new_passwd
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
     })
-    .then(() => {
-      showToast('비밀번호가 변경되었습니다. 다시 로그인 해주세요.', 'success');
-      logout();
-      navigate('/');
+      .then(() => {
+        showToast('비밀번호가 변경되었습니다. 다시 로그인 해주세요.', 'success');
+        logout();
+        navigate('/');
     })
     .catch(() => {
       showToast('비밀번호 변경에 실패했습니다.', 'error');
@@ -257,7 +250,7 @@ const MyPage = () => {
                            '⏳ 심사 대기중'}
                         </span>
                         <p className={styles.date}>
-                          신청일: {adoption.applyDate ? new Date(adoption.applyDate).toLocaleDateString() : '-'}
+                          신청일: {formatDate(adoption.applyDate)}
                         </p>
                       </div>
                     </li>

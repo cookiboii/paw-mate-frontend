@@ -6,13 +6,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
-
-// 상태 ENUM 정의
-const AnimalStatus = {
-  WAITING: 'WAITING',
-  PROTECTED: 'PROTECTED',
-  ADOPTED: 'ADOPTED',
-};
+import { AnimalStatus, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
 
 // Inline SVG Icons
 const PawIcon = () => (
@@ -116,23 +110,6 @@ const AnimalDetail = () => {
     toggleFavorite(animal);
   };
 
-  const getGenderText = (gender) => {
-    if (!gender) return "정보 없음";
-    const g = gender.toUpperCase();
-    if (g === "M" || g === "MALE") return "수컷";
-    if (g === "F" || g === "FEMALE") return "암컷";
-    return gender;
-  };
-
-  const getStatusLabel = (status) => {
-    const mapping = {
-      WAITING: "입양 대기",
-      PROTECTED: "임시 보호 중",
-      ADOPTED: "입양 완료",
-    };
-    return mapping[status] || status;
-  };
-
   const getStatusBadgeClass = (status) => {
     const mapping = {
       WAITING: styles.badgeWaiting,
@@ -226,7 +203,7 @@ const AnimalDetail = () => {
                   <div className={styles.cardMeta}>
                     <span className={styles.cardLabel}>종류</span>
                     <span className={styles.cardValue}>
-                      {animal.species === 'DOG' ? '강아지 (Dog)' : animal.species === 'CAT' ? '고양이 (Cat)' : animal.species === 'ETC' ? '기타 (ETC)' : animal.species}
+                      {getSpeciesLabel(animal.species)}
                     </span>
                   </div>
                 </div>
@@ -235,7 +212,7 @@ const AnimalDetail = () => {
                   <span className={styles.cardIcon}><GenderIcon /></span>
                   <div className={styles.cardMeta}>
                     <span className={styles.cardLabel}>성별</span>
-                    <span className={styles.cardValue}>{getGenderText(animal.gender)}</span>
+                    <span className={styles.cardValue}>{getGenderLabel(animal.gender)}</span>
                   </div>
                 </div>
 
