@@ -31,6 +31,15 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+const clearAuthData = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('role');
+  localStorage.removeItem('email');
+  localStorage.removeItem('name');
+  localStorage.removeItem('provider');
+};
+
 axiosInstance.interceptors.response.use(
   response => response,
   async error => {
@@ -70,8 +79,11 @@ axiosInstance.interceptors.response.use(
         }
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        clearAuthData();
+        // 📢 전역 AuthContext에 세션 만료 이벤트 전파
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

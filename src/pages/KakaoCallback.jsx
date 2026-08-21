@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import axios from '../api/axiosInstance';
 import Spinner from '../components/Spinner';
 
@@ -8,6 +9,7 @@ const KakaoCallback = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useToast();
   const [statusMsg, setStatusMsg] = useState('카카오 로그인 처리 중입니다...');
 
   useEffect(() => {
@@ -21,13 +23,14 @@ const KakaoCallback = () => {
 
       if (error) {
         setStatusMsg('카카오 로그인 인증이 취소되었거나 오류가 발생했습니다.');
+        showToast('카카오 로그인 인증이 취소되었습니다.', 'error');
         setTimeout(() => {
           if (window.opener) {
             window.close();
           } else {
             navigate('/login', { replace: true });
           }
-        }, 2000);
+        }, 1500);
         return;
       }
 
@@ -45,7 +48,7 @@ const KakaoCallback = () => {
         }
 
         login(token, userInfo);
-        alert('카카오 로그인 성공!');
+        showToast('카카오 로그인 성공! 🎉', 'success');
         navigate('/', { replace: true });
         return;
       }
@@ -62,7 +65,6 @@ const KakaoCallback = () => {
               resData = JSON.parse(resData);
             } catch {
               // HTML string response returned from backend
-              // The backend HTML script may execute window.opener.postMessage itself
               return;
             }
           }
@@ -102,25 +104,27 @@ const KakaoCallback = () => {
             }
 
             login(jwtToken, userInfo);
-            alert('카카오 로그인 성공!');
+            showToast('카카오 로그인 성공! 🎉', 'success');
             navigate('/', { replace: true });
           } else {
             setStatusMsg('로그인 토큰을 받지 못했습니다.');
-            setTimeout(() => navigate('/login', { replace: true }), 2000);
+            showToast('로그인 토큰을 발급받지 못했습니다.', 'error');
+            setTimeout(() => navigate('/login', { replace: true }), 1500);
           }
         } catch (err) {
           console.error('Kakao auth error:', err);
           setStatusMsg('카카오 로그인 연동 실패. 다시 시도해 주세요.');
-          setTimeout(() => navigate('/login', { replace: true }), 2000);
+          showToast('카카오 로그인 처리에 실패했습니다.', 'error');
+          setTimeout(() => navigate('/login', { replace: true }), 1500);
         }
       } else {
         setStatusMsg('인증 코드가 없습니다.');
-        setTimeout(() => navigate('/login', { replace: true }), 2000);
+        setTimeout(() => navigate('/login', { replace: true }), 1500);
       }
     };
 
     processKakaoAuth();
-  }, [searchParams, login, navigate]);
+  }, [searchParams, login, navigate, showToast]);
 
   return (
     <div style={{
@@ -134,8 +138,8 @@ const KakaoCallback = () => {
       padding: '2rem'
     }}>
       <Spinner />
-      <h3 style={{ fontSize: '1.25rem', color: '#374151', margin: 0 }}>{statusMsg}</h3>
-      <p style={{ fontSize: '0.9rem', color: '#6B7280', margin: 0 }}>잠시만 기다려주세요.</p>
+      <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', margin: 0 }}>{statusMsg}</h3>
+      <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0 }}>잠시만 기다려주세요.</p>
     </div>
   );
 };

@@ -3,9 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from '../api/axiosInstance';
+import { fetchAnimalById } from '../api/animal';
 import styles from '../styles/AdoptionForm.module.css';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
 const AdoptionForm = () => {
   const { animalId } = useParams();
@@ -25,11 +24,8 @@ const AdoptionForm = () => {
     // 동물 정보 조회
     const fetchAnimal = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/animals/${animalId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setAnimal(data.result);
-        }
+        const data = await fetchAnimalById(animalId);
+        setAnimal(data);
       } catch (err) {
         console.warn('동물 정보 로드 실패:', err);
       }
@@ -44,7 +40,12 @@ const AdoptionForm = () => {
           <span>🔒</span>
           <h3>로그인이 필요한 서비스입니다</h3>
           <p>입양 신청서를 작성하시려면 먼저 로그인해 주세요.</p>
-          <Link to="/login" className="btn-primary" style={{marginTop: '16px', display: 'inline-block'}}>
+          <Link
+            to="/login"
+            state={{ from: `/adopt/${animalId}` }}
+            className="btn-primary"
+            style={{marginTop: '16px', display: 'inline-block'}}
+          >
             로그인하러 가기
           </Link>
         </div>
