@@ -9,8 +9,6 @@
 .inputWrapper {
   position: relative;
   width: 100%;
-  display: flex;
-  align-items: stretch;
 }
 
 /* ==================
@@ -18,11 +16,12 @@
    ================== */
 .input {
   width: 100%;
-  padding: 22px 16px 8px 16px;
+  height: 56px;
+  padding: 18px 16px 6px 16px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   font-size: 1rem;
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
   background: var(--bg-color);
   color: var(--text-primary);
   outline: none;
@@ -37,15 +36,14 @@
   background: var(--surface-color);
 }
 
-/* 아이콘 있는 경우 왼쪽 패딩 추가 */
 .input.hasIcon {
   padding-left: 46px;
 }
 
-/* disabled */
 .input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: var(--bg-color);
 }
 
 /* ==================
@@ -54,8 +52,8 @@
 .inputIcon {
   position: absolute;
   left: 14px;
-  top: 0;
-  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,22 +77,22 @@
   transform: translateY(-50%);
   color: var(--text-muted);
   font-size: 1rem;
-  transition: all 0.2s ease-out;
+  line-height: 1;
+  transition: top 0.2s ease, transform 0.2s ease, font-size 0.2s ease, color 0.2s ease;
   pointer-events: none;
-  transform-origin: left center;
-  white-space: nowrap;
   z-index: 1;
+  white-space: nowrap;
 }
 
-/* 아이콘이 있으면 라벨도 오른쪽으로 */
 .label.labelWithIcon {
   left: 46px;
 }
 
-/* Float up — scale만, translate 없음 */
+/* 활성(플로팅) 상태 */
 .label.floating {
   top: 10px;
-  transform: translateY(0) scale(0.78);
+  transform: translateY(0);
+  font-size: 0.72rem;
   color: var(--primary-color);
   font-weight: 600;
 }
