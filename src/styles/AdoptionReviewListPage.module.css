@@ -1,25 +1,105 @@
+/* ========================
+   AdoptionReviewListPage
+   ======================== */
+
 .container {
   max-width: 1200px;
-  margin: 60px auto 100px;
-  padding: 0 24px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
   animation: slideUpFade var(--transition-normal);
 }
 
-.container h2 {
+/* 페이지 헤더 */
+.pageHeader {
   text-align: center;
-  font-size: 2.2rem;
+  padding: 60px 0 36px;
+}
+
+.pageHeader h2 {
+  font-size: 2.4rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 48px;
+  margin-bottom: 10px;
   letter-spacing: -0.5px;
 }
 
+.pageHeader p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+/* 카테고리 탭바 */
+.tabBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 36px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 1.5px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.tabBtn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.activeTab {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.tabEmoji {
+  font-size: 1rem;
+}
+
+/* 글쓰기 버튼 (탭바 오른쪽) */
+.writeBtn {
+  margin-left: auto;
+  padding: 10px 24px;
+  border-radius: 50px;
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  box-shadow: 0 4px 12px var(--primary-light);
+}
+
+.writeBtn:hover {
+  background: var(--primary-hover, #4a9eff);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--primary-light);
+}
+
+/* 그리드 */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 32px;
+  gap: 28px;
 }
 
+/* 카드 */
 .card {
   display: flex;
   flex-direction: column;
@@ -30,53 +110,127 @@
   text-decoration: none;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-normal);
-  height: 100%;
 }
 
 .card:hover {
   box-shadow: var(--shadow-md);
   border-color: var(--primary-color);
+  transform: translateY(-3px);
 }
 
+/* 이미지 영역 */
 .imageWrapper {
   width: 100%;
-  height: 240px;
+  height: 220px;
   overflow: hidden;
   background-color: var(--bg-color);
+  flex-shrink: 0;
 }
 
 .thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-normal);
 }
 
+.card:hover .thumbnail {
+  transform: scale(1.04);
+}
+
+/* 이미지 없을 때 플레이스홀더 */
+.noImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-color) 100%);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.noImagePlaceholder span {
+  font-size: 3rem;
+}
+
+.reportPlaceholder {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.08) 0%, var(--bg-color) 100%);
+  color: var(--danger-color, #e74c3c);
+}
+
+/* 카드 콘텐츠 */
 .cardContent {
-  padding: 24px;
+  padding: 20px 24px 24px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  gap: 8px;
+}
+
+/* 카테고리 뱃지 */
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.badgeReview {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.badgeReport {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--danger-color, #e74c3c);
 }
 
 .cardContent h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 12px;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin: 0;
 }
 
 .cardContent p {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   line-height: 1.6;
   flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
 }
 
+.cardMeta {
+  display: flex;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.authorName {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* 빈 상태 */
 .emptyState {
   grid-column: 1 / -1;
   text-align: center;
@@ -95,11 +249,44 @@
 .emptyState p {
   color: var(--text-muted);
   font-size: 1.1rem;
+  margin-bottom: 24px;
+}
+
+.emptyWriteBtn {
+  padding: 12px 28px;
+  border-radius: 50px;
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.emptyWriteBtn:hover {
+  background: var(--primary-hover, #4a9eff);
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
+  .pageHeader {
+    padding: 40px 0 28px;
+  }
+
+  .pageHeader h2 {
+    font-size: 1.8rem;
+  }
+
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
+    gap: 20px;
+  }
+
+  .writeBtn {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
   }
 }

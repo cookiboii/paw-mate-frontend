@@ -1,3 +1,7 @@
+/* ===========================
+   AdoptionReview (작성/수정)
+   =========================== */
+
 .pageWrapper {
   padding: 60px 24px;
   background-color: var(--bg-color);
@@ -18,15 +22,52 @@
   overflow: hidden;
 }
 
+/* 카테고리 탭 */
+.categoryTabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.categoryTab {
+  flex: 1;
+  padding: 18px 16px;
+  border: none;
+  background: var(--bg-color);
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  border-bottom: 3px solid transparent;
+}
+
+.categoryTab:hover {
+  background: var(--surface-color);
+  color: var(--primary-color);
+}
+
+.categoryTabActive {
+  background: var(--surface-color);
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+/* 카드 헤더 */
 .cardHeader {
-  padding: 40px;
+  padding: 32px 40px;
   text-align: center;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
+  transition: background-color var(--transition-fast);
+}
+
+.cardHeaderReport {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.06) 0%, var(--bg-color) 100%);
 }
 
 .cardHeader h2 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 8px;
@@ -35,15 +76,16 @@
 
 .cardHeader p {
   color: var(--text-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
+/* 폼 */
 .form {
   padding: 40px;
 }
 
 .fieldGroup {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .label {
@@ -51,7 +93,42 @@
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 12px;
-  font-size: 1.05rem;
+  font-size: 1rem;
+}
+
+/* 제보 가이드 배너 */
+.reportGuide {
+  background: rgba(231, 76, 60, 0.07);
+  border: 1px solid rgba(231, 76, 60, 0.25);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  font-size: 0.93rem;
+}
+
+.reportGuide strong {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--danger-color, #e74c3c);
+  font-size: 1rem;
+}
+
+.reportGuide ul {
+  margin: 0 0 12px;
+  padding-left: 8px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-primary);
+}
+
+.reportEmergency {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(231, 76, 60, 0.2);
+  color: var(--text-muted);
+  font-size: 0.88rem;
 }
 
 /* Textarea */
@@ -67,6 +144,7 @@
   line-height: 1.6;
   resize: vertical;
   transition: all var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .textarea:focus {
@@ -103,20 +181,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 24px;
+  padding: 52px 24px;
   text-align: center;
   color: var(--text-muted);
 }
 
 .uploadIcon {
-  font-size: 3rem;
-  margin-bottom: 16px;
+  font-size: 2.8rem;
+  margin-bottom: 14px;
   opacity: 0.8;
 }
 
 .uploadPlaceholder p {
   line-height: 1.5;
   font-size: 1rem;
+  margin: 0;
 }
 
 .uploadPlaceholder strong {
@@ -126,7 +205,7 @@
 .previewContainer {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  padding-top: 56.25%;
   background-color: #000;
 }
 
@@ -161,17 +240,47 @@
   background-color: var(--danger-color);
 }
 
+/* 제출 버튼 */
 .submitBtn {
   width: 100%;
   margin-top: 16px;
+  padding: 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.submitBtnReport {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(231, 76, 60, 0.3);
+}
+
+.submitBtnReport:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.4);
+}
+
+.submitBtnReport:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 @media (max-width: 576px) {
   .cardHeader {
-    padding: 32px 24px;
+    padding: 28px 24px;
   }
-  
+
   .form {
-    padding: 32px 24px;
+    padding: 28px 20px;
+  }
+
+  .categoryTab {
+    font-size: 0.88rem;
+    padding: 14px 12px;
   }
 }

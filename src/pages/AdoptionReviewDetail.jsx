@@ -5,6 +5,7 @@ import styles from '../styles/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
 import Spinner from '../components/Spinner';
+import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
 
 const AdoptionReviewDetail = () => {
   const { id } = useParams();
@@ -50,13 +51,10 @@ const AdoptionReviewDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    // Custom confirm via toast, but since toast is just notification,
-    // we use a nice standard confirm for now (or a custom modal if we had one).
-    // Let's stick to standard confirm but use toast for the result.
-    if (window.confirm('정말 이 후기를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.')) {
+    if (window.confirm('정말 이 글을 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.')) {
       try {
         await axios.delete(`/post/${id}`);
-        showToast('후기가 성공적으로 삭제되었습니다.', 'success');
+        showToast('게시글이 성공적으로 삭제되었습니다.', 'success');
         navigate('/reviews');
       } catch (err) {
         showToast('삭제에 실패했습니다. 다시 시도해주세요.', 'error');
@@ -70,24 +68,41 @@ const AdoptionReviewDetail = () => {
   const isAuthor = currentUser.email === review.email;
   const isAdmin = currentUser.role === 'ADMIN';
 
+  const cat = getCategoryFromTitle(review.title);
+  const cleanTitle = getCleanTitle(review.title);
+  const catInfo = CATEGORIES.find(c => c.key === cat) || CATEGORIES[1];
+  const isReport = cat === 'REPORT';
+
   return (
     <div className={styles.pageWrapper}>
       <article className={styles.article}>
         {/* Hero Section */}
-        <div className={styles.heroSection}>
+        <div className={`${styles.heroSection} ${!review.img ? (isReport ? styles.heroNoImgReport : styles.heroNoImg) : ''}`}>
           {review.img ? (
-            <img src={review.img} alt={review.title} className={styles.heroImage} />
+            <img src={review.img} alt={cleanTitle} className={styles.heroImage} />
           ) : (
-            <div className={styles.noImage}>이미지가 없습니다</div>
+            <div className={`${styles.noImage} ${isReport ? styles.noImageReport : ''}`}>
+              <span style={{ fontSize: '4rem' }}>{catInfo.emoji}</span>
+              <p>{catInfo.label}</p>
+            </div>
           )}
           <div className={styles.heroOverlay}>
             <div className={styles.heroContent}>
-              <h1 className={styles.title}>{review.title}</h1>
+              {/* 카테고리 뱃지 */}
+              <span className={`${styles.heroCategoryBadge} ${isReport ? styles.heroBadgeReport : styles.heroBadgeReview}`}>
+                {catInfo.emoji} {catInfo.label}
+              </span>
+              <h1 className={styles.title}>{cleanTitle}</h1>
               <div className={styles.meta}>
                 <span className={styles.author}>
                   <div className={styles.avatar}>{review.name?.charAt(0) || 'U'}</div>
                   {review.name}
                 </span>
+                {review.createAt && (
+                  <span className={styles.dateText}>
+                    {new Date(review.createAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -98,27 +113,34 @@ const AdoptionReviewDetail = () => {
           {(isAuthor || isAdmin) && (
             <div className={styles.actions}>
               {isAuthor && (
-                <button 
-                  className={styles.editBtn} 
-                  onClick={() => navigate(`/reviews/${id}/edit`)}
-                >
+                <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)}>
                   수정
                 </button>
               )}
-              <button 
-                className={styles.deleteBtn} 
-                onClick={handleDelete}
-              >
+              <button className={styles.deleteBtn} onClick={handleDelete}>
                 삭제
               </button>
             </div>
           )}
-          
+
+          {/* 유기동물 제보 긴급 안내 */}
+          {isReport && (
+            <div className={styles.reportBanner}>
+              <strong>🚨 이 글은 유기동물 제보 게시글입니다</strong>
+              <p>도움이 필요하신 분은 <strong>동물보호 상담전화 1577-0954</strong>로 연락해 주세요.</p>
+            </div>
+          )}
+
           <div className={styles.bodyText}>
             {review.content.split('\n').map((line, index) => (
               <p key={index}>{line}</p>
             ))}
           </div>
+
+          {/* 목록으로 버튼 */}
+          <button className={styles.backBtn} onClick={() => navigate('/reviews')}>
+            ← 목록으로
+          </button>
         </div>
       </article>
 

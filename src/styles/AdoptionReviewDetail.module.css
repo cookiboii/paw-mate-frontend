@@ -41,12 +41,24 @@
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--primary-light);
+  gap: 12px;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-color) 100%);
   color: var(--primary-color);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 700;
+}
+
+.noImageReport {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, var(--bg-color) 100%);
+  color: var(--danger-color, #e74c3c);
+}
+
+.heroNoImg .heroOverlay,
+.heroNoImgReport .heroOverlay {
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
 }
 
 .heroOverlay {
@@ -65,11 +77,35 @@
   width: 100%;
 }
 
+.heroCategoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.heroBadgeReview {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.heroBadgeReport {
+  background: rgba(231, 76, 60, 0.75);
+  color: white;
+  border: 1px solid rgba(231, 76, 60, 0.5);
+}
+
 .title {
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-weight: 800;
   color: white;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   line-height: 1.2;
   letter-spacing: -0.5px;
 }
@@ -78,6 +114,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .author {
@@ -85,7 +123,7 @@
   align-items: center;
   gap: 12px;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -99,6 +137,12 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dateText {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.88rem;
 }
 
 /* Content Section */
@@ -147,6 +191,28 @@
   border-color: var(--danger-color);
 }
 
+/* 제보 안내 배너 */
+.reportBanner {
+  background: rgba(231, 76, 60, 0.07);
+  border: 1px solid rgba(231, 76, 60, 0.25);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  font-size: 0.9rem;
+}
+
+.reportBanner strong {
+  display: block;
+  color: var(--danger-color, #e74c3c);
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.reportBanner p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
 .bodyText {
   font-size: 1.15rem;
   line-height: 1.8;
@@ -157,6 +223,30 @@
 
 .bodyText p {
   margin-bottom: 24px;
+}
+
+/* 목록으로 버튼 */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.backBtn:hover {
+  background: var(--surface-color);
+  color: var(--text-primary);
+  border-color: var(--text-light);
 }
 
 /* Comment Wrapper */
