@@ -296,7 +296,7 @@ const Register = () => {
 
         {/* 비밀번호 입력 */}
         <div className={styles.fieldGroup}>
-          <FloatingInput
+        <FloatingInput
             label="비밀번호"
             type={showPassword ? "text" : "password"}
             name="password"
@@ -304,6 +304,7 @@ const Register = () => {
             onChange={handleChange}
             required
             icon={<LockIcon />}
+            style={{ paddingRight: '48px' }}
           >
             <button
               type="button"
@@ -342,6 +343,7 @@ const Register = () => {
             onChange={handleChange}
             required
             icon={<LockIcon />}
+            style={{ paddingRight: '48px' }}
           >
             <button
               type="button"

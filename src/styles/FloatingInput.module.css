@@ -9,18 +9,26 @@
 .inputWrapper {
   position: relative;
   width: 100%;
+  display: flex;
+  align-items: stretch;
 }
 
+/* ==================
+   Input
+   ================== */
 .input {
   width: 100%;
-  padding: 24px 16px 8px; /* Extra padding on top for floating label */
+  padding: 22px 16px 8px 16px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  font-size: 1.05rem;
+  font-size: 1rem;
   transition: all var(--transition-fast);
   background: var(--bg-color);
   color: var(--text-primary);
   outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.4;
 }
 
 .input:focus {
@@ -29,61 +37,75 @@
   background: var(--surface-color);
 }
 
+/* 아이콘 있는 경우 왼쪽 패딩 추가 */
 .input.hasIcon {
-  padding-left: 48px;
+  padding-left: 46px;
 }
 
+/* disabled */
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==================
+   Icon (좌측)
+   ================== */
 .inputIcon {
   position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
+  left: 14px;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-muted);
   pointer-events: none;
   z-index: 2;
   transition: color var(--transition-fast);
 }
 
-.input:focus ~ .inputIcon,
 .inputGroup:focus-within .inputIcon {
   color: var(--primary-color);
 }
 
+/* ==================
+   Floating Label
+   ================== */
 .label {
   position: absolute;
   left: 16px;
-  top: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
   transition: all 0.2s ease-out;
   pointer-events: none;
-  transform-origin: left top;
+  transform-origin: left center;
+  white-space: nowrap;
+  z-index: 1;
 }
 
+/* 아이콘이 있으면 라벨도 오른쪽으로 */
 .label.labelWithIcon {
-  left: 48px;
+  left: 46px;
 }
 
-/* Float up state */
+/* Float up — scale만, translate 없음 */
 .label.floating {
-  transform: translateY(-8px) scale(0.75);
+  top: 10px;
+  transform: translateY(0) scale(0.78);
   color: var(--primary-color);
   font-weight: 600;
 }
 
-.label.labelWithIcon.floating {
-  transform: translateY(-8px) translateX(-32px) scale(0.75);
-}
-
+/* 에러 상태 */
 .hasError .input {
   border-color: var(--danger-color);
 }
 
 .hasError .input:focus {
-  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15); /* light danger color */
+  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15);
 }
 
 .hasError .label.floating {
