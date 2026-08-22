@@ -23,7 +23,7 @@
   padding: 40px 36px 32px;
   width: 100%;
   max-width: 400px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), var(--surface-highlight);
   border: 1px solid var(--border-color);
   text-align: center;
   animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);

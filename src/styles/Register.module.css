@@ -4,8 +4,8 @@
   padding: 48px 40px;
   background-color: var(--surface-color);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-lg), var(--surface-highlight);
+  border: 1px solid var(--border-color);
   animation: slideUpFade var(--transition-normal);
 }
 
@@ -229,7 +229,7 @@
 
 .submitButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(231, 111, 81, 0.3);
+  box-shadow: 0 12px 24px rgba(101, 121, 99, 0.35);
 }
 
 .submitButton:disabled {

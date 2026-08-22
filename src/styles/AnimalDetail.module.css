@@ -73,7 +73,7 @@
 
 .favActive {
   background: #ffffff;
-  color: #e74c3c;
+  color: var(--danger-color);
 }
 
 /* 비로그인 잠금 상태 */
@@ -120,6 +120,7 @@
   align-items: center;
   gap: 16px;
   border: 1px solid var(--border-color);
+  box-shadow: var(--surface-highlight);
 }
 
 .cardIcon {
@@ -162,18 +163,21 @@
 }
 
 .badgeWaiting {
-  background-color: rgba(243, 156, 18, 0.15);
-  color: #d35400;
+  background-color: rgba(242, 204, 143, 0.2);
+  color: var(--warning-color);
+  border: 1px solid rgba(242, 204, 143, 0.35);
 }
 
 .badgeProtected {
-  background-color: rgba(46, 204, 113, 0.15);
-  color: #27ae60;
+  background-color: rgba(129, 178, 154, 0.2);
+  color: var(--success-color);
+  border: 1px solid rgba(129, 178, 154, 0.35);
 }
 
 .badgeAdopted {
-  background-color: rgba(149, 165, 166, 0.15);
-  color: #7f8c8d;
+  background-color: rgba(148, 153, 148, 0.2);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
 }
 
 .statusBanner {
@@ -188,21 +192,21 @@
 }
 
 .bannerProtected {
-  background-color: rgba(46, 204, 113, 0.1);
-  color: #27ae60;
-  border: 1px solid rgba(46, 204, 113, 0.2);
+  background-color: rgba(129, 178, 154, 0.12);
+  color: var(--success-color);
+  border: 1px solid rgba(129, 178, 154, 0.25);
 }
 
 .bannerWaiting {
-  background-color: rgba(243, 156, 18, 0.1);
-  color: #d35400;
-  border: 1px solid rgba(243, 156, 18, 0.2);
+  background-color: rgba(242, 204, 143, 0.15);
+  color: var(--warning-color);
+  border: 1px solid rgba(242, 204, 143, 0.3);
 }
 
 .bannerAdopted {
-  background-color: rgba(149, 165, 166, 0.1);
-  color: #7f8c8d;
-  border: 1px solid rgba(149, 165, 166, 0.2);
+  background-color: rgba(148, 153, 148, 0.12);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
 }
 
 .bannerIcon {
@@ -241,7 +245,7 @@
 .deleteButton {
   background: transparent;
   color: var(--danger-color);
-  border-color: rgba(231, 76, 60, 0.3);
+  border-color: rgba(224, 122, 95, 0.3);
 }
 
 .deleteButton:hover {

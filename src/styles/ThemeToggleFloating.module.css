@@ -7,7 +7,7 @@
   border-radius: 50%;
   background: var(--surface-color);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-lg), 0 0 15px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg), var(--surface-highlight);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,7 +22,7 @@
   transform: scale(1.08) rotate(15deg);
   background: var(--bg-color);
   border-color: var(--primary-color);
-  box-shadow: 0 8px 24px rgba(231, 111, 81, 0.25);
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .icon {

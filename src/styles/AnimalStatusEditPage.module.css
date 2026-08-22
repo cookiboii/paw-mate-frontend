@@ -4,8 +4,8 @@
   padding: 48px 40px;
   background-color: var(--surface-color);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: var(--shadow-lg), var(--surface-highlight);
+  border: 1px solid var(--border-color);
   animation: slideUpFade var(--transition-normal);
 }
 
@@ -40,12 +40,12 @@
 .select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px var(--primary-light);
+  box-shadow: var(--input-focus-ring);
   background-color: var(--surface-color);
 }
 
 .button {
-  background: linear-gradient(135deg, var(--primary-color), #f4a261);
+  background: linear-gradient(135deg, var(--primary-color), #768a74);
   color: white;
   font-weight: 700;
   padding: 16px;
@@ -60,5 +60,5 @@
 
 .button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(231, 111, 81, 0.3);
+  box-shadow: 0 12px 24px rgba(101, 121, 99, 0.35);
 }

@@ -87,9 +87,9 @@
 }
 
 .writeBtn:hover {
-  background: var(--primary-hover, #4a9eff);
+  background: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px var(--primary-light);
+  box-shadow: var(--shadow-glow-primary);
 }
 
 /* 그리드 */
@@ -108,20 +108,20 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
   text-decoration: none;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--surface-highlight);
   transition: all var(--transition-normal);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg), var(--surface-highlight);
   border-color: var(--primary-color);
-  transform: translateY(-3px);
+  transform: translateY(-5px);
 }
 
 /* 이미지 영역 */
 .imageWrapper {
   width: 100%;
-  height: 220px;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background-color: var(--bg-color);
   flex-shrink: 0;
@@ -158,8 +158,8 @@
 }
 
 .reportPlaceholder {
-  background: linear-gradient(135deg, rgba(231, 76, 60, 0.08) 0%, var(--bg-color) 100%);
-  color: var(--danger-color, #e74c3c);
+  background: linear-gradient(135deg, rgba(224, 122, 95, 0.08) 0%, var(--bg-color) 100%);
+  color: var(--danger-color);
 }
 
 /* 카드 콘텐츠 */
@@ -189,8 +189,8 @@
 }
 
 .badgeReport {
-  background: rgba(231, 76, 60, 0.1);
-  color: var(--danger-color, #e74c3c);
+  background: rgba(224, 122, 95, 0.12);
+  color: var(--danger-color);
 }
 
 .cardContent h3 {
@@ -274,8 +274,9 @@
 }
 
 .emptyWriteBtn:hover {
-  background: var(--primary-hover, #4a9eff);
+  background: var(--primary-hover);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-glow-primary);
 }
 
 @media (max-width: 768px) {
@@ -284,7 +285,25 @@
   }
 
   .pageHeader h2 {
-    font-size: 1.8rem;
+    font-size: clamp(1.6rem, 4vw, 2rem);
+  }
+
+  .tabBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabBar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabBtn {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: 0.9rem;
   }
 
   .grid {

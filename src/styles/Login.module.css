@@ -4,8 +4,8 @@
   padding: 48px 40px;
   background: var(--surface-color);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: var(--shadow-lg), var(--surface-highlight);
+  border: 1px solid var(--border-color);
   animation: slideUpFade var(--transition-normal);
 }
 
@@ -37,7 +37,7 @@
 .input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px var(--primary-light);
+  box-shadow: var(--input-focus-ring);
   background: var(--surface-color);
 }
 

@@ -239,13 +239,13 @@
 }
 
 .badgeAdmin {
-  background-color: rgba(231, 76, 60, 0.1);
-  color: #e74c3c;
+  background-color: rgba(224, 122, 95, 0.15);
+  color: var(--danger-color);
 }
 
 .badgeUser {
-  background-color: rgba(52, 152, 219, 0.1);
-  color: #3498db;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
 }
 
 /* Action Buttons */
@@ -273,9 +273,9 @@
 }
 
 .dangerBtn:hover {
-  background-color: rgba(231, 76, 60, 0.1);
-  color: #e74c3c;
-  border-color: #e74c3c;
+  background-color: rgba(224, 122, 95, 0.15);
+  color: var(--danger-color);
+  border-color: var(--danger-color);
 }
 
 .emptyRow {

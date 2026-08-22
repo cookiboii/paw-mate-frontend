@@ -63,7 +63,7 @@
 }
 
 .cardHeaderReport {
-  background: linear-gradient(135deg, rgba(231, 76, 60, 0.06) 0%, var(--bg-color) 100%);
+  background: linear-gradient(135deg, rgba(224, 122, 95, 0.08) 0%, var(--bg-color) 100%);
 }
 
 .cardHeader h2 {
@@ -98,8 +98,8 @@
 
 /* 제보 가이드 배너 */
 .reportGuide {
-  background: rgba(231, 76, 60, 0.07);
-  border: 1px solid rgba(231, 76, 60, 0.25);
+  background: rgba(224, 122, 95, 0.08);
+  border: 1px solid rgba(224, 122, 95, 0.25);
   border-radius: var(--radius-md);
   padding: 20px 24px;
   margin-bottom: 28px;
@@ -109,7 +109,7 @@
 .reportGuide strong {
   display: block;
   margin-bottom: 12px;
-  color: var(--danger-color, #e74c3c);
+  color: var(--danger-color);
   font-size: 1rem;
 }
 
@@ -126,7 +126,7 @@
 .reportEmergency {
   margin: 0;
   padding-top: 12px;
-  border-top: 1px solid rgba(231, 76, 60, 0.2);
+  border-top: 1px solid rgba(224, 122, 95, 0.2);
   color: var(--text-muted);
   font-size: 0.88rem;
 }
@@ -255,14 +255,14 @@
 }
 
 .submitBtnReport {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  background: linear-gradient(135deg, var(--danger-color) 0%, #c85a3e 100%);
   color: white;
-  box-shadow: 0 4px 16px rgba(231, 76, 60, 0.3);
+  box-shadow: 0 4px 16px rgba(224, 122, 95, 0.35);
 }
 
 .submitBtnReport:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.4);
+  box-shadow: 0 6px 24px rgba(224, 122, 95, 0.45);
 }
 
 .submitBtnReport:disabled {

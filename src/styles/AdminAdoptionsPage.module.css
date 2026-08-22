@@ -136,18 +136,21 @@
 }
 
 .badgePending {
-  background: rgba(243, 156, 18, 0.15);
-  color: #d35400;
+  background: rgba(242, 204, 143, 0.2);
+  color: var(--warning-color);
+  border: 1px solid rgba(242, 204, 143, 0.3);
 }
 
 .badgeApproved {
-  background: rgba(46, 204, 113, 0.15);
-  color: #27ae60;
+  background: rgba(129, 178, 154, 0.2);
+  color: var(--success-color);
+  border: 1px solid rgba(129, 178, 154, 0.3);
 }
 
 .badgeRejected {
-  background: rgba(231, 76, 60, 0.15);
-  color: #c0392b;
+  background: rgba(224, 122, 95, 0.2);
+  color: var(--danger-color);
+  border: 1px solid rgba(224, 122, 95, 0.3);
 }
 
 /* Actions */
@@ -193,21 +196,21 @@
 }
 
 .acceptBtn {
-  background-color: #27ae60;
+  background-color: var(--success-color);
   color: white;
 }
 
 .acceptBtn:hover {
-  background-color: #219653;
+  filter: brightness(1.08);
 }
 
 .rejectBtn {
-  background-color: #e74c3c;
+  background-color: var(--danger-color);
   color: white;
 }
 
 .rejectBtn:hover {
-  background-color: #c0392b;
+  filter: brightness(1.08);
 }
 
 /* Modal */
