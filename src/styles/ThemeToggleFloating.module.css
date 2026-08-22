@@ -14,7 +14,7 @@
   font-size: 1.4rem;
   cursor: pointer;
   z-index: 999;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
   backdrop-filter: blur(8px);
 }
 

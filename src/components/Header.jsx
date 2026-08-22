@@ -29,6 +29,17 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // 화면 크기 변경 시 (데스크톱 복귀 시) 모바일 메뉴 자동 닫기
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 868) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // 모바일 메뉴 열렸을 때 배경 스크롤 방지
   useEffect(() => {
     if (isMobileMenuOpen) {

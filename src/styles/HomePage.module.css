@@ -152,9 +152,9 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-color);
   backdrop-filter: blur(8px);
-  border: none;
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-size: 1.8rem;
   line-height: 1;
@@ -168,11 +168,14 @@
 }
 
 .slider:hover .sliderArrow {
-  opacity: 1;
+  opacity: 0.9;
 }
 
 .sliderArrow:hover {
-  background: #ffffff;
+  opacity: 1 !important;
+  background: var(--surface-color);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
   transform: translateY(-50%) scale(1.1);
   box-shadow: var(--shadow-lg);
 }
@@ -239,7 +242,19 @@
 
 .sectionHeader {
   text-align: center;
-  margin-bottom: 80px;
+  margin-bottom: 60px;
+}
+
+.sectionBadge {
+  display: inline-block;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
 }
 
 .sectionHeader h2 {
@@ -649,11 +664,14 @@
   box-shadow: var(--shadow-md);
   position: relative;
   transition: all var(--transition-normal);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
 }
 
 .testimonialCard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
   box-shadow: var(--shadow-lg);
+  border-color: var(--primary-color);
 }
 
 .quoteIcon {
@@ -672,7 +690,7 @@
 }
 
 .testimonialText {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   line-height: 1.6;
   color: var(--text-primary);
   margin-bottom: 24px;
@@ -696,6 +714,16 @@
   color: var(--secondary-color);
   font-weight: 700;
   font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.reviewerAvatarImg {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--primary-light);
 }
 
 .reviewerInfo h5 {
@@ -707,6 +735,11 @@
 .reviewerInfo span {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.testimonialAction {
+  margin-top: 48px;
+  text-align: center;
 }
 
 @media (max-width: 992px) {

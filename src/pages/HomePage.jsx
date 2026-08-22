@@ -4,6 +4,8 @@ import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
 import { fetchAnimalList } from "../api/animal";
+import axios from "../api/axiosInstance";
+import { getCleanTitle } from "./AdoptionReviewListPage";
 import EmptyState from '../components/EmptyState';
 import useScrollReveal from "../hooks/useScrollReveal";
 import usePageTitle from "../hooks/usePageTitle";
@@ -16,6 +18,30 @@ import cat from "../assets/cat.jpg";
 
 const images = [dog1, dog2, dog3, dog4, cat];
 
+const DEFAULT_TESTIMONIALS = [
+  {
+    id: "default-1",
+    name: "김민지",
+    role: '믹스견 "코코" 입양 가족',
+    text: "처음엔 낯을 많이 가려서 걱정했는데, 지금은 세상에서 가장 애교 많은 가족이 되었어요. 파우메이트 덕분에 평생 친구를 만났습니다.",
+    rating: 5,
+  },
+  {
+    id: "default-2",
+    name: "이준혁",
+    role: '치즈태비 "나비" 입양 가족',
+    text: "입양 절차가 투명하고 상세하게 안내되어 초보 집사도 안심하고 데려올 수 있었어요. 매일 퇴근길이 기다려집니다.",
+    rating: 5,
+  },
+  {
+    id: "default-3",
+    name: "박서연",
+    role: '시바믹스 "보리" 입양 가족',
+    text: "사지 않고 입양하길 정말 잘했다고 매일 생각해요. 따뜻한 눈빛으로 바라보는 아이를 볼 때마다 가슴이 뭉클해집니다.",
+    rating: 5,
+  },
+];
+
 const HomePage = () => {
   usePageTitle('사지 말고 입양하세요 🐾');
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -23,7 +49,7 @@ const HomePage = () => {
   const [current, setCurrent] = useState(0);
   const [recentAnimals, setRecentAnimals] = useState([]);
   const [isLoadingAnimals, setIsLoadingAnimals] = useState(true);
-  const [testimonials, setTestimonials] = useState([]);
+  const [testimonials, setTestimonials] = useState(DEFAULT_TESTIMONIALS);
   const [isPaused, setIsPaused] = useState(false);
   const navigate = useNavigate();
 
@@ -49,11 +75,37 @@ const HomePage = () => {
     const loadData = async () => {
       setIsLoadingAnimals(true);
       try {
-        const res = await fetchAnimalList(0, 4);
-        const list = res?.result?.content || res?.content || res?.result || [];
-        setRecentAnimals(Array.isArray(list) ? list : []);
+        const [animalRes, postRes] = await Promise.allSettled([
+          fetchAnimalList(0, 4),
+          axios.get('/post/list?page=0&size=6&sort=id,desc'),
+        ]);
+
+        if (animalRes.status === 'fulfilled' && animalRes.value) {
+          const list = animalRes.value?.result?.content || animalRes.value?.content || animalRes.value?.result || [];
+          setRecentAnimals(Array.isArray(list) ? list : []);
+        }
+
+        if (postRes.status === 'fulfilled' && postRes.value?.data) {
+          const allPosts = postRes.value.data.result?.content ?? postRes.value.data?.content ?? [];
+          const reviewPosts = allPosts
+            .filter((p) => !p.title?.startsWith('[유기동물제보]'))
+            .slice(0, 3);
+
+          if (reviewPosts.length > 0) {
+            const mapped = reviewPosts.map((p) => ({
+              id: p.id,
+              postId: p.id,
+              name: p.name || '입양 가족',
+              role: getCleanTitle(p.title) || '입양 후기',
+              text: p.content?.slice(0, 90) + (p.content?.length > 90 ? '...' : ''),
+              img: p.img,
+              rating: 5,
+            }));
+            setTestimonials(mapped);
+          }
+        }
       } catch (error) {
-        console.error("Failed to load recent animals:", error);
+        console.error("Failed to load home page data:", error);
       } finally {
         setIsLoadingAnimals(false);
       }
@@ -217,17 +269,35 @@ const HomePage = () => {
       {testimonials.length > 0 && (
         <section className={styles.testimonialsSection} ref={testimonialsRef}>
           <div className={styles.sectionHeader}>
+            <span className={styles.sectionBadge}>REVIEWS</span>
             <h2>입양 가족들의 따뜻한 이야기</h2>
             <p>파우메이트를 통해 새로운 가족을 만난 분들의 생생한 후기입니다.</p>
           </div>
           <div className={styles.testimonialsGrid}>
             {testimonials.map(review => (
-              <div key={review.id} className={styles.testimonialCard}>
+              <div
+                key={review.id}
+                className={styles.testimonialCard}
+                onClick={() => {
+                  if (review.postId) {
+                    navigate(`/reviews/${review.postId}`);
+                  } else {
+                    navigate('/reviews');
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && navigate(review.postId ? `/reviews/${review.postId}` : '/reviews')}
+              >
                 <div className={styles.quoteIcon}>"</div>
                 <div className={styles.stars}>{"★".repeat(review.rating)}</div>
                 <p className={styles.testimonialText}>"{review.text}"</p>
                 <div className={styles.reviewer}>
-                  <div className={styles.reviewerAvatar}>{review.name[0]}</div>
+                  {review.img ? (
+                    <img src={review.img} alt={review.name} className={styles.reviewerAvatarImg} />
+                  ) : (
+                    <div className={styles.reviewerAvatar}>{review.name[0]}</div>
+                  )}
                   <div className={styles.reviewerInfo}>
                     <h5>{review.name}</h5>
                     <span>{review.role}</span>
@@ -235,6 +305,11 @@ const HomePage = () => {
                 </div>
               </div>
             ))}
+          </div>
+          <div className={styles.testimonialAction}>
+            <Link to="/reviews" className="btn-secondary">
+              💌 입양 후기 & 제보 더 보러가기 &rarr;
+            </Link>
           </div>
         </section>
       )}

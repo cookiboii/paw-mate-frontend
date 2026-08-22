@@ -6,24 +6,27 @@ export const useTheme = () => {
   return useContext(ThemeContext);
 };
 
-export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('light');
-
-  useEffect(() => {
-    // Check local storage or system preference
+const getInitialTheme = () => {
+  try {
     const savedTheme = localStorage.getItem('pawmate-theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? 'dark' : 'light');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme;
     }
-  }, []);
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+  } catch (e) {}
+  return 'light';
+};
+
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(getInitialTheme);
 
   useEffect(() => {
-    // Apply theme to document
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('pawmate-theme', theme);
+    try {
+      localStorage.setItem('pawmate-theme', theme);
+    } catch (e) {}
   }, [theme]);
 
   const toggleTheme = () => {

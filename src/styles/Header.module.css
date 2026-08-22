@@ -214,7 +214,7 @@
 .mobileDrawer {
   position: fixed;
   top: 0;
-  right: -320px;
+  right: 0;
   width: 300px;
   height: 100vh;
   background: var(--surface-color);
@@ -222,12 +222,17 @@
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
-  transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s ease;
   padding: 24px;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .drawerOpen {
-  right: 0 !important;
+  transform: translateX(0) !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .drawerHeader {
@@ -459,5 +464,15 @@
 
   .mobileControls {
     display: flex;
+  }
+}
+
+@media (min-width: 869px) {
+  .mobileControls,
+  .mobileBackdrop,
+  .mobileDrawer {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 }
