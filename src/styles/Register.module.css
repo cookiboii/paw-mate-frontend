@@ -155,11 +155,19 @@
 
 .timerBadge {
   position: absolute;
-  right: 16px;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--danger-color);
+  background: rgba(217, 101, 72, 0.12);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
   pointer-events: none;
+  z-index: 3;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 .requirements {

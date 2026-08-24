@@ -5,6 +5,7 @@ import styles from "../styles/ForgotPassword.module.css";
 import FloatingInput from "../components/FloatingInput";
 import { useToast } from "../context/ToastContext";
 import usePageTitle from "../hooks/usePageTitle";
+import { EyeIcon, EyeOffIcon } from "../components/Icons";
 
 const ForgotPassword = () => {
   usePageTitle('비밀번호 찾기');
@@ -39,8 +40,9 @@ const ForgotPassword = () => {
   }, [timerActive, timeLeft, showToast]);
 
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const validSec = Math.max(0, Math.floor(seconds || 0));
+    const mins = Math.floor(validSec / 60);
+    const secs = validSec % 60;
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
@@ -158,27 +160,21 @@ const ForgotPassword = () => {
       {/* Step 2: 인증 코드 입력 & 타이머 */}
       {step === 2 && (
         <form onSubmit={handleCodeVerify} className={styles.form}>
-          <div style={{ position: 'relative' }}>
-            <FloatingInput
-              label="인증 코드 (6자리)"
-              type="text"
-              name="code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              required
-            />
-            <div style={{
-              position: 'absolute',
-              right: '16px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: '0.85rem',
-              fontWeight: '600',
-              color: timeLeft < 30 ? 'var(--danger-color)' : 'var(--primary-color)',
-            }}>
-              {formatTime(timeLeft)}
-            </div>
-          </div>
+          <FloatingInput
+            label="인증 코드 (6자리)"
+            type="text"
+            name="code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+            style={{ paddingRight: timerActive ? '80px' : '16px' }}
+          >
+            {timerActive && (
+              <span className={`${styles.timerBadge} ${timeLeft < 30 ? styles.timerUrgent : ''}`}>
+                {formatTime(timeLeft)}
+              </span>
+            )}
+          </FloatingInput>
 
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
@@ -187,19 +183,20 @@ const ForgotPassword = () => {
               disabled={loading}
               style={{
                 flex: '1',
-                padding: '12px',
+                padding: '14px',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--bg-color)',
                 color: 'var(--text-primary)',
                 border: '1px solid var(--border-color)',
-                fontSize: '0.9rem',
+                fontSize: '0.92rem',
                 fontWeight: '600',
                 cursor: 'pointer',
+                transition: 'all var(--transition-fast)',
               }}
             >
               재전송
             </button>
-            <button type="submit" className={styles.submitBtn} disabled={loading || timeLeft === 0} style={{ flex: '2' }}>
+            <button type="submit" className={styles.submitBtn} disabled={loading || timeLeft === 0} style={{ flex: '2', marginTop: 0 }}>
               {loading ? "확인 중..." : "인증 확인"}
             </button>
           </div>
@@ -236,17 +233,7 @@ const ForgotPassword = () => {
                 alignItems: 'center',
               }}
             >
-              {showPassword ? (
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                  <line x1="1" y1="1" x2="23" y2="23" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              )}
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
           </div>
 
@@ -277,17 +264,7 @@ const ForgotPassword = () => {
                 alignItems: 'center',
               }}
             >
-              {showPasswordConfirm ? (
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                  <line x1="1" y1="1" x2="23" y2="23" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              )}
+              {showPasswordConfirm ? <EyeOffIcon /> : <EyeIcon />}
             </button>
           </div>
 

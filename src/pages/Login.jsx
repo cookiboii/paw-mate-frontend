@@ -17,7 +17,7 @@ const Login = ({ onLoginSuccess }) => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
-  const { addToast } = useToast();
+  const { showToast } = useToast();
 
   const redirectPath = location.state?.from || "/";
 
@@ -66,7 +66,7 @@ const Login = ({ onLoginSuccess }) => {
       console.error(err);
       const errMsg = err.response?.data?.statusMessage || err.response?.data?.message || "로그인에 실패했습니다.";
       setError(errMsg);
-      addToast(errMsg, "error");
+      showToast(errMsg, "error");
     }
   };
 
@@ -106,10 +106,10 @@ const Login = ({ onLoginSuccess }) => {
         .catch((err) => {
           console.error("Kakao code login error:", err);
           setError("카카오 로그인 처리 중 오류가 발생했습니다.");
-          addToast("카카오 로그인 처리 중 오류가 발생했습니다.", "error");
+          showToast("카카오 로그인 처리 중 오류가 발생했습니다.", "error");
         });
     }
-  }, [searchParams, login, navigate, onLoginSuccess, addToast, redirectPath]);
+  }, [searchParams, login, navigate, onLoginSuccess, showToast, redirectPath]);
 
   // Window postMessage listener (e.g. popup callback)
   useEffect(() => {
@@ -150,7 +150,7 @@ const Login = ({ onLoginSuccess }) => {
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [BACKEND_ORIGIN, login, navigate, onLoginSuccess, addToast, redirectPath]);
+  }, [BACKEND_ORIGIN, login, navigate, onLoginSuccess, redirectPath]);
 
   const handleKakaoLogin = () => {
     const popup = window.open(

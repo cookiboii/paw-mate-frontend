@@ -8,6 +8,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import usePageTitle from '../hooks/usePageTitle';
 import axios from '../api/axiosInstance';
+import { getGenderLabel, getSpeciesLabel } from '../constants/animal';
 
 const AnimalList = () => {
   usePageTitle('가족을 기다리는 아이들');
@@ -183,13 +184,13 @@ const AnimalList = () => {
                     <Link to={`/animals/${animal.id}`} className={styles.imageLink}>
                       <ImageWithFallback
                         src={animal.image}
-                        alt={`${animal.breed || animal.species} - ${animal.gender === 'M' || animal.gender === 'MALE' ? '수컷' : '암컷'} ${Math.max(0, Number(animal.age) || 0)}살`}
+                        alt={`${animal.breed || animal.species} - ${getGenderLabel(animal.gender)} ${Math.max(0, Number(animal.age) || 0)}살`}
                         className={styles.lazyImage}
                         fallbackText="동물 사진 준비 중"
                       />
                     </Link>
                     <span className={styles.badge}>
-                      {animal.species === 'DOG' ? '강아지 🐶' : animal.species === 'CAT' ? '고양이 🐱' : animal.species === 'ETC' ? '기타 🐾' : animal.species}
+                      {getSpeciesLabel(animal.species)}
                     </span>
                     
                     {/* 찜하기(하트) 버튼 */}
@@ -214,7 +215,7 @@ const AnimalList = () => {
                     <div className={styles.meta}>
                       <span>{Math.max(0, Number(animal.age) || 0)}살</span>
                       <span className={styles.dot}>•</span>
-                      <span>{animal.gender === 'M' || animal.gender === 'MALE' ? '수컷' : animal.gender === 'F' || animal.gender === 'FEMALE' ? '암컷' : '성별미상'}</span>
+                      <span>{getGenderLabel(animal.gender)}</span>
                       {animal.color && (
                         <>
                           <span className={styles.dot}>•</span>

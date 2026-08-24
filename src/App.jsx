@@ -54,7 +54,7 @@ const PageLoader = () => (
 
 // 👇 사용자 및 관리자 라우트 구성
 const AppRoutes = () => {
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
 
   return (
     <Suspense fallback={<PageLoader />}>
@@ -80,7 +80,7 @@ const AppRoutes = () => {
         {/* 마이페이지: ADMIN이면 관리 페이지로 이동 */}
         <Route
           path="/mypage"
-          element={(user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN') ? <Navigate to="/admin/users" replace /> : <MyPage />}
+          element={isAdmin ? <Navigate to="/admin/users" replace /> : <MyPage />}
         />
 
         {/* 🔐 관리자 라우트 (AdminLayout 공통 사이드바 중첩 라우트) */}
