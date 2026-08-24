@@ -7,6 +7,7 @@ import { fetchAnimalList } from "../api/animal";
 import EmptyState from '../components/EmptyState';
 import useScrollReveal from "../hooks/useScrollReveal";
 import usePageTitle from "../hooks/usePageTitle";
+import ImageWithFallback from "../components/ImageWithFallback";
 
 import dog1 from "../assets/dog1.jpg";
 import dog2 from "../assets/dog2.jpg";
@@ -166,7 +167,14 @@ const HomePage = () => {
             recentAnimals.map(animal => (
               <div key={animal.id || animal.animalId} className={styles.animalCard} onClick={() => navigate(`/animals/${animal.id || animal.animalId}`)}>
                 <div className={styles.animalBadge}>NEW</div>
-                <img src={animal.image || animal.profileImageUrl || dog1} alt={`${animal.breed || animal.species} - ${animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : '기타'}`} className={styles.animalImage} />
+                <div style={{ height: '180px', width: '100%' }}>
+                  <ImageWithFallback
+                    src={animal.image || animal.profileImageUrl || dog1}
+                    alt={`${animal.breed || animal.species} - ${animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : '기타'}`}
+                    className={styles.animalImage}
+                    fallbackText="사진 준비 중"
+                  />
+                </div>
                 <div className={styles.animalInfo}>
                   <h4>{animal.breed || animal.name || animal.species}</h4>
                   <p>{animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : animal.species} {animal.breed ? `- ${animal.breed}` : ''}</p>

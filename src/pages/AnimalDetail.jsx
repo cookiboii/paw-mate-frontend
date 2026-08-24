@@ -6,6 +6,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
+import ImageWithFallback from '../components/ImageWithFallback';
 import { AnimalStatus, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
 import usePageTitle from '../hooks/usePageTitle';
 
@@ -168,19 +169,11 @@ const AnimalDetail = () => {
         {animal ? (
           <div className={styles.card}>
             <div className={styles.imageContainer}>
-              <img
-                src={animal.image || '/default-animal.jpg'}
+              <ImageWithFallback
+                src={animal.image}
                 alt={`${animal.breed || animal.species} 사진`}
                 className={styles.image}
-                loading="lazy"
-                onLoad={(e) => {
-                  e.target.style.opacity = 1;
-                }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/default-animal.jpg';
-                }}
-                style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }}
+                fallbackText="동물 사진 준비 중입니다"
               />
               {/* 찜하기 플로팅 버튼 */}
               <button

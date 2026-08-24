@@ -2,10 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Comfortable & Relaxing Palette (Earthy Green & Oatmeal) */
-  --primary-color: #657963; /* Muted Moss Green */
-  --primary-hover: #546552;
-  --primary-light: rgba(101, 121, 99, 0.1);
+  /* Comfortable & Relaxing Palette (Earthy Forest Green & Oatmeal) - Contrast Optimized */
+  --primary-color: #556b54; /* Richer Muted Moss Green (WCAG AA Compliant for White Text) */
+  --primary-hover: #435542;
+  --primary-light: rgba(85, 107, 84, 0.1);
   
   --secondary-color: #dcb897; /* Warm Soft Oak/Camel */
   --secondary-hover: #c4a181;
@@ -14,20 +14,20 @@
   --bg-color: #f9f8f6; /* Very Soft Oatmeal/Ivory */
   --surface-color: #ffffff; /* White */
   
-  --text-primary: #2d302d; /* Softened Black/Dark Gray-Green */
-  --text-muted: #757a75; /* Soft Gray */
-  --text-light: #949994;
+  --text-primary: #252825; /* Crisp Dark Charcoal-Green (Contrast ~14:1) */
+  --text-muted: #5e635e; /* Crisp Medium Gray-Green (Contrast ~5.5:1) */
+  --text-light: #7c827c; /* Subdued Detail/Placeholder */
   
   --border-color: #e2dfda; /* Warm Gray Border */
-  --danger-color: #e07a5f; /* Softer Muted Red/Terracotta */
-  --success-color: #81b29a; /* Muted Green */
-  --warning-color: #f2cc8f; /* Muted Yellow */
+  --danger-color: #d96548; /* Terracotta Red (Clear & Readable) */
+  --success-color: #4a8c6f; /* Refined Success Green */
+  --warning-color: #c98b2c; /* Clear Warm Amber */
 
   /* Premium Soft Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.09);
-  --shadow-glow-primary: 0 8px 24px rgba(101, 121, 99, 0.25);
+  --shadow-glow-primary: 0 8px 24px rgba(85, 107, 84, 0.22);
   
   /* Modern Border Radii */
   --radius-sm: 8px;
@@ -43,13 +43,13 @@
 
   /* Surface Depth & Highlights */
   --surface-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
-  --input-focus-ring: 0 0 0 3.5px var(--primary-light);
+  --input-focus-ring: 0 0 0 3.5px rgba(85, 107, 84, 0.18);
 }
 
 [data-theme="dark"] {
-  --primary-color: #81b29a;
-  --primary-hover: #9bbfa8;
-  --primary-light: rgba(129, 178, 154, 0.18);
+  --primary-color: #8bb7a2; /* Soft Luminous Sage Green */
+  --primary-hover: #a2c8b5;
+  --primary-light: rgba(139, 183, 162, 0.18);
   
   --secondary-color: #f2cc8f;
   --secondary-hover: #f4d9a8;
@@ -58,22 +58,22 @@
   --bg-color: #161816; 
   --surface-color: #222522; 
   
-  --text-primary: #e6e8e6; 
-  --text-muted: #a3a6a3; 
-  --text-light: #7a7d7a;
+  --text-primary: #e8eae8; 
+  --text-muted: #b0b4b0; 
+  --text-light: #8e928e;
   
   --border-color: #333833; 
   --danger-color: #e07a5f; 
-  --success-color: #81b29a; 
+  --success-color: #8bb7a2; 
   --warning-color: #f2cc8f; 
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
-  --shadow-glow-primary: 0 8px 24px rgba(129, 178, 154, 0.2);
+  --shadow-glow-primary: 0 8px 24px rgba(139, 183, 162, 0.22);
 
   --surface-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
-  --input-focus-ring: 0 0 0 3.5px rgba(129, 178, 154, 0.25);
+  --input-focus-ring: 0 0 0 3.5px rgba(139, 183, 162, 0.25);
 }
 
 html {

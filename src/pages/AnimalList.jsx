@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from '../styles/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
+import ImageWithFallback from '../components/ImageWithFallback';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import usePageTitle from '../hooks/usePageTitle';
@@ -180,16 +181,11 @@ const AnimalList = () => {
                 <li key={animal.id} className={styles.card}>
                   <div className={styles.imageWrapper}>
                     <Link to={`/animals/${animal.id}`} className={styles.imageLink}>
-                      <img 
-                        src={animal.image || '/default-animal.jpg'} 
+                      <ImageWithFallback
+                        src={animal.image}
                         alt={`${animal.breed || animal.species} - ${animal.gender === 'M' || animal.gender === 'MALE' ? '수컷' : '암컷'} ${Math.max(0, Number(animal.age) || 0)}살`}
-                        loading="lazy"
                         className={styles.lazyImage}
-                        onLoad={(e) => e.target.classList.add(styles.loaded)}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = '/default-animal.jpg';
-                        }}
+                        fallbackText="동물 사진 준비 중"
                       />
                     </Link>
                     <span className={styles.badge}>
