@@ -60,7 +60,6 @@ const Login = ({ onLoginSuccess }) => {
 
       const userInfo = { email, role, name, provider: "LOCAL" };
       login(token, userInfo, refreshToken);
-      addToast("로그인 성공!", "success");
       if (onLoginSuccess) onLoginSuccess();
       navigate(redirectPath);
     } catch (err) {
@@ -82,7 +81,6 @@ const Login = ({ onLoginSuccess }) => {
     if (urlToken) {
       const userInfo = { email: urlEmail, role: urlRole, name: urlName, provider: "KAKAO" };
       login(urlToken, userInfo);
-      addToast("카카오 로그인 성공!", "success");
       if (onLoginSuccess) onLoginSuccess();
       navigate(redirectPath, { replace: true });
       return;
@@ -101,7 +99,6 @@ const Login = ({ onLoginSuccess }) => {
           const name = resData?.name || resData?.result?.name;
           if (token) {
             login(token, { email, role, name, provider: "KAKAO" });
-            addToast("카카오 로그인 성공!", "success");
             if (onLoginSuccess) onLoginSuccess();
             navigate(redirectPath, { replace: true });
           }
@@ -146,7 +143,6 @@ const Login = ({ onLoginSuccess }) => {
           name
         };
         login(token, userInfo);
-        addToast("카카오 로그인 성공!", "success");
         if (onLoginSuccess) onLoginSuccess();
         navigate(redirectPath);
       }

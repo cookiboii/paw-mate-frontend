@@ -48,7 +48,6 @@ const KakaoCallback = () => {
         }
 
         login(token, userInfo);
-        showToast('카카오 로그인 성공! 🎉', 'success');
         navigate('/', { replace: true });
         return;
       }
@@ -104,7 +103,6 @@ const KakaoCallback = () => {
             }
 
             login(jwtToken, userInfo);
-            showToast('카카오 로그인 성공! 🎉', 'success');
             navigate('/', { replace: true });
           } else {
             setStatusMsg('로그인 토큰을 받지 못했습니다.');
