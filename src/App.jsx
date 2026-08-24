@@ -38,6 +38,7 @@ const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
 const AdminAnimalsPage = lazy(() => import('./pages/admin/AdminAnimalsPage'));
 const AdminAdoptionsPage = lazy(() => import('./pages/admin/AdminAdoptionsPage'));
+const AdminPasswordPage = lazy(() => import('./pages/admin/AdminPasswordPage'));
 const AnimalStatusEditPage = lazy(() => import('./pages/admin/AnimalStatusEditPage'));
 
 const PageLoader = () => (
@@ -97,6 +98,7 @@ const AppRoutes = () => {
           <Route path="animals" element={<AdminAnimalsPage />} />
           <Route path="animals/register" element={<AdminAnimalsPage />} />
           <Route path="adoptions" element={<AdminAdoptionsPage />} />
+          <Route path="password" element={<AdminPasswordPage />} />
         </Route>
 
         {/* 레거시 동물 상태 수정 라우트 */}

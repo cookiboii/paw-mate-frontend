@@ -35,6 +35,14 @@ const AdminLayout = ({ children }) => {
               📋 입양 신청 관리
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/admin/password"
+              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
+            >
+              🔒 비밀번호 변경
+            </NavLink>
+          </li>
         </ul>
       </nav>
 
