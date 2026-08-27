@@ -5,21 +5,47 @@ export interface User {
   email?: string;
   name?: string;
   role?: string;
+  profileImage?: string;
+  socialProvider?: string;
+  socialId?: string;
   provider?: string;
   phone?: string;
   createdAt?: string;
 }
 
-export interface LoginCredentials {
+export type MemberInfoResponseDto = User;
+
+export interface MemberRegisterRequestDto {
+  name: string;
+  email: string;
+  password: string;
+  role?: UserRole | string;
+}
+
+export interface MemberLoginRequestDto {
   email: string;
   password: string;
 }
 
-export interface RegisterPayload {
-  name: string;
+export interface MemberLoginResultDto {
+  token: string;
+  refreshToken?: string;
+  email: string;
+  role: UserRole | string;
+}
+
+export interface PasswordChangeRequestDto {
+  currentPassword?: string;
+  newPassword?: string;
+}
+
+export interface PasswordResetRequestDto {
   email: string;
   password: string;
 }
+
+export type LoginCredentials = MemberLoginRequestDto;
+export type RegisterPayload = MemberRegisterRequestDto;
 
 export interface AuthContextType {
   isAuthenticated: boolean;

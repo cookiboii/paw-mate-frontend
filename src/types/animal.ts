@@ -1,9 +1,10 @@
 export type AnimalStatus = 'WAITING' | 'PROTECTED' | 'ADOPTED';
-export type AnimalSpecies = 'DOG' | 'CAT' | 'ETC';
-export type AnimalGender = 'MALE' | 'FEMALE' | 'M' | 'F';
+export type AnimalSpecies = 'DOG' | 'CAT' | 'ETC' | string;
+export type AnimalGender = 'MALE' | 'FEMALE' | 'M' | 'F' | string;
 
 export interface Animal {
   id: number | string;
+  animalId?: number | string;
   name?: string;
   species: string;
   breed?: string;
@@ -14,6 +15,7 @@ export interface Animal {
   status: AnimalStatus | string;
   image?: string;
   imageUrl?: string;
+  profileImageUrl?: string;
   description?: string;
   foundLocation?: string;
   shelterName?: string;
@@ -22,6 +24,20 @@ export interface Animal {
   noticeEndDate?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface AnimalCreateRequest {
+  species: string;
+  breed: string;
+  color: string;
+  image: string;
+  age: number;
+  gender: string;
+  status: string;
+}
+
+export interface AnimalStatusUpdateRequest {
+  status: AnimalStatus | string;
 }
 
 export interface AnimalFormData {
