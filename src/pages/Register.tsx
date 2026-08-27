@@ -1,0 +1,377 @@
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import styles from "../styles/Register.module.css";
+import { registerUser } from "../api/auth";
+import axios from "../api/axiosInstance";
+import { useNavigate } from "react-router-dom";
+import FloatingInput from "../components/FloatingInput";
+import usePageTitle from "../hooks/usePageTitle";
+import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, CheckIcon, AlertIcon } from "../components/Icons";
+
+const Register: React.FC = () => {
+  usePageTitle('회원가입');
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+  const [emailCode, setEmailCode] = useState<string>("");
+  const [emailVerified, setEmailVerified] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // UI state for password toggles and timers
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(180);
+  const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  // Timer countdown hook
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+    if (isTimerActive && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsTimerActive(false);
+      setError("인증 시간이 만료되었습니다. 다시 요청해주세요.");
+      setEmailSent(false);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerActive, timer]);
+
+  const formatTimer = (seconds: number) => {
+    const validSec = Math.max(0, Math.floor(seconds || 0));
+    const mins = Math.floor(validSec / 60);
+    const secs = validSec % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setError("");
+    setMessage("");
+  };
+
+  // Regular expressions
+  const nameRegex = /^[가-힣a-zA-Z]{2,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Real-time validations
+  const isNameValid = form.name === "" || nameRegex.test(form.name);
+  const isEmailValid = form.email === "" || emailRegex.test(form.email);
+
+  const hasLetter = /[A-Za-z]/.test(form.password);
+  const hasNumber = /\d/.test(form.password);
+  const isLengthOk = form.password.length >= 8;
+  const isPasswordValid = hasLetter && hasNumber && isLengthOk;
+
+  const isConfirmPasswordValid =
+    form.confirmPassword === "" ||
+    (form.password === form.confirmPassword && isPasswordValid);
+
+  const validateForm = () => {
+    if (!nameRegex.test(form.name)) return "이름은 한글 또는 영문 2자 이상이어야 합니다.";
+    if (!emailRegex.test(form.email)) return "유효한 이메일 형식이 아닙니다.";
+    if (!isPasswordValid) return "비밀번호는 영문과 숫자를 포함하여 8자 이상이어야 합니다.";
+    if (form.password !== form.confirmPassword) return "비밀번호가 일치하지 않습니다.";
+    if (!emailVerified) return "이메일 인증을 완료해주세요.";
+    return null;
+  };
+
+  const handleEmailSend = async () => {
+    if (!form.email) {
+      setError("이메일을 입력해주세요.");
+      return;
+    }
+    if (!emailRegex.test(form.email)) {
+      setError("올바른 이메일 형식을 입력해주세요.");
+      return;
+    }
+    try {
+      setError("");
+      setMessage("인증 메일을 전송 중입니다...");
+      await axios.post("/adoptmate/verify-email", { email: form.email });
+      setEmailSent(true);
+      setTimer(180);
+      setIsTimerActive(true);
+      setMessage("인증 코드가 이메일로 전송되었습니다.");
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "이메일 인증 요청 실패";
+      setError(msg);
+      setMessage("");
+      setEmailSent(false);
+      setIsTimerActive(false);
+    }
+  };
+
+  const handleEmailVerify = async () => {
+    if (!emailCode) {
+      setError("인증 코드를 입력해주세요.");
+      return;
+    }
+    try {
+      setError("");
+      const res = await axios.post("/adoptmate/verify-code", {
+        email: form.email,
+        code: emailCode,
+      });
+      if (res.status === 200) {
+        setEmailVerified(true);
+        setIsTimerActive(false);
+        setMessage("이메일 인증 완료!");
+        setError("");
+      }
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "인증 코드가 올바르지 않습니다.";
+      setError(msg);
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setError("");
+      await registerUser(form); // form: name, email, password
+      alert("회원가입이 완료되었습니다!");
+      navigate("/login");
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "회원가입 실패";
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className={styles.registerContainer}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>가족이 되어주세요</h2>
+        <p className={styles.subtitle}>Paw Mate의 회원이 되어 반려동물에게 따뜻한 가족을 선물하세요.</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* 이름 입력 */}
+        <div className={styles.fieldGroup}>
+          <FloatingInput
+            label="이름"
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            icon={<UserIcon />}
+          />
+          {form.name && !nameRegex.test(form.name) && (
+            <p className={`${styles.helperText} ${styles.error}`}>
+              <AlertIcon /> 이름은 한글 또는 영문 2자 이상이어야 합니다.
+            </p>
+          )}
+        </div>
+
+        {/* 이메일 입력 */}
+        <div className={styles.fieldGroup}>
+          <div className={styles.verifyRow}>
+            <FloatingInput
+              label="이메일 주소"
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              disabled={emailVerified}
+              required
+              icon={<MailIcon />}
+            />
+            <button
+              type="button"
+              onClick={handleEmailSend}
+              disabled={emailVerified || !form.email || !emailRegex.test(form.email) || isTimerActive}
+              className={`${styles.verifyRowButton} ${
+                form.email && emailRegex.test(form.email) && !emailVerified && !isTimerActive ? styles.verifyActiveButton : ""
+              }`}
+            >
+              {emailSent ? "재전송" : "인증 요청"}
+            </button>
+          </div>
+          {form.email && !emailRegex.test(form.email) && (
+            <p className={`${styles.helperText} ${styles.error}`}>
+              <AlertIcon /> 올바른 이메일 형식을 입력해주세요.
+            </p>
+          )}
+          {emailVerified && (
+            <p className={`${styles.helperText} ${styles.success}`}>
+              <CheckIcon /> 이메일 인증이 완료되었습니다.
+            </p>
+          )}
+        </div>
+
+        {/* 이메일 인증 번호 입력 */}
+        {emailSent && !emailVerified && (
+          <div className={styles.fieldGroup}>
+            <div className={styles.verifyRow}>
+              <FloatingInput
+                label="인증 코드"
+                type="text"
+                name="emailCode"
+                value={emailCode}
+                onChange={(e) => setEmailCode(e.target.value)}
+                required
+                icon={<LockIcon />}
+                style={{ paddingRight: isTimerActive ? '80px' : '16px' }}
+              >
+                {isTimerActive && (
+                  <span className={styles.timerBadge}>{formatTimer(timer)}</span>
+                )}
+              </FloatingInput>
+              <button
+                type="button"
+                onClick={handleEmailVerify}
+                disabled={!emailCode}
+                className={`${styles.verifyRowButton} ${emailCode ? styles.verifyActiveButton : ""}`}
+              >
+                인증 확인
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 비밀번호 입력 */}
+        <div className={styles.fieldGroup}>
+          <FloatingInput
+            label="비밀번호"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            icon={<LockIcon />}
+            style={{ paddingRight: '48px' }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className={styles.passwordToggle}
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
+          </FloatingInput>
+          {form.password && (
+            <div className={styles.requirements}>
+              <div className={`${styles.requirementItem} ${hasLetter ? styles.valid : ""}`}>
+                <span className={styles.requirementIcon}><CheckIcon /></span>
+                영문 포함
+              </div>
+              <div className={`${styles.requirementItem} ${hasNumber ? styles.valid : ""}`}>
+                <span className={styles.requirementIcon}><CheckIcon /></span>
+                숫자 포함
+              </div>
+              <div className={`${styles.requirementItem} ${isLengthOk ? styles.valid : ""}`}>
+                <span className={styles.requirementIcon}><CheckIcon /></span>
+                8자 이상
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 비밀번호 확인 입력 */}
+        <div className={styles.fieldGroup}>
+          <FloatingInput
+            label="비밀번호 확인"
+            type={showConfirmPassword ? "text" : "password"}
+            name="confirmPassword"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            required
+            icon={<LockIcon />}
+            style={{ paddingRight: '48px' }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className={styles.passwordToggle}
+              tabIndex={-1}
+            >
+              {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
+          </FloatingInput>
+          {form.confirmPassword && (
+            <div className={`${styles.helperText} ${isConfirmPasswordValid ? styles.success : styles.error}`}>
+              {isConfirmPasswordValid ? (
+                <>
+                  <CheckIcon /> 비밀번호가 일치합니다.
+                </>
+              ) : (
+                <>
+                  <AlertIcon /> 비밀번호가 일치하지 않습니다.
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* API 에러 및 메시지 */}
+        {error && (
+          <p className={`${styles.helperText} ${styles.error}`}>
+            <AlertIcon /> {error}
+          </p>
+        )}
+        {message && !error && (
+          <p className={`${styles.helperText} ${styles.success}`}>
+            <CheckIcon /> {message}
+          </p>
+        )}
+
+        {/* 회원가입 버튼 */}
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={
+            isSubmitting ||
+            !form.name ||
+            !nameRegex.test(form.name) ||
+            !form.email ||
+            !emailRegex.test(form.email) ||
+            !emailVerified ||
+            !isPasswordValid ||
+            form.password !== form.confirmPassword
+          }
+        >
+          {isSubmitting ? (
+            <>
+              <div className={styles.spinner} />
+              가입 중...
+            </>
+          ) : (
+            "가입하기"
+          )}
+        </button>
+      </form>
+
+      <p className={styles.loginPrompt}>
+        이미 계정이 있으신가요?
+        <span className={styles.loginLink} onClick={() => navigate("/login")}>
+          로그인
+        </span>
+      </p>
+    </div>
+  );
+};
+
+export default Register;
