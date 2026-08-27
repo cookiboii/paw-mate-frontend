@@ -7,6 +7,7 @@ import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
 import { CATEGORY_PREFIX } from './AdoptionReviewListPage';
 import usePageTitle from '../hooks/usePageTitle';
+import { uploadImageToBlob } from '../utils/imageUpload';
 
 const CATEGORY_OPTIONS = [
   { key: 'REVIEW', label: '💌 입양 후기', desc: '입양 후 반려동물과의 소중한 이야기를 공유해요', prefix: CATEGORY_PREFIX.REVIEW },
@@ -24,9 +25,10 @@ const AdoptionReview: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('REVIEW');
   const [form, setForm] = useState({
     content: '',
-    imageBase64: '',
+    img: '',
     title: '',
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -35,19 +37,10 @@ const AdoptionReview: React.FC = () => {
 
   const activeCat = CATEGORY_OPTIONS.find((c) => c.key === selectedCategory) || CATEGORY_OPTIONS[0];
 
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-
-  const handleFile = async (file?: File) => {
+  const handleFile = (file?: File) => {
     if (file && file.type.startsWith('image/')) {
-      const base64 = await toBase64(file);
-      setForm((prev) => ({ ...prev, imageBase64: base64 }));
-      setPreview(base64);
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
     } else {
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
     }
@@ -82,7 +75,8 @@ const AdoptionReview: React.FC = () => {
 
   const removeImage = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setForm((prev) => ({ ...prev, imageBase64: '' }));
+    setSelectedFile(null);
+    setForm((prev) => ({ ...prev, img: '' }));
     setPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -96,14 +90,19 @@ const AdoptionReview: React.FC = () => {
 
     setIsSubmitting(true);
 
-    // 제목에 카테고리 접두사를 붙여 저장
-    const finalTitle = `${activeCat.prefix} ${form.title.trim()}`;
-
     try {
+      let uploadedImageUrl = form.img;
+      if (selectedFile) {
+        uploadedImageUrl = await uploadImageToBlob(selectedFile);
+      }
+
+      // 제목에 카테고리 접두사를 붙여 저장
+      const finalTitle = `${activeCat.prefix} ${form.title.trim()}`;
+
       await axios.post('/post/create', {
         title: finalTitle,
         content: form.content,
-        img: form.imageBase64,
+        img: uploadedImageUrl,
         name: user?.name || '익명',
         dateTime: new Date().toISOString(),
       });
@@ -115,7 +114,8 @@ const AdoptionReview: React.FC = () => {
           : '💌 입양 후기가 등록되었습니다!',
         'success'
       );
-      setForm({ title: '', content: '', imageBase64: '' });
+      setForm({ title: '', content: '', img: '' });
+      setSelectedFile(null);
       setPreview(null);
       navigate('/reviews');
     } catch (error: any) {

@@ -7,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import FloatingInput from '../../components/FloatingInput';
 import { SPECIES_OPTIONS, STATUS_OPTIONS, GENDER_OPTIONS } from '../../constants/animal';
 import usePageTitle from '../../hooks/usePageTitle';
+import { uploadImageToBlob } from '../../utils/imageUpload';
 
 const AdminAnimalsPage: React.FC = () => {
   usePageTitle('유기동물 신규 등록 (Admin)');
@@ -32,8 +33,10 @@ const AdminAnimalsPage: React.FC = () => {
     image: '',
   });
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (user?.role?.toUpperCase() !== 'ADMIN' && user?.role?.toUpperCase() !== 'ROLE_ADMIN') {
@@ -58,13 +61,8 @@ const AdminAnimalsPage: React.FC = () => {
 
   const handleFile = (file: File | undefined) => {
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setAnimal((prev) => ({ ...prev, image: result }));
-        setPreview(result);
-      };
-      reader.readAsDataURL(file);
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
     } else {
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
     }
@@ -94,6 +92,7 @@ const AdminAnimalsPage: React.FC = () => {
 
   const removeImage = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    setSelectedFile(null);
     setAnimal((prev) => ({ ...prev, image: '' }));
     setPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -107,9 +106,17 @@ const AdminAnimalsPage: React.FC = () => {
       showToast('나이는 0 이상의 숫자로 입력해주세요.', 'error');
       return;
     }
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     try {
-      await registerAnimal({ ...animal, age: ageNum });
+      let uploadedImageUrl = animal.image;
+      if (selectedFile) {
+        uploadedImageUrl = await uploadImageToBlob(selectedFile);
+      }
+
+      await registerAnimal({ ...animal, image: uploadedImageUrl, age: ageNum });
       showToast('동물이 성공적으로 등록되었습니다!', 'success');
       setAnimal({
         species: '',
@@ -120,9 +127,12 @@ const AdminAnimalsPage: React.FC = () => {
         age: '',
         image: '',
       });
+      setSelectedFile(null);
       setPreview(null);
     } catch (err: any) {
       showToast('등록 실패: ' + (err.response?.data?.message || err.message), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

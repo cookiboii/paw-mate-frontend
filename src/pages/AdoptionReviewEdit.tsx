@@ -7,6 +7,7 @@ import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
 import Spinner from '../components/Spinner';
 import { CATEGORY_PREFIX, getCategoryFromTitle, getCleanTitle } from './AdoptionReviewListPage';
+import { uploadImageToBlob } from '../utils/imageUpload';
 
 const CATEGORY_OPTIONS = [
   { key: 'REVIEW', label: '💌 입양 후기', prefix: CATEGORY_PREFIX.REVIEW },
@@ -25,19 +26,12 @@ const AdoptionReviewEdit: React.FC = () => {
   const [form, setForm] = useState({
     title: '',
     content: '',
-    imageBase64: '',
+    img: '',
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
 
   useEffect(() => {
     if (!id) return;
@@ -75,7 +69,7 @@ const AdoptionReviewEdit: React.FC = () => {
         setForm({
           title: cleanTitle,
           content: review.content || '',
-          imageBase64: review.img || '',
+          img: review.img || '',
         });
 
         setPreview(review.img || null);
@@ -90,11 +84,10 @@ const AdoptionReviewEdit: React.FC = () => {
     fetchData();
   }, [id, navigate, showToast]);
 
-  const handleFile = async (file?: File) => {
+  const handleFile = (file?: File) => {
     if (file && file.type.startsWith('image/')) {
-      const base64 = await toBase64(file);
-      setForm((prev) => ({ ...prev, imageBase64: base64 }));
-      setPreview(base64);
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
     } else {
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
     }
@@ -129,7 +122,8 @@ const AdoptionReviewEdit: React.FC = () => {
 
   const removeImage = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setForm((prev) => ({ ...prev, imageBase64: '' }));
+    setSelectedFile(null);
+    setForm((prev) => ({ ...prev, img: '' }));
     setPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -145,12 +139,17 @@ const AdoptionReviewEdit: React.FC = () => {
     const finalTitle = `${activeCat.prefix} ${form.title.trim()}`;
 
     try {
+      let uploadedImageUrl = form.img;
+      if (selectedFile) {
+        uploadedImageUrl = await uploadImageToBlob(selectedFile);
+      }
+
       await axios.put(
         `/post/${id}`,
         {
           title: finalTitle,
           content: form.content,
-          img: form.imageBase64,
+          img: uploadedImageUrl,
         },
         {
           headers: {
