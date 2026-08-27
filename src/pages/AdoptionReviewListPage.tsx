@@ -17,16 +17,19 @@ export interface CategoryOption {
 export const CATEGORIES: CategoryOption[] = [
   { key: 'ALL', label: '전체', emoji: '📋' },
   { key: 'REVIEW', label: '입양 후기', emoji: '💌' },
+  { key: 'FREE_ADOPTION', label: '무료 분양', emoji: '🎁' },
   { key: 'REPORT', label: '유기동물 제보', emoji: '🚨' },
 ];
 
 export const CATEGORY_PREFIX: Record<string, string> = {
   REVIEW: '[입양후기]',
+  FREE_ADOPTION: '[무료분양]',
   REPORT: '[유기동물제보]',
 };
 
 export function getCategoryFromTitle(title = ''): string {
   if (title.startsWith(CATEGORY_PREFIX.REVIEW)) return 'REVIEW';
+  if (title.startsWith(CATEGORY_PREFIX.FREE_ADOPTION)) return 'FREE_ADOPTION';
   if (title.startsWith(CATEGORY_PREFIX.REPORT)) return 'REPORT';
   return 'REVIEW'; // 기본값
 }
@@ -34,6 +37,7 @@ export function getCategoryFromTitle(title = ''): string {
 export function getCleanTitle(title = ''): string {
   return title
     .replace(CATEGORY_PREFIX.REVIEW, '')
+    .replace(CATEGORY_PREFIX.FREE_ADOPTION, '')
     .replace(CATEGORY_PREFIX.REPORT, '')
     .trim();
 }
@@ -130,7 +134,7 @@ const AdoptionReviewListPage: React.FC = () => {
       {/* 페이지 헤더 */}
       <div className={styles.pageHeader}>
         <h2>커뮤니티</h2>
-        <p>입양 후기와 유기동물 제보를 공유하는 공간입니다.</p>
+        <p>입양 후기, 무료 분양 및 유기동물 제보를 공유하는 따뜻한 공간입니다.</p>
       </div>
 
       {/* 카테고리 탭 */}
@@ -185,10 +189,14 @@ const AdoptionReviewListPage: React.FC = () => {
                   ) : (
                     <div
                       className={`${styles.noImagePlaceholder} ${
-                        cat === 'REPORT' ? styles.reportPlaceholder : ''
+                        cat === 'REPORT'
+                          ? styles.reportPlaceholder
+                          : cat === 'FREE_ADOPTION'
+                          ? styles.freeAdoptionPlaceholder
+                          : ''
                       }`}
                     >
-                      <span>{cat === 'REPORT' ? '🚨' : '💌'}</span>
+                      <span>{cat === 'REPORT' ? '🚨' : cat === 'FREE_ADOPTION' ? '🎁' : '💌'}</span>
                       <p>{catInfo.label}</p>
                     </div>
                   )}
@@ -196,7 +204,11 @@ const AdoptionReviewListPage: React.FC = () => {
                 <div className={styles.cardContent}>
                   <div
                     className={`${styles.categoryBadge} ${
-                      cat === 'REPORT' ? styles.badgeReport : styles.badgeReview
+                      cat === 'REPORT'
+                        ? styles.badgeReport
+                        : cat === 'FREE_ADOPTION'
+                        ? styles.badgeFreeAdoption
+                        : styles.badgeReview
                     }`}
                   >
                     {catInfo.emoji} {catInfo.label}
@@ -217,10 +229,12 @@ const AdoptionReviewListPage: React.FC = () => {
           })
         ) : !isLoading ? (
           <div className={styles.emptyState}>
-            <span>{activeCategory === 'REPORT' ? '🚨' : '🐾'}</span>
+            <span>{activeCategory === 'REPORT' ? '🚨' : activeCategory === 'FREE_ADOPTION' ? '🎁' : '🐾'}</span>
             <p>
               {activeCategory === 'REPORT'
                 ? '아직 유기동물 제보 글이 없습니다.'
+                : activeCategory === 'FREE_ADOPTION'
+                ? '아직 등록된 무료 분양 글이 없습니다.'
                 : activeCategory === 'REVIEW'
                 ? '아직 작성된 입양 후기가 없습니다.'
                 : '아직 작성된 글이 없습니다.'}

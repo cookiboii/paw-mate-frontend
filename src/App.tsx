@@ -76,6 +76,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/animals/:id" element={<AnimalDetail />} />
         <Route path="/review" element={<AdoptionReview />} />
         <Route path="/adopt/:animalId" element={<AdoptionForm />} />
+        <Route path="/community" element={<Navigate to="/reviews" replace />} />
         <Route path="/reviews" element={<AdoptionReviewListPage />} />
         <Route path="/reviews/:id" element={<AdoptionReviewDetail />} />
         <Route path="/reviews/:id/edit" element={<AdoptionReviewEdit />} />

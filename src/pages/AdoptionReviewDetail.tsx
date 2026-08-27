@@ -94,16 +94,35 @@ const AdoptionReviewDetail: React.FC = () => {
   const cat = getCategoryFromTitle(review.title);
   const catInfo = CATEGORIES.find((c) => c.key === cat) || CATEGORIES[1];
   const isReport = cat === 'REPORT';
+  const isFreeAdoption = cat === 'FREE_ADOPTION';
 
   return (
     <div className={styles.pageWrapper}>
       <article className={styles.article}>
         {/* Hero Section */}
-        <div className={`${styles.heroSection} ${!review.img ? (isReport ? styles.heroNoImgReport : styles.heroNoImg) : ''}`}>
+        <div
+          className={`${styles.heroSection} ${
+            !review.img
+              ? isReport
+                ? styles.heroNoImgReport
+                : isFreeAdoption
+                ? styles.heroNoImgFreeAdoption
+                : styles.heroNoImg
+              : ''
+          }`}
+        >
           {review.img ? (
             <img src={review.img} alt={cleanTitle} className={styles.heroImage} />
           ) : (
-            <div className={`${styles.noImage} ${isReport ? styles.noImageReport : ''}`}>
+            <div
+              className={`${styles.noImage} ${
+                isReport
+                  ? styles.noImageReport
+                  : isFreeAdoption
+                  ? styles.noImageFreeAdoption
+                  : ''
+              }`}
+            >
               <span style={{ fontSize: '4rem' }}>{catInfo.emoji}</span>
               <p>{catInfo.label}</p>
             </div>
@@ -111,7 +130,15 @@ const AdoptionReviewDetail: React.FC = () => {
           <div className={styles.heroOverlay}>
             <div className={styles.heroContent}>
               {/* 카테고리 뱃지 */}
-              <span className={`${styles.heroCategoryBadge} ${isReport ? styles.heroBadgeReport : styles.heroBadgeReview}`}>
+              <span
+                className={`${styles.heroCategoryBadge} ${
+                  isReport
+                    ? styles.heroBadgeReport
+                    : isFreeAdoption
+                    ? styles.heroBadgeFreeAdoption
+                    : styles.heroBadgeReview
+                }`}
+              >
                 {catInfo.emoji} {catInfo.label}
               </span>
               <h1 className={styles.title}>{cleanTitle}</h1>
@@ -154,6 +181,14 @@ const AdoptionReviewDetail: React.FC = () => {
             <div className={styles.reportBanner}>
               <strong>🚨 이 글은 유기동물 제보 게시글입니다</strong>
               <p>도움이 필요하신 분은 <strong>동물보호 상담전화 1577-0954</strong>로 연락해 주세요.</p>
+            </div>
+          )}
+
+          {/* 무료 분양 안내 */}
+          {isFreeAdoption && (
+            <div className={styles.freeAdoptionBanner}>
+              <strong>🎁 무료 분양 안내</strong>
+              <p>반려동물 입양은 소중한 생명을 평생 책임지는 약속입니다. 안전한 입양을 위해 직접 만나 아이의 상태를 확인하고 교감해 보세요.</p>
             </div>
           )}
 

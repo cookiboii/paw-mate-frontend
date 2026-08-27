@@ -56,8 +56,18 @@
   color: var(--danger-color);
 }
 
+.noImageFreeAdoption {
+  background: linear-gradient(135deg, rgba(82, 183, 136, 0.12) 0%, var(--bg-color) 100%);
+  color: #2d6a4f;
+}
+
+[data-theme='dark'] .noImageFreeAdoption {
+  color: #74c69d;
+}
+
 .heroNoImg .heroOverlay,
-.heroNoImgReport .heroOverlay {
+.heroNoImgReport .heroOverlay,
+.heroNoImgFreeAdoption .heroOverlay {
   background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
 }
 
@@ -99,6 +109,12 @@
   background: rgba(224, 122, 95, 0.85);
   color: white;
   border: 1px solid rgba(224, 122, 95, 0.6);
+}
+
+.heroBadgeFreeAdoption {
+  background: rgba(45, 106, 79, 0.85);
+  color: white;
+  border: 1px solid rgba(82, 183, 136, 0.6);
 }
 
 .title {
@@ -209,6 +225,32 @@
 }
 
 .reportBanner p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* 무료 분양 안내 배너 */
+.freeAdoptionBanner {
+  background: rgba(82, 183, 136, 0.1);
+  border: 1px solid rgba(82, 183, 136, 0.3);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  font-size: 0.9rem;
+}
+
+.freeAdoptionBanner strong {
+  display: block;
+  color: #2d6a4f;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+[data-theme='dark'] .freeAdoptionBanner strong {
+  color: #74c69d;
+}
+
+.freeAdoptionBanner p {
   color: var(--text-muted);
   margin: 0;
 }

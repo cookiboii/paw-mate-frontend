@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
             <ul>
               <li><Link to="/guide">입양 안내</Link></li>
               <li><Link to="/animals">동물 목록</Link></li>
-              <li><Link to="/reviews">입양 후기</Link></li>
+              <li><Link to="/reviews">커뮤니티</Link></li>
             </ul>
           </div>
 

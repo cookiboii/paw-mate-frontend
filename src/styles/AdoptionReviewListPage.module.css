@@ -162,6 +162,15 @@
   color: var(--danger-color);
 }
 
+.freeAdoptionPlaceholder {
+  background: linear-gradient(135deg, rgba(82, 183, 136, 0.1) 0%, var(--bg-color) 100%);
+  color: #2d6a4f;
+}
+
+[data-theme='dark'] .freeAdoptionPlaceholder {
+  color: #74c69d;
+}
+
 /* 카드 콘텐츠 */
 .cardContent {
   padding: 20px 24px 24px;
@@ -186,6 +195,16 @@
 .badgeReview {
   background: var(--primary-light);
   color: var(--primary-color);
+}
+
+.badgeFreeAdoption {
+  background: rgba(82, 183, 136, 0.18);
+  color: #2d6a4f;
+}
+
+[data-theme='dark'] .badgeFreeAdoption {
+  background: rgba(82, 183, 136, 0.25);
+  color: #74c69d;
 }
 
 .badgeReport {

@@ -10,6 +10,7 @@ import { CATEGORY_PREFIX, getCategoryFromTitle, getCleanTitle } from './Adoption
 
 const CATEGORY_OPTIONS = [
   { key: 'REVIEW', label: '💌 입양 후기', prefix: CATEGORY_PREFIX.REVIEW },
+  { key: 'FREE_ADOPTION', label: '🎁 무료 분양', prefix: CATEGORY_PREFIX.FREE_ADOPTION },
   { key: 'REPORT', label: '🚨 유기동물 제보', prefix: CATEGORY_PREFIX.REPORT },
 ];
 
@@ -190,7 +191,15 @@ const AdoptionReviewEdit: React.FC = () => {
         </div>
 
         {/* 헤더 */}
-        <div className={`${styles.cardHeader} ${selectedCategory === 'REPORT' ? styles.cardHeaderReport : ''}`}>
+        <div
+          className={`${styles.cardHeader} ${
+            selectedCategory === 'REPORT'
+              ? styles.cardHeaderReport
+              : selectedCategory === 'FREE_ADOPTION'
+              ? styles.cardHeaderFreeAdoption
+              : ''
+          }`}
+        >
           <h2>게시글 수정</h2>
           <p>{activeCat?.label} 내용을 수정합니다.</p>
         </div>
@@ -245,6 +254,8 @@ const AdoptionReviewEdit: React.FC = () => {
               placeholder={
                 selectedCategory === 'REPORT'
                   ? '발견 장소, 시간, 동물 상태, 부상 여부 등을 자세히 적어주세요...'
+                  : selectedCategory === 'FREE_ADOPTION'
+                  ? '아이의 성격, 특징, 배변 훈련 여부, 원하는 입양자 조건 등을 자세히 적어주세요...'
                   : '반려동물과의 소중한 추억을 자유롭게 적어주세요!'
               }
               value={form.content}
@@ -256,7 +267,13 @@ const AdoptionReviewEdit: React.FC = () => {
 
           <button
             type="submit"
-            className={`${selectedCategory === 'REPORT' ? styles.submitBtnReport : 'btn-primary'} ${styles.submitBtn}`}
+            className={`${
+              selectedCategory === 'REPORT'
+                ? styles.submitBtnReport
+                : selectedCategory === 'FREE_ADOPTION'
+                ? styles.submitBtnFreeAdoption
+                : 'btn-primary'
+            } ${styles.submitBtn}`}
           >
             수정 완료하기
           </button>
