@@ -1,211 +1,212 @@
-# 🐾 PawMate - 입양동물 플랫폼 백엔드
+# 🐾 AdoptMate (PawMate) - 프론트엔드
 
-유기동물과 입양희망자를 연결하는 풀스택 웹 플랫폼의 백엔드 서비스입니다.  
-Spring Boot와 Java 17을 기반으로 구축되었으며, 회원 관리, 이메일 인증, 카카오 소셜 로그인, JWT/Redis 토큰 관리, 보호 동물의 입양 신청 및 계층형 대댓글 커뮤니티 기능을 제공합니다.
+> **"사지 말고 입양하세요"**  
+> 유기동물과 새로운 가족을 따뜻하게 연결하는 풀스택 입양 & 커뮤니티 플랫폼의 **React 19 + TypeScript** 프론트엔드 웹 애플리케이션입니다.
+
+<br/>
+
+## 📖 목차
+1. [프로젝트 소개](#-프로젝트-소개)
+2. [기술 스택](#-기술-스택)
+3. [주요 기능](#-주요-기능)
+4. [프로젝트 구조](#-프로젝트-구조)
+5. [핵심 아키텍처 & UX 포인트](#-핵심-아키텍처--ux-포인트)
+6. [시작 가이드 (Getting Started)](#-시작-가이드-getting-started)
+7. [페이지 & 라우팅 구조](#-페이지--라우팅-구조)
 
 ---
 
-## 🌱 프로젝트 개요
+## 🐶 프로젝트 소개
 
-> "기술로 유기동물 문제를 해결할 수 없을까?"라는 고민에서 출발한 개인 프로젝트입니다.  
-보호소에서 봉사하며 느꼈던 현실적인 불편함을 바탕으로, 입양 절차를 온라인으로 쉽게 진행하고 소통할 수 있도록 제작하였습니다.
+**AdoptMate**는 보호소의 유기동물 정보 확인부터 온라인 입양 신청, 입양 후기 및 무료 분양, 유기동물 긴급 제보까지 한곳에서 소통할 수 있도록 제작된 반응형 웹 플랫폼입니다.
+
+- **안전하고 체계적인 입양 절차**: 조건별 상세 검색, 관심 동물 찜하기, 온라인 입양 신청서 작성
+- **활발한 소통 커뮤니티**: 입양 후기, 무료 분양, 긴급 유기동물 제보 및 계층형 대댓글 지원
+- **사용자 중심의 UX**: 라이트/다크 모드, 반응형 모바일 드로어, 스켈레톤 로딩, 무한 스크롤, 실시간 토스트 알림
 
 ---
 
-## 🔧 기술 스택
+## 🛠 기술 스택
 
-### Backend Framework & Language
-- **Language**: Java 17
-- **Framework**: Spring Boot 3.5.3
-- **Security & Auth**: Spring Security, OAuth2 Client, JWT (jjwt 0.11.5)
-- **Database / ORM**: Spring Data JPA, H2 / MySQL
-- **Cache & Session**: Redis (Spring Data Redis)
-- **Mail Service**: JavaMailSender (SMTP)
-- **Build Tool**: Gradle
+### Core & Framework
+- **Runtime & Library**: React 19 (`^19.1.0`)
+- **Language**: TypeScript (`~5.8.0`)
+- **Build Tool**: Vite 7 (`^7.0.0`)
+- **Routing**: React Router DOM v7 (`^7.6.3`)
+- **HTTP Client**: Axios (`^1.9.0`)
+
+### Styling & Design System
+- **CSS Architecture**: CSS Modules (`*.module.css`) + Global CSS Variables
+- **Design Tokens**: HSL 테마 컬러, Glassmorphism, 부드러운 트랜지션 및 마이크로 인터랙션
+- **Theme**: 시스템 테마 감지 및 로컬스토리지 연동 **라이트 / 다크 모드**
+- **Responsive Design**: 데스크톱, 태블릿, 모바일 완벽 대응
 
 ---
 
 ## 🚀 주요 기능
 
-### 🔐 인증 및 회원 관리
-- 일반 회원가입 및 로그인 (JWT Access Token & Refresh Token 기반)
-- 이메일 인증 코드 발송 및 검증 (Redis 연동)
-- 비밀번호 재설정 기능 (안전한 인증 확인 검증 적용)
-- 카카오 OAuth2 소셜 로그인 지원
-- Redis 기반 토큰 자동 갱신 및 로그아웃 블랙리스트 관리
+### 1. 🏠 메인 & 탐색 (Home & Discovery)
+- **비주얼 히어로 슬라이더**: 자동 재생 및 마우스 호버 일시정지, 인터랙티브 닷/화살표 인디케이터
+- **방금 들어온 새로운 가족**: 백엔드 API 연동 최신 등록 보호 동물 실시간 큐레이션
+- **입양 절차 안내 & Scroll Reveal**: 스크롤 위치에 맞춰 요소가 등장하는 인터랙티브 애니메이션
+- **빠른 로그인 모달**: 비로그인 사용자를 위한 메인 화면 인라인 팝업 로그인
 
-### 🐶 보호 동물 관리
-- 보호 동물 등록, 상세 조회 및 페이징 목록 조회
-- 보호 동물 상태 수정 (보호중, 입양완료 등) 및 삭제 (관리자 권한)
+### 2. 🐾 유기동물 목록 & 상세 (Animals & Adoption)
+- **다중 필터링 & 실시간 검색**: 종별(강아지/고양이/기타), 성별(수컷/암컷), 품종 및 색상 키워드 실시간 필터링
+- **관심 동물(찜하기) 시스템**: 로그인 연동 및 로컬스토리지 동기화 하트 토글 (비로그인 시 안내 툴팁)
+- **상세 정보 & 맞춤 상태 배너**: 보호 상태(보호중, 대기중, 입양완료)에 따른 직관적 안내 배너
+- **온라인 입양 신청서**: 주거 형태, 기존 반려동물 유무, 입양 동기 작성 및 평생 양육 필수 서약 검증
 
-### 🏡 입양 신청 관리
-- 유기동물 입양 신청서 제출 및 중복 신청 방지
-- 사용자별 내 입양 신청 내역 조회
-- 관리자 전체 입양 신청 내역 조회 및 상태 변경 (승인 / 거절)
+### 3. 💬 커뮤니티 (Community & Comments)
+- **4가지 카테고리 탭**: `전체(📋)`, `입양 후기(💌)`, `무료 분양(🎁)`, `유기동물 제보(🚨)`
+- **무한 스크롤(Infinite Scroll)**: `Intersection Observer API`를 활용한 게시글 자동 추가 로딩
+- **드래그 앤 드롭 이미지 업로드**: 이미지 미리보기 및 Base64 인코딩 지원
+- **카테고리별 맞춤 안내**: 유기동물 제보 시 긴급 상담전화(1577-0954) 배너 및 무료 분양 가이드
+- **계층형 대댓글 시스템**: 댓글 작성, 대댓글(답글) 작성/접기/펼치기, 본인 댓글 수정 및 삭제
 
-### 💬 커뮤니티 & 계층형 댓글
-- 입양 후기 및 게시글 작성, 조회(페이징), 수정, 삭제
-- 계층형 댓글 및 대댓글(답글) 작성/조회 (EntityGraph 페치 조인 적용으로 N+1 쿼리 최적화)
+### 4. 🔐 인증 & 회원 관리 (Authentication)
+- **JWT 이중 토큰 인증**: Access Token 만료 시 Refresh Token을 통한 백그라운드 자동 갱신
+- **이메일 인증 시스템**: 회원가입 시 인증 코드 발송 및 실시간 카운트다운 타이머(3분)
+- **비밀번호 찾기 & 재설정**: 이메일 코드 검증 기반의 안전한 2단계 비밀번호 변경
+- **카카오 OAuth2 소셜 로그인**: 카카오 인가 코드를 수신하여 자동 로그인 및 토큰 발급 처리
+- **마이페이지**: 내 프로필 정보 조회, 관심 등록한 동물(찜 목록) 바로가기, 로그아웃
+
+### 5. 👑 관리자 대시보드 (Admin Dashboard)
+- **관리자 전용 라우트 보호 (`AdminRoute`)**: `ROLE_ADMIN` 권한 검증 및 비인가 접근 차단
+- **동물 등록 및 상태 관리**: 새 보호동물 등록, 상태(대기/보호/입양완료) 수정 및 정보 삭제
+- **사용자 관리**: 전체 가입 회원 목록 조회 및 권한 확인
+- **입양 신청 심사**: 접수된 모든 입양 신청서 확인 및 상태 승인/반려 관리
 
 ---
 
-## 📊 시스템 구조 및 다이어그램
+## 📁 프로젝트 구조
 
-### DB 설계 (ERD)
-<img width="1280" height="952" alt="DB Diagram" src="https://github.com/user-attachments/assets/250cbc1b-0326-459e-a89d-17a871cc97be" />
-
-### 유스케이스 다이어그램
-<img width="1104" height="930" alt="Use Case Diagram" src="https://github.com/user-attachments/assets/ee9125c5-c1a1-4dbd-a8b3-63ffeee61a5d" />
-
----
-
-## 📋 REST API 명세서
-
-### 📦 공통 응답 포맷
-
-본 프로젝트의 API는 일관된 응답 구조(`CommonResDto`)를 사용합니다.
-
-```json
-{
-  "statusCode": 200,
-  "statusMessage": "성공 메시지",
-  "result": { ... }
-}
+```text
+paw-mate-frontend/
+├── public/                     # 정적 에셋
+├── src/
+│   ├── api/                    # API 모듈 및 Axios 인스턴스
+│   │   ├── axiosInstance.ts    # JWT 토큰 인터셉터 및 401 갱신 큐
+│   │   ├── auth.ts             # 인증/회원 API
+│   │   └── animal.ts           # 동물/입양 API
+│   ├── assets/                 # 이미지 및 미디어 리소스
+│   ├── components/             # 공통 UI 컴포넌트
+│   │   ├── Header.tsx          # 상단 네비게이션 & 모바일 드로어
+│   │   ├── Footer.tsx          # 하단 푸터
+│   │   ├── Layout.tsx          # 페이지 공통 레이아웃
+│   │   ├── CommentSection.tsx  # 계층형 댓글/대댓글 컴포넌트
+│   │   ├── ConfirmModal.tsx    # 커스텀 삭제/확인 모달
+│   │   ├── FloatingInput.tsx   # 플로팅 라벨 인풋 필드
+│   │   ├── ImageWithFallback.tsx # 이미지 에러/지연 로딩 대응
+│   │   ├── Toast.tsx           # 토스트 알림 UI
+│   │   ├── Skeleton.tsx        # 스켈레톤 로더
+│   │   ├── ErrorBoundary.tsx   # React 에러 바운더리
+│   │   └── ...
+│   ├── constants/              # 공통 상수 및 라벨 매핑
+│   │   └── animal.ts           # 동물 종/성별/상태 상수
+│   ├── context/                # 글로벌 상태 관리 (React Context)
+│   │   ├── AuthContext.tsx     # 사용자 로그인/권한 상태
+│   │   ├── ThemeContext.tsx    # 라이트/다크 테마 상태
+│   │   ├── ToastContext.tsx    # 토스트 알림 디스패처
+│   │   └── FavoritesContext.tsx # 관심 동물(찜) 상태
+│   ├── hooks/                  # 커스텀 훅
+│   │   ├── usePageTitle.ts     # 페이지 타이틀 변경 훅
+│   │   └── useScrollReveal.ts  # 스크롤 인터랙션 훅
+│   ├── pages/                  # 라우트 페이지 컴포넌트
+│   │   ├── HomePage.tsx        # 메인 홈
+│   │   ├── AnimalList.tsx      # 동물 목록
+│   │   ├── AnimalDetail.tsx    # 동물 상세
+│   │   ├── AdoptionForm.tsx    # 입양 신청서
+│   │   ├── AdoptionReviewListPage.tsx # 커뮤니티 목록
+│   │   ├── AdoptionReviewDetail.tsx   # 커뮤니티 상세
+│   │   ├── AdoptionReview.tsx         # 글쓰기
+│   │   ├── AdoptionReviewEdit.tsx     # 글 수정
+│   │   ├── Login.tsx / Register.tsx   # 로그인 / 회원가입
+│   │   ├── ForgotPassword.tsx         # 비밀번호 찾기
+│   │   ├── MyPage.tsx                 # 마이페이지
+│   │   ├── AdoptionGuide.tsx / FAQ.tsx # 입양 안내 / 자주 묻는 질문
+│   │   ├── admin/              # 관리자 전용 페이지
+│   │   └── ...
+│   ├── styles/                 # CSS Modules 및 글로벌 스타일
+│   │   ├── global.css          # CSS 변수, 테마 토큰, 리셋
+│   │   └── *.module.css        # 컴포넌트별 모듈러 스타일
+│   ├── types/                  # TypeScript 도메인 타입 정의
+│   ├── utils/                  # 유틸리티 함수 (date 포맷터 등)
+│   ├── App.tsx                 # 코드 스플리팅 & 라우팅 정의
+│   ├── main.tsx                # React 19 엔트리 포인트
+│   └── vite-env.d.ts           # Vite 환경 타입 선언
+├── index.html                  # HTML 템플릿
+├── package.json
+├── tsconfig.json               # TypeScript 설정
+└── vite.config.ts              # Vite 설정
 ```
 
 ---
 
-### 👤 1. 회원 & 인증 API (`/adoptmate`)
+## ⚡ 핵심 아키텍처 & UX 포인트
 
-| 메서드 | URL | 권한 | 설명 | Request Body / Params | Response Data |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/adoptmate/register` | Public | 일반 회원가입 | `MemberRegisterRequestDto` | `MemberResponseDto` |
-| `POST` | `/adoptmate/login` | Public | 일반 로그인 | `MemberLoginResponseDto` | `MemberLoginResultDto` |
-| `POST` | `/adoptmate/refresh-token` | Public | Access Token 재발급 | `{"refreshToken": "string"}` | `{"token": "string"}` |
-| `POST` | `/adoptmate/logout` | User | 로그아웃 (토큰 블랙리스트/Redis 파기) | Header: `Authorization: Bearer <token>` | `null` |
-| `GET` | `/adoptmate/myInfo` | User | 내 정보 조회 | Header: `Authorization: Bearer <token>` | `MemberInfoRequestDto` |
-| `GET` | `/adoptmate/all` | Admin | 전체 회원 목록 조회 | - | `List<MemberInfoRequestDto>` |
-| `POST` | `/adoptmate/password` | User | 비밀번호 변경 (로그인 상태) | `PasswordChangeRequestDto` | `PasswordChangeRequestDto` |
-| `DELETE` | `/adoptmate/delete` | User | 회원 탈퇴 | Header: `Authorization: Bearer <token>` | `TokenUserInfo` |
+### 1. 🛡️ 무중단 JWT 자동 갱신 인터셉터 (`axiosInstance.ts`)
+- 백엔드로부터 `401 Unauthorized` 응답이 올 경우, 사용자의 작업을 중단시키지 않고 백그라운드에서 `RefreshToken`으로 새 `AccessToken`을 요청합니다.
+- 토큰 갱신 중 들어오는 추가 API 요청들은 대기열(`failedQueue`)에 보관된 후, 새 토큰으로 일괄 재시도 처리됩니다.
 
-<details>
-<summary><b>📄 회원 관련 DTO 상세</b></summary>
+### 2. ⚡ 성능 최적화 (Code Splitting & Lazy Loading)
+- `React.lazy()` 및 `Suspense`를 통해 모든 페이지 컴포넌트를 청크 단위로 분할 로딩하여 초기 번들 크기를 최소화하고 로딩 속도를 향상시켰습니다.
+- 이미지 에러 시 기본 대체 이미지(`ImageWithFallback`)와 스켈레톤 로더(`Skeleton`)를 제공하여 레이아웃 시프트(CLS)를 방지합니다.
 
-- **MemberRegisterRequestDto** (회원가입 요청): `name` (String), `email` (String), `password` (String), `role` (Role: `USER` \| `ADMIN`)
-- **MemberLoginResponseDto** (로그인 요청 / 비밀번호 변경): `email` (String, 필수/이메일형식), `password` (String, 필수)
-- **MemberLoginResultDto** (로그인 응답): `token` (String), `refreshToken` (String), `email` (String), `role` (Role)
-- **MemberInfoRequestDto** (회원 정보): `id` (Long), `name` (String), `email` (String), `role` (Role)
-- **MemberResponseDto** (회원 응답): `id` (Long), `name` (String), `email` (String), `password` (String), `role` (Role), `profileImage` (String), `socialProvider` (String), `socialId` (String)
-- **PasswordChangeRequestDto** (비밀번호 변경 요청): `currentPassword` (String), `newPassword` (String)
-
-</details>
+### 3. 🌓 완전한 다크모드 지원
+- `CSS Variables` 기반의 테마 시스템으로 깜빡임 없이 부드러운 테마 전환을 제공하며, 사용자 선호 테마를 로컬스토리지에 영구 보관합니다.
 
 ---
 
-### ✉️ 2. 이메일 인증 & 비밀번호 재설정 API (`/adoptmate`)
+## 💻 시작 가이드 (Getting Started)
 
-| 메서드 | URL | 권한 | 설명 | Request Body / Params | Response Data |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/adoptmate/verify-email` | Public | 회원가입용 이메일 인증 코드 발송 | `{"email": "string"}` | `null` |
-| `POST` | `/adoptmate/verify-code` | Public | 이메일 인증 코드 검증 | `{"email": "string", "code": "string"}` | `Map<String, String>` |
-| `POST` | `/adoptmate/send-reset-code` | Public | 비밀번호 재설정 인증 코드 발송 | Query: `?email={email}` | `null` |
-| `POST` | `/adoptmate/verify-reset-code` | Public | 비밀번호 재설정 인증 코드 검증 | Query: `?email={email}&code={code}` | `null` |
-| `PATCH` | `/adoptmate/password` | Public | 비밀번호 재설정 (인증 완료 후) | `MemberLoginResponseDto` | `null` |
+### 1. 패키지 설치
+```bash
+npm install
+```
 
----
+### 2. 환경 변수 설정
+프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 백엔드 API 주소를 설정합니다.
+```env
+VITE_API_BASE_URL=https://port-0-paw-mate-be-m68k5w0efb6fae78.sel4.cloudtype.app
+```
 
-### 🔑 3. 카카오 소셜 로그인 API (`/adoptmate`)
+### 3. 개발 서버 실행
+```bash
+npm run dev
+```
+브라우저에서 `http://localhost:5173`으로 접속합니다.
 
-| 메서드 | URL | 권한 | 설명 | Request Params | Response |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/adoptmate/kakao` | Public | 카카오 OAuth2 콜백 | Query: `?code={code}` | HTML (Window postMessage / Redirect) |
-
----
-
-### 🐶 4. 보호 동물 관리 API (`/animals`)
-
-| 메서드 | URL | 권한 | 설명 | Request Body / Params | Response Data |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/animals/register` | Admin | 보호 동물 등록 | `AnimalCreateRequest` | `Animal` (Entity) |
-| `GET` | `/animals/list` | Public | 보호 동물 목록 조회 (페이징) | Query: `?page=0&size=10` | `Page<AnimalResponse>` |
-| `GET` | `/animals/{id}` | Public | 보호 동물 상세 조회 | Path: `id` | `AnimalResponse` |
-| `PUT` | `/animals/{id}/status` | Admin | 보호 동물 상태 변경 | Path: `id`, Body: `AnimalStatusUpdateRequest` | `AnimalResponse` |
-| `DELETE` | `/animals/delete/{id}` | Admin | 보호 동물 삭제 | Path: `id` | HTTP 204 No Content |
-
-<details>
-<summary><b>📄 보호 동물 관련 DTO & Enum 상세</b></summary>
-
-- **AnimalCreateRequest**: `species` (String), `breed` (String), `color` (String), `image` (String), `age` (Long), `gender` (`Gender`), `status` (`Status`), `member` (Member)
-- **AnimalResponse**: `id` (Long), `species` (String), `breed` (String), `color` (String), `status` (`Status`), `age` (Long), `gender` (`Gender`), `image` (String)
-- **AnimalStatusUpdateRequest**: `status` (`Status`)
-- **Enums**:
-  - `Status`: `WAITING` (대기), `PROTECTED` (보호중), `ADOPTED` (입양완료)
-  - `Gender`: `MALE` (수컷), `FEMALE` (암컷)
-
-</details>
+### 4. 프로덕션 빌드 및 타입 검사
+```bash
+npm run build
+```
 
 ---
 
-### 🏡 5. 입양 신청 관리 API (`/adoptions`)
+## 🗺️ 페이지 & 라우팅 구조
 
-| 메서드 | URL | 권한 | 설명 | Request Body / Params | Response Data |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/adoptions/animals/{animalId}` | User | 동물 입양 신청 | Path: `animalId`, Body: `AdoptionRequestDto` | `AdoptionResponseDto` |
-| `GET` | `/adoptions/myAdoption` | User | 내 입양 신청 내역 조회 | Header: `Authorization: Bearer <token>` | `List<AdoptionResponseDto>` |
-| `GET` | `/adoptions/all` | Admin/User | 전체 입양 신청 내역 조회 | - | `List<AdoptionResponseDto>` |
-| `PUT` | `/adoptions/{adoptionId}/status` | User/Admin | 입양 신청 상태 변경 | Path: `adoptionId`, Body: `AdoptionUpdateRequestDto` | `AdoptionResponseDto` |
-
-<details>
-<summary><b>📄 입양 신청 관련 DTO & Enum 상세</b></summary>
-
-- **AdoptionRequestDto**: `memberId` (Long), `animalId` (Long), `interview` (String - 신청 사유/인터뷰), `status` (`AdoptionStatus`)
-- **AdoptionResponseDto**: `adoptionId` (Long), `memberName` (String), `status` (`AdoptionStatus`), `interviewer` (String), `animalImage` (String), `applyDate` (String)
-- **AdoptionUpdateRequestDto**: `adoptionStatus` (`AdoptionStatus`)
-- **Enum**:
-  - `AdoptionStatus`: `PENDING` (신청대기), `APPROVED` (승인), `REJECTED` (거절)
-
-</details>
-
----
-
-### 📝 6. 커뮤니티 게시글 API (`/post`)
-
-| 메서드 | URL | 권한 | 설명 | Request Body / Params | Response Data |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/post/create` | User | 게시글 작성 | `PostCreateRequestDto` | `Post` (Entity) |
-| `GET` | `/post/list` | Public | 게시글 목록 조회 (페이징) | Query: `?page=0&size=10&sort=id,desc` | `Page<PostResponseDto>` |
-| `GET` | `/post/{postId}` | Public | 게시글 상세 조회 | Path: `postId` | `PostResponseDto` |
-| `PUT` | `/post/{postId}` | Author/Admin | 게시글 수정 | Path: `postId`, Body: `PostUpdateRequestDto` | `PostResponseDto` |
-| `DELETE` | `/post/{postId}` | Author/Admin | 게시글 삭제 | Path: `postId` | `null` |
-
-<details>
-<summary><b>📄 게시글 관련 DTO 상세</b></summary>
-
-- **PostCreateRequestDto**: `title` (String), `content` (String), `img` (String), `name` (String), `dateTime` (LocalDateTime)
-- **PostResponseDto**: `id` (Long), `title` (String), `content` (String), `email` (String), `name` (String), `createAt` (LocalDateTime), `img` (String)
-- **PostUpdateRequestDto**: `title` (String), `img` (String), `content` (String)
-
-</details>
+| 경로 | 페이지 설명 | 접근 권한 |
+| :--- | :--- | :--- |
+| `/` | 메인 홈 (히어로 슬라이더, 신규 동물 큐레이션) | 전체 공개 |
+| `/guide` | 입양 절차 및 안내 가이드 | 전체 공개 |
+| `/animals` | 보호 동물 목록 (검색 & 다중 필터) | 전체 공개 |
+| `/animals/:id` | 동물 상세 정보 & 찜하기 | 전체 공개 (입양신청: 회원) |
+| `/adopt/:animalId` | 입양 신청서 작성 | 회원 전용 (`USER`) |
+| `/reviews` (`/community`) | 커뮤니티 (입양후기 / 무료분양 / 제보 목록) | 전체 공개 |
+| `/reviews/:id` | 커뮤니티 상세 & 계층형 댓글 | 전체 공개 |
+| `/review` | 커뮤니티 글쓰기 (사진 첨부) | 회원 전용 (`USER`) |
+| `/reviews/:id/edit` | 커뮤니티 글 수정 | 작성자 / 관리자 |
+| `/login` / `/register` | 로그인 / 이메일 인증 회원가입 | 비로그인 |
+| `/forgot-password` | 2단계 비밀번호 재설정 | 비로그인 |
+| `/mypage` | 마이페이지 (내 정보, 찜한 동물 목록) | 회원 전용 (`USER`) |
+| `/admin/users` | [관리자] 회원 관리 | 관리자 (`ADMIN`) |
+| `/admin/animals` | [관리자] 동물 등록 & 목록 관리 | 관리자 (`ADMIN`) |
+| `/admin/adoptions` | [관리자] 입양 신청 심사 관리 | 관리자 (`ADMIN`) |
+| `/faq` / `/terms` | 자주 묻는 질문 / 이용약관 | 전체 공개 |
 
 ---
 
-### 💬 7. 댓글 & 계층형 답글 API (`/comment`)
+## 📄 라이선스
 
-| 메서드 | URL | 권한 | 설명 | Request Body / Params | Response Data |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/comment/{postId}` | User | 댓글/답글 작성 | Path: `postId`, Body: `CommentDto` | `CommentResponseDto` |
-| `GET` | `/comment/{postId}` | Public | 특정 게시글 댓글 목록 (계층형) | Path: `postId` | `List<CommentResponseDto>` |
-| `PUT` | `/comment/update/{commentId}` | Author/Admin | 댓글 수정 | Path: `commentId`, Body: `CommentUpdateDto` | `CommentResponseDto` |
-| `DELETE` | `/comment/{commentId}` | Author/Admin | 댓글 삭제 | Path: `commentId` | `null` |
-
-<details>
-<summary><b>📄 댓글 관련 DTO 상세</b></summary>
-
-- **CommentDto** (작성 요청): `parentId` (Long, 최상위 댓글은 `null` / 답글일 경우 부모 댓글 ID), `content` (String)
-- **CommentResponseDto** (응답): `id` (Long), `authorName` (String), `authorId` (Long), `authorEmail` (String), `content` (String), `createdAt` (LocalDateTime), `children` (`List<CommentResponseDto>` - 대댓글 리스트)
-- **CommentUpdateDto** (수정 요청): `commentId` (Long), `content` (String)
-
-</details>
-
-
-
+This project is licensed under the MIT License.
