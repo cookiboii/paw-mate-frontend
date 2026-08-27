@@ -65,9 +65,6 @@ const Header: React.FC = () => {
             <li><NavLink to="/guide" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>입양 안내</NavLink></li>
             <li><NavLink to="/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>동물 목록</NavLink></li>
             <li><NavLink to="/reviews" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>커뮤니티</NavLink></li>
-            {isAuthenticated && (
-              <li><NavLink to="/review" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>글쓰기</NavLink></li>
-            )}
             {isAdmin && (
               <>
                 <li><NavLink to="/admin/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>동물 등록</NavLink></li>
@@ -162,9 +159,6 @@ const Header: React.FC = () => {
             <li><NavLink to="/guide" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>📖 입양 안내</NavLink></li>
             <li><NavLink to="/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>🐾 동물 목록</NavLink></li>
             <li><NavLink to="/reviews" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>💬 커뮤니티</NavLink></li>
-            {isAuthenticated && (
-              <li><NavLink to="/review" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>✏️ 글쓰기</NavLink></li>
-            )}
             
             {isAuthenticated && !isAdmin && (
               <li>
