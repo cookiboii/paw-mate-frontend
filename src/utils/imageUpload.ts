@@ -21,10 +21,8 @@ export async function uploadImageToBlob(file: File): Promise<string> {
       token: token,
     });
 
-    console.log('✅ Vercel Blob 업로드 성공:', blob.url);
     return blob.url;
   } catch (error) {
-    console.error('❌ Vercel Blob 업로드 실패:', error);
     throw new Error('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
   }
 }

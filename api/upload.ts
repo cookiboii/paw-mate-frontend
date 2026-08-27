@@ -27,7 +27,6 @@ export async function POST(request: Request) {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
-    console.error('Vercel Blob Upload Error:', error);
     return new Response(
       JSON.stringify({ error: error.message || '이미지 업로드에 실패했습니다.' }),
       {
