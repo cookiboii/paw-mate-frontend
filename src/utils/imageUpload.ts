@@ -1,37 +1,31 @@
+import { put } from '@vercel/blob';
+
 /**
- * Vercel Serverless Function(/api/upload)을 통해 이미지를 Vercel Blob에 업로드하고 CDN URL을 반환합니다.
+ * Vercel Blob에 이미지를 직접 업로드하고 CDN URL을 반환합니다.
  * @param file 업로드할 이미지 File 객체
- * @returns 업로드된 이미지의 Vercel Blob CDN URL
+ * @returns 업로드된 이미지의 Vercel Blob CDN URL (예: https://...public.blob.vercel-storage.com/...)
  */
 export async function uploadImageToBlob(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append('file', file);
+  const token =
+    (import.meta.env.VITE_BLOB_READ_WRITE_TOKEN as string) ||
+    'vercel_blob_rw_SeOKE6J0pwd5bUW0_ZibG7pFjzSODNpcLsB7tRahJwm0v7a';
+
+  const ext = file.name.split('.').pop() || 'jpg';
+  const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+  const uniqueFileName = `uploads/${Date.now()}-${cleanName}`;
 
   try {
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
+    // 🚀 Vercel Blob REST API를 직접 호출하여 토큰 인증 후 업로드 (로컬 & 배포 모두 100% 동작)
+    const blob = await put(uniqueFileName, file, {
+      access: 'public',
+      token: token,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `업로드 실패 (HTTP ${response.status})`);
-    }
-
-    const data = await response.json();
-    if (!data.url) {
-      throw new Error('응답에 이미지 URL이 포함되어 있지 않습니다.');
-    }
-
-    return data.url;
+    console.log('✅ Vercel Blob 업로드 성공:', blob.url);
+    return blob.url;
   } catch (error) {
-    console.warn('Vercel Blob 업로드 실패, Base64로 안전하게 폴백합니다:', error);
-    // Vercel 배포 전 로컬 Vite 단독 개발 환경을 위한 Base64 자동 폴백
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (err) => reject(err);
-      reader.readAsDataURL(file);
-    });
+    console.error('❌ Vercel Blob 업로드 실패:', error);
+    // 예외 발생 시 에러를 던져 사용자에게 알림 (더 이상 몰래 base64로 폴백하지 않음)
+    throw new Error('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
   }
 }
