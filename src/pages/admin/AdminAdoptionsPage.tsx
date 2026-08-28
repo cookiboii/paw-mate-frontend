@@ -6,13 +6,15 @@ import ConfirmModal from '../../components/ConfirmModal';
 import { formatDateTime, formatDate } from '../../utils/date';
 import usePageTitle from '../../hooks/usePageTitle';
 
+// API 명세: AdoptionResponseDto { adoptionId, memberName, status, interviewer?, animalImage?, applyDate? }
+// 서버가 추가 정보를 반환하는 경우를 대비해 optional 필드 포함
 interface AdminAdoptionItem {
   adoptionId: number | string;
-  animalId: number | string;
+  animalId?: number | string;
   animalBreed?: string;
   animalImage?: string;
-  userName?: string;
-  memberName?: string;
+  userName?: string;      // 혹시 서버가 userName으로 반환하는 경우
+  memberName?: string;    // API 명세 기준 필드
   phone?: string;
   housingType?: string;
   hasPet?: string;
@@ -20,6 +22,7 @@ interface AdminAdoptionItem {
   status: string;
   reason?: string;
   interview?: string;
+  interviewer?: string;
 }
 
 const AdminAdoptionsPage: React.FC = () => {

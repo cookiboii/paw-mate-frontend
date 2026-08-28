@@ -48,7 +48,21 @@ export const changePassword = async ({
 };
 
 /**
- * 🚪 회원 탈퇴 API
+ * 🚪 로그아웃 API (Redis 토큰 삭제 및 블랙리스트 등록)
+ */
+export const logoutUser = async () => {
+  return await axiosInstance.post('/adoptmate/logout');
+};
+
+/**
+ * 🔄 Access Token 재발급 API
+ */
+export const refreshAccessToken = async (refreshToken: string) => {
+  return await axiosInstance.post('/adoptmate/refresh-token', { refreshToken });
+};
+
+/**
+ * 🗑️ 회원 탈퇴 API
  */
 export const deleteAccount = async () => {
   return await axiosInstance.delete('/adoptmate/delete');

@@ -20,6 +20,12 @@ interface AdoptionHistoryItem {
   animalImage?: string;
   applyDate?: string;
   status?: string;
+  memberName?: string;
+  phone?: string;
+  housingType?: string;
+  hasPet?: string;
+  reason?: string;
+  interviewer?: string;
 }
 
 const MyPage: React.FC = () => {
@@ -269,11 +275,11 @@ const MyPage: React.FC = () => {
                       <li key={adoption.adoptionId || index} className={styles.adoptionItem}>
                         <img
                           src={adoption.animalImage || '/default-animal.jpg'}
-                          alt={adoption.animalBreed || adoption.animalName}
+                          alt={adoption.animalBreed || adoption.animalName || '입양 동물'}
                           className={styles.adoptionImage}
                         />
                         <div className={styles.adoptionInfo}>
-                          <h4>{adoption.animalBreed || adoption.animalName || '품종 미기재'}</h4>
+                          <h4>{adoption.animalBreed || adoption.animalName || '입양 신청 #' + (adoption.adoptionId || (index + 1))}</h4>
                           <span
                             className={`${styles.statusBadge} ${
                               adoption.status === 'APPROVED'
