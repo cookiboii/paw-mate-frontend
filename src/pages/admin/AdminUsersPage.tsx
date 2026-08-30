@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import axiosInstance from '../../api/axiosInstance';
+import { getAllUsers } from '../../api/user';
 import styles from '../../styles/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import usePageTitle from '../../hooks/usePageTitle';
@@ -16,10 +16,9 @@ const AdminUsersPage: React.FC = () => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    axiosInstance
-      .get('/adoptmate/all')
-      .then((res) => {
-        setUsers(res.data.result || res.data || []);
+    getAllUsers()
+      .then((data) => {
+        setUsers(data || []);
       })
       .catch(() => {
         showToast('회원 목록을 불러오지 못했습니다.', 'error');

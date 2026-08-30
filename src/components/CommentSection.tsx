@@ -1,5 +1,6 @@
 import React, { useEffect, useState, FormEvent } from 'react';
-import axios from '../api/axiosInstance';
+import { getComments, createComment, updateComment, deleteComment } from '../api/review';
+import { getMyInfo } from '../api/user';
 import styles from '../styles/CommentSection.module.css';
 import Spinner from '../components/Spinner';
 import { CommentItem } from '../types/review';
@@ -16,22 +17,30 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [editModeMap, setEditModeMap] = useState<Record<string | number, boolean>>({});
   const [loadingMap, setLoadingMap] = useState<Record<string | number, boolean>>({});
 
+  const refreshComments = async () => {
+    try {
+      const data = await getComments(postId);
+      setComments(data || []);
+    } catch (err) {
+      console.error('댓글 새로고침 실패:', err);
+    }
+  };
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [userRes, commentsRes] = await Promise.all([
-          axios.get('/adoptmate/myInfo').catch(() => null),
-          axios.get(`/comment/${postId}`).catch(() => null),
+        const [userData, commentsData] = await Promise.all([
+          getMyInfo().catch(() => null),
+          getComments(postId).catch(() => null),
         ]);
 
-        const user = userRes?.data?.result || userRes?.data;
-        if (user) {
+        if (userData) {
           setUserInfo({
-            email: (user.email || '').trim().toLowerCase(),
-            role: (user.role || '').toUpperCase(),
+            email: (userData.email || '').trim().toLowerCase(),
+            role: (userData.role || '').toUpperCase(),
           });
         }
-        setComments(commentsRes?.data?.result || commentsRes?.data || []);
+        setComments(commentsData || []);
       } catch (err) {
         console.error('초기 데이터 로딩 실패:', err);
       }
@@ -53,10 +62,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     setLoadingMap((prev) => ({ ...prev, [key]: true }));
 
     try {
-      await axios.post(`/comment/${postId}`, { content, parentId });
+      await createComment(postId, { content, parentId });
       setContentMap((prev) => ({ ...prev, [key]: '' }));
-      const { data } = await axios.get(`/comment/${postId}`);
-      setComments(data?.result || data || []);
+      await refreshComments();
     } catch (err) {
       console.error('댓글 등록 실패:', err);
     } finally {
@@ -69,9 +77,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     setLoadingMap((prev) => ({ ...prev, [commentId]: true }));
 
     try {
-      await axios.delete(`/comment/${commentId}`);
-      const { data } = await axios.get(`/comment/${postId}`);
-      setComments(data?.result || data || []);
+      await deleteComment(commentId);
+      await refreshComments();
     } catch (err) {
       console.error('댓글 삭제 실패:', err);
     } finally {
@@ -91,14 +98,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     setLoadingMap((prev) => ({ ...prev, [commentId]: true }));
 
     try {
-      // 📌 백엔드 CommentUpdateDto: commentId, content
-      await axios.put(`/comment/update/${commentId}`, {
-        commentId: Number(commentId),
-        content: updatedContent,
-      });
+      await updateComment(commentId, updatedContent);
       setEditModeMap((prev) => ({ ...prev, [commentId]: false }));
-      const { data } = await axios.get(`/comment/${postId}`);
-      setComments(data?.result || data || []);
+      await refreshComments();
     } catch (err) {
       console.error('댓글 수정 실패:', err);
     } finally {

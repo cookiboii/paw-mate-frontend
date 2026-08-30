@@ -2,11 +2,12 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import axios from '../api/axiosInstance';
+import { submitAdoption } from '../api/adoption';
 import { fetchAnimalById } from '../api/animal';
 import styles from '../styles/AdoptionForm.module.css';
 import usePageTitle from '../hooks/usePageTitle';
 import { Animal } from '../types/animal';
+import { formatPhoneNumber, isValidPhoneNumber } from '../utils/validation';
 
 const AdoptionForm: React.FC = () => {
   usePageTitle('입양 신청서 작성');
@@ -60,8 +61,7 @@ const AdoptionForm: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
-    if (!phoneRegex.test(phone.trim())) {
+    if (!isValidPhoneNumber(phone.trim())) {
       showToast('올바른 연락처 형식(예: 010-1234-5678)을 입력해 주세요.', 'error');
       return;
     }
@@ -88,7 +88,7 @@ const AdoptionForm: React.FC = () => {
     };
 
     try {
-      await axios.post(`/adoptions/animals/${animalId}`, payload);
+      await submitAdoption(animalId, payload);
 
       showToast('🎉 입양 신청이 성공적으로 접수되었습니다! 담당자가 검토 후 연락드립니다.', 'success');
       navigate(`/animals/${animalId}`);
@@ -155,7 +155,7 @@ const AdoptionForm: React.FC = () => {
                 type="tel"
                 placeholder="010-0000-0000"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                 required
                 className={styles.input}
               />

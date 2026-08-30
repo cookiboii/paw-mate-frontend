@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styles from '../styles/AdoptionReviewListPage.module.css';
-import axios from '../api/axiosInstance';
+import { getReviews } from '../api/review';
 import { Link, useNavigate } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
 import { useAuth } from '../context/AuthContext';
@@ -79,8 +79,8 @@ const AdoptionReviewListPage: React.FC = () => {
   const fetchReviews = async (pageNum: number) => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`/post/list?page=${pageNum}&size=9&sort=id,desc`);
-      const allReviews: ReviewItem[] = res.data.result?.content ?? res.data?.content ?? [];
+      const data = await getReviews(pageNum, 9, 'id,desc');
+      const allReviews: ReviewItem[] = data.result?.content ?? data.content ?? [];
 
       // 카테고리 필터링 (프론트에서 제목 prefix 기반으로 분류)
       const filtered =

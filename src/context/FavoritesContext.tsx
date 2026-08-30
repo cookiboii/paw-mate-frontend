@@ -16,26 +16,48 @@ interface FavoritesProviderProps {
 }
 
 export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }) => {
-  const [favorites, setFavorites] = useState<Partial<Animal>[]>(() => {
-    try {
-      const saved = localStorage.getItem('paw_mate_favorites');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.error('Failed to load favorites from localStorage', e);
-      return [];
-    }
-  });
+  const { user, isAuthenticated } = useAuth();
+  const storageKey = user?.email
+    ? `paw_mate_favs_${user.email.replace(/[^a-zA-Z0-9_.-]/g, '_')}`
+    : 'paw_mate_favs_guest';
 
-  const { showToast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const [favorites, setFavorites] = useState<Partial<Animal>[]>([]);
 
+  // 사용자 전환 또는 인증 상태 변경 시 해당 계정의 찜 목록 로드
   useEffect(() => {
     try {
-      localStorage.setItem('paw_mate_favorites', JSON.stringify(favorites));
+      const currentSaved = localStorage.getItem(storageKey);
+      if (currentSaved) {
+        setFavorites(JSON.parse(currentSaved));
+      } else if (user?.email) {
+        // 기존 레거시 단일 키 마이그레이션
+        const legacySaved = localStorage.getItem('paw_mate_favorites');
+        if (legacySaved) {
+          const parsed = JSON.parse(legacySaved);
+          setFavorites(parsed);
+          localStorage.setItem(storageKey, legacySaved);
+        } else {
+          setFavorites([]);
+        }
+      } else {
+        setFavorites([]);
+      }
+    } catch (e) {
+      console.error('Failed to load favorites from localStorage', e);
+      setFavorites([]);
+    }
+  }, [storageKey, user?.email]);
+
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(favorites));
     } catch (e) {
       console.error('Failed to save favorites to localStorage', e);
     }
-  }, [favorites]);
+  }, [favorites, storageKey, isAuthenticated]);
 
   const isFavorite = (id: string | number) => {
     return favorites.some((item) => String(item.id) === String(id));

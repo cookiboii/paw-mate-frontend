@@ -7,7 +7,8 @@ import ImageWithFallback from '../components/ImageWithFallback';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import usePageTitle from '../hooks/usePageTitle';
-import axios from '../api/axiosInstance';
+import useDebounce from '../hooks/useDebounce';
+import { fetchAnimalList, fetchAnimalListBySpecies } from '../api/animal';
 import { getGenderLabel, getSpeciesLabel } from '../constants/animal';
 import { Animal } from '../types/animal';
 
@@ -23,6 +24,8 @@ const AnimalList: React.FC = () => {
   const [genderFilter, setGenderFilter] = useState<'ALL' | 'MALE' | 'FEMALE'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isAuthenticated } = useAuth();
   const pageSize = 6;
@@ -31,19 +34,12 @@ const AnimalList: React.FC = () => {
     const fetchAnimals = async () => {
       setIsLoading(true);
       try {
-        let res;
-        // 📌 API 명세서 반영:
-        // 전체 조회: GET /animals/list?page=0&size=10
-        // 종별 조회: GET /animals/species?species={species}&page=0&size=10
-        if (speciesFilter === 'ALL') {
-          res = await axios.get(`/animals/list?page=${page}&size=${pageSize}`);
-        } else {
-          res = await axios.get(
-            `/animals/species?species=${encodeURIComponent(speciesFilter)}&page=${page}&size=${pageSize}`
-          );
-        }
+        const data =
+          speciesFilter === 'ALL'
+            ? await fetchAnimalList(page, pageSize)
+            : await fetchAnimalListBySpecies(speciesFilter, page, pageSize);
 
-        const pageData = res.data.result || res.data;
+        const pageData = (data as any).result || data;
         setAnimals(pageData.content || []);
         setTotalPages(pageData.totalPages || 1);
       } catch (err) {
@@ -55,7 +51,7 @@ const AnimalList: React.FC = () => {
     fetchAnimals();
   }, [page, speciesFilter]);
 
-  // 프론트엔드 다중 필터링 (검색어 + 성별)
+  // 프론트엔드 다중 필터링 (디바운스 검색어 + 성별)
   const filteredAnimals = useMemo(() => {
     return animals.filter((animal) => {
       // 1. 성별 필터
@@ -65,8 +61,8 @@ const AnimalList: React.FC = () => {
         if (genderFilter === 'FEMALE' && !(g === 'F' || g === 'FEMALE')) return false;
       }
       // 2. 검색어 필터 (품종, 색상, 종)
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
+      if (debouncedSearchQuery.trim()) {
+        const q = debouncedSearchQuery.toLowerCase().trim();
         const breed = (animal.breed || '').toLowerCase();
         const species = (animal.species || '').toLowerCase();
         const color = (animal.color || '').toLowerCase();
@@ -76,7 +72,7 @@ const AnimalList: React.FC = () => {
       }
       return true;
     });
-  }, [animals, genderFilter, searchQuery]);
+  }, [animals, genderFilter, debouncedSearchQuery]);
 
   const handleSpeciesChange = (type: string) => {
     setSpeciesFilter(type);

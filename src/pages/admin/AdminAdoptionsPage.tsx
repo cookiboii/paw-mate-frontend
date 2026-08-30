@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from '../../api/axiosInstance';
+import { getAllAdoptions, updateAdoptionStatus } from '../../api/adoption';
 import { useToast } from '../../context/ToastContext';
 import styles from '../../styles/AdminAdoptionsPage.module.css';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -26,8 +26,7 @@ const AdminAdoptionsPage: React.FC = () => {
 
   const fetchAdoptions = async () => {
     try {
-      const res = await axios.get('/adoptions/all');
-      const data = res.data.result || res.data || [];
+      const data = await getAllAdoptions();
       setAdoptions(data);
     } catch {
       showToast('입양 신청 목록을 불러오지 못했습니다.', 'error');
@@ -53,9 +52,7 @@ const AdminAdoptionsPage: React.FC = () => {
 
     try {
       // 📌 API 명세서 Body: AdoptionUpdateRequestDto { adoptionStatus }
-      await axios.put(`/adoptions/${adoptionId}/status`, {
-        adoptionStatus: status,
-      });
+      await updateAdoptionStatus(adoptionId, status);
 
       showToast(`입양 신청이 성공적으로 ${actionText}되었습니다.`, 'success');
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from '../api/axiosInstance';
+import { getReviewById, deleteReview } from '../api/review';
+import { getMyInfo } from '../api/user';
 import styles from '../styles/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
@@ -29,13 +30,10 @@ const AdoptionReviewDetail: React.FC = () => {
     if (!id) return;
     const fetchData = async () => {
       try {
-        const [reviewRes, userRes] = await Promise.all([
-          axios.get(`/post/${id}`).catch(() => null),
-          axios.get('/adoptmate/myInfo').catch(() => null),
+        const [reviewData, userData] = await Promise.all([
+          getReviewById(id).catch(() => null),
+          getMyInfo().catch(() => null),
         ]);
-
-        const reviewData = reviewRes?.data?.result || reviewRes?.data;
-        const userData = userRes?.data?.result || userRes?.data;
 
         if (reviewData) {
           setReview({
@@ -64,7 +62,7 @@ const AdoptionReviewDetail: React.FC = () => {
     if (!id) return;
     setIsDeleting(true);
     try {
-      await axios.delete(`/post/${id}`);
+      await deleteReview(id);
       setIsDeleteModalOpen(false);
       showToast('게시글이 성공적으로 삭제되었습니다.', 'success');
       setTimeout(() => navigate('/reviews'), 800);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import styles from '../styles/MyPage.module.css';
-import axios from '../api/axiosInstance';
+import { getMyInfo, deleteMyAccount, updatePassword } from '../api/user';
+import { getMyAdoptions } from '../api/adoption';
 import AdminUsersPage from './admin/AdminUsersPage';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -34,10 +35,8 @@ const MyPage: React.FC = () => {
   useEffect(() => {
     if (!token) return;
 
-    axios
-      .get(`/adoptmate/myInfo`)
-      .then((res) => {
-        const data = res.data.result || res.data || {};
+    getMyInfo()
+      .then((data) => {
         const { name, email, role } = data;
         setUserInfo({ name, email, role });
       })
@@ -45,10 +44,9 @@ const MyPage: React.FC = () => {
         showToast('사용자 정보를 불러오지 못했습니다.', 'error');
       });
 
-    axios
-      .get('/adoptions/myAdoption')
-      .then((res) => {
-        setAdoptionList(res.data.result || []);
+    getMyAdoptions()
+      .then((adoptions) => {
+        setAdoptionList(adoptions || []);
       })
       .catch(() => {
         console.warn('입양 내역을 불러오지 못했습니다.');
@@ -61,8 +59,7 @@ const MyPage: React.FC = () => {
 
   const confirmDeleteAccount = () => {
     setIsDeleteModalOpen(false);
-    axios
-      .delete('/adoptmate/delete')
+    deleteMyAccount()
       .then(() => {
         showToast('회원 탈퇴가 완료되었습니다.', 'info');
         logout();
@@ -85,11 +82,10 @@ const MyPage: React.FC = () => {
       return;
     }
 
-    axios
-      .post('/adoptmate/password', {
-        currentPassword: form.passwd,
-        newPassword: form.new_passwd,
-      })
+    updatePassword({
+      currentPassword: form.passwd,
+      newPassword: form.new_passwd,
+    })
       .then(() => {
         showToast('비밀번호가 변경되었습니다. 다시 로그인 해주세요.', 'success');
         logout();
