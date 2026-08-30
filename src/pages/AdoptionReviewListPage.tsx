@@ -96,7 +96,7 @@ const AdoptionReviewListPage: React.FC = () => {
           return [...prev, ...filtered.filter((r) => !existingIds.has(r.id))];
         });
       }
-      setTotalPages(res.data.result?.totalPages ?? res.data?.totalPages ?? 1);
+      setTotalPages(data.result?.totalPages ?? data.totalPages ?? 1);
     } catch (err) {
       console.error('게시글 불러오기 실패', err);
     } finally {
