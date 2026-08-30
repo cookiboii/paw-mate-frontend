@@ -118,10 +118,12 @@
   border-color: var(--primary-color);
 }
 
-.activeChip {
-  background-color: var(--primary-color) !important;
-  color: white !important;
-  border-color: var(--primary-color) !important;
+.activeChip,
+.filterChip.activeChip,
+.filterChip.activeChip:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
   box-shadow: var(--shadow-glow-primary);
 }
 
@@ -229,10 +231,6 @@
 }
 
 /* 찜 해제 피드백 */
-.favBtn {
-  transition: all var(--transition-fast);
-}
-
 .favBtn:not(.favActive) {
   animation: none;
   opacity: 1;
@@ -251,16 +249,17 @@
 }
 
 /* 비로그인 잠금 상태 */
-.favLocked {
-  background: rgba(0, 0, 0, 0.25) !important;
-  color: rgba(255, 255, 255, 0.7) !important;
+.favBtn.favLocked {
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.7);
   cursor: not-allowed;
   filter: grayscale(0.3);
 }
 
-.favLocked:hover {
-  transform: none !important;
-  background: rgba(0, 0, 0, 0.3) !important;
+.favBtn.favLocked:hover {
+  transform: none;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-sm);
 }
 
 .info {

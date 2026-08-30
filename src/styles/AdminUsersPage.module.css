@@ -249,8 +249,10 @@
 }
 
 /* Action Buttons */
+.table th.textRight,
+.table td.textRight,
 .textRight {
-  text-align: right !important;
+  text-align: right;
 }
 
 .actionBtn {
@@ -278,9 +280,10 @@
   border-color: var(--danger-color);
 }
 
+.table td.emptyRow,
 .emptyRow {
-  text-align: center !important;
-  padding: 48px !important;
+  text-align: center;
+  padding: 48px;
   color: var(--text-muted);
   font-size: 1.05rem;
 }

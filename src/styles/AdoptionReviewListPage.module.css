@@ -44,7 +44,7 @@
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   border: 1.5px solid var(--border-color);
   background: var(--surface-color);
   color: var(--text-muted);
@@ -74,7 +74,7 @@
 .writeBtn {
   margin-left: auto;
   padding: 10px 24px;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   border: none;
   background: var(--primary-color);
   color: white;
@@ -163,12 +163,8 @@
 }
 
 .freeAdoptionPlaceholder {
-  background: linear-gradient(135deg, rgba(82, 183, 136, 0.1) 0%, var(--bg-color) 100%);
-  color: #2d6a4f;
-}
-
-[data-theme='dark'] .freeAdoptionPlaceholder {
-  color: #74c69d;
+  background: linear-gradient(135deg, rgba(74, 140, 111, 0.1) 0%, var(--bg-color) 100%);
+  color: var(--success-color);
 }
 
 /* 카드 콘텐츠 */
@@ -186,7 +182,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 700;
   width: fit-content;
@@ -198,13 +194,8 @@
 }
 
 .badgeFreeAdoption {
-  background: rgba(82, 183, 136, 0.18);
-  color: #2d6a4f;
-}
-
-[data-theme='dark'] .badgeFreeAdoption {
-  background: rgba(82, 183, 136, 0.25);
-  color: #74c69d;
+  background: rgba(74, 140, 111, 0.18);
+  color: var(--success-color);
 }
 
 .badgeReport {
@@ -281,7 +272,7 @@
 
 .emptyWriteBtn {
   padding: 12px 28px;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   border: none;
   background: var(--primary-color);
   color: white;

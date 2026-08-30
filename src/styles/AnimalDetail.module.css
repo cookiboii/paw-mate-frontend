@@ -77,16 +77,16 @@
 }
 
 /* 비로그인 잠금 상태 */
-.favLocked {
-  background: rgba(0, 0, 0, 0.4) !important;
-  color: rgba(255, 255, 255, 0.85) !important;
-  border-color: transparent !important;
+.favBtn.favLocked {
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.85);
+  border-color: transparent;
   cursor: not-allowed;
 }
 
-.favLocked:hover {
-  transform: none !important;
-  background: rgba(0, 0, 0, 0.5) !important;
+.favBtn.favLocked:hover {
+  transform: none;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .info {

@@ -41,10 +41,10 @@
   background: var(--surface-color);
 }
 
-/* 🎨 팔레트 일치 — green 그라디언트로 수정 */
+/* 🎨 팔레트 일치 — CSS 변수 적용 */
 .submitButton {
   padding: 16px;
-  background: linear-gradient(135deg, var(--primary-color), #768a74);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
   border: none;
   border-radius: var(--radius-md);

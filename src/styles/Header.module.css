@@ -229,10 +229,10 @@
   pointer-events: none;
 }
 
-.drawerOpen {
-  transform: translateX(0) !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
+.mobileDrawer.drawerOpen {
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .drawerHeader {
@@ -452,11 +452,6 @@
   font-weight: 600;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @media (max-width: 868px) {
   .nav, .userActions {
     display: none;
@@ -471,8 +466,8 @@
   .mobileControls,
   .mobileBackdrop,
   .mobileDrawer {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+    display: none;
+    visibility: hidden;
+    pointer-events: none;
   }
 }

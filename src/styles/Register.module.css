@@ -144,9 +144,9 @@
 }
 
 .verifyActiveButton {
-  background: linear-gradient(135deg, var(--secondary-color), #48cae4) !important;
-  color: white !important;
-  border: none !important;
+  background: linear-gradient(135deg, var(--secondary-color), var(--secondary-hover));
+  color: white;
+  border: none;
 }
 
 .verifyActiveButton:hover:not(:disabled) {
@@ -218,7 +218,7 @@
 }
 
 .submitButton {
-  background: linear-gradient(135deg, var(--primary-color), #f4a261);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
   font-weight: 700;
   padding: 16px;

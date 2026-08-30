@@ -171,8 +171,9 @@
   opacity: 0.9;
 }
 
+.slider:hover .sliderArrow:hover,
 .sliderArrow:hover {
-  opacity: 1 !important;
+  opacity: 1;
   background: var(--surface-color);
   color: var(--primary-color);
   border-color: var(--primary-color);

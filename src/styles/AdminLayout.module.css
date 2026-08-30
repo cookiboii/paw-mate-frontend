@@ -71,12 +71,14 @@
   transform: translateX(4px);
 }
 
-.activeLink {
-  background-color: var(--primary-color) !important;
-  color: #ffffff !important;
+.activeLink,
+.navLink.activeLink,
+.navLink.activeLink:hover {
+  background-color: var(--primary-color);
+  color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(101, 121, 99, 0.25);
-  transform: none !important;
+  box-shadow: var(--shadow-glow-primary);
+  transform: none;
 }
 
 .mainContent {
