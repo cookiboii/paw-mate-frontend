@@ -1,7 +1,12 @@
 import { useEffect, useRef, RefObject } from 'react';
 
+const DEFAULT_OPTIONS: IntersectionObserverInit = {
+  threshold: 0.15,
+  rootMargin: '0px 0px -50px 0px',
+};
+
 export const useScrollReveal = <T extends HTMLElement = HTMLElement>(
-  options: IntersectionObserverInit = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+  options: IntersectionObserverInit = DEFAULT_OPTIONS
 ): RefObject<T | null> => {
   const ref = useRef<T | null>(null);
 
@@ -9,7 +14,6 @@ export const useScrollReveal = <T extends HTMLElement = HTMLElement>(
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('revealed');
-        // observer.unobserve(entry.target);
       }
     }, options);
 
@@ -22,8 +26,9 @@ export const useScrollReveal = <T extends HTMLElement = HTMLElement>(
       if (ref.current) {
         observer.unobserve(ref.current);
       }
+      observer.disconnect();
     };
-  }, [options]);
+  }, [options.threshold, options.rootMargin, options.root]);
 
   return ref;
 };

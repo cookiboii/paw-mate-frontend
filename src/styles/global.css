@@ -1,6 +1,3 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
 :root {
   /* Comfortable & Relaxing Palette (Earthy Forest Green & Oatmeal) - Contrast Optimized */
   --primary-color: #556b54; /* Richer Muted Moss Green (WCAG AA Compliant for White Text) */

@@ -101,6 +101,8 @@ const HomePage: React.FC = () => {
                 src={img}
                 alt={`입양 동물 슬라이드 ${idx + 1} / ${images.length}`}
                 className={`${styles.slide} ${idx === current ? styles.active : ""}`}
+                loading={idx === 0 ? "eager" : "lazy"}
+                decoding="async"
               />
             ))}
             {/* 화살표 네비게이션 */}

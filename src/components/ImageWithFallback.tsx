@@ -98,6 +98,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
           setHasError(true);
         }}
         loading="lazy"
+        decoding="async"
         {...props}
       />
     </div>
