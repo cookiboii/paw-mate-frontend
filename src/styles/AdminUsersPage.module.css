@@ -337,12 +337,40 @@
   transition: all var(--transition-fast);
 }
 
-.pageNum:hover {
-  background: var(--surface-color);
-  color: var(--text-primary);
-}
-
 .pageNum.activePage {
   background: var(--primary-color);
   color: white;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchBox {
+    max-width: 100%;
+  }
+
+  .tableCard {
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
+

@@ -289,6 +289,27 @@
   box-shadow: var(--shadow-glow-primary);
 }
 
+/* 무한 스크롤 종단 (End of List) */
+.endOfList {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.endOfListDivider {
+  width: 60px;
+  height: 2px;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+
 @media (max-width: 768px) {
   .pageHeader {
     padding: 40px 0 28px;

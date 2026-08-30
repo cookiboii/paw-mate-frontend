@@ -127,6 +127,44 @@
   box-shadow: var(--shadow-glow-primary);
 }
 
+/* 실시간 검색 & 필터 결과 카운트 뱃지 */
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0 4px;
+}
+
+.resultCountBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.countHighlight {
+  color: var(--primary-color);
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+
+.resetBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 8px;
+}
+
+.resetBtn:hover {
+  color: var(--primary-color);
+}
+
 /* 동물 카드 그리드 */
 .list {
   display: grid;
@@ -136,6 +174,7 @@
   padding: 0;
   margin: 0;
 }
+
 
 .card {
   background: var(--surface-color);

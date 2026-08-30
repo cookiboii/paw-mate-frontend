@@ -20,9 +20,11 @@ export interface PageResponse<T> {
 }
 
 export interface ApiResponse<T = unknown> {
+  isSuccess?: boolean;
   success?: boolean;
   message?: string;
   result?: T;
   data?: T;
-  code?: number;
+  code?: number | string;
 }
+

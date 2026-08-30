@@ -9,10 +9,12 @@ import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import Spinner from '../components/Spinner';
 import ConfirmModal from '../components/ConfirmModal';
+import AnimalCard from '../components/AnimalCard';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { User } from '../types/auth';
 import { AdoptionHistoryItem } from '../types/adoption';
+
 
 const MyPage: React.FC = () => {
   usePageTitle('마이페이지');
@@ -196,42 +198,15 @@ const MyPage: React.FC = () => {
                 ) : (
                   <div className={styles.favoritesGrid}>
                     {favorites.map((animal) => (
-                      <div key={animal.id} className={styles.favCard}>
-                        <div className={styles.favImageWrapper}>
-                          <img
-                            src={animal.image || '/default-animal.jpg'}
-                            alt={animal.breed || animal.species}
-                            className={styles.favImage}
-                          />
-                          <button
-                            className={styles.favRemoveBtn}
-                            onClick={() => toggleFavorite(animal as any)}
-                            title="관심 목록에서 제거"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                        <div className={styles.favInfo}>
-                          <h4>{animal.breed || animal.species}</h4>
-                          <p className={styles.favMeta}>
-                            {animal.age ? `${animal.age}살 • ` : ''}
-                            {animal.gender === 'M' || animal.gender === 'MALE'
-                              ? '수컷'
-                              : animal.gender === 'F' || animal.gender === 'FEMALE'
-                              ? '암컷'
-                              : '성별미상'}
-                          </p>
-                          <Link
-                            to={`/animals/${animal.id}`}
-                            className="btn-primary"
-                            style={{ display: 'block', textAlign: 'center', marginTop: '12px', padding: '10px' }}
-                          >
-                            상세보기
-                          </Link>
-                        </div>
-                      </div>
+                      <AnimalCard
+                        key={animal.id}
+                        animal={animal}
+                        showStatus
+                        onRemove={() => toggleFavorite(animal as any)}
+                      />
                     ))}
                   </div>
+
                 )}
               </div>
             </section>

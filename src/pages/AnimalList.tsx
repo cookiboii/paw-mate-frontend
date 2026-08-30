@@ -1,22 +1,21 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import styles from '../styles/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
-import ImageWithFallback from '../components/ImageWithFallback';
-import { useFavorites } from '../context/FavoritesContext';
-import { useAuth } from '../context/AuthContext';
+import AnimalCard from '../components/AnimalCard';
+import Pagination from '../components/Pagination';
 import usePageTitle from '../hooks/usePageTitle';
 import useDebounce from '../hooks/useDebounce';
 import { fetchAnimalList, fetchAnimalListBySpecies } from '../api/animal';
-import { getGenderLabel, getSpeciesLabel } from '../constants/animal';
 import { Animal } from '../types/animal';
+import { PageResponse } from '../types/common';
 
 const AnimalList: React.FC = () => {
   usePageTitle('가족을 기다리는 아이들');
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [page, setPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalElements, setTotalElements] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // 필터 및 검색 상태
@@ -25,9 +24,6 @@ const AnimalList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const { isAuthenticated } = useAuth();
   const pageSize = 6;
 
   useEffect(() => {
@@ -39,9 +35,12 @@ const AnimalList: React.FC = () => {
             ? await fetchAnimalList(page, pageSize)
             : await fetchAnimalListBySpecies(speciesFilter, page, pageSize);
 
-        const pageData = (data as any).result || data;
+        const pageData: PageResponse<Animal> =
+          'result' in data && data.result ? (data.result as PageResponse<Animal>) : (data as PageResponse<Animal>);
+
         setAnimals(pageData.content || []);
         setTotalPages(pageData.totalPages || 1);
+        setTotalElements(pageData.totalElements || pageData.content?.length || 0);
       } catch (err) {
         console.error('동물 목록 조회 실패:', err);
       } finally {
@@ -86,8 +85,7 @@ const AnimalList: React.FC = () => {
     setPage(0);
   };
 
-  const prevPage = () => setPage((p) => Math.max(p - 1, 0));
-  const nextPage = () => setPage((p) => Math.min(p + 1, totalPages - 1));
+  const isFilteringActive = speciesFilter !== 'ALL' || genderFilter !== 'ALL' || searchQuery.trim().length > 0;
 
   return (
     <div className={styles.pageWrapper}>
@@ -106,16 +104,21 @@ const AnimalList: React.FC = () => {
             placeholder="품종, 색상 등으로 검색 (예: 푸들, 흰색)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="동물 검색"
           />
           {searchQuery && (
-            <button className={styles.clearSearchBtn} onClick={() => setSearchQuery('')}>
+            <button
+              className={styles.clearSearchBtn}
+              onClick={() => setSearchQuery('')}
+              aria-label="검색어 지우기"
+            >
               ✕
             </button>
           )}
         </div>
 
         <div className={styles.filterControls}>
-          {/* 종 필터 (신규 /animals/species 엔드포인트 연동: DOG, CAT, ETC) */}
+          {/* 종 필터 */}
           <div className={styles.filterGroup}>
             <span className={styles.filterLabel}>종:</span>
             {[
@@ -154,6 +157,28 @@ const AnimalList: React.FC = () => {
         </div>
       </div>
 
+      {/* 결과 헤더 (카운트 뱃지 & 초기화) */}
+      <div className={styles.resultsHeader} aria-live="polite">
+        <div className={styles.resultCountBadge}>
+          <span>🐾 현재</span>
+          <span className={styles.countHighlight}>
+            {isLoading ? '...' : filteredAnimals.length}
+          </span>
+          <span>마리의 아이가 가족을 기다리고 있어요</span>
+          {totalElements > 0 && !isFilteringActive && (
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+              (전체 {totalElements}마리)
+            </span>
+          )}
+        </div>
+
+        {isFilteringActive && (
+          <button className={styles.resetBtn} onClick={handleResetFilters}>
+            필터 초기화 ↺
+          </button>
+        )}
+      </div>
+
       <div className={styles.container}>
         {isLoading ? (
           <ul className={styles.list}>
@@ -177,90 +202,24 @@ const AnimalList: React.FC = () => {
           />
         ) : (
           <ul className={styles.list}>
-            {filteredAnimals.map((animal) => {
-              const favorite = isFavorite(animal.id);
-              return (
-                <li key={animal.id} className={styles.card}>
-                  <div className={styles.imageWrapper}>
-                    <Link to={`/animals/${animal.id}`} className={styles.imageLink}>
-                      <ImageWithFallback
-                        src={animal.image}
-                        alt={`${animal.breed || animal.species} - ${getGenderLabel(animal.gender)} ${Math.max(
-                          0,
-                          Number(animal.age) || 0
-                        )}살`}
-                        className={styles.lazyImage}
-                        fallbackText="동물 사진 준비 중"
-                      />
-                    </Link>
-                    <span className={styles.badge}>{getSpeciesLabel(animal.species)}</span>
-
-                    {/* 찜하기(하트) 버튼 */}
-                    <button
-                      className={`${styles.favBtn} ${favorite ? styles.favActive : ''} ${
-                        !isAuthenticated ? styles.favLocked : ''
-                      }`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleFavorite(animal);
-                      }}
-                      aria-label={
-                        !isAuthenticated
-                          ? '로그인 후 찜하기 가능'
-                          : favorite
-                          ? '관심 목록에서 제거'
-                          : '관심 동물로 등록'
-                      }
-                      aria-pressed={isAuthenticated ? favorite : undefined}
-                      title={
-                        !isAuthenticated
-                          ? '로그인 후 찜하기 가능합니다'
-                          : favorite
-                          ? '관심 목록에서 제거'
-                          : '관심 동물로 등록'
-                      }
-                    >
-                      {!isAuthenticated ? '🔒' : favorite ? '❤️' : '🤍'}
-                    </button>
-                  </div>
-                  <div className={styles.info}>
-                    <Link to={`/animals/${animal.id}`}>
-                      <h3 className={styles.breed}>{animal.breed}</h3>
-                    </Link>
-                    <div className={styles.meta}>
-                      <span>{Math.max(0, Number(animal.age) || 0)}살</span>
-                      <span className={styles.dot}>•</span>
-                      <span>{getGenderLabel(animal.gender)}</span>
-                      {animal.color && (
-                        <>
-                          <span className={styles.dot}>•</span>
-                          <span>{animal.color}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
+            {filteredAnimals.map((animal) => (
+              <li key={animal.id} style={{ listStyle: 'none' }}>
+                <AnimalCard animal={animal} showStatus />
+              </li>
+            ))}
           </ul>
         )}
 
-        {/* 페이지네이션 */}
-        <div className={styles.pagination}>
-          <button onClick={prevPage} disabled={page === 0} className={styles.pageBtn}>
-            이전
-          </button>
-          <span className={styles.pageInfo}>
-            {page + 1} <span className={styles.pageTotal}>/ {totalPages || 1}</span>
-          </span>
-          <button onClick={nextPage} disabled={page + 1 >= totalPages} className={styles.pageBtn}>
-            다음
-          </button>
-        </div>
+        {/* 재사용 페이지네이션 컴포넌트 */}
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
       </div>
     </div>
   );
 };
 
 export default AnimalList;
+

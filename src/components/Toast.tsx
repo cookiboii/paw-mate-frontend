@@ -62,8 +62,9 @@ const Toast: React.FC<ToastProps> = ({ toast }) => {
       className={`${styles.toast} ${styles[toast.type || 'info']} ${isRemoving ? styles.removing : ''}`}
       onClick={() => removeToast(toast.id)}
       role="alert"
-      aria-live="polite"
+      aria-live={toast.type === 'error' || toast.type === 'warning' ? 'assertive' : 'polite'}
     >
+
       <div className={styles.iconWrapper}>
         <ToastIcon type={toast.type} />
       </div>

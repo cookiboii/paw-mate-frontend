@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
 import { fetchAnimalList } from "../api/animal";
 import EmptyState from '../components/EmptyState';
+import AnimalCard from '../components/AnimalCard';
 import useScrollReveal from "../hooks/useScrollReveal";
 import usePageTitle from "../hooks/usePageTitle";
-import ImageWithFallback from "../components/ImageWithFallback";
 import { Animal } from "../types/animal";
+import { PageResponse } from "../types/common";
 
 import dog1 from "../assets/dog1.jpg";
 import dog2 from "../assets/dog2.jpg";
@@ -26,7 +27,6 @@ const HomePage: React.FC = () => {
   const [recentAnimals, setRecentAnimals] = useState<Animal[]>([]);
   const [isLoadingAnimals, setIsLoadingAnimals] = useState<boolean>(true);
   const [isPaused, setIsPaused] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   // Scroll Reveal Refs
   const newArrivalsRef = useScrollReveal<HTMLDivElement>();
@@ -49,9 +49,10 @@ const HomePage: React.FC = () => {
     const loadData = async () => {
       setIsLoadingAnimals(true);
       try {
-        const res: any = await fetchAnimalList(0, 4);
-        const list = res?.result?.content || res?.content || res?.result || [];
-        setRecentAnimals(Array.isArray(list) ? list : []);
+        const res = await fetchAnimalList(0, 4);
+        const pageData: PageResponse<Animal> =
+          'result' in res && res.result ? (res.result as PageResponse<Animal>) : (res as PageResponse<Animal>);
+        setRecentAnimals(pageData.content || []);
       } catch (error) {
         console.error("Failed to load recent animals:", error);
       } finally {
@@ -60,6 +61,7 @@ const HomePage: React.FC = () => {
     };
     loadData();
   }, []);
+
 
   const goToSlide = (index: number) => setCurrent(index);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
@@ -166,34 +168,18 @@ const HomePage: React.FC = () => {
               />
             </div>
           ) : (
-            recentAnimals.map((animal: any) => (
-              <div
+            recentAnimals.map((animal) => (
+              <AnimalCard
                 key={animal.id || animal.animalId}
-                className={styles.animalCard}
-                onClick={() => navigate(`/animals/${animal.id || animal.animalId}`)}
-              >
-                <div className={styles.animalBadge}>NEW</div>
-                <div style={{ height: '180px', width: '100%' }}>
-                  <ImageWithFallback
-                    src={animal.image || animal.profileImageUrl || dog1}
-                    alt={`${animal.breed || animal.species} - ${animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : '기타'}`}
-                    className={styles.animalImage}
-                    fallbackText="사진 준비 중"
-                  />
-                </div>
-                <div className={styles.animalInfo}>
-                  <h4>{animal.breed || animal.name || animal.species}</h4>
-                  <p>{animal.species === 'DOG' ? '강아지' : animal.species === 'CAT' ? '고양이' : animal.species} {animal.breed ? `- ${animal.breed}` : ''}</p>
-                  <div className={styles.animalMeta}>
-                    <span>나이: {Math.max(0, Number(animal.age) || 0)}살</span>
-                    <span style={{ color: "var(--primary-color)", fontWeight: "600" }}>자세히 보기 &rarr;</span>
-                  </div>
-                </div>
-              </div>
+                animal={animal}
+                extraBadgeText="NEW"
+                showStatus
+              />
             ))
           )}
         </div>
       </section>
+
 
       {/* 3. How it works Section */}
       <section className={styles.howItWorks} ref={howItWorksRef}>

@@ -238,9 +238,18 @@ const AdoptionReviewListPage: React.FC = () => {
         ) : null}
 
         {isLoading && renderSkeletons(page === 0 ? 9 : 3)}
+
+        {/* 무한 스크롤 종단 UI */}
+        {!isLoading && reviews.length > 0 && page >= totalPages - 1 && (
+          <div className={styles.endOfList}>
+            <div className={styles.endOfListDivider} />
+            <p>모든 이야기를 다 불러왔습니다 🐾</p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default AdoptionReviewListPage;
+
