@@ -8,6 +8,7 @@ import FloatingInput from '../../components/FloatingInput';
 import { SPECIES_OPTIONS, STATUS_OPTIONS, GENDER_OPTIONS } from '../../constants/animal';
 import usePageTitle from '../../hooks/usePageTitle';
 import { uploadImageToBlob } from '../../utils/imageUpload';
+import { AnimalRegisterForm } from '../../types/animal';
 
 const AdminAnimalsPage: React.FC = () => {
   usePageTitle('유기동물 신규 등록 (Admin)');
@@ -15,15 +16,7 @@ const AdminAnimalsPage: React.FC = () => {
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [animal, setAnimal] = useState<{
-    species: string;
-    breed: string;
-    color: string;
-    status: string;
-    gender: string;
-    age: number | string;
-    image: string;
-  }>({
+  const [animal, setAnimal] = useState<AnimalRegisterForm>({
     species: '',
     breed: '',
     color: '',

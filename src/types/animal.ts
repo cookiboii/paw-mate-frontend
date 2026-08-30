@@ -59,3 +59,13 @@ export interface AnimalOptionItem {
   key: string;
   label: string;
 }
+
+export interface AnimalRegisterForm {
+  species: string;
+  breed: string;
+  color: string;
+  status: string;
+  gender: string;
+  age: number | string;
+  image: string;
+}

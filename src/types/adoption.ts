@@ -56,4 +56,8 @@ export interface AdoptionResponseDto {
   housingType?: string;
   hasPet?: string;
   reason?: string;
+  userName?: string;
+  interview?: string;
 }
+
+export type AdoptionHistoryItem = AdoptionResponseDto;

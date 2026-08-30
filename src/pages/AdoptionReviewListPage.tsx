@@ -6,6 +6,7 @@ import Skeleton from '../components/Skeleton';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
+import { ReviewItem } from '../types/review';
 
 export interface CategoryOption {
   key: string;
@@ -40,17 +41,6 @@ export function getCleanTitle(title = ''): string {
     .replace(CATEGORY_PREFIX.FREE_ADOPTION, '')
     .replace(CATEGORY_PREFIX.REPORT, '')
     .trim();
-}
-
-interface ReviewItem {
-  id: number | string;
-  title: string;
-  content?: string;
-  img?: string;
-  name?: string;
-  email?: string;
-  createdAt?: string;
-  createAt?: string;
 }
 
 const AdoptionReviewListPage: React.FC = () => {

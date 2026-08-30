@@ -46,6 +46,8 @@ export interface PostResponseDto {
 }
 
 export type AdoptionReview = PostResponseDto;
+export type ReviewItem = PostResponseDto;
+export type ReviewDetailData = PostResponseDto;
 
 export interface ReviewFormData {
   title: string;

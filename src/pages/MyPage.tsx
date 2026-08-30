@@ -11,22 +11,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { User } from '../types/auth';
-
-interface AdoptionHistoryItem {
-  adoptionId?: number | string;
-  animalId?: number | string;
-  animalName?: string;
-  animalBreed?: string;
-  animalImage?: string;
-  applyDate?: string;
-  status?: string;
-  memberName?: string;
-  phone?: string;
-  housingType?: string;
-  hasPet?: string;
-  reason?: string;
-  interviewer?: string;
-}
+import { AdoptionHistoryItem } from '../types/adoption';
 
 const MyPage: React.FC = () => {
   usePageTitle('마이페이지');

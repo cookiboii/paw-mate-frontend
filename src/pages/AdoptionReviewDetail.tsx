@@ -9,17 +9,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
-
-interface ReviewDetailData {
-  id: number | string;
-  title: string;
-  content: string;
-  img?: string;
-  name?: string;
-  email?: string;
-  createdAt?: string;
-  createAt?: string;
-}
+import { ReviewDetailData } from '../types/review';
 
 const AdoptionReviewDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
