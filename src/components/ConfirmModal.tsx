@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styles from '../styles/ConfirmModal.module.css';
+import { AlertTriangle, Info } from 'lucide-react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -48,8 +49,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <div className={styles.overlay} onClick={onCancel} role="dialog" aria-modal="true" aria-labelledby="confirm-title">
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`}>
-          {variant === 'danger' ? '⚠️' : 'ℹ️'}
+        <div className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {variant === 'danger' ? <AlertTriangle size={24} color="var(--danger-color, #e63946)" /> : <Info size={24} color="var(--primary-color, #4361ee)" />}
         </div>
         <h3 id="confirm-title" className={styles.title}>{title}</h3>
         {message && <p className={styles.message}>{message}</p>}

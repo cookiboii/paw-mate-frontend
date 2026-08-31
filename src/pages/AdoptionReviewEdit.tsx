@@ -8,11 +8,12 @@ import FloatingInput from '../components/FloatingInput';
 import Spinner from '../components/Spinner';
 import { CATEGORY_PREFIX, getCategoryFromTitle, getCleanTitle } from './AdoptionReviewListPage';
 import { uploadImageToBlob } from '../utils/imageUpload';
+import { HeartHandshake, Gift, AlertTriangle, Camera, X } from 'lucide-react';
 
 const CATEGORY_OPTIONS = [
-  { key: 'REVIEW', label: '💌 입양 후기', prefix: CATEGORY_PREFIX.REVIEW },
-  { key: 'FREE_ADOPTION', label: '🎁 무료 분양', prefix: CATEGORY_PREFIX.FREE_ADOPTION },
-  { key: 'REPORT', label: '🚨 유기동물 제보', prefix: CATEGORY_PREFIX.REPORT },
+  { key: 'REVIEW', label: '입양 후기', icon: <HeartHandshake size={16} />, prefix: CATEGORY_PREFIX.REVIEW },
+  { key: 'FREE_ADOPTION', label: '무료 분양', icon: <Gift size={16} />, prefix: CATEGORY_PREFIX.FREE_ADOPTION },
+  { key: 'REPORT', label: '유기동물 제보', icon: <AlertTriangle size={16} />, prefix: CATEGORY_PREFIX.REPORT },
 ];
 
 const AdoptionReviewEdit: React.FC = () => {
@@ -75,7 +76,7 @@ const AdoptionReviewEdit: React.FC = () => {
         setPreview(review.img || null);
         setIsLoaded(true);
       } catch (err) {
-        console.error('❌ 데이터 불러오기 실패:', err);
+        console.error('데이터 불러오기 실패:', err);
         showToast('게시글 정보를 불러오는 데 실패했습니다.', 'error');
         navigate('/reviews');
       }
@@ -162,7 +163,7 @@ const AdoptionReviewEdit: React.FC = () => {
       showToast('게시글이 성공적으로 수정되었습니다!', 'success');
       navigate(`/reviews/${id}`);
     } catch (error) {
-      console.error('❌ 수정 실패:', error);
+      console.error('수정 실패:', error);
       showToast('수정 중 오류가 발생했습니다.', 'error');
     }
   };
@@ -183,8 +184,10 @@ const AdoptionReviewEdit: React.FC = () => {
               type="button"
               className={`${styles.categoryTab} ${selectedCategory === cat.key ? styles.categoryTabActive : ''}`}
               onClick={() => setSelectedCategory(cat.key)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              {cat.label}
+              {cat.icon}
+              <span>{cat.label}</span>
             </button>
           ))}
         </div>
@@ -234,11 +237,15 @@ const AdoptionReviewEdit: React.FC = () => {
               {preview ? (
                 <div className={styles.previewContainer}>
                   <img src={preview} alt="미리보기" className={styles.previewImage} />
-                  <button type="button" className={styles.removeBtn} onClick={removeImage}>✕</button>
+                  <button type="button" className={styles.removeBtn} onClick={removeImage} aria-label="사진 삭제">
+                    <X size={14} />
+                  </button>
                 </div>
               ) : (
                 <div className={styles.uploadPlaceholder}>
-                  <span className={styles.uploadIcon}>📸</span>
+                  <span className={styles.uploadIcon} style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Camera size={36} color="var(--primary-color)" />
+                  </span>
                   <p><strong>클릭</strong>하여 사진을 선택하거나<br />여기로 <strong>드래그 앤 드롭</strong> 하세요</p>
                 </div>
               )}

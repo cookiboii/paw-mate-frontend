@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Heart, Lock, X } from 'lucide-react';
 import styles from '../styles/AnimalCard.module.css';
 import ImageWithFallback from './ImageWithFallback';
 import { useFavorites } from '../context/FavoritesContext';
@@ -111,7 +112,13 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
               : '관심 동물로 등록'
           }
         >
-          {onRemove ? '✕' : !isAuthenticated ? '🔒' : favorite ? '❤️' : '🤍'}
+          {onRemove ? (
+            <X size={16} />
+          ) : !isAuthenticated ? (
+            <Lock size={15} />
+          ) : (
+            <Heart size={18} fill={favorite ? '#ff4d4f' : 'none'} color={favorite ? '#ff4d4f' : 'currentColor'} />
+          )}
         </button>
       </div>
 

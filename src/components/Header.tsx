@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { PawPrint, BookOpen, MessageSquare, User, Heart, PlusCircle, Users, ClipboardList, Crown, X, LogOut } from 'lucide-react';
 import styles from '../styles/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
@@ -56,7 +57,10 @@ const Header: React.FC = () => {
     <header className={`${styles.header} ${isScrolled ? styles.headerScrolled : ''}`}>
       <div className={styles.container}>
         <div className={styles.logo}>
-          <Link to="/">🐾 AdoptMate</Link>
+          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <PawPrint size={22} color="var(--primary-color, #ff6b6b)" />
+            <span>AdoptMate</span>
+          </Link>
         </div>
 
         {/* 데스크톱 네비게이션 */}
@@ -123,9 +127,12 @@ const Header: React.FC = () => {
       
       <div className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}>
         <div className={styles.drawerHeader}>
-          <span className={styles.drawerLogo}>🐾 AdoptMate</span>
-          <button className={styles.drawerCloseBtn} onClick={() => setIsMobileMenuOpen(false)}>
-            ✕
+          <span className={styles.drawerLogo} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <PawPrint size={20} color="var(--primary-color, #ff6b6b)" />
+            <span>AdoptMate</span>
+          </span>
+          <button className={styles.drawerCloseBtn} onClick={() => setIsMobileMenuOpen(false)} aria-label="닫기">
+            <X size={20} />
           </button>
         </div>
 
@@ -138,8 +145,8 @@ const Header: React.FC = () => {
               </div>
               <div className={styles.userCardInfo}>
                 <span className={styles.userCardName}>{user?.name || '회원'} 님</span>
-                <span className={styles.userCardRole}>
-                  {isAdmin ? '👑 관리자' : '일반 회원'}
+                <span className={styles.userCardRole} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  {isAdmin ? <><Crown size={14} color="#f59e0b" /> 관리자</> : '일반 회원'}
                 </span>
               </div>
             </div>
@@ -156,14 +163,26 @@ const Header: React.FC = () => {
 
         <nav className={styles.drawerNav}>
           <ul className={styles.drawerList}>
-            <li><NavLink to="/guide" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>📖 입양 안내</NavLink></li>
-            <li><NavLink to="/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>🐾 동물 목록</NavLink></li>
-            <li><NavLink to="/reviews" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>💬 커뮤니티</NavLink></li>
+            <li>
+              <NavLink to="/guide" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <BookOpen size={18} /> 입양 안내
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <PawPrint size={18} /> 동물 목록
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/reviews" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <MessageSquare size={18} /> 커뮤니티
+              </NavLink>
+            </li>
             
             {isAuthenticated && !isAdmin && (
               <li>
-                <NavLink to="/mypage" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
-                  👤 마이페이지 {favorites.length > 0 && <span className={styles.drawerFavBadge}>❤️ {favorites.length}</span>}
+                <NavLink to="/mypage" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <User size={18} /> 마이페이지 {favorites.length > 0 && <span className={styles.drawerFavBadge} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}><Heart size={12} fill="currentColor" /> {favorites.length}</span>}
                 </NavLink>
               </li>
             )}
@@ -171,9 +190,21 @@ const Header: React.FC = () => {
             {isAdmin && (
               <div className={styles.adminSection}>
                 <span className={styles.drawerSectionTitle}>관리자 전용 메뉴</span>
-                <li><NavLink to="/admin/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>🐶 동물 등록</NavLink></li>
-                <li><NavLink to="/admin/users" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>👥 사용자 관리</NavLink></li>
-                <li><NavLink to="/admin/adoptions" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>📋 입양 신청 관리</NavLink></li>
+                <li>
+                  <NavLink to="/admin/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <PlusCircle size={18} /> 동물 등록
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/admin/users" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Users size={18} /> 사용자 관리
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/admin/adoptions" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <ClipboardList size={18} /> 입양 신청 관리
+                  </NavLink>
+                </li>
               </div>
             )}
           </ul>
@@ -181,8 +212,8 @@ const Header: React.FC = () => {
 
         {isAuthenticated && (
           <div className={styles.drawerFooter}>
-            <button onClick={handleLogout} className={styles.drawerLogoutBtn}>
-              로그아웃
+            <button onClick={handleLogout} className={styles.drawerLogoutBtn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <LogOut size={16} /> 로그아웃
             </button>
           </div>
         )}

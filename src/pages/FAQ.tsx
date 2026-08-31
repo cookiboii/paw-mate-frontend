@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../styles/StaticPage.module.css';
 import usePageTitle from '../hooks/usePageTitle';
+import { ChevronDown } from 'lucide-react';
 
 interface FAQItem {
   q: string;
@@ -44,7 +45,9 @@ const FAQ: React.FC = () => {
                   id={`faq-btn-${idx}`}
                 >
                   <span>Q. {faq.q}</span>
-                  <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}>▼</span>
+                  <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`} style={{ display: 'flex', alignItems: 'center' }}>
+                    <ChevronDown size={18} />
+                  </span>
                 </button>
                 {/* max-height 트랜지션으로 부드럽게 열기/닫기 */}
                 <div

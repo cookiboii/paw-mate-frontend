@@ -12,13 +12,13 @@ import ConfirmModal from '../components/ConfirmModal';
 import AnimalCard from '../components/AnimalCard';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
-import { User } from '../types/auth';
+import { User as UserType } from '../types/auth';
 import { AdoptionHistoryItem } from '../types/adoption';
-
+import { User, Heart, ClipboardList, ShieldCheck, PawPrint, CheckCircle2, XCircle, Clock } from 'lucide-react';
 
 const MyPage: React.FC = () => {
   usePageTitle('마이페이지');
-  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [userInfo, setUserInfo] = useState<UserType | null>(null);
   const [activeTab, setActiveTab] = useState<'profile' | 'favorites' | 'password' | 'adoptions'>('profile');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [form, setForm] = useState({
@@ -123,27 +123,35 @@ const MyPage: React.FC = () => {
             <button
               className={`${styles.navItem} ${activeTab === 'profile' ? styles.active : ''}`}
               onClick={() => setActiveTab('profile')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              👤 내 프로필
+              <User size={16} />
+              <span>내 프로필</span>
             </button>
             <button
               className={`${styles.navItem} ${activeTab === 'favorites' ? styles.active : ''}`}
               onClick={() => setActiveTab('favorites')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              ❤️ 관심 동물 ({favorites.length})
+              <Heart size={16} />
+              <span>관심 동물 ({favorites.length})</span>
             </button>
             <button
               className={`${styles.navItem} ${activeTab === 'adoptions' ? styles.active : ''}`}
               onClick={() => setActiveTab('adoptions')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              🐾 입양 신청 내역
+              <ClipboardList size={16} />
+              <span>입양 신청 내역</span>
             </button>
             {provider !== 'KAKAO' && (
               <button
                 className={`${styles.navItem} ${activeTab === 'password' ? styles.active : ''}`}
                 onClick={() => setActiveTab('password')}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
               >
-                🔒 보안 설정
+                <ShieldCheck size={16} />
+                <span>보안 설정</span>
               </button>
             )}
           </nav>
@@ -183,13 +191,16 @@ const MyPage: React.FC = () => {
           {activeTab === 'favorites' && (
             <section className={styles.card}>
               <div className={styles.cardHeader}>
-                <h3>❤️ 관심 동물 목록 ({favorites.length})</h3>
+                <h3 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <Heart size={20} color="#ff4d4f" fill="#ff4d4f" />
+                  <span>관심 동물 목록 ({favorites.length})</span>
+                </h3>
                 <p>찜해둔 아이들을 확인하고 입양 신청서를 작성해 보세요.</p>
               </div>
               <div className={styles.cardBody}>
                 {favorites.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <span>🐾</span>
+                    <span style={{ display: 'flex', justifyContent: 'center' }}><PawPrint size={40} color="var(--text-muted)" /></span>
                     <p>아직 관심 동물로 등록한 아이가 없습니다.</p>
                     <Link to="/animals" className="btn-primary" style={{ display: 'inline-block', marginTop: '16px' }}>
                       동물 둘러보기
@@ -222,7 +233,7 @@ const MyPage: React.FC = () => {
               <div className={styles.cardBody}>
                 {adoptionList.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <span>🐾</span>
+                    <span style={{ display: 'flex', justifyContent: 'center' }}><PawPrint size={40} color="var(--text-muted)" /></span>
                     <p>아직 입양 신청 내역이 없습니다.</p>
                   </div>
                 ) : (
@@ -244,12 +255,15 @@ const MyPage: React.FC = () => {
                                 ? styles.statusRejected
                                 : styles.statusPending
                             }`}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                           >
-                            {adoption.status === 'APPROVED'
-                              ? '🎉 입양 승인'
-                              : adoption.status === 'REJECTED'
-                              ? '❌ 반려됨'
-                              : '⏳ 심사 대기중'}
+                            {adoption.status === 'APPROVED' ? (
+                              <><CheckCircle2 size={13} /> 입양 승인</>
+                            ) : adoption.status === 'REJECTED' ? (
+                              <><XCircle size={13} /> 반려됨</>
+                            ) : (
+                              <><Clock size={13} /> 심사 대기중</>
+                            )}
                           </span>
                           <p className={styles.date}>신청일: {formatDate(adoption.applyDate)}</p>
                         </div>

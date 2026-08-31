@@ -6,6 +6,7 @@ import FloatingInput from '../components/FloatingInput';
 import { useToast } from '../context/ToastContext';
 import usePageTitle from '../hooks/usePageTitle';
 import { EyeIcon, EyeOffIcon } from '../components/Icons';
+import { ArrowLeft } from 'lucide-react';
 
 const ForgotPassword: React.FC = () => {
   usePageTitle('비밀번호 찾기');
@@ -285,8 +286,9 @@ const ForgotPassword: React.FC = () => {
 
       <div className={styles.footerActions}>
         {step > 1 ? (
-          <button className={styles.backBtn} onClick={() => setStep((prev) => prev - 1)}>
-            ← 이전 단계로
+          <button className={styles.backBtn} onClick={() => setStep((prev) => prev - 1)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <ArrowLeft size={16} />
+            <span>이전 단계로</span>
           </button>
         ) : (
           <span />

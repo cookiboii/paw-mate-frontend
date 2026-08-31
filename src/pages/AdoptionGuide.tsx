@@ -2,6 +2,7 @@ import React from 'react';
 import styles from '../styles/AdoptionGuide.module.css';
 import useScrollReveal from '../hooks/useScrollReveal';
 import usePageTitle from '../hooks/usePageTitle';
+import { Lightbulb } from 'lucide-react';
 
 const AdoptionGuide: React.FC = () => {
   usePageTitle('입양 절차 안내');
@@ -52,7 +53,10 @@ const AdoptionGuide: React.FC = () => {
       </div>
 
       <div className={styles.noticeSection}>
-        <h3>💡 입양 전 반드시 읽어주세요!</h3>
+        <h3 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <Lightbulb size={20} color="var(--primary-color)" />
+          <span>입양 전 반드시 읽어주세요!</span>
+        </h3>
         <ul>
           <li>반려동물은 장난감이 아닌 <strong>생명</strong>입니다. 평생 책임질 수 있는지 신중하게 고민해 주세요.</li>
           <li>가족 구성원 <strong>모두의 동의</strong>가 반드시 필요합니다.</li>

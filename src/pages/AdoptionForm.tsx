@@ -8,6 +8,7 @@ import styles from '../styles/AdoptionForm.module.css';
 import usePageTitle from '../hooks/usePageTitle';
 import { Animal } from '../types/animal';
 import { formatPhoneNumber, isValidPhoneNumber } from '../utils/validation';
+import { FileText, Lock } from 'lucide-react';
 
 const AdoptionForm: React.FC = () => {
   usePageTitle('입양 신청서 작성');
@@ -42,7 +43,9 @@ const AdoptionForm: React.FC = () => {
     return (
       <div className={styles.loginPrompt}>
         <div className={styles.promptCard}>
-          <span>🔒</span>
+          <span style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+            <Lock size={44} color="var(--text-muted)" />
+          </span>
           <h3>로그인이 필요한 서비스입니다</h3>
           <p>입양 신청서를 작성하시려면 먼저 로그인해 주세요.</p>
           <Link
@@ -90,7 +93,7 @@ const AdoptionForm: React.FC = () => {
     try {
       await submitAdoption(animalId, payload);
 
-      showToast('🎉 입양 신청이 성공적으로 접수되었습니다! 담당자가 검토 후 연락드립니다.', 'success');
+      showToast('입양 신청이 성공적으로 접수되었습니다! 담당자가 검토 후 연락드립니다.', 'success');
       navigate(`/animals/${animalId}`);
     } catch (err: any) {
       console.error('입양 신청 에러:', err);
@@ -114,7 +117,10 @@ const AdoptionForm: React.FC = () => {
     <div className={styles.pageWrapper}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <h2>🐾 입양 신청서 작성</h2>
+          <h2 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <FileText size={24} color="var(--primary-color)" />
+            <span>입양 신청서 작성</span>
+          </h2>
           <p>한 생명을 평생 가족으로 맞이하기 위한 소중한 첫걸음입니다.</p>
         </div>
 

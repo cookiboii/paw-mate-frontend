@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { Search, X, Dog, Cat, PawPrint, RotateCcw } from 'lucide-react';
 import styles from '../styles/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
@@ -97,7 +98,9 @@ const AnimalList: React.FC = () => {
       {/* 검색 및 다중 필터 섹션 */}
       <div className={styles.filterSection}>
         <div className={styles.searchBarWrapper}>
-          <span className={styles.searchIcon}>🔍</span>
+          <span className={styles.searchIcon} style={{ display: 'flex', alignItems: 'center' }}>
+            <Search size={18} />
+          </span>
           <input
             type="text"
             className={styles.searchInput}
@@ -111,8 +114,9 @@ const AnimalList: React.FC = () => {
               className={styles.clearSearchBtn}
               onClick={() => setSearchQuery('')}
               aria-label="검색어 지우기"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              ✕
+              <X size={14} />
             </button>
           )}
         </div>
@@ -122,17 +126,19 @@ const AnimalList: React.FC = () => {
           <div className={styles.filterGroup}>
             <span className={styles.filterLabel}>종:</span>
             {[
-              { key: 'ALL', label: '전체' },
-              { key: 'DOG', label: '강아지 🐶' },
-              { key: 'CAT', label: '고양이 🐱' },
-              { key: 'ETC', label: '기타 🐾' },
-            ].map(({ key, label }) => (
+              { key: 'ALL', label: '전체', icon: null },
+              { key: 'DOG', label: '강아지', icon: <Dog size={15} /> },
+              { key: 'CAT', label: '고양이', icon: <Cat size={15} /> },
+              { key: 'ETC', label: '기타', icon: <PawPrint size={15} /> },
+            ].map(({ key, label, icon }) => (
               <button
                 key={key}
                 className={`${styles.filterChip} ${speciesFilter === key ? styles.activeChip : ''}`}
                 onClick={() => handleSpeciesChange(key)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
               >
-                {label}
+                {icon}
+                <span>{label}</span>
               </button>
             ))}
           </div>
@@ -159,8 +165,9 @@ const AnimalList: React.FC = () => {
 
       {/* 결과 헤더 (카운트 뱃지 & 초기화) */}
       <div className={styles.resultsHeader} aria-live="polite">
-        <div className={styles.resultCountBadge}>
-          <span>🐾 현재</span>
+        <div className={styles.resultCountBadge} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <PawPrint size={15} />
+          <span>현재</span>
           <span className={styles.countHighlight}>
             {isLoading ? '...' : filteredAnimals.length}
           </span>
@@ -173,8 +180,9 @@ const AnimalList: React.FC = () => {
         </div>
 
         {isFilteringActive && (
-          <button className={styles.resetBtn} onClick={handleResetFilters}>
-            필터 초기화 ↺
+          <button className={styles.resetBtn} onClick={handleResetFilters} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <RotateCcw size={14} />
+            <span>필터 초기화</span>
           </button>
         )}
       </div>
@@ -194,7 +202,7 @@ const AnimalList: React.FC = () => {
           </ul>
         ) : filteredAnimals.length === 0 ? (
           <EmptyState
-            icon="🐕"
+            icon={<Dog size={48} color="var(--text-muted)" />}
             title="조건에 맞는 아이가 없습니다."
             description="현재 조건에 부합하는 유기동물이 없습니다. 검색어나 필터를 초기화해 보세요."
             actionLabel="검색 & 필터 초기화"

@@ -8,6 +8,7 @@ import Spinner from '../../components/Spinner';
 import { STATUS_OPTIONS } from '../../constants/animal';
 import usePageTitle from '../../hooks/usePageTitle';
 import { Animal } from '../../types/animal';
+import { Edit3 } from 'lucide-react';
 
 const AnimalStatusEditPage: React.FC = () => {
   usePageTitle('동물 보호 상태 변경 (Admin)');
@@ -50,7 +51,7 @@ const AnimalStatusEditPage: React.FC = () => {
     try {
       // 📌 Body: AnimalStatusUpdateRequest { status }
       await axios.put(`/animals/${id}/status`, { status });
-      showToast('✅ 동물 상태가 성공적으로 변경되었습니다.', 'success');
+      showToast('동물 상태가 성공적으로 변경되었습니다.', 'success');
       navigate(`/animals/${id}`);
     } catch (err: any) {
       showToast('상태 수정 실패: ' + (err.response?.data?.message || err.message), 'error');
@@ -67,7 +68,10 @@ const AnimalStatusEditPage: React.FC = () => {
 
   return (
     <section className={styles.container}>
-      <h2 className={styles.title}>🐾 동물 보호 상태 변경</h2>
+      <h2 className={styles.title} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <Edit3 size={22} color="var(--primary-color)" />
+        <span>동물 보호 상태 변경</span>
+      </h2>
       {animal && (
         <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '24px' }}>
           <strong>{animal.breed}</strong> (#{animal.id})의 현재 상태를 변경합니다.

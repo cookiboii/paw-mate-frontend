@@ -66,7 +66,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   const toggleFavorite = (animal: Partial<Animal> & { id: string | number; species?: string; breed?: string }) => {
     // 비로그인 사용자 차단
     if (!isAuthenticated) {
-      showToast('찜하기는 로그인 후 이용할 수 있습니다. 상단 버튼을 눌러 로그인해주세요 🐾', 'info');
+      showToast('찜하기는 로그인 후 이용할 수 있습니다. 상단 버튼을 눌러 로그인해주세요.', 'info');
       return;
     }
     if (!animal || !animal.id) return;
@@ -87,7 +87,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
         image: animal.image,
       };
       setFavorites((prev) => [minimalAnimal, ...prev]);
-      showToast(`'${animal.breed || animal.species || '동물'}'을(를) 관심 목록에 담았습니다! ❤️`, 'success');
+      showToast(`'${animal.breed || animal.species || '동물'}'을(를) 관심 목록에 담았습니다!`, 'success');
     }
   };
 

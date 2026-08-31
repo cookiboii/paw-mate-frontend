@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight, X, ArrowRight, HeartHandshake } from "lucide-react";
 import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
@@ -20,7 +21,7 @@ import cat from "../assets/cat.jpg";
 const images = [dog1, dog2, dog3, dog4, cat];
 
 const HomePage: React.FC = () => {
-  usePageTitle('사지 말고 입양하세요 🐾');
+  usePageTitle('사지 말고 입양하세요 | AdoptMate');
   const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState<number>(0);
@@ -79,8 +80,9 @@ const HomePage: React.FC = () => {
             따뜻한 손길로 아이들의 세상을 바꿔주세요.
           </p>
           <div className={styles.heroActions}>
-            <Link to="/animals" className="btn-primary">
-              입양 기다리는 아이들 보기
+            <Link to="/animals" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <span>입양 기다리는 아이들 보기</span>
+              <ArrowRight size={18} />
             </Link>
             {!isAuthenticated && (
               <button onClick={() => setIsLoginOpen(true)} className="btn-secondary">
@@ -113,14 +115,14 @@ const HomePage: React.FC = () => {
               onClick={(e) => { e.stopPropagation(); prevSlide(); }}
               aria-label="이전 슬라이드"
             >
-              &#8249;
+              <ChevronLeft size={24} />
             </button>
             <button
               className={`${styles.sliderArrow} ${styles.sliderArrowRight}`}
               onClick={(e) => { e.stopPropagation(); nextSlide(); }}
               aria-label="다음 슬라이드"
             >
-              &#8250;
+              <ChevronRight size={24} />
             </button>
             <div className={styles.dots} role="tablist" aria-label="슬라이드 네비게이션">
               {images.map((_, idx) => (
@@ -160,7 +162,6 @@ const HomePage: React.FC = () => {
           ) : recentAnimals.length === 0 ? (
             <div style={{ gridColumn: '1 / -1' }}>
               <EmptyState
-                icon="🐾"
                 title="아직 등록된 동물이 없습니다."
                 description="새로운 가족을 기다리는 아이들이 곧 등록될 예정입니다."
                 actionLabel="동물 목록 둘러보기"
@@ -216,8 +217,9 @@ const HomePage: React.FC = () => {
         <div className={styles.ctaContent}>
           <h2>망설이지 마세요.<br />아이들은 당신을 기다립니다.</h2>
           <p>지금 바로 AdoptMate와 함께 새로운 가족을 맞이할 준비를 시작해보세요.</p>
-          <Link to="/animals" className={styles.primaryBtnLarge}>
-            동물 목록 보러가기
+          <Link to="/animals" className={styles.primaryBtnLarge} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <HeartHandshake size={20} />
+            <span>동물 목록 보러가기</span>
           </Link>
         </div>
       </section>
@@ -225,7 +227,9 @@ const HomePage: React.FC = () => {
       {isLoginOpen && (
         <div className={styles.modalOverlay} onClick={closeLoginModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeBtn} onClick={closeLoginModal}>&times;</button>
+            <button className={styles.closeBtn} onClick={closeLoginModal} aria-label="닫기">
+              <X size={20} />
+            </button>
             <Login onLoginSuccess={handleLoginSuccess} />
           </div>
         </div>

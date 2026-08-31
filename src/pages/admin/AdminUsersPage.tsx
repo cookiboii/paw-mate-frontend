@@ -4,6 +4,7 @@ import styles from '../../styles/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import usePageTitle from '../../hooks/usePageTitle';
 import { User } from '../../types/auth';
+import { Users, Crown, User as UserIcon, Search, BarChart3 } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -76,28 +77,37 @@ const AdminUsersPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>👥 회원 관리</h1>
+        <h1 className={styles.title} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <Users size={26} color="var(--primary-color)" />
+          <span>회원 관리</span>
+        </h1>
         <p className={styles.subtitle}>파우메이트에 가입된 모든 유저를 관리합니다.</p>
       </div>
 
       {/* 통계 대시보드 */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>📊</span>
+          <span className={styles.statIcon} style={{ display: 'flex', alignItems: 'center' }}>
+            <BarChart3 size={24} color="var(--primary-color)" />
+          </span>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>전체 회원</span>
             <span className={styles.statValue}>{stats.total}명</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>👑</span>
+          <span className={styles.statIcon} style={{ display: 'flex', alignItems: 'center' }}>
+            <Crown size={24} color="#f59e0b" />
+          </span>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>관리자</span>
             <span className={styles.statValue}>{stats.admins}명</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>👤</span>
+          <span className={styles.statIcon} style={{ display: 'flex', alignItems: 'center' }}>
+            <UserIcon size={24} color="#3b82f6" />
+          </span>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>일반 회원</span>
             <span className={styles.statValue}>{stats.users}명</span>
@@ -108,7 +118,9 @@ const AdminUsersPage: React.FC = () => {
       {/* 검색 및 필터 컨트롤 */}
       <div className={styles.controls}>
         <div className={styles.searchBox}>
-          <span className={styles.searchIcon}>🔍</span>
+          <span className={styles.searchIcon} style={{ display: 'flex', alignItems: 'center' }}>
+            <Search size={18} />
+          </span>
           <input
             type="text"
             placeholder="이름 또는 이메일 검색..."

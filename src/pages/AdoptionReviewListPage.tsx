@@ -7,19 +7,20 @@ import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { ReviewItem } from '../types/review';
+import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, User, PawPrint, ArrowRight } from 'lucide-react';
 
 export interface CategoryOption {
   key: string;
   label: string;
-  emoji: string;
+  icon: React.ReactNode;
 }
 
 // 카테고리 접두사 파싱
 export const CATEGORIES: CategoryOption[] = [
-  { key: 'ALL', label: '전체', emoji: '📋' },
-  { key: 'REVIEW', label: '입양 후기', emoji: '💌' },
-  { key: 'FREE_ADOPTION', label: '무료 분양', emoji: '🎁' },
-  { key: 'REPORT', label: '유기동물 제보', emoji: '🚨' },
+  { key: 'ALL', label: '전체', icon: <LayoutGrid size={16} /> },
+  { key: 'REVIEW', label: '입양 후기', icon: <HeartHandshake size={16} /> },
+  { key: 'FREE_ADOPTION', label: '무료 분양', icon: <Gift size={16} /> },
+  { key: 'REPORT', label: '유기동물 제보', icon: <AlertTriangle size={16} /> },
 ];
 
 export const CATEGORY_PREFIX: Record<string, string> = {
@@ -42,6 +43,18 @@ export function getCleanTitle(title = ''): string {
     .replace(CATEGORY_PREFIX.REPORT, '')
     .trim();
 }
+
+const renderCategoryIcon = (cat: string, size = 16) => {
+  switch (cat) {
+    case 'REPORT':
+      return <AlertTriangle size={size} />;
+    case 'FREE_ADOPTION':
+      return <Gift size={size} />;
+    case 'REVIEW':
+    default:
+      return <HeartHandshake size={size} />;
+  }
+};
 
 const AdoptionReviewListPage: React.FC = () => {
   usePageTitle('따뜻한 입양 후기 & 제보');
@@ -129,20 +142,22 @@ const AdoptionReviewListPage: React.FC = () => {
 
       {/* 카테고리 탭 */}
       <div className={styles.tabBar}>
-        {CATEGORIES.map(({ key, label, emoji }) => (
+        {CATEGORIES.map(({ key, label, icon }) => (
           <button
             key={key}
             className={`${styles.tabBtn} ${activeCategory === key ? styles.activeTab : ''}`}
             onClick={() => setActiveCategory(key)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            <span className={styles.tabEmoji}>{emoji}</span>
-            {label}
+            <span className={styles.tabEmoji} style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>
+            <span>{label}</span>
           </button>
         ))}
 
         {isAuthenticated && (
-          <button className={styles.writeBtn} onClick={() => navigate('/review')}>
-            ✏️ 글쓰기
+          <button className={styles.writeBtn} onClick={() => navigate('/review')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <PenSquare size={16} />
+            <span>글쓰기</span>
           </button>
         )}
       </div>
@@ -186,7 +201,7 @@ const AdoptionReviewListPage: React.FC = () => {
                           : ''
                       }`}
                     >
-                      <span>{cat === 'REPORT' ? '🚨' : cat === 'FREE_ADOPTION' ? '🎁' : '💌'}</span>
+                      <span style={{ display: 'flex', justifyContent: 'center' }}>{renderCategoryIcon(cat, 32)}</span>
                       <p>{catInfo.label}</p>
                     </div>
                   )}
@@ -200,13 +215,17 @@ const AdoptionReviewListPage: React.FC = () => {
                         ? styles.badgeFreeAdoption
                         : styles.badgeReview
                     }`}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                   >
-                    {catInfo.emoji} {catInfo.label}
+                    {renderCategoryIcon(cat, 13)}
+                    <span>{catInfo.label}</span>
                   </div>
                   <h3>{cleanTitle}</h3>
                   <p>{review.content?.slice(0, 65) ?? '내용 없음'}...</p>
                   <div className={styles.cardMeta}>
-                    <span className={styles.authorName}>✍️ {review.name || '익명'}</span>
+                    <span className={styles.authorName} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <User size={13} /> {review.name || '익명'}
+                    </span>
                     {(review.createdAt || review.createAt) && (
                       <span className={styles.cardDate}>
                         {formatDate(review.createdAt || review.createAt)}
@@ -219,7 +238,7 @@ const AdoptionReviewListPage: React.FC = () => {
           })
         ) : !isLoading ? (
           <div className={styles.emptyState}>
-            <span>{activeCategory === 'REPORT' ? '🚨' : activeCategory === 'FREE_ADOPTION' ? '🎁' : '🐾'}</span>
+            <span style={{ display: 'flex', justifyContent: 'center' }}>{renderCategoryIcon(activeCategory, 44)}</span>
             <p>
               {activeCategory === 'REPORT'
                 ? '아직 유기동물 제보 글이 없습니다.'
@@ -230,8 +249,9 @@ const AdoptionReviewListPage: React.FC = () => {
                 : '아직 작성된 글이 없습니다.'}
             </p>
             {isAuthenticated && (
-              <button className={styles.emptyWriteBtn} onClick={() => navigate('/review')}>
-                첫 글을 작성해보세요 →
+              <button className={styles.emptyWriteBtn} onClick={() => navigate('/review')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <span>첫 글을 작성해보세요</span>
+                <ArrowRight size={16} />
               </button>
             )}
           </div>
@@ -243,7 +263,10 @@ const AdoptionReviewListPage: React.FC = () => {
         {!isLoading && reviews.length > 0 && page >= totalPages - 1 && (
           <div className={styles.endOfList}>
             <div className={styles.endOfListDivider} />
-            <p>모든 이야기를 다 불러왔습니다 🐾</p>
+            <p style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span>모든 이야기를 다 불러왔습니다</span>
+              <PawPrint size={14} />
+            </p>
           </div>
         )}
       </div>

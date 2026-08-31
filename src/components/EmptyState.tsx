@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PawPrint } from 'lucide-react';
 import styles from '../styles/EmptyState.module.css';
 
 interface EmptyStateProps {
@@ -15,7 +16,7 @@ interface EmptyStateProps {
  * 🐾 공통 빈 상태(Empty State) 안내 컴포넌트
  */
 const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = '🐾',
+  icon,
   title = '데이터가 없습니다.',
   description = '요청하신 정보가 아직 등록되지 않았습니다.',
   actionLabel,
@@ -35,7 +36,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   return (
     <div className={styles.emptyStateContainer}>
       <div className={styles.iconWrapper}>
-        <span className={styles.icon}>{icon}</span>
+        <span className={styles.icon}>{icon || <PawPrint size={44} color="var(--text-muted)" />}</span>
       </div>
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.description}>{description}</p>

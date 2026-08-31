@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { PawPrint, Phone } from 'lucide-react';
 import styles from '../styles/Footer.module.css';
 
 const Footer: React.FC = () => {
@@ -8,7 +9,10 @@ const Footer: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.topSection}>
           <div className={styles.brandColumn}>
-            <h3>🐾 AdoptMate</h3>
+            <h3 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <PawPrint size={22} color="var(--primary-color, #ff6b6b)" />
+              AdoptMate
+            </h3>
             <p>유기동물 입양은 생명을 살리는 일입니다.<br />따뜻한 가족이 되어주세요.</p>
             <div className={styles.socialIcons}>
               <a href="https://github.com/cookiboii" target="_blank" rel="noopener noreferrer" className={styles.icon}>GitHub</a>
@@ -36,7 +40,9 @@ const Footer: React.FC = () => {
           <div className={styles.linksColumn}>
             <h4>긴급 제보 & 상담</h4>
             <ul className={styles.contactList}>
-              <li style={{ color: 'var(--primary-color)', fontWeight: '700', fontSize: '1.05rem' }}>📞 1577-0954</li>
+              <li style={{ color: 'var(--primary-color)', fontWeight: '700', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Phone size={18} /> 1577-0954
+              </li>
               <li style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>동물보호 상담센터 (평일 09:00~18:00)</li>
               <li style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>응급 구조 신고: 국번없이 120 / 112</li>
             </ul>

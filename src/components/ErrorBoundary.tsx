@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import styles from '../styles/ErrorBoundary.module.css';
+import { AlertCircle } from 'lucide-react';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -25,7 +26,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('🔥 ErrorBoundary caught an error:', error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
   handleReset = (): void => {
@@ -43,7 +44,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return (
         <div className={styles.errorWrapper}>
           <div className={styles.errorCard}>
-            <div className={styles.iconWrapper}>😿</div>
+            <div className={styles.iconWrapper} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AlertCircle size={48} color="var(--danger-color, #e63946)" />
+            </div>
             <h2 className={styles.title}>일시적인 오류가 발생했습니다</h2>
             <p className={styles.description}>
               페이지를 불러오는 중 문제가 발생했습니다.<br />

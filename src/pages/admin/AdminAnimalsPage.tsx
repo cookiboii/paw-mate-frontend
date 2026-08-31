@@ -9,6 +9,7 @@ import { SPECIES_OPTIONS, STATUS_OPTIONS, GENDER_OPTIONS } from '../../constants
 import usePageTitle from '../../hooks/usePageTitle';
 import { uploadImageToBlob } from '../../utils/imageUpload';
 import { AnimalRegisterForm } from '../../types/animal';
+import { PlusCircle, Camera, X } from 'lucide-react';
 
 const AdminAnimalsPage: React.FC = () => {
   usePageTitle('유기동물 신규 등록 (Admin)');
@@ -133,7 +134,10 @@ const AdminAnimalsPage: React.FC = () => {
     <div className={styles.pageWrapper}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <h2>🐾 유기동물 신규 등록</h2>
+          <h2 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <PlusCircle size={22} color="var(--primary-color)" />
+            <span>유기동물 신규 등록</span>
+          </h2>
           <p>파우메이트에 새로운 동물을 등록하여 가족을 찾아주세요.</p>
         </div>
 
@@ -247,13 +251,15 @@ const AdminAnimalsPage: React.FC = () => {
                 {preview ? (
                   <div className={styles.previewContainer}>
                     <img src={preview} alt="미리보기" className={styles.previewImage} />
-                    <button type="button" className={styles.removeBtn} onClick={removeImage}>
-                      ✕
+                    <button type="button" className={styles.removeBtn} onClick={removeImage} aria-label="사진 삭제">
+                      <X size={14} />
                     </button>
                   </div>
                 ) : (
                   <div className={styles.uploadPlaceholder}>
-                    <span className={styles.uploadIcon}>📷</span>
+                    <span className={styles.uploadIcon} style={{ display: 'flex', justifyContent: 'center' }}>
+                      <Camera size={36} color="var(--primary-color)" />
+                    </span>
                     <p>사진 <strong>클릭</strong> 또는<br /><strong>드래그 앤 드롭</strong></p>
                   </div>
                 )}

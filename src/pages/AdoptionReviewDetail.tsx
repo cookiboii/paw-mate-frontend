@@ -11,6 +11,19 @@ import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
 import { ReviewDetailData } from '../types/review';
+import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2 } from 'lucide-react';
+
+const renderCategoryIcon = (cat: string, size = 16) => {
+  switch (cat) {
+    case 'REPORT':
+      return <AlertTriangle size={size} />;
+    case 'FREE_ADOPTION':
+      return <Gift size={size} />;
+    case 'REVIEW':
+    default:
+      return <HeartHandshake size={size} />;
+  }
+};
 
 const AdoptionReviewDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,7 +64,7 @@ const AdoptionReviewDetail: React.FC = () => {
 
         setIsLoaded(true);
       } catch (err) {
-        console.error('❌ 데이터 조회 실패:', err);
+        console.error('데이터 조회 실패:', err);
       }
     };
 
@@ -111,7 +124,7 @@ const AdoptionReviewDetail: React.FC = () => {
                   : ''
               }`}
             >
-              <span style={{ fontSize: '4rem' }}>{catInfo.emoji}</span>
+              <span style={{ display: 'flex', justifyContent: 'center' }}>{renderCategoryIcon(cat, 56)}</span>
               <p>{catInfo.label}</p>
             </div>
           )}
@@ -126,8 +139,10 @@ const AdoptionReviewDetail: React.FC = () => {
                     ? styles.heroBadgeFreeAdoption
                     : styles.heroBadgeReview
                 }`}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                {catInfo.emoji} {catInfo.label}
+                {renderCategoryIcon(cat, 14)}
+                <span>{catInfo.label}</span>
               </span>
               <h1 className={styles.title}>{cleanTitle}</h1>
               <div className={styles.meta}>
@@ -150,16 +165,19 @@ const AdoptionReviewDetail: React.FC = () => {
           {(isAuthor || isAdmin) && (
             <div className={styles.actions}>
               {isAuthor && (
-                <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)}>
-                  수정
+                <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Edit3 size={15} />
+                  <span>수정</span>
                 </button>
               )}
               <button
                 className={styles.deleteBtn}
                 onClick={() => setIsDeleteModalOpen(true)}
                 disabled={isDeleting}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                {isDeleting ? '삭제 중...' : '삭제'}
+                <Trash2 size={15} />
+                <span>{isDeleting ? '삭제 중...' : '삭제'}</span>
               </button>
             </div>
           )}
@@ -167,7 +185,10 @@ const AdoptionReviewDetail: React.FC = () => {
           {/* 유기동물 제보 긴급 안내 */}
           {isReport && (
             <div className={styles.reportBanner}>
-              <strong>🚨 이 글은 유기동물 제보 게시글입니다</strong>
+              <strong style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertTriangle size={18} color="#e63946" />
+                <span>이 글은 유기동물 제보 게시글입니다</span>
+              </strong>
               <p>도움이 필요하신 분은 <strong>동물보호 상담전화 1577-0954</strong>로 연락해 주세요.</p>
             </div>
           )}
@@ -175,7 +196,10 @@ const AdoptionReviewDetail: React.FC = () => {
           {/* 무료 분양 안내 */}
           {isFreeAdoption && (
             <div className={styles.freeAdoptionBanner}>
-              <strong>🎁 무료 분양 안내</strong>
+              <strong style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Gift size={18} color="#4361ee" />
+                <span>무료 분양 안내</span>
+              </strong>
               <p>반려동물 입양은 소중한 생명을 평생 책임지는 약속입니다. 안전한 입양을 위해 직접 만나 아이의 상태를 확인하고 교감해 보세요.</p>
             </div>
           )}
@@ -187,8 +211,9 @@ const AdoptionReviewDetail: React.FC = () => {
           </div>
 
           {/* 목록으로 버튼 */}
-          <button className={styles.backBtn} onClick={() => navigate('/reviews')}>
-            ← 목록으로
+          <button className={styles.backBtn} onClick={() => navigate('/reviews')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <ArrowLeft size={16} />
+            <span>목록으로</span>
           </button>
         </div>
       </article>

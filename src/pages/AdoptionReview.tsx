@@ -8,11 +8,12 @@ import FloatingInput from '../components/FloatingInput';
 import { CATEGORY_PREFIX } from './AdoptionReviewListPage';
 import usePageTitle from '../hooks/usePageTitle';
 import { uploadImageToBlob } from '../utils/imageUpload';
+import { HeartHandshake, Gift, AlertTriangle, Camera, X, MapPin, Calendar, PawPrint, Phone, AlertCircle, Heart } from 'lucide-react';
 
 const CATEGORY_OPTIONS = [
-  { key: 'REVIEW', label: '💌 입양 후기', desc: '입양 후 반려동물과의 소중한 이야기를 공유해요', prefix: CATEGORY_PREFIX.REVIEW },
-  { key: 'FREE_ADOPTION', label: '🎁 무료 분양', desc: '새로운 가족을 찾는 아이들의 무료 분양 글을 등록해요 (상업적 분양 금지)', prefix: CATEGORY_PREFIX.FREE_ADOPTION },
-  { key: 'REPORT', label: '🚨 유기동물 제보', desc: '유기·학대 동물을 목격했다면 알려주세요', prefix: CATEGORY_PREFIX.REPORT },
+  { key: 'REVIEW', label: '입양 후기', desc: '입양 후 반려동물과의 소중한 이야기를 공유해요', icon: <HeartHandshake size={16} />, prefix: CATEGORY_PREFIX.REVIEW },
+  { key: 'FREE_ADOPTION', label: '무료 분양', desc: '새로운 가족을 찾는 아이들의 무료 분양 글을 등록해요 (상업적 분양 금지)', icon: <Gift size={16} />, prefix: CATEGORY_PREFIX.FREE_ADOPTION },
+  { key: 'REPORT', label: '유기동물 제보', desc: '유기·학대 동물을 목격했다면 알려주세요', icon: <AlertTriangle size={16} />, prefix: CATEGORY_PREFIX.REPORT },
 ];
 
 const AdoptionReview: React.FC = () => {
@@ -108,10 +109,10 @@ const AdoptionReview: React.FC = () => {
       });
       showToast(
         selectedCategory === 'REPORT'
-          ? '🚨 유기동물 제보가 등록되었습니다. 빠른 도움이 이어지길 바랍니다!'
+          ? '유기동물 제보가 등록되었습니다. 빠른 도움이 이어지길 바랍니다!'
           : selectedCategory === 'FREE_ADOPTION'
-          ? '🎁 무료 분양 글이 등록되었습니다. 좋은 가족을 만나길 응원합니다!'
-          : '💌 입양 후기가 등록되었습니다!',
+          ? '무료 분양 글이 등록되었습니다. 좋은 가족을 만나길 응원합니다!'
+          : '입양 후기가 등록되었습니다!',
         'success'
       );
       setForm({ title: '', content: '', img: '' });
@@ -141,8 +142,10 @@ const AdoptionReview: React.FC = () => {
               type="button"
               className={`${styles.categoryTab} ${selectedCategory === cat.key ? styles.categoryTabActive : ''}`}
               onClick={() => setSelectedCategory(cat.key)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              {cat.label}
+              {cat.icon}
+              <span>{cat.label}</span>
             </button>
           ))}
         </div>
@@ -177,12 +180,15 @@ const AdoptionReview: React.FC = () => {
           {/* 유기동물 제보 전용 안내 배너 */}
           {selectedCategory === 'REPORT' && (
             <div className={styles.reportGuide}>
-              <strong>🚨 제보 시 포함해주세요</strong>
+              <strong style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertTriangle size={18} color="#e63946" />
+                <span>제보 시 포함해주세요</span>
+              </strong>
               <ul>
-                <li>📍 <strong>위치</strong>: 발견 장소 (시/구/동 또는 주요 건물명)</li>
-                <li>📅 <strong>시간</strong>: 발견 일시</li>
-                <li>🐾 <strong>상태</strong>: 동물 종류, 외형, 부상 여부</li>
-                <li>📞 <strong>연락처</strong> (선택): 제보자 연락 가능 여부</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={15} /> <strong>위치</strong>: 발견 장소 (시/구/동 또는 주요 건물명)</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Calendar size={15} /> <strong>시간</strong>: 발견 일시</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><PawPrint size={15} /> <strong>상태</strong>: 동물 종류, 외형, 부상 여부</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={15} /> <strong>연락처</strong> (선택): 제보자 연락 가능 여부</li>
               </ul>
               <p className={styles.reportEmergency}>긴급 구조가 필요한 경우 <strong>동물보호 상담전화 1577-0954</strong>로 연락하세요.</p>
             </div>
@@ -191,12 +197,15 @@ const AdoptionReview: React.FC = () => {
           {/* 무료 분양 전용 안내 배너 */}
           {selectedCategory === 'FREE_ADOPTION' && (
             <div className={styles.freeAdoptionGuide}>
-              <strong>🎁 무료 분양 등록 안내</strong>
+              <strong style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Gift size={18} color="#4361ee" />
+                <span>무료 분양 등록 안내</span>
+              </strong>
               <ul>
-                <li>🐾 <strong>아이 정보</strong>: 품종, 나이, 성별, 건강 상태 (예방접종 / 중성화 여부)</li>
-                <li>📍 <strong>지역</strong>: 분양 가능 지역 (직거래 권장)</li>
-                <li>❤️ <strong>입양 조건</strong>: 가족 구성원 동의, 주거 환경, 사후 연락 가능 여부</li>
-                <li>⚠️ <strong>주의</strong>: 책임비를 제외한 일체의 상업적 유료 분양은 금지됩니다.</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><PawPrint size={15} /> <strong>아이 정보</strong>: 품종, 나이, 성별, 건강 상태 (예방접종 / 중성화 여부)</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={15} /> <strong>지역</strong>: 분양 가능 지역 (직거래 권장)</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Heart size={15} /> <strong>입양 조건</strong>: 가족 구성원 동의, 주거 환경, 사후 연락 가능 여부</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><AlertCircle size={15} /> <strong>주의</strong>: 책임비를 제외한 일체의 상업적 유료 분양은 금지됩니다.</li>
               </ul>
               <p className={styles.freeAdoptionNotice}>소중한 한 생명을 평생 가족으로 보낼 수 있도록 신중하게 작성해 주세요.</p>
             </div>
@@ -224,12 +233,14 @@ const AdoptionReview: React.FC = () => {
               {preview ? (
                 <div className={styles.previewContainer}>
                   <img src={preview} alt="미리보기" className={styles.previewImage} />
-                  <button type="button" className={styles.removeBtn} onClick={removeImage}>✕</button>
+                  <button type="button" className={styles.removeBtn} onClick={removeImage} aria-label="사진 삭제">
+                    <X size={14} />
+                  </button>
                 </div>
               ) : (
                 <div className={styles.uploadPlaceholder}>
-                  <span className={styles.uploadIcon}>
-                    {selectedCategory === 'REPORT' ? '🚨' : selectedCategory === 'FREE_ADOPTION' ? '🎁' : '📸'}
+                  <span className={styles.uploadIcon} style={{ display: 'flex', justifyContent: 'center' }}>
+                    {selectedCategory === 'REPORT' ? <AlertTriangle size={36} color="#e63946" /> : selectedCategory === 'FREE_ADOPTION' ? <Gift size={36} color="#4361ee" /> : <Camera size={36} color="var(--primary-color)" />}
                   </span>
                   <p><strong>클릭</strong>하여 사진을 선택하거나<br />여기로 <strong>드래그 앤 드롭</strong> 하세요</p>
                   {selectedCategory === 'REPORT' && (
@@ -281,10 +292,10 @@ const AdoptionReview: React.FC = () => {
             {isSubmitting
               ? '등록 중...'
               : selectedCategory === 'REPORT'
-              ? '🚨 제보 등록하기'
+              ? '제보 등록하기'
               : selectedCategory === 'FREE_ADOPTION'
-              ? '🎁 무료 분양 등록하기'
-              : '💌 후기 등록하기'}
+              ? '무료 분양 등록하기'
+              : '후기 등록하기'}
           </button>
         </form>
       </div>
