@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { ReviewItem } from '../types/review';
-import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, User, PawPrint, ArrowRight, Search, X } from 'lucide-react';
+import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, User, PawPrint, Search, X } from 'lucide-react';
 
 export interface CategoryOption {
   key: string;
@@ -311,12 +311,6 @@ const AdoptionReviewListPage: React.FC = () => {
                 ? '아직 작성된 입양 후기가 없습니다.'
                 : '아직 작성된 글이 없습니다.'}
             </p>
-            {isAuthenticated && !searchKeyword && (
-              <button className={styles.emptyWriteBtn} onClick={() => navigate('/review')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <span>이야기 남기기</span>
-                <ArrowRight size={15} />
-              </button>
-            )}
           </div>
         ) : null}
 
