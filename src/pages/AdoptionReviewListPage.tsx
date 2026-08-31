@@ -313,8 +313,8 @@ const AdoptionReviewListPage: React.FC = () => {
             </p>
             {isAuthenticated && !searchKeyword && (
               <button className={styles.emptyWriteBtn} onClick={() => navigate('/review')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <span>첫 글을 작성해보세요</span>
-                <ArrowRight size={16} />
+                <span>이야기 남기기</span>
+                <ArrowRight size={15} />
               </button>
             )}
           </div>

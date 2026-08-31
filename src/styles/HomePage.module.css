@@ -313,10 +313,14 @@
 
 /* 6. CTA Section */
 .ctaSection {
-  background-color: var(--primary-color);
-  padding: 100px 24px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #475c46 100%);
+  padding: 90px 24px;
   text-align: center;
   color: #ffffff;
+  border-radius: var(--radius-xl);
+  max-width: 1200px;
+  margin: 0 auto 90px;
+  box-shadow: var(--shadow-md);
 }
 
 .ctaContent {
@@ -334,18 +338,18 @@
 }
 
 .ctaContent p {
-  font-size: 1.15rem;
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 40px;
+  font-size: 1.12rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 36px;
 }
 
 .primaryBtnLarge {
   background-color: #ffffff;
   color: var(--primary-color) !important;
-  padding: 16px 36px;
+  padding: 15px 34px;
   border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -221,8 +221,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         {comments.length > 0 ? (
           renderComments(comments)
         ) : (
-          <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: '24px 0', fontSize: '0.92rem' }}>
-            첫 번째 응원 댓글을 남겨보세요.
+          <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: '24px 0', fontSize: '0.9rem' }}>
+            따뜻한 응원의 한마디를 남겨보세요.
           </p>
         )}
       </div>

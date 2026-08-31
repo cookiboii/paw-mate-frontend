@@ -1,101 +1,96 @@
 :root {
-  /* Serious & Sophisticated Palette (Deep Forest Pine & Warm Sandstone) */
-  --primary-color: #243b29; /* Deep Forest Pine - Resolute, Trustworthy & Dignified */
-  --primary-hover: #19291d;
-  --primary-light: rgba(36, 59, 41, 0.1);
-  --primary-glow: rgba(36, 59, 41, 0.2);
+  /* Warm & Gentle Cozy Palette (Warm Sage, Cream Ivory & Soft Apricot) */
+  --primary-color: #587057; /* Soft Warm Sage Green - Gentle, Comforting & Natural */
+  --primary-hover: #475c46;
+  --primary-light: rgba(88, 112, 87, 0.1);
+  --primary-glow: rgba(88, 112, 87, 0.2);
   
-  --secondary-color: #b3926e; /* Muted Warm Sandstone / Raw Oak */
-  --secondary-hover: #9c7b57;
-  --secondary-light: rgba(179, 146, 110, 0.14);
+  --secondary-color: #c99368; /* Warm Apricot Sandstone - Cozy & Friendly */
+  --secondary-hover: #b57f55;
+  --secondary-light: rgba(201, 147, 104, 0.14);
   
-  --bg-color: #f7f6f2; /* Pure Ivory Linen */
-  --surface-color: #ffffff; /* Crisp Pure Surface */
-  --surface-secondary: #eeebe3; /* Subtle Neutral Surface */
+  --bg-color: #faf8f5; /* Pure Warm Cream Linen */
+  --surface-color: #ffffff; /* Crisp Warm Surface */
+  --surface-secondary: #f3efe8; /* Soft Warm Oatmeal */
   
-  --text-primary: #181c19; /* High-contrast Charcoal Black */
-  --text-muted: #525953; /* Deep Neutral Gray */
-  --text-light: #7a827b; /* Subdued Tertiary Text */
+  --text-primary: #2c302d; /* Soft Warm Charcoal Mocha */
+  --text-muted: #697068; /* Gentle Neutral Gray */
+  --text-light: #9aa19a; /* Subdued Tertiary Text */
   
-  --border-color: #ded9cf; /* Elegant Warm Gray Border */
-  --border-light: #eae6de;
-  --danger-color: #c44f38; /* Muted Terracotta Crimson */
-  --danger-light: rgba(196, 79, 56, 0.1);
-  --success-color: #2d6a4f; /* Deep Forest Sage */
-  --success-light: rgba(45, 106, 79, 0.1);
-  --warning-color: #b57c1e; /* Antique Gold Amber */
-  --warning-light: rgba(181, 124, 30, 0.12);
-  --info-color: #2b5c8f; /* Classic Navy Slate */
-  --info-light: rgba(43, 92, 143, 0.1);
-
-  /* Restrained & Subtle Depth Shadows */
-  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.03);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.08);
-  --shadow-glow-primary: 0 6px 20px rgba(36, 59, 41, 0.18);
+  --border-color: #e8e3d8; /* Gentle Warm Oatmeal Border */
+  --border-light: #f0ece3;
+  --danger-color: #c85a42; /* Soft Terracotta Coral */
+  --danger-light: rgba(200, 90, 66, 0.1);
+  --success-color: #4a7c59; /* Soft Leaf Green */
+  --success-light: rgba(74, 124, 89, 0.12);
+  --warning-color: #c48833; /* Warm Honey Gold */
+  --warning-light: rgba(196, 136, 51, 0.12);
+  --info-color: #436d85; /* Soft Muted Slate Blue */
+  --info-light: rgba(67, 109, 133, 0.1);
   
-  /* Refined Border Radii - Structured & Elegant */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  /* 둥글고 부드러운 Border Radius */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
   --radius-full: 9999px;
-
-  /* Smooth Fluid Transitions */
-  --transition-fast: 0.15s cubic-bezier(0.2, 0, 0, 1);
-  --transition-normal: 0.25s cubic-bezier(0.2, 0, 0, 1);
-  --transition-slow: 0.4s cubic-bezier(0.2, 0, 0, 1);
-
-  /* Surface Depth & Highlights */
-  --surface-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
-  --input-focus-ring: 0 0 0 3px rgba(36, 59, 41, 0.16);
+  
+  /* 포근하고 부드러운 그림자 */
+  --shadow-xs: 0 1px 3px rgba(60, 50, 40, 0.04);
+  --shadow-sm: 0 3px 10px rgba(60, 50, 40, 0.06);
+  --shadow-md: 0 8px 24px rgba(60, 50, 40, 0.08);
+  --shadow-lg: 0 16px 36px rgba(60, 50, 40, 0.1);
+  --shadow-glow-primary: 0 4px 16px rgba(88, 112, 87, 0.25);
+  
+  --transition-fast: 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-normal: 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  --input-focus-ring: 0 0 0 3px rgba(88, 112, 87, 0.18);
+  
+  /* Layout */
+  --header-height: 74px;
 }
 
 [data-theme="dark"] {
-  --primary-color: #7da885; /* Soft Muted Sage Pine */
-  --primary-hover: #93bc9b;
-  --primary-light: rgba(125, 168, 133, 0.15);
-  --primary-glow: rgba(125, 168, 133, 0.22);
+  --primary-color: #7d9e7b;
+  --primary-hover: #90b38e;
+  --primary-light: rgba(125, 158, 123, 0.16);
+  --primary-glow: rgba(125, 158, 123, 0.25);
   
-  --secondary-color: #d8ba98;
-  --secondary-hover: #e5ccb0;
-  --secondary-light: rgba(216, 186, 152, 0.14);
+  --secondary-color: #dba983;
+  --secondary-hover: #ecc09e;
+  --secondary-light: rgba(219, 169, 131, 0.18);
   
-  --bg-color: #131614; 
-  --surface-color: #1c201d; 
-  --surface-secondary: #252a26;
+  --bg-color: #171a18;
+  --surface-color: #212522;
+  --surface-secondary: #2a302b;
   
-  --text-primary: #ebeee9; 
-  --text-muted: #a6aea8; 
-  --text-light: #7c857e;
+  --text-primary: #f2f5f2;
+  --text-muted: #abb3aa;
+  --text-light: #7b857a;
   
-  --border-color: #2c332e; 
-  --border-light: #232824;
-  --danger-color: #d96f5b; 
-  --danger-light: rgba(217, 111, 91, 0.16);
-  --success-color: #7da885; 
-  --success-light: rgba(125, 168, 133, 0.15);
-  --warning-color: #d8ba98; 
-  --warning-light: rgba(216, 186, 152, 0.16);
-  --info-color: #6a9fd4;
-  --info-light: rgba(106, 159, 212, 0.16);
-
+  --border-color: #353d36;
+  --border-light: #2d332e;
+  --danger-color: #e57d69;
+  --danger-light: rgba(229, 125, 105, 0.16);
+  --success-color: #6bb07d;
+  --success-light: rgba(107, 176, 125, 0.16);
+  --warning-color: #e2a852;
+  --warning-light: rgba(226, 168, 82, 0.16);
+  --info-color: #6fa0bc;
+  --info-light: rgba(111, 160, 188, 0.16);
+  
   --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.65);
-  --shadow-glow-primary: 0 6px 20px rgba(125, 168, 133, 0.2);
-
-  --surface-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-  --input-focus-ring: 0 0 0 3px rgba(125, 168, 133, 0.22);
+  --shadow-sm: 0 3px 10px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.6);
+  --shadow-glow-primary: 0 4px 16px rgba(125, 158, 123, 0.3);
+  --input-focus-ring: 0 0 0 3px rgba(125, 158, 123, 0.25);
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
+/* ==========================================================================
+   Base Elements
+   ========================================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -103,14 +98,79 @@ html {
 }
 
 body {
-  font-family: 'Pretendard', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-primary);
   line-height: 1.65;
-  letter-spacing: -0.01em;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   Global Button System (부드럽고 따뜻한 버튼 스타일)
+   ========================================================================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--primary-color);
+  color: #ffffff !important;
+  padding: 13px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.98rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--surface-color);
+  color: var(--text-primary) !important;
+  padding: 13px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.98rem;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  background-color: var(--surface-secondary);
+  border-color: var(--secondary-color);
+  color: var(--secondary-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 a {

@@ -183,7 +183,7 @@ const HomePage: React.FC = () => {
         </div>
         <div style={{ textAlign: 'center', marginTop: '48px' }}>
           <Link to="/animals" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <span>전체 보호 동물 보기 ({recentAnimals.length}마리 이상)</span>
+            <span>보호 중인 아이들 모두 보기</span>
             <ArrowRight size={16} />
           </Link>
         </div>
