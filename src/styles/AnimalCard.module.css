@@ -12,17 +12,17 @@
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow: var(--shadow-md);
-  border-color: var(--primary-light);
+  border-color: var(--secondary-color);
 }
 
 .imageWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1; /* 사진을 더욱 크고 시원하게 보여주는 포트레이트 비율 */
   overflow: hidden;
-  background: var(--bg-color);
+  background: var(--surface-secondary);
 }
 
 .imageLink {
@@ -35,42 +35,44 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-slow);
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .card:hover .image {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 /* Badges */
 .badgeGroup {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 14px;
+  left: 14px;
   display: flex;
   gap: 6px;
   z-index: 2;
 }
 
 .speciesBadge {
-  padding: 4px 10px;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  padding: 5px 12px;
+  background: rgba(44, 48, 45, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: #ffffff;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .statusBadge {
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  font-size: 0.78rem;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .statusProtected {
@@ -91,36 +93,37 @@
 /* Favorite Button & Micro Bounce Animation */
 .favBtn {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 38px;
-  height: 38px;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: none;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   cursor: pointer;
   z-index: 3;
   transition: transform var(--transition-fast), background var(--transition-fast);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
 [data-theme="dark"] .favBtn {
-  background: rgba(34, 37, 34, 0.85);
+  background: rgba(33, 37, 34, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .favBtn:hover {
-  transform: scale(1.12);
-  background: rgba(255, 255, 255, 0.98);
+  transform: scale(1.14);
+  background: #ffffff;
 }
 
 [data-theme="dark"] .favBtn:hover {
-  background: rgba(34, 37, 34, 0.98);
+  background: #2a302b;
 }
 
 .favBtn:active {
