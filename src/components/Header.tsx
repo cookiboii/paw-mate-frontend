@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { PawPrint, BookOpen, MessageSquare, User, Heart, PlusCircle, Users, ClipboardList, Crown, X, LogOut } from 'lucide-react';
+import { PawPrint, BookOpen, MessageSquare, User, Heart, ShieldCheck, Crown, X, LogOut } from 'lucide-react';
 import styles from '../styles/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
@@ -70,11 +70,16 @@ const Header: React.FC = () => {
             <li><NavLink to="/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>동물 목록</NavLink></li>
             <li><NavLink to="/reviews" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>커뮤니티</NavLink></li>
             {isAdmin && (
-              <>
-                <li><NavLink to="/admin/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>동물 등록</NavLink></li>
-                <li><NavLink to="/admin/users" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>사용자 관리</NavLink></li>
-                <li><NavLink to="/admin/adoptions" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>입양 신청 관리</NavLink></li>
-              </>
+              <li>
+                <NavLink
+                  to="/admin/users"
+                  className={({ isActive }) => `${styles.navLink} ${styles.adminCenterLink} ${isActive ? styles.activeNavLink : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <ShieldCheck size={16} color="var(--primary-color)" />
+                  <span>관리자 센터</span>
+                </NavLink>
+              </li>
             )}
           </ul>
         </nav>
@@ -188,24 +193,11 @@ const Header: React.FC = () => {
             )}
 
             {isAdmin && (
-              <div className={styles.adminSection}>
-                <span className={styles.drawerSectionTitle}>관리자 전용 메뉴</span>
-                <li>
-                  <NavLink to="/admin/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <PlusCircle size={18} /> 동물 등록
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/admin/users" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Users size={18} /> 사용자 관리
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/admin/adoptions" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <ClipboardList size={18} /> 입양 신청 관리
-                  </NavLink>
-                </li>
-              </div>
+              <li>
+                <NavLink to="/admin/users" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <ShieldCheck size={18} color="var(--primary-color)" /> 관리자 센터
+                </NavLink>
+              </li>
             )}
           </ul>
         </nav>
