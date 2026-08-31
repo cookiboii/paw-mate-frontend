@@ -5,6 +5,7 @@ import styles from '../styles/CommentSection.module.css';
 import Spinner from '../components/Spinner';
 import { CommentItem } from '../types/review';
 import { User } from '../types/auth';
+import { MessageSquare, Send, CornerDownRight } from 'lucide-react';
 
 interface CommentSectionProps {
   postId: string | number;
@@ -73,7 +74,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   };
 
   const handleDelete = async (commentId: string | number) => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+    if (!window.confirm('댓글을 삭제하시겠습니까?')) return;
     setLoadingMap((prev) => ({ ...prev, [commentId]: true }));
 
     try {
@@ -116,31 +117,49 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       return (
         <div key={comment.id} className={styles.commentBox}>
           <div className={styles.commentContent}>
-            <strong>{comment.authorName}</strong>:<br />
+            <div className={styles.commentHeader}>
+              <strong className={styles.authorName}>{comment.authorName || '익명'}</strong>
+              {(isAuthor || isAdmin) && !editModeMap[comment.id] && (
+                <div className={styles.actions}>
+                  {isAuthor && (
+                    <button
+                      className={styles.actionBtn}
+                      onClick={() => handleEditToggle(comment.id, comment.content)}
+                    >
+                      수정
+                    </button>
+                  )}
+                  <button
+                    className={styles.deleteActionBtn}
+                    onClick={() => handleDelete(comment.id)}
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
+            </div>
+
             {loadingMap[comment.id] ? (
               <Spinner />
             ) : editModeMap[comment.id] ? (
-              <>
+              <div>
                 <input
                   type="text"
+                  className={styles.editInput}
                   value={contentMap[comment.id] || ''}
                   onChange={(e) => handleChange(comment.id, e.target.value)}
                 />
-                <button onClick={() => handleUpdate(comment.id)}>저장</button>
-                <button onClick={() => handleEditToggle(comment.id, '')}>취소</button>
-              </>
+                <div className={styles.editActions}>
+                  <button className={styles.submitBtn} onClick={() => handleUpdate(comment.id)}>
+                    저장
+                  </button>
+                  <button className={styles.actionBtn} onClick={() => handleEditToggle(comment.id, '')}>
+                    취소
+                  </button>
+                </div>
+              </div>
             ) : (
-              <>
-                <span>{comment.content}</span>
-                {(isAuthor || isAdmin) && (
-                  <div className={styles.actions}>
-                    {isAuthor && (
-                      <button onClick={() => handleEditToggle(comment.id, comment.content)}>수정</button>
-                    )}
-                    <button onClick={() => handleDelete(comment.id)}>삭제</button>
-                  </div>
-                )}
-              </>
+              <div className={styles.commentBody}>{comment.content}</div>
             )}
           </div>
 
@@ -148,11 +167,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             <form className={styles.replyForm} onSubmit={(e) => handleSubmit(e, comment.id)}>
               <input
                 type="text"
-                placeholder="답글 입력..."
+                placeholder="답글을 남겨주세요..."
                 value={contentMap[comment.id] || ''}
                 onChange={(e) => handleChange(comment.id, e.target.value)}
               />
-              {loadingMap[comment.id] ? <Spinner /> : <button type="submit">등록</button>}
+              {loadingMap[comment.id] ? (
+                <Spinner />
+              ) : (
+                <button type="submit" className={styles.submitBtn}>
+                  <CornerDownRight size={14} /> 답글
+                </button>
+              )}
             </form>
           )}
 
@@ -165,19 +190,42 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
   return (
     <div className={styles.commentSection}>
-      <h3>댓글</h3>
-      {userInfo && (
+      <h3>
+        <MessageSquare size={20} color="var(--primary-color)" />
+        <span>따뜻한 응원 댓글 ({comments.length})</span>
+      </h3>
+
+      {userInfo ? (
         <form onSubmit={(e) => handleSubmit(e)} className={styles.commentForm}>
           <input
             type="text"
-            placeholder="댓글을 입력하세요"
+            placeholder="아이와 가족을 위한 따뜻한 응원의 말을 남겨주세요."
             value={contentMap['root'] || ''}
             onChange={(e) => handleChange('root', e.target.value)}
           />
-          {loadingMap['root'] ? <Spinner /> : <button type="submit">등록</button>}
+          {loadingMap['root'] ? (
+            <Spinner />
+          ) : (
+            <button type="submit" className={styles.submitBtn}>
+              <Send size={14} /> 등록
+            </button>
+          )}
         </form>
+      ) : (
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}>
+          댓글을 작성하려면 로그인이 필요합니다.
+        </p>
       )}
-      <div className={styles.commentList}>{renderComments(comments)}</div>
+
+      <div className={styles.commentList}>
+        {comments.length > 0 ? (
+          renderComments(comments)
+        ) : (
+          <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: '24px 0', fontSize: '0.92rem' }}>
+            첫 번째 응원 댓글을 남겨보세요.
+          </p>
+        )}
+      </div>
     </div>
   );
 };

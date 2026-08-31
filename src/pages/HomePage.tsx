@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X, ArrowRight, HeartHandshake } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart } from "lucide-react";
 import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
@@ -30,7 +30,9 @@ const HomePage: React.FC = () => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   // Scroll Reveal Refs
+  const statsRef = useScrollReveal<HTMLDivElement>();
   const newArrivalsRef = useScrollReveal<HTMLDivElement>();
+  const principlesRef = useScrollReveal<HTMLDivElement>();
   const howItWorksRef = useScrollReveal<HTMLDivElement>();
   const ctaRef = useScrollReveal<HTMLDivElement>();
 
@@ -63,7 +65,6 @@ const HomePage: React.FC = () => {
     loadData();
   }, []);
 
-
   const goToSlide = (index: number) => setCurrent(index);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
   const nextSlide = () => setCurrent((prev) => (prev + 1) % images.length);
@@ -73,22 +74,23 @@ const HomePage: React.FC = () => {
       {/* 1. Hero Section */}
       <section className={styles.heroSection}>
         <div className={`${styles.heroContent} animate-slide-up`}>
-          <span className={styles.heroBadge}>사지 마세요, 입양하세요</span>
-          <h1>당신의 평생 친구를<br />만나보세요</h1>
+          <span className={styles.heroBadge}>
+            <ShieldCheck size={14} style={{ marginRight: '6px' }} />
+            생명 존중과 책임 있는 입양의 시작
+          </span>
+          <h1>한 생명의 평생을 함께할<br />가족을 기다립니다</h1>
           <p>
-            새로운 가족을 기다리는 수많은 유기동물들이 있습니다.<br />
-            따뜻한 손길로 아이들의 세상을 바꿔주세요.
+            파우메이트는 안락사 위기의 유기동물들이 안전하고 따뜻한 가정에서 새로운 삶을 시작할 수 있도록,
+            철저한 건강 검진과 투명한 심사를 거쳐 평생 가족을 연결합니다.
           </p>
           <div className={styles.heroActions}>
             <Link to="/animals" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              <span>입양 기다리는 아이들 보기</span>
+              <span>보호 중인 동물 확인하기</span>
               <ArrowRight size={18} />
             </Link>
-            {!isAuthenticated && (
-              <button onClick={() => setIsLoginOpen(true)} className="btn-secondary">
-                로그인 / 회원가입
-              </button>
-            )}
+            <Link to="/guide" className="btn-secondary">
+              입양 절차 및 원칙
+            </Link>
           </div>
         </div>
         <div className={styles.heroVisual}>
@@ -115,14 +117,14 @@ const HomePage: React.FC = () => {
               onClick={(e) => { e.stopPropagation(); prevSlide(); }}
               aria-label="이전 슬라이드"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={22} />
             </button>
             <button
               className={`${styles.sliderArrow} ${styles.sliderArrowRight}`}
               onClick={(e) => { e.stopPropagation(); nextSlide(); }}
               aria-label="다음 슬라이드"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={22} />
             </button>
             <div className={styles.dots} role="tablist" aria-label="슬라이드 네비게이션">
               {images.map((_, idx) => (
@@ -142,11 +144,36 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. New Arrivals Section */}
+      {/* 2. 신뢰 지표 & 임팩트 카운터 */}
+      <section className={styles.statsSection} ref={statsRef}>
+        <div className={styles.statCard}>
+          <h3>1,280+</h3>
+          <p>새 가족을 만난 아이들</p>
+          <span className={styles.statSub}>따뜻한 보금자리 정착 완료</span>
+        </div>
+        <div className={styles.statCard}>
+          <h3>100%</h3>
+          <p>정밀 건강검진 및 접종</p>
+          <span className={styles.statSub}>전문 수의사 검진 및 케어</span>
+        </div>
+        <div className={styles.statCard}>
+          <h3>0원</h3>
+          <p>비영리 책임 입양</p>
+          <span className={styles.statSub}>생명 매매가 아닌 구조와 보호</span>
+        </div>
+        <div className={styles.statCard}>
+          <h3>4,500+</h3>
+          <p>사후 케어 커뮤니티</p>
+          <span className={styles.statSub}>입양 후 지속적인 소통과 나눔</span>
+        </div>
+      </section>
+
+      {/* 3. New Arrivals Section */}
       <section className={styles.newArrivalsSection} ref={newArrivalsRef}>
         <div className={styles.sectionHeader}>
-          <h2>방금 들어온 새로운 가족</h2>
-          <p>가장 최근에 파우메이트와 함께하게 된 아이들입니다.</p>
+          <span className={styles.sectionSubTitle}>NEW ARRIVALS</span>
+          <h2>가족을 기다리는 아이들</h2>
+          <p>구조 후 건강 검진과 돌봄을 받으며 따뜻한 평생 반려인을 기다리고 있습니다.</p>
         </div>
         <div className={styles.animalGrid}>
           {isLoadingAnimals ? (
@@ -162,7 +189,7 @@ const HomePage: React.FC = () => {
           ) : recentAnimals.length === 0 ? (
             <div style={{ gridColumn: '1 / -1' }}>
               <EmptyState
-                title="아직 등록된 동물이 없습니다."
+                title="현재 대기 중인 동물이 없습니다."
                 description="새로운 가족을 기다리는 아이들이 곧 등록될 예정입니다."
                 actionLabel="동물 목록 둘러보기"
                 actionPath="/animals"
@@ -179,47 +206,79 @@ const HomePage: React.FC = () => {
             ))
           )}
         </div>
+        <div style={{ textAlign: 'center', marginTop: '48px' }}>
+          <Link to="/animals" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span>전체 보호 동물 보기 ({recentAnimals.length}마리 이상)</span>
+            <ArrowRight size={16} />
+          </Link>
+        </div>
       </section>
 
+      {/* 4. 책임 있는 입양 4대 원칙 */}
+      <section className={styles.principlesSection} ref={principlesRef}>
+        <div className={styles.sectionHeader}>
+          <span className={styles.sectionSubTitle}>OUR PRINCIPLES</span>
+          <h2>파우메이트의 4대 안심 원칙</h2>
+          <p>생명을 대하는 진중한 태도로, 아이와 가족 모두가 행복할 수 있는 환경을 만듭니다.</p>
+        </div>
+        <div className={styles.principlesGrid}>
+          <div className={styles.principleCard}>
+            <div className={styles.principleIcon}><CheckCircle2 size={24} color="var(--primary-color)" /></div>
+            <h4>철저한 사전 건강 검진</h4>
+            <p>기본 접종, 중성화 여부, 기저 질환을 투명하게 확인하고 진료 기록을 보호자에게 온전히 공유합니다.</p>
+          </div>
+          <div className={styles.principleCard}>
+            <div className={styles.principleIcon}><FileText size={24} color="var(--primary-color)" /></div>
+            <h4>책임감 있는 매칭 심사</h4>
+            <p>주거 환경, 가족 구성원의 동의, 경제적 부양 능력을 종합적으로 고려하여 신중하게 심사합니다.</p>
+          </div>
+          <div className={styles.principleCard}>
+            <div className={styles.principleIcon}><Home size={24} color="var(--primary-color)" /></div>
+            <h4>직접 방문 및 교감</h4>
+            <p>온라인 신청 후 보호소에서 아이와 직접 대면하여 서로의 기질과 환경이 맞는지 교감 시간을 갖습니다.</p>
+          </div>
+          <div className={styles.principleCard}>
+            <div className={styles.principleIcon}><Heart size={24} color="var(--primary-color)" /></div>
+            <h4>평생 지속되는 사후 케어</h4>
+            <p>입양 후에도 커뮤니티와 상담 창구를 통해 훈련, 건강, 돌봄에 필요한 정보를 함께 나눕니다.</p>
+          </div>
+        </div>
+      </section>
 
-      {/* 3. How it works Section */}
+      {/* 5. How it works Section */}
       <section className={styles.howItWorks} ref={howItWorksRef}>
         <div className={styles.sectionHeader}>
-          <h2>입양은 이렇게 진행됩니다</h2>
-          <p>신중한 입양을 위해 꼼꼼한 절차를 거치고 있습니다.</p>
+          <span className={styles.sectionSubTitle}>PROCESS</span>
+          <h2>입양 절차 안내</h2>
+          <p>신중하고 체계적인 3단계 절차로 안전하게 진행됩니다.</p>
         </div>
         <div className={styles.stepsGrid}>
           <div className={styles.stepCard}>
-            <div className={styles.stepIcon}>1</div>
-            <h4>동물 확인 및 신청</h4>
-            <p>온라인으로 마음에 드는 동물을 확인하고 입양 신청서를 작성합니다.</p>
+            <div className={styles.stepIcon}>01</div>
+            <h4>동물 확인 및 신청서 작성</h4>
+            <p>온라인에서 아이들의 프로필과 건강 상태를 확인하고 정성껏 신청서를 작성합니다.</p>
           </div>
           <div className={styles.stepCard}>
-            <div className={styles.stepIcon}>2</div>
-            <h4>신청서 심사</h4>
-            <p>제출해주신 입양 신청서를 바탕으로 담당자가 꼼꼼하게 검토합니다.</p>
+            <div className={styles.stepIcon}>02</div>
+            <h4>신청서 심사 및 결과 안내</h4>
+            <p>제출된 서류를 바탕으로 양육 환경과 적합성을 면밀히 심사하여 결과를 안내해 드립니다.</p>
           </div>
           <div className={styles.stepCard}>
-            <div className={styles.stepIcon}>3</div>
-            <h4>보호소 방문 및 교감</h4>
-            <p>실제 보호소에 방문하여 아이와 직접 만나고 교감하는 시간을 가집니다.</p>
-          </div>
-          <div className={styles.stepCard}>
-            <div className={styles.stepIcon}>4</div>
-            <h4>입양 완료</h4>
-            <p>모든 절차가 완료되면 아이와 함께 따뜻한 집으로 돌아갑니다.</p>
+            <div className={styles.stepIcon}>03</div>
+            <h4>보호소 방문 및 입양 확정</h4>
+            <p>보호소에 방문하여 아이와 첫인사를 나누고 서약서 작성 후 평생 가족이 됩니다.</p>
           </div>
         </div>
       </section>
 
-      {/* 4. CTA Section */}
+      {/* 6. CTA Section */}
       <section className={styles.ctaSection} ref={ctaRef}>
         <div className={styles.ctaContent}>
-          <h2>망설이지 마세요.<br />아이들은 당신을 기다립니다.</h2>
-          <p>지금 바로 AdoptMate와 함께 새로운 가족을 맞이할 준비를 시작해보세요.</p>
+          <h2>사지 마세요, 입양하세요.<br />한 생명의 세상을 바꿀 수 있습니다.</h2>
+          <p>당신의 따뜻한 결심이 한 아이에게는 평생의 기적이 됩니다.</p>
           <Link to="/animals" className={styles.primaryBtnLarge} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
             <HeartHandshake size={20} />
-            <span>동물 목록 보러가기</span>
+            <span>새로운 가족 맞이하기</span>
           </Link>
         </div>
       </section>

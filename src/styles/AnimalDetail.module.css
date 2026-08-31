@@ -163,19 +163,19 @@
 }
 
 .badgeWaiting {
-  background-color: rgba(242, 204, 143, 0.2);
+  background-color: var(--warning-light);
   color: var(--warning-color);
-  border: 1px solid rgba(242, 204, 143, 0.35);
+  border: 1px solid rgba(181, 124, 30, 0.35);
 }
 
 .badgeProtected {
-  background-color: rgba(129, 178, 154, 0.2);
+  background-color: var(--success-light);
   color: var(--success-color);
-  border: 1px solid rgba(129, 178, 154, 0.35);
+  border: 1px solid rgba(45, 106, 79, 0.35);
 }
 
 .badgeAdopted {
-  background-color: rgba(148, 153, 148, 0.2);
+  background-color: var(--surface-secondary);
   color: var(--text-muted);
   border: 1px solid var(--border-color);
 }
@@ -192,19 +192,19 @@
 }
 
 .bannerProtected {
-  background-color: rgba(129, 178, 154, 0.12);
+  background-color: var(--success-light);
   color: var(--success-color);
-  border: 1px solid rgba(129, 178, 154, 0.25);
+  border: 1px solid rgba(45, 106, 79, 0.25);
 }
 
 .bannerWaiting {
-  background-color: rgba(242, 204, 143, 0.15);
+  background-color: var(--warning-light);
   color: var(--warning-color);
-  border: 1px solid rgba(242, 204, 143, 0.3);
+  border: 1px solid rgba(181, 124, 30, 0.3);
 }
 
 .bannerAdopted {
-  background-color: rgba(148, 153, 148, 0.12);
+  background-color: var(--surface-secondary);
   color: var(--text-muted);
   border: 1px solid var(--border-color);
 }
