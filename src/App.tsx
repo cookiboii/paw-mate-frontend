@@ -31,6 +31,7 @@ const AdoptionGuide = lazy(() => import('./pages/AdoptionGuide'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const KakaoCallback = lazy(() => import('./pages/KakaoCallback'));
+const BenchmarkPage = lazy(() => import('./pages/BenchmarkPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Admin pages
@@ -80,6 +81,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/reviews" element={<AdoptionReviewListPage />} />
         <Route path="/reviews/:id" element={<AdoptionReviewDetail />} />
         <Route path="/reviews/:id/edit" element={<AdoptionReviewEdit />} />
+        <Route path="/benchmark" element={<BenchmarkPage />} />
 
         {/* 마이페이지: ADMIN이면 관리 페이지로 이동 */}
         <Route
