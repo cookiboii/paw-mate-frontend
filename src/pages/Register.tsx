@@ -5,10 +5,12 @@ import axios from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import usePageTitle from "../hooks/usePageTitle";
+import { useToast } from "../context/ToastContext";
 import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, CheckIcon, AlertIcon } from "../components/Icons";
 
 const Register: React.FC = () => {
   usePageTitle('회원가입');
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -149,7 +151,7 @@ const Register: React.FC = () => {
       setIsSubmitting(true);
       setError("");
       await registerUser(form); // form: name, email, password
-      alert("회원가입이 완료되었습니다!");
+      showToast("회원가입이 완료되었습니다! 로그인해 주세요.", "success");
       navigate("/login");
     } catch (err: any) {
       const msg = err.response?.data?.message || "회원가입 실패";

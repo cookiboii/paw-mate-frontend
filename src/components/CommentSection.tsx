@@ -5,6 +5,7 @@ import styles from '../styles/CommentSection.module.css';
 import Spinner from '../components/Spinner';
 import { CommentItem } from '../types/review';
 import { User } from '../types/auth';
+import { useToast } from '../context/ToastContext';
 import { MessageSquare, Send, CornerDownRight } from 'lucide-react';
 
 interface CommentSectionProps {
@@ -12,6 +13,7 @@ interface CommentSectionProps {
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+  const { showToast } = useToast();
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [contentMap, setContentMap] = useState<Record<string, string>>({});
@@ -65,9 +67,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     try {
       await createComment(postId, { content, parentId });
       setContentMap((prev) => ({ ...prev, [key]: '' }));
+      showToast('댓글이 등록되었습니다.', 'success');
       await refreshComments();
     } catch (err) {
       console.error('댓글 등록 실패:', err);
+      showToast('댓글 등록에 실패했습니다.', 'error');
     } finally {
       setLoadingMap((prev) => ({ ...prev, [key]: false }));
     }
@@ -79,9 +83,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
     try {
       await deleteComment(commentId);
+      showToast('댓글이 삭제되었습니다.', 'info');
       await refreshComments();
     } catch (err) {
       console.error('댓글 삭제 실패:', err);
+      showToast('댓글 삭제에 실패했습니다.', 'error');
     } finally {
       setLoadingMap((prev) => ({ ...prev, [commentId]: false }));
     }
@@ -101,9 +107,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     try {
       await updateComment(commentId, updatedContent);
       setEditModeMap((prev) => ({ ...prev, [commentId]: false }));
+      showToast('댓글이 수정되었습니다.', 'success');
       await refreshComments();
     } catch (err) {
       console.error('댓글 수정 실패:', err);
+      showToast('댓글 수정에 실패했습니다.', 'error');
     } finally {
       setLoadingMap((prev) => ({ ...prev, [commentId]: false }));
     }
