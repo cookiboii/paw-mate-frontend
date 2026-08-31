@@ -41,8 +41,8 @@
   margin: 0 auto 20px;
 }
 
-.iconDanger  { background: rgba(224, 122, 95, 0.12); }
-.iconDefault { background: var(--primary-light); }
+.iconDanger  { background: var(--danger-light); color: var(--danger-color); }
+.iconDefault { background: var(--primary-light); color: var(--primary-color); }
 
 /* 타이틀 */
 .title {
@@ -69,12 +69,12 @@
 
 .cancelBtn {
   flex: 1;
-  padding: 13px;
+  padding: 12px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: var(--bg-color);
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -89,34 +89,35 @@
 
 .confirmBtn {
   flex: 1;
-  padding: 13px;
+  padding: 12px 16px;
   border-radius: var(--radius-md);
   border: none;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
   font-family: inherit;
+  box-shadow: var(--shadow-xs);
 }
 
 /* danger variant */
 .confirmDanger {
   background: var(--danger-color);
-  color: white;
+  color: #ffffff;
 }
 .confirmDanger:hover {
-  filter: brightness(1.08);
+  background: #a93e2a;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(224, 122, 95, 0.35);
+  box-shadow: var(--shadow-md);
 }
 
 /* default variant */
 .confirmDefault {
-  background: linear-gradient(135deg, var(--primary-color), #768a74);
-  color: white;
-  box-shadow: var(--shadow-glow-primary);
+  background: var(--primary-color);
+  color: #ffffff;
 }
 .confirmDefault:hover {
-  filter: brightness(1.05);
+  background: var(--primary-hover);
   transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }

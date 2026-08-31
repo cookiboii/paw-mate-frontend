@@ -30,7 +30,6 @@ const HomePage: React.FC = () => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   // Scroll Reveal Refs
-  const statsRef = useScrollReveal<HTMLDivElement>();
   const newArrivalsRef = useScrollReveal<HTMLDivElement>();
   const principlesRef = useScrollReveal<HTMLDivElement>();
   const howItWorksRef = useScrollReveal<HTMLDivElement>();
@@ -144,31 +143,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. 신뢰 지표 & 임팩트 카운터 */}
-      <section className={styles.statsSection} ref={statsRef}>
-        <div className={styles.statCard}>
-          <h3>1,280+</h3>
-          <p>새 가족을 만난 아이들</p>
-          <span className={styles.statSub}>따뜻한 보금자리 정착 완료</span>
-        </div>
-        <div className={styles.statCard}>
-          <h3>100%</h3>
-          <p>정밀 건강검진 및 접종</p>
-          <span className={styles.statSub}>전문 수의사 검진 및 케어</span>
-        </div>
-        <div className={styles.statCard}>
-          <h3>0원</h3>
-          <p>비영리 책임 입양</p>
-          <span className={styles.statSub}>생명 매매가 아닌 구조와 보호</span>
-        </div>
-        <div className={styles.statCard}>
-          <h3>4,500+</h3>
-          <p>사후 케어 커뮤니티</p>
-          <span className={styles.statSub}>입양 후 지속적인 소통과 나눔</span>
-        </div>
-      </section>
-
-      {/* 3. New Arrivals Section */}
+      {/* 2. New Arrivals Section */}
       <section className={styles.newArrivalsSection} ref={newArrivalsRef}>
         <div className={styles.sectionHeader}>
           <span className={styles.sectionSubTitle}>NEW ARRIVALS</span>

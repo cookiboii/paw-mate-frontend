@@ -164,57 +164,6 @@
   right: 14px;
 }
 
-/* 2. Stats Section */
-.statsSection {
-  background-color: var(--surface-color);
-  padding: 44px 32px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  max-width: 1200px;
-  margin: 0 auto 80px;
-  gap: 24px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-xs);
-}
-
-.statCard {
-  text-align: center;
-  position: relative;
-  padding: 8px 16px;
-}
-
-.statCard:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 15%;
-  height: 70%;
-  width: 1px;
-  background-color: var(--border-color);
-}
-
-.statCard h3 {
-  font-size: 2.4rem;
-  font-weight: 800;
-  color: var(--primary-color);
-  margin-bottom: 6px;
-  letter-spacing: -0.03em;
-}
-
-.statCard p {
-  font-size: 1.02rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.statSub {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  display: block;
-}
-
 /* Common Section Header */
 .sectionHeader {
   text-align: center;
@@ -487,15 +436,6 @@
     gap: 40px;
   }
 
-  .statsSection {
-    grid-template-columns: repeat(2, 1fr);
-    margin-bottom: 60px;
-  }
-
-  .statCard:nth-child(2)::after {
-    display: none;
-  }
-
   .principlesGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -508,15 +448,6 @@
 @media (max-width: 640px) {
   .heroContent h1 {
     font-size: 2.1rem;
-  }
-
-  .statsSection {
-    grid-template-columns: 1fr;
-    padding: 24px 16px;
-  }
-
-  .statCard:not(:last-child)::after {
-    display: none;
   }
 
   .principlesGrid {

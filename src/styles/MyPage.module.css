@@ -337,21 +337,21 @@
 }
 
 .statusApproved {
-  background-color: rgba(129, 178, 154, 0.2);
+  background-color: var(--success-light);
   color: var(--success-color);
-  border: 1px solid rgba(129, 178, 154, 0.4);
+  border: 1px solid rgba(45, 106, 79, 0.35);
 }
 
 .statusRejected {
-  background-color: rgba(224, 122, 95, 0.15);
+  background-color: var(--danger-light);
   color: var(--danger-color);
-  border: 1px solid rgba(224, 122, 95, 0.3);
+  border: 1px solid rgba(196, 79, 56, 0.3);
 }
 
 .statusPending {
-  background-color: rgba(242, 204, 143, 0.25);
+  background-color: var(--warning-light);
   color: var(--warning-color);
-  border: 1px solid rgba(242, 204, 143, 0.5);
+  border: 1px solid rgba(181, 124, 30, 0.35);
 }
 
 /* 진행 타임라인 단계 */

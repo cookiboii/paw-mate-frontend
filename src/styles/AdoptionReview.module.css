@@ -102,8 +102,8 @@
 
 /* 제보 가이드 배너 */
 .reportGuide {
-  background: rgba(224, 122, 95, 0.08);
-  border: 1px solid rgba(224, 122, 95, 0.25);
+  background: var(--danger-light);
+  border: 1px solid rgba(196, 79, 56, 0.25);
   border-radius: var(--radius-md);
   padding: 20px 24px;
   margin-bottom: 28px;
@@ -130,15 +130,15 @@
 .reportEmergency {
   margin: 0;
   padding-top: 12px;
-  border-top: 1px solid rgba(224, 122, 95, 0.2);
+  border-top: 1px solid rgba(196, 79, 56, 0.2);
   color: var(--text-muted);
   font-size: 0.88rem;
 }
 
 /* 무료 분양 가이드 배너 */
 .freeAdoptionGuide {
-  background: rgba(74, 140, 111, 0.1);
-  border: 1px solid rgba(74, 140, 111, 0.3);
+  background: var(--info-light);
+  border: 1px solid rgba(43, 92, 143, 0.3);
   border-radius: var(--radius-md);
   padding: 20px 24px;
   margin-bottom: 28px;
@@ -148,7 +148,7 @@
 .freeAdoptionGuide strong {
   display: block;
   margin-bottom: 12px;
-  color: var(--success-color);
+  color: var(--info-color);
   font-size: 1rem;
 }
 
@@ -165,7 +165,7 @@
 .freeAdoptionNotice {
   margin: 0;
   padding-top: 12px;
-  border-top: 1px solid rgba(74, 140, 111, 0.25);
+  border-top: 1px solid rgba(43, 92, 143, 0.25);
   color: var(--text-muted);
   font-size: 0.88rem;
 }
@@ -189,7 +189,7 @@
 .textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-light);
+  box-shadow: var(--input-focus-ring);
   background-color: var(--bg-color);
 }
 
@@ -283,45 +283,46 @@
 .submitBtn {
   width: 100%;
   margin-top: 16px;
-  padding: 16px;
+  padding: 14px 20px;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: var(--radius-md);
   cursor: pointer;
   border: none;
   transition: all var(--transition-fast);
   font-family: inherit;
+  box-shadow: var(--shadow-xs);
 }
 
 .submitBtnReport {
-  background: linear-gradient(135deg, var(--danger-color) 0%, #c85a3e 100%);
-  color: white;
-  box-shadow: 0 4px 16px rgba(224, 122, 95, 0.35);
+  background: var(--danger-color);
+  color: #ffffff;
 }
 
 .submitBtnReport:hover:not(:disabled) {
+  background: #a93e2a;
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(224, 122, 95, 0.45);
+  box-shadow: var(--shadow-md);
 }
 
 .submitBtnReport:disabled {
-  opacity: 0.7;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .submitBtnFreeAdoption {
-  background: linear-gradient(135deg, var(--success-color) 0%, #3d785e 100%);
-  color: white;
-  box-shadow: 0 4px 16px rgba(74, 140, 111, 0.35);
+  background: var(--info-color);
+  color: #ffffff;
 }
 
 .submitBtnFreeAdoption:hover:not(:disabled) {
+  background: #1f456e;
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(74, 140, 111, 0.45);
+  box-shadow: var(--shadow-md);
 }
 
 .submitBtnFreeAdoption:disabled {
-  opacity: 0.7;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
