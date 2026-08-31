@@ -30,8 +30,8 @@ const AdoptionGuide: React.FC = () => {
         <div className={styles.step} ref={step2Ref}>
           <div className={styles.stepNumber}>2</div>
           <div className={styles.stepContent}>
-            <h3>상담 및 심사</h3>
-            <p>제출해주신 신청서를 바탕으로 담당자와의 전화 또는 대면 상담이 진행됩니다. 입양 조건에 부합하는지, 서로에게 좋은 인연이 될 수 있을지 꼼꼼하게 확인하는 과정입니다.</p>
+            <h3>신청서 심사</h3>
+            <p>제출해주신 신청서를 바탕으로 담당자가 입양 조건 및 양육 환경을 꼼꼼하게 확인하고 심사를 진행합니다.</p>
           </div>
         </div>
 

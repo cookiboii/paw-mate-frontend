@@ -52,17 +52,13 @@
 }
 
 .noImageReport {
-  background: linear-gradient(135deg, rgba(224, 122, 95, 0.1) 0%, var(--bg-color) 100%);
+  background: linear-gradient(135deg, var(--danger-light) 0%, var(--bg-color) 100%);
   color: var(--danger-color);
 }
 
 .noImageFreeAdoption {
-  background: linear-gradient(135deg, rgba(82, 183, 136, 0.12) 0%, var(--bg-color) 100%);
-  color: #2d6a4f;
-}
-
-[data-theme='dark'] .noImageFreeAdoption {
-  color: #74c69d;
+  background: linear-gradient(135deg, var(--info-light) 0%, var(--bg-color) 100%);
+  color: var(--info-color);
 }
 
 .heroNoImg .heroOverlay,
@@ -106,15 +102,15 @@
 }
 
 .heroBadgeReport {
-  background: rgba(224, 122, 95, 0.85);
+  background: rgba(217, 101, 72, 0.85);
   color: white;
-  border: 1px solid rgba(224, 122, 95, 0.6);
+  border: 1px solid rgba(217, 101, 72, 0.6);
 }
 
 .heroBadgeFreeAdoption {
-  background: rgba(45, 106, 79, 0.85);
+  background: rgba(67, 97, 238, 0.85);
   color: white;
-  border: 1px solid rgba(82, 183, 136, 0.6);
+  border: 1px solid rgba(67, 97, 238, 0.6);
 }
 
 .title {
@@ -198,7 +194,7 @@
 
 .deleteBtn {
   color: var(--danger-color);
-  border-color: rgba(224, 122, 95, 0.3);
+  border-color: var(--danger-light);
 }
 
 .deleteBtn:hover {
@@ -209,8 +205,8 @@
 
 /* 제보 안내 배너 */
 .reportBanner {
-  background: rgba(224, 122, 95, 0.08);
-  border: 1px solid rgba(224, 122, 95, 0.25);
+  background: var(--danger-light);
+  border: 1px solid rgba(217, 101, 72, 0.3);
   border-radius: var(--radius-md);
   padding: 16px 20px;
   margin-bottom: 28px;
@@ -231,8 +227,8 @@
 
 /* 무료 분양 안내 배너 */
 .freeAdoptionBanner {
-  background: rgba(82, 183, 136, 0.1);
-  border: 1px solid rgba(82, 183, 136, 0.3);
+  background: var(--info-light);
+  border: 1px solid rgba(67, 97, 238, 0.3);
   border-radius: var(--radius-md);
   padding: 16px 20px;
   margin-bottom: 28px;
@@ -241,13 +237,9 @@
 
 .freeAdoptionBanner strong {
   display: block;
-  color: #2d6a4f;
+  color: var(--info-color);
   margin-bottom: 6px;
   font-size: 0.95rem;
-}
-
-[data-theme='dark'] .freeAdoptionBanner strong {
-  color: #74c69d;
 }
 
 .freeAdoptionBanner p {

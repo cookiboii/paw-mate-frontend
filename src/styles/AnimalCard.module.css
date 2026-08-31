@@ -74,17 +74,17 @@
 }
 
 .statusProtected {
-  background: rgba(85, 107, 84, 0.88);
+  background: var(--success-color);
   color: #ffffff;
 }
 
 .statusWaiting {
-  background: rgba(201, 139, 44, 0.88);
+  background: var(--warning-color);
   color: #ffffff;
 }
 
 .statusAdopted {
-  background: rgba(100, 100, 100, 0.88);
+  background: var(--text-muted);
   color: #ffffff;
 }
 

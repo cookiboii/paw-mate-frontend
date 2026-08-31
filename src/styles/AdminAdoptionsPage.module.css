@@ -129,28 +129,28 @@
 /* Status Badges */
 .statusBadge {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: var(--radius-full);
   font-size: 0.8rem;
   font-weight: 700;
 }
 
 .badgePending {
-  background: rgba(242, 204, 143, 0.2);
+  background: var(--warning-light);
   color: var(--warning-color);
-  border: 1px solid rgba(242, 204, 143, 0.3);
+  border: 1px solid rgba(201, 139, 44, 0.3);
 }
 
 .badgeApproved {
-  background: rgba(129, 178, 154, 0.2);
+  background: var(--success-light);
   color: var(--success-color);
-  border: 1px solid rgba(129, 178, 154, 0.3);
+  border: 1px solid rgba(74, 140, 111, 0.3);
 }
 
 .badgeRejected {
-  background: rgba(224, 122, 95, 0.2);
+  background: var(--danger-light);
   color: var(--danger-color);
-  border: 1px solid rgba(224, 122, 95, 0.3);
+  border: 1px solid rgba(217, 101, 72, 0.3);
 }
 
 /* Actions */

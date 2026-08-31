@@ -196,8 +196,8 @@ const HomePage: React.FC = () => {
           </div>
           <div className={styles.stepCard}>
             <div className={styles.stepIcon}>2</div>
-            <h4>전화 상담</h4>
-            <p>담당자와의 상담을 통해 입양 조건 및 환경을 확인합니다.</p>
+            <h4>신청서 심사</h4>
+            <p>제출해주신 입양 신청서를 바탕으로 담당자가 꼼꼼하게 검토합니다.</p>
           </div>
           <div className={styles.stepCard}>
             <div className={styles.stepIcon}>3</div>
