@@ -198,7 +198,12 @@ const AdoptionForm: React.FC = () => {
           </div>
 
           <div className={styles.fieldGroupFull}>
-            <label className={styles.label}>입양 동기 및 돌봄 계획 *</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <label className={styles.label} style={{ marginBottom: 0 }}>입양 동기 및 돌봄 계획 *</label>
+              <span style={{ fontSize: '0.82rem', color: interview.trim().length < 10 ? 'var(--danger-color, #e63946)' : 'var(--text-muted)' }}>
+                {interview.length}자 {interview.trim().length < 10 && '(최소 10자 이상)'}
+              </span>
+            </div>
             <textarea
               value={interview}
               onChange={(e) => setInterview(e.target.value)}

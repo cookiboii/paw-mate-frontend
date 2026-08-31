@@ -11,7 +11,9 @@ import {
   FileText, 
   Palette, 
   Edit3, 
-  Trash2 
+  Trash2,
+  Share2,
+  Check
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -20,6 +22,7 @@ import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
 import ImageWithFallback from '../components/ImageWithFallback';
+import Skeleton from '../components/Skeleton';
 import { AnimalStatus, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
 import usePageTitle from '../hooks/usePageTitle';
 import { Animal } from '../types/animal';
@@ -36,6 +39,7 @@ const AnimalDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   usePageTitle(animal ? `${animal.breed || animal.species} - 입양 상세 정보` : '동물 상세 정보');
 
@@ -50,7 +54,7 @@ const AnimalDetail: React.FC = () => {
         const data = res.data.result || res.data;
         setAnimal(data);
       } catch (err) {
-        console.warn("백엔드 연결 실패 - 미리보기용 데모 데이터를 로드합니다.", err);
+        console.warn("백엔드 연결 실패 - 데모 데이터를 로드합니다.", err);
         setAnimal({
           id: id || '1',
           species: "개",
@@ -92,6 +96,33 @@ const AnimalDetail: React.FC = () => {
     if (animal) toggleFavorite(animal);
   };
 
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareTitle = `[파우메이트] ${animal?.breed || '유기동물'} 평생 가족을 찾고 있어요!`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: `${animal?.breed || '유기동물'}의 입양 상세 정보를 확인해 보세요.`,
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        // 공유 취소 시 무시
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setIsCopied(true);
+      showToast('링크가 클립보드에 복사되었습니다! 원하는 곳에 공유해 보세요.', 'success');
+      setTimeout(() => setIsCopied(false), 2500);
+    } catch {
+      showToast('링크 복사에 실패했습니다.', 'error');
+    }
+  };
+
   const getStatusBadgeClass = (status: string) => {
     const mapping: Record<string, string> = {
       WAITING: styles.badgeWaiting,
@@ -129,7 +160,33 @@ const AnimalDetail: React.FC = () => {
     return null;
   };
 
-  if (loading) return <p className={styles.message}>동물 정보를 불러오는 중입니다...</p>;
+  if (loading) {
+    return (
+      <section className={styles.detailContainer}>
+        <div className={styles.topNavigation}>
+          <Skeleton type="text" width={140} height={24} />
+        </div>
+        <div className={styles.card}>
+          <div className={styles.imageContainer}>
+            <Skeleton type="image" height={420} />
+          </div>
+          <div className={styles.info}>
+            <Skeleton type="badge" width={80} height={26} />
+            <Skeleton type="title" width="60%" height={32} style={{ margin: '16px 0' }} />
+            <div className={styles.infoGrid}>
+              <Skeleton type="card" height={70} />
+              <Skeleton type="card" height={70} />
+              <Skeleton type="card" height={70} />
+              <Skeleton type="card" height={70} />
+            </div>
+            <Skeleton type="card" height={50} style={{ margin: '20px 0' }} />
+            <Skeleton type="card" height={52} />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (error) return <p className={styles.error}>오류 발생: {error}</p>;
 
   const canAdopt = animal?.status === AnimalStatus.PROTECTED;
@@ -138,11 +195,43 @@ const AnimalDetail: React.FC = () => {
   return (
     <>
       <section className={styles.detailContainer}>
-        <div className={styles.topNavigation}>
+        <div className={styles.topNavigation} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link to="/animals" className={styles.backLink} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <ArrowLeft size={16} />
             <span>전체 동물 목록으로</span>
           </Link>
+
+          <button
+            onClick={handleShare}
+            className={styles.shareBtn}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-full)',
+              border: '1px solid var(--border-color)',
+              background: 'var(--surface-color)',
+              color: 'var(--text-primary)',
+              cursor: 'pointer',
+              fontSize: '0.88rem',
+              fontWeight: 500,
+              transition: 'all var(--transition-fast)'
+            }}
+            title="링크 복사 및 공유하기"
+          >
+            {isCopied ? (
+              <>
+                <Check size={16} color="var(--primary-color)" />
+                <span style={{ color: 'var(--primary-color)' }}>링크 복사됨</span>
+              </>
+            ) : (
+              <>
+                <Share2 size={16} />
+                <span>공유하기</span>
+              </>
+            )}
+          </button>
         </div>
 
         {animal ? (

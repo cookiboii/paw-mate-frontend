@@ -260,7 +260,12 @@ const AdoptionReview: React.FC = () => {
 
           {/* 내용 */}
           <div className={styles.fieldGroup}>
-            <label className={styles.label}>상세 내용</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <label className={styles.label} style={{ marginBottom: 0 }}>상세 내용 *</label>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                {form.content.length}자
+              </span>
+            </div>
             <textarea
               name="content"
               className={styles.textarea}

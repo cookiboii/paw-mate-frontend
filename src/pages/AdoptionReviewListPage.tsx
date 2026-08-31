@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import styles from '../styles/AdoptionReviewListPage.module.css';
 import { getReviews } from '../api/review';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { ReviewItem } from '../types/review';
-import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, User, PawPrint, ArrowRight } from 'lucide-react';
+import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, User, PawPrint, ArrowRight, Search, X } from 'lucide-react';
 
 export interface CategoryOption {
   key: string;
@@ -66,6 +66,7 @@ const AdoptionReviewListPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
   const observer = useRef<IntersectionObserver | null>(null);
 
   const lastReviewElementRef = useCallback(
@@ -121,6 +122,18 @@ const AdoptionReviewListPage: React.FC = () => {
     fetchReviews(page);
   }, [page, activeCategory]);
 
+  // 검색어 필터링
+  const displayedReviews = useMemo(() => {
+    if (!searchKeyword.trim()) return reviews;
+    const kw = searchKeyword.toLowerCase().trim();
+    return reviews.filter((r) => {
+      const title = getCleanTitle(r.title).toLowerCase();
+      const content = (r.content || '').toLowerCase();
+      const author = (r.name || '').toLowerCase();
+      return title.includes(kw) || content.includes(kw) || author.includes(kw);
+    });
+  }, [reviews, searchKeyword]);
+
   const renderSkeletons = (count: number) =>
     Array.from({ length: count }).map((_, idx) => (
       <div key={`skeleton-${idx}`} className={styles.card}>
@@ -140,33 +153,81 @@ const AdoptionReviewListPage: React.FC = () => {
         <p>입양 후기, 무료 분양 및 유기동물 제보를 공유하는 따뜻한 공간입니다.</p>
       </div>
 
-      {/* 카테고리 탭 */}
-      <div className={styles.tabBar}>
-        {CATEGORIES.map(({ key, label, icon }) => (
-          <button
-            key={key}
-            className={`${styles.tabBtn} ${activeCategory === key ? styles.activeTab : ''}`}
-            onClick={() => setActiveCategory(key)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          >
-            <span className={styles.tabEmoji} style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>
-            <span>{label}</span>
-          </button>
-        ))}
+      {/* 검색 & 카테고리 컨트롤 영역 */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
+        <div style={{ position: 'relative', maxWidth: '440px', width: '100%' }}>
+          <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+            <Search size={18} />
+          </span>
+          <input
+            type="text"
+            placeholder="제목, 내용, 작성자 검색..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px 38px 10px 40px',
+              borderRadius: 'var(--radius-full)',
+              border: '1px solid var(--border-color)',
+              background: 'var(--surface-color)',
+              color: 'var(--text-primary)',
+              fontSize: '0.92rem',
+              outline: 'none',
+              transition: 'border-color var(--transition-fast)'
+            }}
+          />
+          {searchKeyword && (
+            <button
+              type="button"
+              onClick={() => setSearchKeyword('')}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '4px'
+              }}
+              aria-label="검색어 지우기"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
 
-        {isAuthenticated && (
-          <button className={styles.writeBtn} onClick={() => navigate('/review')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <PenSquare size={16} />
-            <span>글쓰기</span>
-          </button>
-        )}
+        {/* 카테고리 탭 */}
+        <div className={styles.tabBar}>
+          {CATEGORIES.map(({ key, label, icon }) => (
+            <button
+              key={key}
+              className={`${styles.tabBtn} ${activeCategory === key ? styles.activeTab : ''}`}
+              onClick={() => setActiveCategory(key)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              <span className={styles.tabEmoji} style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+
+          {isAuthenticated && (
+            <button className={styles.writeBtn} onClick={() => navigate('/review')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <PenSquare size={16} />
+              <span>글쓰기</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 게시글 그리드 */}
       <div className={styles.grid}>
-        {reviews.length > 0 ? (
-          reviews.map((review, index) => {
-            const isLast = reviews.length === index + 1;
+        {displayedReviews.length > 0 ? (
+          displayedReviews.map((review, index) => {
+            const isLast = displayedReviews.length === index + 1;
             const cat = getCategoryFromTitle(review.title);
             const cleanTitle = getCleanTitle(review.title);
             const catInfo = CATEGORIES.find((c) => c.key === cat) || CATEGORIES[1];
@@ -240,7 +301,9 @@ const AdoptionReviewListPage: React.FC = () => {
           <div className={styles.emptyState}>
             <span style={{ display: 'flex', justifyContent: 'center' }}>{renderCategoryIcon(activeCategory, 44)}</span>
             <p>
-              {activeCategory === 'REPORT'
+              {searchKeyword
+                ? `'${searchKeyword}'에 대한 검색 결과가 없습니다.`
+                : activeCategory === 'REPORT'
                 ? '아직 유기동물 제보 글이 없습니다.'
                 : activeCategory === 'FREE_ADOPTION'
                 ? '아직 등록된 무료 분양 글이 없습니다.'
@@ -248,7 +311,7 @@ const AdoptionReviewListPage: React.FC = () => {
                 ? '아직 작성된 입양 후기가 없습니다.'
                 : '아직 작성된 글이 없습니다.'}
             </p>
-            {isAuthenticated && (
+            {isAuthenticated && !searchKeyword && (
               <button className={styles.emptyWriteBtn} onClick={() => navigate('/review')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <span>첫 글을 작성해보세요</span>
                 <ArrowRight size={16} />
@@ -260,7 +323,7 @@ const AdoptionReviewListPage: React.FC = () => {
         {isLoading && renderSkeletons(page === 0 ? 9 : 3)}
 
         {/* 무한 스크롤 종단 UI */}
-        {!isLoading && reviews.length > 0 && page >= totalPages - 1 && (
+        {!isLoading && displayedReviews.length > 0 && page >= totalPages - 1 && (
           <div className={styles.endOfList}>
             <div className={styles.endOfListDivider} />
             <p style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>

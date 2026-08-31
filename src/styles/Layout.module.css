@@ -7,6 +7,10 @@
 .mainContent {
   flex: 1;
   width: 100%;
-  /* No more max-width, background, or padding here.
-     Individual pages (HomePage, AnimalList) will handle their own containers. */
+}
+
+@media (max-width: 768px) {
+  .layout {
+    padding-bottom: 60px;
+  }
 }

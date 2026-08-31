@@ -266,6 +266,30 @@ const MyPage: React.FC = () => {
                             )}
                           </span>
                           <p className={styles.date}>신청일: {formatDate(adoption.applyDate)}</p>
+
+                          {/* 진행 단계 타임라인 */}
+                          <div className={styles.timelineWrapper}>
+                            <div className={styles.stepBar}>
+                              <div className={`${styles.stepItem} ${styles.stepDone}`}>
+                                <div className={styles.stepDot}>1</div>
+                                <span className={styles.stepLabel}>신청 접수</span>
+                              </div>
+                              <div className={`${styles.stepItem} ${adoption.status === 'PENDING' ? styles.stepActive : styles.stepDone}`}>
+                                <div className={styles.stepDot}>2</div>
+                                <span className={styles.stepLabel}>서류 심사</span>
+                              </div>
+                              <div className={`${styles.stepItem} ${adoption.status === 'APPROVED' ? styles.stepDone : ''}`}>
+                                <div className={styles.stepDot}>3</div>
+                                <span className={styles.stepLabel}>상담 및 교감</span>
+                              </div>
+                              <div className={`${styles.stepItem} ${adoption.status === 'APPROVED' ? styles.stepActive : ''}`}>
+                                <div className={styles.stepDot}>4</div>
+                                <span className={styles.stepLabel}>
+                                  {adoption.status === 'REJECTED' ? '반려' : '입양 확정'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </li>
                     ))}

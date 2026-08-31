@@ -5,13 +5,13 @@ import { getMyInfo } from '../api/user';
 import styles from '../styles/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
-import Spinner from '../components/Spinner';
 import ConfirmModal from '../components/ConfirmModal';
+import Skeleton from '../components/Skeleton';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
 import { ReviewDetailData } from '../types/review';
-import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2 } from 'lucide-react';
+import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2, Share2, Check } from 'lucide-react';
 
 const renderCategoryIcon = (cat: string, size = 16) => {
   switch (cat) {
@@ -35,6 +35,7 @@ const AdoptionReviewDetail: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   const cleanTitle = review ? getCleanTitle(review.title) : '';
   usePageTitle(cleanTitle || '후기 상세');
@@ -87,7 +88,49 @@ const AdoptionReviewDetail: React.FC = () => {
     }
   };
 
-  if (!isLoaded || !review) return <div className={styles.loadingWrapper}><Spinner /></div>;
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareTitle = `[파우메이트] ${cleanTitle}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: review?.content ? review.content.slice(0, 80) + '...' : cleanTitle,
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        // 공유 취소
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setIsCopied(true);
+      showToast('게시글 링크가 클립보드에 복사되었습니다!', 'success');
+      setTimeout(() => setIsCopied(false), 2500);
+    } catch {
+      showToast('링크 복사에 실패했습니다.', 'error');
+    }
+  };
+
+  if (!isLoaded || !review) {
+    return (
+      <div className={styles.pageWrapper}>
+        <article className={styles.article}>
+          <Skeleton type="image" height={320} />
+          <div className={styles.contentSection}>
+            <Skeleton type="title" width="70%" height={32} style={{ marginBottom: '16px' }} />
+            <Skeleton type="text" width="40%" height={20} style={{ marginBottom: '24px' }} />
+            <Skeleton type="text" height={18} style={{ marginBottom: '8px' }} />
+            <Skeleton type="text" height={18} style={{ marginBottom: '8px' }} />
+            <Skeleton type="text" width="80%" height={18} />
+          </div>
+        </article>
+      </div>
+    );
+  }
 
   const isAuthor = currentUser.email === review.email;
   const isAdmin = currentUser.role === 'ADMIN';
@@ -162,25 +205,58 @@ const AdoptionReviewDetail: React.FC = () => {
 
         {/* Content Section */}
         <div className={styles.contentSection}>
-          {(isAuthor || isAdmin) && (
-            <div className={styles.actions}>
-              {isAuthor && (
-                <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                  <Edit3 size={15} />
-                  <span>수정</span>
-                </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+            <button
+              onClick={handleShare}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-full)',
+                border: '1px solid var(--border-color)',
+                background: 'var(--surface-color)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                fontSize: '0.88rem',
+                fontWeight: 500,
+                transition: 'all var(--transition-fast)'
+              }}
+              title="링크 복사 및 공유하기"
+            >
+              {isCopied ? (
+                <>
+                  <Check size={15} color="var(--primary-color)" />
+                  <span style={{ color: 'var(--primary-color)' }}>링크 복사됨</span>
+                </>
+              ) : (
+                <>
+                  <Share2 size={15} />
+                  <span>공유하기</span>
+                </>
               )}
-              <button
-                className={styles.deleteBtn}
-                onClick={() => setIsDeleteModalOpen(true)}
-                disabled={isDeleting}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              >
-                <Trash2 size={15} />
-                <span>{isDeleting ? '삭제 중...' : '삭제'}</span>
-              </button>
-            </div>
-          )}
+            </button>
+
+            {(isAuthor || isAdmin) && (
+              <div className={styles.actions} style={{ margin: 0 }}>
+                {isAuthor && (
+                  <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <Edit3 size={15} />
+                    <span>수정</span>
+                  </button>
+                )}
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  disabled={isDeleting}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Trash2 size={15} />
+                  <span>{isDeleting ? '삭제 중...' : '삭제'}</span>
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* 유기동물 제보 긴급 안내 */}
           {isReport && (

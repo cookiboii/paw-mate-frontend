@@ -147,9 +147,9 @@ const AnimalList: React.FC = () => {
           <div className={styles.filterGroup}>
             <span className={styles.filterLabel}>성별:</span>
             {[
-              { key: 'ALL', label: '전체' },
-              { key: 'MALE', label: '수컷 ♂' },
-              { key: 'FEMALE', label: '암컷 ♀' },
+              { key: 'ALL', label: '전체 성별' },
+              { key: 'MALE', label: '수컷' },
+              { key: 'FEMALE', label: '암컷' },
             ].map(({ key, label }) => (
               <button
                 key={key}

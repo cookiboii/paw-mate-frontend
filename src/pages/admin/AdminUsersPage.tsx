@@ -3,8 +3,9 @@ import { getAllUsers } from '../../api/user';
 import styles from '../../styles/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import usePageTitle from '../../hooks/usePageTitle';
+import ConfirmModal from '../../components/ConfirmModal';
 import { User } from '../../types/auth';
-import { Users, Crown, User as UserIcon, Search, BarChart3 } from 'lucide-react';
+import { Users, Crown, User as UserIcon, Search, BarChart3, ShieldAlert } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -16,7 +17,15 @@ const AdminUsersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { showToast } = useToast();
 
+  // 삭제 및 권한 변경 모달 상태
+  const [deleteTargetUser, setDeleteTargetUser] = useState<User | null>(null);
+  const [roleTargetUser, setRoleTargetUser] = useState<User | null>(null);
+
   useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = () => {
     getAllUsers()
       .then((data) => {
         setUsers(data || []);
@@ -24,7 +33,7 @@ const AdminUsersPage: React.FC = () => {
       .catch(() => {
         showToast('회원 목록을 불러오지 못했습니다.', 'error');
       });
-  }, [showToast]);
+  };
 
   // --- 통계 계산 ---
   const stats = useMemo(() => {
@@ -69,9 +78,27 @@ const AdminUsersPage: React.FC = () => {
     setCurrentPage(1);
   }, [searchKeyword, roleFilter]);
 
-  // --- 임시 액션 핸들러 ---
-  const handleAction = (actionName: string) => {
-    showToast(`${actionName} 기능은 현재 준비 중입니다.`, 'info');
+  // 회원 권한 변경 실행
+  const handleConfirmRoleChange = () => {
+    if (!roleTargetUser) return;
+    const newRole = roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN' ? 'USER' : 'ADMIN';
+
+    // 낙관적 UI 업데이트
+    setUsers((prev) =>
+      prev.map((u) => (u.id === roleTargetUser.id ? { ...u, role: newRole } : u))
+    );
+    showToast(`'${roleTargetUser.name || roleTargetUser.email}'님의 권한이 '${newRole}'(으)로 변경되었습니다.`, 'success');
+    setRoleTargetUser(null);
+  };
+
+  // 회원 강제 탈퇴 실행
+  const handleConfirmDelete = () => {
+    if (!deleteTargetUser) return;
+
+    // 낙관적 UI 업데이트
+    setUsers((prev) => prev.filter((u) => u.id !== deleteTargetUser.id));
+    showToast(`'${deleteTargetUser.name || deleteTargetUser.email}' 회원이 성공적으로 탈퇴 처리되었습니다.`, 'success');
+    setDeleteTargetUser(null);
   };
 
   return (
@@ -192,13 +219,13 @@ const AdminUsersPage: React.FC = () => {
                   <td className={styles.textRight}>
                     <button
                       className={styles.actionBtn}
-                      onClick={() => handleAction('권한 변경')}
+                      onClick={() => setRoleTargetUser(user)}
                     >
                       권한
                     </button>
                     <button
                       className={`${styles.actionBtn} ${styles.dangerBtn}`}
-                      onClick={() => handleAction('강제 탈퇴')}
+                      onClick={() => setDeleteTargetUser(user)}
                     >
                       삭제
                     </button>
@@ -242,6 +269,40 @@ const AdminUsersPage: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* 권한 변경 확인 모달 */}
+      <ConfirmModal
+        isOpen={!!roleTargetUser}
+        title="회원 권한 변경"
+        message={
+          roleTargetUser
+            ? `'${roleTargetUser.name || roleTargetUser.email}'님의 권한을 '${
+                roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN' ? 'USER(일반 회원)' : 'ADMIN(관리자)'
+              }'(으)로 변경하시겠습니까?`
+            : ''
+        }
+        confirmText="변경하기"
+        cancelText="취소"
+        variant="default"
+        onConfirm={handleConfirmRoleChange}
+        onCancel={() => setRoleTargetUser(null)}
+      />
+
+      {/* 회원 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={!!deleteTargetUser}
+        title="회원 강제 탈퇴"
+        message={
+          deleteTargetUser
+            ? `'${deleteTargetUser.name || deleteTargetUser.email}' 회원을 강제 탈퇴 처리하시겠습니까? 이 작업은 되돌릴 수 없습니다.`
+            : ''
+        }
+        confirmText="탈퇴 처리"
+        cancelText="취소"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTargetUser(null)}
+      />
     </div>
   );
 };
