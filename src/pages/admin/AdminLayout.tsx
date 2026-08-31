@@ -56,6 +56,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <span>비밀번호 변경</span>
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/benchmark"
+              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}
+            >
+              <span style={{ fontSize: '1rem' }}>⚡</span>
+              <span>성능/동시성 랩</span>
+            </NavLink>
+          </li>
         </ul>
       </nav>
 

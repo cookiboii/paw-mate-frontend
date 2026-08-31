@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PawPrint, Phone } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import styles from '../styles/Footer.module.css';
 
 const Footer: React.FC = () => {
+  const { isAdmin } = useAuth();
+
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
@@ -26,7 +29,13 @@ const Footer: React.FC = () => {
               <li><Link to="/guide">입양 안내</Link></li>
               <li><Link to="/animals">동물 목록</Link></li>
               <li><Link to="/reviews">커뮤니티</Link></li>
-              <li><Link to="/benchmark" style={{ color: 'var(--primary-color)', fontWeight: 600 }}>⚡ 성능/동시성 랩</Link></li>
+              {isAdmin && (
+                <li>
+                  <Link to="/benchmark" style={{ color: 'var(--primary-color)', fontWeight: 600 }}>
+                    ⚡ 성능/동시성 랩
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 

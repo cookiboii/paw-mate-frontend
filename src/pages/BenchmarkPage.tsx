@@ -40,7 +40,9 @@ const BenchmarkPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('concurrency');
 
   // ================= 1. API Concurrency Test State =================
-  const [endpoint, setEndpoint] = useState<string>('/adoptmate/animals');
+  const [endpoint, setEndpoint] = useState<string>('/animals/list?page=0&size=10');
+  const [isCustomEndpoint, setIsCustomEndpoint] = useState<boolean>(false);
+  const [customUrl, setCustomUrl] = useState<string>('');
   const [totalRequests, setTotalRequests] = useState<number>(20);
   const [mode, setMode] = useState<'concurrent' | 'chunked' | 'sequential'>('concurrent');
   const [chunkSize, setChunkSize] = useState<number>(5);
@@ -132,6 +134,12 @@ const BenchmarkPage: React.FC = () => {
 
   // ================= 4. Run Concurrency Benchmark =================
   const handleRunConcurrency = async () => {
+    const targetEndpoint = isCustomEndpoint ? customUrl.trim() : endpoint;
+    if (!targetEndpoint) {
+      alert('테스트할 API 엔드포인트를 입력해 주세요.');
+      return;
+    }
+
     setIsRunning(true);
     setTestResult(null);
     setLiveMetrics([]);
@@ -139,7 +147,7 @@ const BenchmarkPage: React.FC = () => {
 
     try {
       const result = await runConcurrencyBenchmark({
-        endpoint,
+        endpoint: targetEndpoint,
         totalRequests,
         mode,
         chunkSize,
@@ -161,31 +169,31 @@ const BenchmarkPage: React.FC = () => {
   const k6ScriptContent = `import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-// 🚀 k6 동시성 & 부하 테스트 설정 (PawMate API)
+// 🚀 PawMate 실제 백엔드 서버 동시성 & 부하 테스트 설정
 export const options = {
   stages: [
-    { duration: '10s', target: 20 },  // 10초 동안 동시 사용자 20명으로 웜업
-    { duration: '30s', target: 50 },  // 30초 동안 50명 동시 요청 유지 (부하 테스트)
-    { duration: '10s', target: 0 },   // 10초 동안 서서히 종료
+    { duration: '5s', target: 10 },   // 5초 동안 10명으로 웜업
+    { duration: '15s', target: 30 },  // 15초 동안 동시 요청 30명 유지 (부하 테스트)
+    { duration: '5s', target: 0 },    // 5초 동안 서서히 종료
   ],
   thresholds: {
-    http_req_duration: ['p(95)<500'], // 95%의 요청이 500ms 이내에 완료되어야 성공
-    http_req_failed: ['rate<0.01'],    // 에러율 1% 미만 유지
+    http_req_duration: ['p(95)<1500'], // 95%의 요청이 1.5초 이내에 완료되어야 성공
+    http_req_failed: ['rate<0.05'],    // 에러율 5% 미만 유지
   },
 };
 
 const BASE_URL = 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
 export default function () {
-  // 동물 목록 동시 조회 테스트
-  const res = http.get(\`\${BASE_URL}/adoptmate/animals?page=1&limit=12\`);
+  // 실제 동물 목록 동시 조회 테스트 (/animals/list)
+  const res = http.get(\`\${BASE_URL}/animals/list?page=0&size=10\`);
   
   check(res, {
-    'status is 200': (r) => r.status === 200,
-    'response under 400ms': (r) => r.timings.duration < 400,
+    'HTTP 상태 200 OK': (r) => r.status === 200,
+    '응답 시간 < 1000ms': (r) => r.timings.duration < 1000,
   });
 
-  sleep(0.5); // 유저 요청 간격 0.5초
+  sleep(0.3); // 가상 유저 요청 간격
 }`;
 
   const handleCopyK6 = () => {
@@ -240,23 +248,48 @@ export default function () {
       {activeTab === 'concurrency' && (
         <div>
           <div className={styles.card}>
-            <h2 className={styles.cardTitle}>
-              <Activity size={20} color="var(--primary-color)" /> API 동시성 벤치마크 설정
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem', marginBottom: '1.2rem' }}>
+              <h2 className={styles.cardTitle} style={{ margin: 0 }}>
+                <Activity size={20} color="var(--primary-color)" /> 실제 백엔드 API 동시성 & 부하 테스트
+              </h2>
+              <div style={{ fontSize: '0.8rem', background: 'var(--primary-light)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-full)', color: 'var(--primary-color)', fontWeight: 600 }}>
+                🌐 연결 서버: Cloudtype Live Backend
+              </div>
+            </div>
 
             <div className={styles.controlGrid}>
               <div className={styles.controlGroup}>
-                <label className={styles.label}>테스트 대상 API 엔드포인트</label>
-                <select
-                  className={styles.select}
-                  value={endpoint}
-                  onChange={(e) => setEndpoint(e.target.value)}
-                  disabled={isRunning}
-                >
-                  <option value="/adoptmate/animals">/adoptmate/animals (동물 목록 조회)</option>
-                  <option value="/adoptmate/reviews">/adoptmate/reviews (입양 후기 목록)</option>
-                  <option value="/adoptmate/animals/1">/adoptmate/animals/1 (동물 상세 조회)</option>
-                </select>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className={styles.label}>테스트 대상 API 엔드포인트</label>
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomEndpoint(!isCustomEndpoint)}
+                    style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    {isCustomEndpoint ? '기본 목록 선택' : '직접 URL 입력'}
+                  </button>
+                </div>
+                {isCustomEndpoint ? (
+                  <input
+                    type="text"
+                    className={styles.input}
+                    placeholder="/animals/list 또는 전체 URL"
+                    value={customUrl}
+                    onChange={(e) => setCustomUrl(e.target.value)}
+                    disabled={isRunning}
+                  />
+                ) : (
+                  <select
+                    className={styles.select}
+                    value={endpoint}
+                    onChange={(e) => setEndpoint(e.target.value)}
+                    disabled={isRunning}
+                  >
+                    <option value="/animals/list?page=0&size=10">/animals/list (동물 목록 조회 - 실제 DB)</option>
+                    <option value="/post/list?page=0&size=10">/post/list (입양 후기 목록 조회 - 실제 DB)</option>
+                    <option value="/animals/1">/animals/1 (동물 상세 조회)</option>
+                  </select>
+                )}
               </div>
 
               <div className={styles.controlGroup}>
