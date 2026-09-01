@@ -155,7 +155,7 @@
 
 /* Info Section */
 .info {
-  padding: 16px 18px;
+  padding: 18px 20px 20px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -168,13 +168,14 @@
 }
 
 .breed {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.02em;
   transition: color var(--transition-fast);
 }
 
@@ -186,24 +187,41 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
-  font-size: 0.875rem;
+  gap: 8px;
+  font-size: 0.92rem;
   color: var(--text-muted);
 }
 
 .dot {
   color: var(--border-color);
   font-weight: 800;
+  font-size: 0.8rem;
 }
 
 .genderTag {
-  font-weight: 600;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 0.82rem;
 }
 
 .genderMale {
-  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
 }
 
 .genderFemale {
-  color: #ec4899;
+  background: rgba(236, 72, 153, 0.12);
+  color: #db2777;
 }
+
+[data-theme="dark"] .genderMale {
+  background: rgba(59, 130, 246, 0.22);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .genderFemale {
+  background: rgba(236, 72, 153, 0.22);
+  color: #f472b6;
+}
+

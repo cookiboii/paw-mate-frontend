@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart, Dog, Cat, Sparkles, PawPrint } from "lucide-react";
 import styles from "../styles/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
-import { fetchAnimalList } from "../api/animal";
+import { fetchAnimalList, fetchAnimalListBySpecies } from "../api/animal";
 import EmptyState from '../components/EmptyState';
 import AnimalCard from '../components/AnimalCard';
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -26,6 +26,7 @@ const HomePage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState<number>(0);
   const [recentAnimals, setRecentAnimals] = useState<Animal[]>([]);
+  const [selectedSpecies, setSelectedSpecies] = useState<'ALL' | 'DOG' | 'CAT'>('ALL');
   const [isLoadingAnimals, setIsLoadingAnimals] = useState<boolean>(true);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
@@ -51,7 +52,11 @@ const HomePage: React.FC = () => {
     const loadData = async () => {
       setIsLoadingAnimals(true);
       try {
-        const res = await fetchAnimalList(0, 4);
+        const res =
+          selectedSpecies === 'ALL'
+            ? await fetchAnimalList(0, 6)
+            : await fetchAnimalListBySpecies(selectedSpecies, 0, 6);
+
         const pageData: PageResponse<Animal> =
           'result' in res && res.result ? (res.result as PageResponse<Animal>) : (res as PageResponse<Animal>);
         setRecentAnimals(pageData.content || []);
@@ -62,7 +67,7 @@ const HomePage: React.FC = () => {
       }
     };
     loadData();
-  }, []);
+  }, [selectedSpecies]);
 
   const goToSlide = (index: number) => setCurrent(index);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
@@ -146,27 +151,59 @@ const HomePage: React.FC = () => {
       {/* 2. New Arrivals Section */}
       <section className={styles.newArrivalsSection} ref={newArrivalsRef}>
         <div className={styles.sectionHeader}>
-          <span className={styles.sectionSubTitle}>NEW ARRIVALS</span>
+          <span className={styles.sectionSubTitle}>
+            <Sparkles size={14} style={{ display: 'inline', marginRight: '4px' }} />
+            NEW ARRIVALS
+          </span>
           <h2>가족을 기다리는 아이들</h2>
           <p>구조 후 건강 검진과 돌봄을 받으며 따뜻한 평생 반려인을 기다리고 있습니다.</p>
         </div>
+
+        {/* 종별 필터 탭 */}
+        <div className={styles.speciesTabs}>
+          <button
+            type="button"
+            className={`${styles.speciesTabBtn} ${selectedSpecies === 'ALL' ? styles.activeSpeciesTab : ''}`}
+            onClick={() => setSelectedSpecies('ALL')}
+          >
+            <PawPrint size={16} />
+            <span>전체 보기</span>
+          </button>
+          <button
+            type="button"
+            className={`${styles.speciesTabBtn} ${selectedSpecies === 'DOG' ? styles.activeSpeciesTab : ''}`}
+            onClick={() => setSelectedSpecies('DOG')}
+          >
+            <Dog size={16} />
+            <span>강아지</span>
+          </button>
+          <button
+            type="button"
+            className={`${styles.speciesTabBtn} ${selectedSpecies === 'CAT' ? styles.activeSpeciesTab : ''}`}
+            onClick={() => setSelectedSpecies('CAT')}
+          >
+            <Cat size={16} />
+            <span>고양이</span>
+          </button>
+        </div>
+
         <div className={styles.animalGrid}>
           {isLoadingAnimals ? (
-            Array.from({ length: 4 }).map((_, i) => (
+            Array.from({ length: 6 }).map((_, i) => (
               <div key={`skeleton-${i}`} className={styles.animalCardSkeleton}>
                 <div className={styles.skeletonImage} />
                 <div className={styles.skeletonContent}>
-                  <div className={styles.skeletonLine} style={{ width: '60%' }} />
-                  <div className={styles.skeletonLine} style={{ width: '40%', height: '14px' }} />
+                  <div className={styles.skeletonLine} style={{ width: '65%', height: '20px' }} />
+                  <div className={styles.skeletonLine} style={{ width: '45%', height: '14px' }} />
                 </div>
               </div>
             ))
           ) : recentAnimals.length === 0 ? (
             <div style={{ gridColumn: '1 / -1' }}>
               <EmptyState
-                title="현재 대기 중인 동물이 없습니다."
+                title="현재 조건에 맞는 아이가 없습니다."
                 description="새로운 가족을 기다리는 아이들이 곧 등록될 예정입니다."
-                actionLabel="동물 목록 둘러보기"
+                actionLabel="동물 전체 목록 둘러보기"
                 actionPath="/animals"
               />
             </div>
@@ -182,9 +219,9 @@ const HomePage: React.FC = () => {
           )}
         </div>
         <div style={{ textAlign: 'center', marginTop: '48px' }}>
-          <Link to="/animals" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <span>보호 중인 아이들 모두 보기</span>
-            <ArrowRight size={16} />
+          <Link to="/animals" className={styles.viewAllBtn} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span>보호 중인 아이들 전체 보기 ({recentAnimals.length > 0 ? '더보기' : '이동'})</span>
+            <ArrowRight size={18} />
           </Link>
         </div>
       </section>

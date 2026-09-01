@@ -197,16 +197,98 @@
 
 /* 3. New Arrivals Section */
 .newArrivalsSection {
-  padding: 40px 24px 90px;
-  max-width: 1200px;
+  padding: 50px 24px 100px;
+  max-width: 1240px;
   margin: 0 auto;
+}
+
+/* 🐾 종별 필터 탭 바 */
+.speciesTabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.speciesTabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-xs);
+}
+
+.speciesTabBtn:hover {
+  color: var(--text-primary);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.activeSpeciesTab {
+  background: var(--primary-color);
+  color: #ffffff !important;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 14px rgba(36, 59, 41, 0.25);
+}
+
+[data-theme="dark"] .activeSpeciesTab {
+  background: var(--primary-color);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 .animalGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 28px;
 }
+
+@media (max-width: 1024px) {
+  .animalGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .animalGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+.viewAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: var(--radius-full);
+  background: var(--surface-color);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-xs);
+  text-decoration: none;
+}
+
+.viewAllBtn:hover {
+  background: var(--primary-color);
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
 
 /* 4. Principles Section */
 .principlesSection {
