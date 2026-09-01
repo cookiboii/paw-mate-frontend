@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-// 🚀 PawMate 실제 백엔드 서버 동시성 & 부하 테스트 스크립트
+// 🚀 PawMate 실제 백엔드 서버 동시성 & 부하 테스트 스크립트 (No-Offset 커서 최적화 검증)
 export const options = {
   stages: [
     { duration: '5s', target: 10 },   // 5초 동안 10명으로 웜업
@@ -9,26 +9,28 @@ export const options = {
     { duration: '5s', target: 0 },    // 5초 동안 종료
   ],
   thresholds: {
-    http_req_duration: ['p(95)<1500'], // 95%의 요청이 1.5초 이내에 완료되어야 성공
-    http_req_failed: ['rate<0.05'],    // 에러율 5% 미만
+    http_req_duration: ['p(95)<1000'], // 95%의 요청이 1초 이내 완료
+    http_req_failed: ['rate<0.01'],    // 에러율 1% 미만 (초고성능)
   },
 };
 
 const BASE_URL = __ENV.API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
 export default function () {
-  // 1. 실제 동물 목록 조회 (/animals/list)
-  const animalRes = http.get(`${BASE_URL}/animals/list?page=0&size=10`);
-  check(animalRes, {
-    '동물 목록 HTTP 200': (r) => r.status === 200,
-    '동물 목록 응답 지연 < 1000ms': (r) => r.timings.duration < 1000,
+  // ⚡ 1. No-Offset 커서 기반 동물 목록 조회 (Count 쿼리 0%)
+  const animalCursorRes = http.get(`${BASE_URL}/animals/cursor?size=10`);
+  check(animalCursorRes, {
+    '동물 커서 목록 HTTP 200': (r) => r.status === 200,
+    '동물 커서 응답 지연 < 500ms': (r) => r.timings.duration < 500,
   });
 
-  // 2. 실제 게시글/후기 목록 조회 (/post/list)
-  const postRes = http.get(`${BASE_URL}/post/list?page=0&size=10`);
-  check(postRes, {
-    '게시글 목록 HTTP 200': (r) => r.status === 200,
+  // ⚡ 2. No-Offset 커서 기반 게시글 목록 조회 (Count 쿼리 0%)
+  const postCursorRes = http.get(`${BASE_URL}/post/cursor?size=10`);
+  check(postCursorRes, {
+    '게시글 커서 목록 HTTP 200': (r) => r.status === 200,
+    '게시글 커서 응답 지연 < 500ms': (r) => r.timings.duration < 500,
   });
 
   sleep(0.3); // 가상 사용자 대기 0.3초
 }
+

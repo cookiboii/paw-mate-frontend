@@ -6,12 +6,29 @@ import {
   CommentResponseDto,
   CommentDto,
 } from '../types/review';
+import { SliceResponse, PageResponse } from '../types/common';
 
 /**
- * 💌 전체 게시글(후기/분양/제보) 목록 조회
+ * 💌 전체 게시글(후기/분양/제보) 목록 조회 (오프셋 페이징)
  */
-export const getReviews = async (page = 0, size = 10, sort = 'id,desc') => {
+export const getReviews = async (page = 0, size = 10, sort = 'id,desc'): Promise<PageResponse<PostResponseDto> | { result: PageResponse<PostResponseDto> }> => {
   const response = await axiosInstance.get(`/post/list?page=${page}&size=${size}&sort=${sort}`);
+  return response.data.result || response.data;
+};
+
+/**
+ * ⚡ No-Offset 커서 기반 고속 게시글 목록 조회 (무한 스크롤 / Count 쿼리 0%)
+ */
+export const getReviewsCursor = async (
+  lastPostId?: number | string,
+  size = 10
+): Promise<SliceResponse<PostResponseDto> | { result: SliceResponse<PostResponseDto> }> => {
+  const params = new URLSearchParams();
+  if (lastPostId !== undefined && lastPostId !== null) {
+    params.append('lastPostId', String(lastPostId));
+  }
+  params.append('size', String(size));
+  const response = await axiosInstance.get(`/post/cursor?${params.toString()}`);
   return response.data.result || response.data;
 };
 
@@ -67,7 +84,7 @@ export const createComment = async (postId: number | string, payload: CommentDto
  * ✏️ 댓글 수정
  */
 export const updateComment = async (commentId: number | string, content: string) => {
-  const response = await axiosInstance.put(`/comment/update/${commentId}`, {
+  const response = await axiosInstance.put(`/comment/${commentId}`, {
     commentId: Number(commentId),
     content,
   });
@@ -81,3 +98,4 @@ export const deleteComment = async (commentId: number | string) => {
   const response = await axiosInstance.delete(`/comment/${commentId}`);
   return response.data;
 };
+

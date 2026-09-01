@@ -1,5 +1,5 @@
 import axios from './axiosInstance';
-import { Animal, AnimalFormData, PageResponse } from '../types';
+import { Animal, AnimalFormData, PageResponse, SliceResponse } from '../types';
 
 const API_BASE_URL = '/animals';
 
@@ -12,10 +12,26 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData) => {
 };
 
 /**
- * 🔍 전체 동물 목록 조회 (페이징 지원)
+ * 🔍 전체 동물 목록 조회 (오프셋 페이징)
  */
 export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse<Animal> | { result: PageResponse<Animal> }> => {
   const response = await axios.get(`${API_BASE_URL}/list?page=${page}&size=${size}`);
+  return response.data;
+};
+
+/**
+ * ⚡ No-Offset 커서 기반 고속 동물 목록 조회 (무한 스크롤 / Count 쿼리 0%)
+ */
+export const fetchAnimalCursorList = async (
+  lastAnimalId?: number | string,
+  size = 10
+): Promise<SliceResponse<Animal> | { result: SliceResponse<Animal> }> => {
+  const params = new URLSearchParams();
+  if (lastAnimalId !== undefined && lastAnimalId !== null) {
+    params.append('lastAnimalId', String(lastAnimalId));
+  }
+  params.append('size', String(size));
+  const response = await axios.get(`${API_BASE_URL}/cursor?${params.toString()}`);
   return response.data;
 };
 
@@ -53,6 +69,7 @@ export const updateAnimalStatus = async (id: string | number, status: string): P
  * 🗑️ 보호 동물 삭제 (관리자 전용)
  */
 export const deleteAnimal = async (id: string | number) => {
-  const response = await axios.delete(`${API_BASE_URL}/delete/${id}`);
+  const response = await axios.delete(`${API_BASE_URL}/${id}`);
   return response.data;
 };
+

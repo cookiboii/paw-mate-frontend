@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
+import { deleteAnimal } from '../api/animal';
 import axios from '../api/axiosInstance';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
@@ -75,9 +76,10 @@ const AnimalDetail: React.FC = () => {
   }, [id]);
 
   const handleDelete = async () => {
+    if (!id) return;
     setIsDeleting(true);
     try {
-      await axios.delete(`/animals/delete/${id}`);
+      await deleteAnimal(id);
       setIsDeleteModalOpen(false);
       showToast('동물 정보가 삭제되었습니다.', 'info');
       setTimeout(() => navigate('/animals'), 800);

@@ -40,12 +40,13 @@ const BenchmarkPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('concurrency');
 
   // ================= 1. API Concurrency Test State =================
-  const [endpoint, setEndpoint] = useState<string>('/animals/list?page=0&size=10');
+  const [endpoint, setEndpoint] = useState<string>('/animals/cursor?size=10');
   const [isCustomEndpoint, setIsCustomEndpoint] = useState<boolean>(false);
   const [customUrl, setCustomUrl] = useState<string>('');
   const [totalRequests, setTotalRequests] = useState<number>(20);
   const [mode, setMode] = useState<'concurrent' | 'chunked' | 'sequential'>('concurrent');
   const [chunkSize, setChunkSize] = useState<number>(5);
+  const [bypassCache, setBypassCache] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [progress, setProgress] = useState<{ completed: number; total: number }>({
     completed: 0,
@@ -151,6 +152,7 @@ const BenchmarkPage: React.FC = () => {
         totalRequests,
         mode,
         chunkSize,
+        bypassCache,
         onProgress: (completed, total, latestMetric) => {
           setProgress({ completed, total });
           setLiveMetrics((prev) => [...prev, latestMetric]);
@@ -177,23 +179,29 @@ export const options = {
     { duration: '5s', target: 0 },    // 5초 동안 서서히 종료
   ],
   thresholds: {
-    http_req_duration: ['p(95)<1500'], // 95%의 요청이 1.5초 이내에 완료되어야 성공
-    http_req_failed: ['rate<0.05'],    // 에러율 5% 미만 유지
+    http_req_duration: ['p(95)<1000'], // 95%의 요청이 1초 이내 완료
+    http_req_failed: ['rate<0.01'],    // 에러율 1% 미만 유지 (초고성능)
   },
 };
 
 const BASE_URL = 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
 export default function () {
-  // 실제 동물 목록 동시 조회 테스트 (/animals/list)
-  const res = http.get(\`\${BASE_URL}/animals/list?page=0&size=10\`);
-  
-  check(res, {
-    'HTTP 상태 200 OK': (r) => r.status === 200,
-    '응답 시간 < 1000ms': (r) => r.timings.duration < 1000,
+  // ⚡ 1. No-Offset 커서 기반 고속 동물 목록 조회 (Count 쿼리 0%)
+  const animalRes = http.get(\`\${BASE_URL}/animals/cursor?size=10\`);
+  check(animalRes, {
+    '동물 커서 조회 HTTP 200 OK': (r) => r.status === 200,
+    '동물 조회 지연시간 < 500ms': (r) => r.timings.duration < 500,
   });
 
-  sleep(0.3); // 가상 유저 요청 간격
+  // ⚡ 2. No-Offset 커서 기반 고속 게시글 목록 조회 (Count 쿼리 0%)
+  const postRes = http.get(\`\${BASE_URL}/post/cursor?size=10\`);
+  check(postRes, {
+    '게시글 커서 조회 HTTP 200 OK': (r) => r.status === 200,
+    '게시글 조회 지연시간 < 500ms': (r) => r.timings.duration < 500,
+  });
+
+  sleep(0.3); // 가상 유저 씽킹 타임
 }`;
 
   const handleCopyK6 = () => {
@@ -285,11 +293,31 @@ export default function () {
                     onChange={(e) => setEndpoint(e.target.value)}
                     disabled={isRunning}
                   >
-                    <option value="/animals/list?page=0&size=10">/animals/list (동물 목록 조회 - 실제 DB)</option>
-                    <option value="/post/list?page=0&size=10">/post/list (입양 후기 목록 조회 - 실제 DB)</option>
+                    <option value="/animals/cursor?size=10">⚡ /animals/cursor (보호 동물 No-Offset 커서 - 고성능 🚀)</option>
+                    <option value="/post/cursor?size=10">⚡ /post/cursor (게시글 No-Offset 커서 - 고성능 🚀)</option>
+                    <option value="/animals/list?page=0&size=10">/animals/list (동물 목록 조회 - 오프셋 페이징)</option>
+                    <option value="/post/list?page=0&size=10">/post/list (입양 후기 목록 조회 - 오프셋 페이징)</option>
                     <option value="/animals/1">/animals/1 (동물 상세 조회)</option>
                   </select>
                 )}
+              </div>
+
+              <div className={styles.controlGroup}>
+                <label className={styles.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                  <span>타임스탬프 캐시 무효화 (_t 강제 파라미터)</span>
+                  <input
+                    type="checkbox"
+                    checked={bypassCache}
+                    onChange={(e) => setBypassCache(e.target.checked)}
+                    disabled={isRunning}
+                    style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)' }}
+                  />
+                </label>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  {bypassCache
+                    ? '⚠️ 매 요청마다 고유 파라미터를 붙여 브라우저/서버 캐시를 무효화합니다 (DB 직격 부하).'
+                    : '✅ 표준 REST 요청으로 실제 운영 환경과 동일하게 측정합니다.'}
+                </p>
               </div>
 
               <div className={styles.controlGroup}>

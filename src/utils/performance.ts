@@ -65,12 +65,14 @@ export const runConcurrencyBenchmark = async ({
   totalRequests = 20,
   mode = 'concurrent', // 'concurrent' (Promise.all) | 'chunked' (배치 동시) | 'sequential' (순차)
   chunkSize = 5,
+  bypassCache = false,
   onProgress,
 }: {
   endpoint: string;
   totalRequests: number;
   mode: 'concurrent' | 'chunked' | 'sequential';
   chunkSize?: number;
+  bypassCache?: boolean;
   onProgress?: (completed: number, total: number, latestMetric: RequestMetric) => void;
 }): Promise<ConcurrencyTestResult> => {
   const metrics: RequestMetric[] = [];
@@ -80,10 +82,10 @@ export const runConcurrencyBenchmark = async ({
   const executeSingleRequest = async (id: number): Promise<RequestMetric> => {
     const reqStart = performance.now();
     try {
-      const res = await axiosInstance.get(endpoint, {
-        // 캐시 방지를 위한 타임스탬프 쿼리
-        params: { _t: Date.now() + id },
-      });
+      const config = bypassCache
+        ? { params: { _t: Date.now() + id } }
+        : {};
+      const res = await axiosInstance.get(endpoint, config);
       const duration = performance.now() - reqStart;
       const metric: RequestMetric = {
         id,

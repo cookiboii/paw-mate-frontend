@@ -19,6 +19,20 @@ export interface PageResponse<T> {
   empty?: boolean;
 }
 
+/**
+ * ⚡ Spring Data Slice 기반 No-Offset 커서 페이징 응답 (Count 쿼리 0%)
+ */
+export interface SliceResponse<T> {
+  content: T[];
+  hasNext?: boolean;
+  isLast?: boolean;
+  number?: number;
+  size?: number;
+  first?: boolean;
+  last?: boolean;
+  empty?: boolean;
+}
+
 export interface ApiResponse<T = unknown> {
   isSuccess?: boolean;
   success?: boolean;
@@ -26,5 +40,11 @@ export interface ApiResponse<T = unknown> {
   result?: T;
   data?: T;
   code?: number | string;
+}
+
+export interface CommonErrorDto {
+  statusCode: number;
+  code: string;
+  statusMessage: string;
 }
 

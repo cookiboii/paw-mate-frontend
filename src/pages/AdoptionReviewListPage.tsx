@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import styles from '../styles/AdoptionReviewListPage.module.css';
-import { getReviews } from '../api/review';
+import { getReviewsCursor, getReviews } from '../api/review';
 import { Link, useNavigate } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
-import { ReviewItem } from '../types/review';
+import { ReviewItem, PostResponseDto } from '../types/review';
+import { SliceResponse, PageResponse } from '../types/common';
 import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, User, PawPrint, Search, X } from 'lucide-react';
 
 export interface CategoryOption {
@@ -62,65 +63,75 @@ const AdoptionReviewListPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
-  const [page, setPage] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(1);
+  const [lastPostId, setLastPostId] = useState<number | undefined>(undefined);
+  const [hasNext, setHasNext] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const observer = useRef<IntersectionObserver | null>(null);
+
+  const fetchNextReviews = async (isReset = false, currentLastId?: number) => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      // ⚡ No-Offset 커서 기반 고속 페이징 API 호출
+      const res = await getReviewsCursor(isReset ? undefined : currentLastId, 9);
+      const sliceData = 'result' in res && res.result ? res.result : (res as SliceResponse<PostResponseDto>);
+      const rawContent = (sliceData.content || []) as unknown as ReviewItem[];
+      const nextHasNext = sliceData.hasNext !== undefined ? sliceData.hasNext : (!sliceData.isLast && rawContent.length > 0);
+
+      if (isReset) {
+        setReviews(rawContent);
+      } else {
+        setReviews((prev) => {
+          const existingIds = new Set(prev.map((r) => r.id));
+          return [...prev, ...rawContent.filter((r) => !existingIds.has(r.id))];
+        });
+      }
+
+      setHasNext(Boolean(nextHasNext && rawContent.length > 0));
+      if (rawContent.length > 0) {
+        const lastItem = rawContent[rawContent.length - 1];
+        setLastPostId(Number(lastItem.id));
+      }
+    } catch (err) {
+      console.warn('커서 페이징 실패, 기존 페이징으로 폴백 시도:', err);
+      try {
+        const fallbackRes = await getReviews(0, 9, 'id,desc');
+        const pageData = 'result' in fallbackRes && fallbackRes.result ? fallbackRes.result : (fallbackRes as PageResponse<PostResponseDto>);
+        const fallbackContent = (pageData.content || []) as unknown as ReviewItem[];
+        setReviews(fallbackContent);
+        setHasNext(false);
+      } catch (fallbackErr) {
+        console.error('게시글 불러오기 실패:', fallbackErr);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const lastReviewElementRef = useCallback(
     (node: HTMLElement | null) => {
       if (isLoading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && page < totalPages - 1) {
-          setPage((prevPage) => prevPage + 1);
+        if (entries[0].isIntersecting && hasNext) {
+          fetchNextReviews(false, lastPostId);
         }
       });
       if (node) observer.current.observe(node);
     },
-    [isLoading, page, totalPages]
+    [isLoading, hasNext, lastPostId]
   );
 
-  // 카테고리 변경 시 초기화
+  // 카테고리 변경 시 초기화 및 첫 페이지 로드
   useEffect(() => {
     setReviews([]);
-    setPage(0);
-    setTotalPages(1);
+    setLastPostId(undefined);
+    setHasNext(true);
+    fetchNextReviews(true);
   }, [activeCategory]);
 
-  const fetchReviews = async (pageNum: number) => {
-    setIsLoading(true);
-    try {
-      const data = await getReviews(pageNum, 9, 'id,desc');
-      const allReviews: ReviewItem[] = data.result?.content ?? data.content ?? [];
-
-      // 카테고리 필터링 (프론트에서 제목 prefix 기반으로 분류)
-      const filtered =
-        activeCategory === 'ALL'
-          ? allReviews
-          : allReviews.filter((r) => getCategoryFromTitle(r.title) === activeCategory);
-
-      if (pageNum === 0) {
-        setReviews(filtered);
-      } else {
-        setReviews((prev) => {
-          const existingIds = new Set(prev.map((r) => r.id));
-          return [...prev, ...filtered.filter((r) => !existingIds.has(r.id))];
-        });
-      }
-      setTotalPages(data.result?.totalPages ?? data.totalPages ?? 1);
-    } catch (err) {
-      console.error('게시글 불러오기 실패', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchReviews(page);
-  }, [page, activeCategory]);
 
   // 검색어 필터링
   const displayedReviews = useMemo(() => {
@@ -314,10 +325,10 @@ const AdoptionReviewListPage: React.FC = () => {
           </div>
         ) : null}
 
-        {isLoading && renderSkeletons(page === 0 ? 9 : 3)}
+        {isLoading && renderSkeletons(lastPostId === undefined ? 9 : 3)}
 
         {/* 무한 스크롤 종단 UI */}
-        {!isLoading && displayedReviews.length > 0 && page >= totalPages - 1 && (
+        {!isLoading && displayedReviews.length > 0 && !hasNext && (
           <div className={styles.endOfList}>
             <div className={styles.endOfListDivider} />
             <p style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
