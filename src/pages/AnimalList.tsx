@@ -286,25 +286,25 @@ const AnimalList: React.FC = () => {
         </div>
 
         <div className={styles.headerControls}>
-          {/* 뷰 모드 토글: 초고속 무한스크롤 vs 페이지네이션 */}
+          {/* 뷰 모드 토글: 피드로 보기 vs 페이지별 보기 */}
           <div className={styles.viewToggleGroup} role="group" aria-label="보기 방식 선택">
             <button
               type="button"
               className={`${styles.viewToggleBtn} ${viewMode === 'infinite' ? styles.activeToggle : ''}`}
               onClick={() => setViewMode('infinite')}
-              title="No-Offset 커서 기반 초고속 무한 스크롤"
+              title="스크롤하여 연속으로 둘러보기"
             >
               <InfinityIcon size={14} />
-              <span>무한 스크롤</span>
+              <span>피드로 보기</span>
             </button>
             <button
               type="button"
               className={`${styles.viewToggleBtn} ${viewMode === 'pagination' ? styles.activeToggle : ''}`}
               onClick={() => setViewMode('pagination')}
-              title="페이지 번호 단위 탐색"
+              title="페이지 번호로 나누어 보기"
             >
               <LayoutGrid size={14} />
-              <span>페이지네이션</span>
+              <span>페이지별 보기</span>
             </button>
           </div>
 
@@ -315,6 +315,7 @@ const AnimalList: React.FC = () => {
             </button>
           )}
         </div>
+
       </div>
 
       <div className={styles.container}>
