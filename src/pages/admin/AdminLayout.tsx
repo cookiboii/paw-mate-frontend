@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import styles from '../../styles/AdminLayout.module.css';
-import { PlusCircle, Users, ClipboardList, KeyRound } from 'lucide-react';
+import { LayoutDashboard, PawPrint, Users, ClipboardList, KeyRound } from 'lucide-react';
 
 interface AdminLayoutProps {
   children?: ReactNode;
@@ -18,14 +18,25 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <ul className={styles.navList}>
           <li>
             <NavLink
+              to="/admin/dashboard"
+              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              <LayoutDashboard size={16} />
+              <span>대시보드 개요</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
               to="/admin/animals"
               className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
               style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              <PlusCircle size={16} />
-              <span>동물 등록</span>
+              <PawPrint size={16} />
+              <span>동물 관리 & 등록</span>
             </NavLink>
           </li>
+
           <li>
             <NavLink
               to="/admin/users"

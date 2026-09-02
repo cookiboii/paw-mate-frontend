@@ -36,6 +36,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Admin pages
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
 const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
 const AdminAnimalsPage = lazy(() => import('./pages/admin/AdminAnimalsPage'));
 const AdminAdoptionsPage = lazy(() => import('./pages/admin/AdminAdoptionsPage'));
@@ -92,10 +93,10 @@ const AppRoutes: React.FC = () => {
           }
         />
 
-        {/* 마이페이지: ADMIN이면 관리 페이지로 이동 */}
+        {/* 마이페이지: ADMIN이면 관리자 대시보드로 이동 */}
         <Route
           path="/mypage"
-          element={isAdmin ? <Navigate to="/admin/users" replace /> : <MyPage />}
+          element={isAdmin ? <Navigate to="/admin/dashboard" replace /> : <MyPage />}
         />
 
         {/* 🔐 관리자 라우트 (AdminLayout 공통 사이드바 중첩 라우트) */}
@@ -107,13 +108,15 @@ const AppRoutes: React.FC = () => {
             </AdminRoute>
           }
         >
-          <Route index element={<Navigate to="/admin/users" replace />} />
-          <Route path="users" element={<AdminUsersPage />} />
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="animals" element={<AdminAnimalsPage />} />
           <Route path="animals/register" element={<AdminAnimalsPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
           <Route path="adoptions" element={<AdminAdoptionsPage />} />
           <Route path="password" element={<AdminPasswordPage />} />
         </Route>
+
 
         {/* 레거시 동물 상태 수정 라우트 */}
         <Route

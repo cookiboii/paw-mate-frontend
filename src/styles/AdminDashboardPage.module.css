@@ -1,0 +1,351 @@
+.container {
+  padding: 40px;
+  animation: slideUpFade var(--transition-normal);
+  background: var(--bg-color);
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+/* Stats Cards Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.statCard {
+  background: var(--surface-color);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
+.statIcon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.statIconPaw {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.statIconPending {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+.statIconUsers {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #2563eb;
+}
+
+.statIconReviews {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.statInfo {
+  flex: 1;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.statValue {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.statSubtext {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.badgeWarning {
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #b45309;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+/* Dashboard Sections Grid */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+.sectionCard {
+  background: var(--surface-color);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionHeader {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-color);
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.viewAllLink {
+  font-size: 0.88rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.viewAllLink:hover {
+  text-decoration: underline;
+}
+
+.sectionBody {
+  padding: 24px;
+  flex: 1;
+}
+
+/* Table in Section */
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 12px 16px;
+  background-color: var(--bg-color);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badgePending {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+
+.badgeApproved {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.badgeRejected {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.actionBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.btnSm {
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.btnApprove {
+  background-color: #10b981;
+  color: white;
+}
+
+.btnApprove:hover {
+  background-color: #059669;
+}
+
+.btnReject {
+  background-color: var(--surface-color);
+  color: var(--danger-color);
+  border-color: var(--border-color);
+}
+
+.btnReject:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: var(--danger-color);
+}
+
+/* Quick Actions Card */
+.quickActionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quickActionItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+}
+
+.quickActionItem:hover {
+  background-color: var(--surface-color);
+  border-color: var(--primary-color);
+  transform: translateX(4px);
+  color: var(--primary-color);
+}
+
+.quickActionIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--surface-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
+}
+
+/* Status Breakdown Bars */
+.statusBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progressBarWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressBarHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: var(--bg-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease;
+}
+
+@media (max-width: 1024px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
