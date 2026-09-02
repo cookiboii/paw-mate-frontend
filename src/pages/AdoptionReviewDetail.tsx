@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReviewById, deleteReview } from '../api/review';
 import { getMyInfo } from '../api/user';
+import { apiCache } from '../utils/apiCache';
 import styles from '../styles/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
@@ -30,12 +31,14 @@ const AdoptionReviewDetail: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const [review, setReview] = useState<ReviewDetailData | null>(null);
+  const initialCached = id ? apiCache.get<ReviewDetailData>(`review:detail:${id}`) : null;
+  const [review, setReview] = useState<ReviewDetailData | null>(initialCached);
   const [currentUser, setCurrentUser] = useState<{ email: string; role: string }>({ email: '', role: '' });
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(!!initialCached);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
+
 
   const cleanTitle = review ? getCleanTitle(review.title) : '';
   usePageTitle(cleanTitle || '후기 상세');

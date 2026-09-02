@@ -1,23 +1,39 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Search, X, Dog, Cat, PawPrint, RotateCcw } from 'lucide-react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { Search, X, Dog, Cat, PawPrint, RotateCcw, Infinity as InfinityIcon, LayoutGrid, Sparkles } from 'lucide-react';
 import styles from '../styles/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import AnimalCard from '../components/AnimalCard';
 import Pagination from '../components/Pagination';
+import Spinner from '../components/Spinner';
 import usePageTitle from '../hooks/usePageTitle';
 import useDebounce from '../hooks/useDebounce';
-import { fetchAnimalList, fetchAnimalListBySpecies } from '../api/animal';
+import { fetchAnimalList, fetchAnimalListBySpecies, fetchAnimalCursorList } from '../api/animal';
 import { Animal } from '../types/animal';
-import { PageResponse } from '../types/common';
+import { PageResponse, SliceResponse } from '../types/common';
+
+type ViewMode = 'infinite' | 'pagination';
 
 const AnimalList: React.FC = () => {
   usePageTitle('가족을 기다리는 아이들');
+
+  // 뷰 모드 ('infinite' = 초고속 No-Offset 커서 무한스크롤, 'pagination' = 페이지네이션)
+  const [viewMode, setViewMode] = useState<ViewMode>('infinite');
+
+  // 동물 데이터 상태
   const [animals, setAnimals] = useState<Animal[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
+
+  // 페이지네이션 모드 전용 상태
   const [page, setPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalElements, setTotalElements] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // 무한스크롤 모드 전용 상태
+  const [lastAnimalId, setLastAnimalId] = useState<number | string | undefined>(undefined);
+  const [hasNext, setHasNext] = useState<boolean>(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   // 필터 및 검색 상태
   const [speciesFilter, setSpeciesFilter] = useState<string>('ALL'); // 'ALL', 'DOG', 'CAT', 'ETC'
@@ -25,31 +41,119 @@ const AnimalList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const pageSize = 6;
+  const pageSize = viewMode === 'infinite' ? 9 : 6;
 
-  useEffect(() => {
-    const fetchAnimals = async () => {
-      setIsLoading(true);
-      try {
-        const data =
-          speciesFilter === 'ALL'
-            ? await fetchAnimalList(page, pageSize)
-            : await fetchAnimalListBySpecies(speciesFilter, page, pageSize);
+  // ⚡ 1. 페이지네이션 모드 데이터 로딩
+  const loadPaginationData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data =
+        speciesFilter === 'ALL'
+          ? await fetchAnimalList(page, pageSize)
+          : await fetchAnimalListBySpecies(speciesFilter, page, pageSize);
 
+      const pageData: PageResponse<Animal> =
+        'result' in data && data.result ? (data.result as PageResponse<Animal>) : (data as PageResponse<Animal>);
+
+      setAnimals(pageData.content || []);
+      setTotalPages(pageData.totalPages || 1);
+      setTotalElements(pageData.totalElements || pageData.content?.length || 0);
+    } catch (err) {
+      console.error('동물 목록(페이지네이션) 조회 실패:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, speciesFilter, pageSize]);
+
+  // ⚡ 2. 무한스크롤(No-Offset 커서) 데이터 초기 로딩
+  const loadInitialInfiniteData = useCallback(async () => {
+    setIsLoading(true);
+    setHasNext(true);
+    setLastAnimalId(undefined);
+
+    try {
+      if (speciesFilter === 'ALL') {
+        // 🚀 No-Offset 커서 기반 고속 API 호출 (Count 쿼리 0%)
+        const res = await fetchAnimalCursorList(undefined, pageSize);
+        const sliceData = 'result' in res && res.result ? res.result : (res as SliceResponse<Animal>);
+        const content = sliceData.content || [];
+        setAnimals(content);
+        setHasNext(sliceData.hasNext ?? content.length >= pageSize);
+        if (content.length > 0) {
+          const lastItem = content[content.length - 1];
+          setLastAnimalId(lastItem.id ?? lastItem.animalId);
+        }
+      } else {
+        // 종별 필터는 백엔드 지원에 맞춰 초기 페이지 로드
+        const data = await fetchAnimalListBySpecies(speciesFilter, 0, pageSize * 2);
         const pageData: PageResponse<Animal> =
           'result' in data && data.result ? (data.result as PageResponse<Animal>) : (data as PageResponse<Animal>);
-
         setAnimals(pageData.content || []);
-        setTotalPages(pageData.totalPages || 1);
-        setTotalElements(pageData.totalElements || pageData.content?.length || 0);
-      } catch (err) {
-        console.error('동물 목록 조회 실패:', err);
-      } finally {
-        setIsLoading(false);
+        setHasNext(false);
       }
-    };
-    fetchAnimals();
-  }, [page, speciesFilter]);
+    } catch (err) {
+      console.error('동물 목록(무한스크롤) 초기 조회 실패:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [speciesFilter, pageSize]);
+
+  // ⚡ 3. 무한스크롤 다음 커서 데이터 로딩
+  const loadNextInfiniteData = useCallback(async () => {
+    if (isFetchingMore || !hasNext || viewMode !== 'infinite' || speciesFilter !== 'ALL') return;
+
+    setIsFetchingMore(true);
+    try {
+      const res = await fetchAnimalCursorList(lastAnimalId, pageSize);
+      const sliceData = 'result' in res && res.result ? res.result : (res as SliceResponse<Animal>);
+      const newItems = sliceData.content || [];
+
+      if (newItems.length > 0) {
+        setAnimals((prev) => {
+          // 중복 방지 (ID 기준)
+          const existingIds = new Set(prev.map((a) => a.id ?? a.animalId));
+          const uniqueNew = newItems.filter((a) => !existingIds.has(a.id ?? a.animalId));
+          return [...prev, ...uniqueNew];
+        });
+        const lastItem = newItems[newItems.length - 1];
+        setLastAnimalId(lastItem.id ?? lastItem.animalId);
+        setHasNext(sliceData.hasNext ?? newItems.length >= pageSize);
+      } else {
+        setHasNext(false);
+      }
+    } catch (err) {
+      console.error('동물 목록 커서 추가 조회 실패:', err);
+      setHasNext(false);
+    } finally {
+      setIsFetchingMore(false);
+    }
+  }, [isFetchingMore, hasNext, viewMode, speciesFilter, lastAnimalId, pageSize]);
+
+  // 뷰 모드 및 필터 변경에 따른 데이터 fetch
+  useEffect(() => {
+    if (viewMode === 'pagination') {
+      loadPaginationData();
+    } else {
+      loadInitialInfiniteData();
+    }
+  }, [viewMode, page, speciesFilter, loadPaginationData, loadInitialInfiniteData]);
+
+  // 무한스크롤 IntersectionObserver 감지 엘리먼트 콜백
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isLoading || isFetchingMore || viewMode !== 'infinite') return;
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNext) {
+          loadNextInfiniteData();
+        }
+      });
+
+      if (node) observerRef.current.observe(node);
+    },
+    [isLoading, isFetchingMore, viewMode, hasNext, loadNextInfiniteData]
+  );
 
   // 프론트엔드 다중 필터링 (디바운스 검색어 + 성별)
   const filteredAnimals = useMemo(() => {
@@ -77,6 +181,7 @@ const AnimalList: React.FC = () => {
   const handleSpeciesChange = (type: string) => {
     setSpeciesFilter(type);
     setPage(0);
+    setLastAnimalId(undefined);
   };
 
   const handleResetFilters = () => {
@@ -84,6 +189,7 @@ const AnimalList: React.FC = () => {
     setGenderFilter('ALL');
     setSearchQuery('');
     setPage(0);
+    setLastAnimalId(undefined);
   };
 
   const isFilteringActive = speciesFilter !== 'ALL' || genderFilter !== 'ALL' || searchQuery.trim().length > 0;
@@ -163,28 +269,52 @@ const AnimalList: React.FC = () => {
         </div>
       </div>
 
-      {/* 결과 헤더 (카운트 뱃지 & 초기화) */}
+      {/* 결과 헤더 (카운트 뱃지 & 뷰 모드 전환 토글 & 필터 초기화) */}
       <div className={styles.resultsHeader} aria-live="polite">
-        <div className={styles.resultCountBadge} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+        <div className={styles.resultCountBadge}>
           <PawPrint size={15} />
           <span>현재</span>
           <span className={styles.countHighlight}>
             {isLoading ? '...' : filteredAnimals.length}
           </span>
           <span>마리의 아이가 가족을 기다리고 있어요</span>
-          {totalElements > 0 && !isFilteringActive && (
+          {viewMode === 'pagination' && totalElements > 0 && !isFilteringActive && (
             <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
               (전체 {totalElements}마리)
             </span>
           )}
         </div>
 
-        {isFilteringActive && (
-          <button className={styles.resetBtn} onClick={handleResetFilters} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <RotateCcw size={14} />
-            <span>필터 초기화</span>
-          </button>
-        )}
+        <div className={styles.headerControls}>
+          {/* 뷰 모드 토글: 초고속 무한스크롤 vs 페이지네이션 */}
+          <div className={styles.viewToggleGroup} role="group" aria-label="보기 방식 선택">
+            <button
+              type="button"
+              className={`${styles.viewToggleBtn} ${viewMode === 'infinite' ? styles.activeToggle : ''}`}
+              onClick={() => setViewMode('infinite')}
+              title="No-Offset 커서 기반 초고속 무한 스크롤"
+            >
+              <InfinityIcon size={14} />
+              <span>무한 스크롤</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.viewToggleBtn} ${viewMode === 'pagination' ? styles.activeToggle : ''}`}
+              onClick={() => setViewMode('pagination')}
+              title="페이지 번호 단위 탐색"
+            >
+              <LayoutGrid size={14} />
+              <span>페이지네이션</span>
+            </button>
+          </div>
+
+          {isFilteringActive && (
+            <button className={styles.resetBtn} onClick={handleResetFilters} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <RotateCcw size={14} />
+              <span>필터 초기화</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className={styles.container}>
@@ -210,24 +340,54 @@ const AnimalList: React.FC = () => {
           />
         ) : (
           <ul className={styles.list}>
-            {filteredAnimals.map((animal) => (
-              <li key={animal.id} style={{ listStyle: 'none' }}>
-                <AnimalCard animal={animal} showStatus />
+            {filteredAnimals.map((animal, idx) => (
+              <li key={animal.id ?? animal.animalId ?? idx} style={{ listStyle: 'none' }}>
+                <AnimalCard animal={animal} showStatus priority={idx < 3} />
               </li>
             ))}
           </ul>
         )}
 
-        {/* 재사용 페이지네이션 컴포넌트 */}
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={(newPage) => setPage(newPage)}
-        />
+        {/* 1. 페이지네이션 모드 하단 번호 UI */}
+        {viewMode === 'pagination' && !isLoading && filteredAnimals.length > 0 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={(newPage) => setPage(newPage)}
+          />
+        )}
+
+        {/* 2. 무한 스크롤 모드 하단 관찰자 & 로딩 상태 */}
+        {viewMode === 'infinite' && (
+          <>
+            {/* IntersectionObserver 타겟 */}
+            <div ref={lastElementRef} style={{ height: '20px', margin: '10px 0' }} />
+
+            {/* 추가 로딩 중 스피너 */}
+            {isFetchingMore && (
+              <div className={styles.infiniteLoader}>
+                <Spinner />
+                <span>아이들 정보를 빠르게 불러오는 중...</span>
+              </div>
+            )}
+
+            {/* 모든 목록 탐색 완료 종단 배너 */}
+            {!hasNext && !isLoading && filteredAnimals.length > 0 && (
+              <div className={styles.endOfList}>
+                <div className={styles.endOfListTitle}>
+                  <Sparkles size={18} color="var(--primary-color)" />
+                  <span>모든 아이들을 다 불러왔습니다 🐾</span>
+                </div>
+                <p className={styles.endOfListDesc}>
+                  따뜻한 사랑으로 아이들의 평생 가족이 되어주세요.
+                </p>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export default AnimalList;
-

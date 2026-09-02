@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Lock, X } from 'lucide-react';
 import styles from '../styles/AnimalCard.module.css';
@@ -7,12 +7,14 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import { Animal } from '../types/animal';
 import { getGenderLabel, getSpeciesLabel, getStatusLabel } from '../constants/animal';
+import { prefetchAnimalById } from '../api/animal';
 
 interface AnimalCardProps {
   animal: Animal | Partial<Animal>;
   showStatus?: boolean;
   extraBadgeText?: string;
   onRemove?: () => void;
+  priority?: boolean;
 }
 
 const AnimalCard: React.FC<AnimalCardProps> = ({
@@ -20,6 +22,7 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
   showStatus = false,
   extraBadgeText,
   onRemove,
+  priority = false,
 }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isAuthenticated } = useAuth();
@@ -27,6 +30,12 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
 
   const animalId = animal.id ?? animal.animalId;
   const favorite = animalId ? isFavorite(animalId) : false;
+
+  const handleMouseEnter = useCallback(() => {
+    if (animalId) {
+      prefetchAnimalById(animalId);
+    }
+  }, [animalId]);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -61,16 +70,19 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
       : styles.statusAdopted;
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onMouseEnter={handleMouseEnter}>
       <div className={styles.imageWrapper}>
         <Link to={`/animals/${animalId}`} className={styles.imageLink}>
           <ImageWithFallback
             src={animal.image || animal.profileImageUrl || animal.imageUrl}
             alt={`${animal.breed || animal.species || '반려동물'} - ${getGenderLabel(gender)} ${age}살`}
             className={styles.image}
+            aspectRatio="4/3"
+            fetchPriority={priority ? 'high' : 'auto'}
             fallbackText="사진 준비 중"
           />
         </Link>
+
 
         {/* 배지 그룹 */}
         <div className={styles.badgeGroup}>

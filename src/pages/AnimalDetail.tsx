@@ -18,8 +18,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
-import { deleteAnimal } from '../api/animal';
-import axios from '../api/axiosInstance';
+import { deleteAnimal, fetchAnimalById } from '../api/animal';
+import { apiCache } from '../utils/apiCache';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
 import ImageWithFallback from '../components/ImageWithFallback';
@@ -35,8 +35,9 @@ const AnimalDetail: React.FC = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
 
-  const [animal, setAnimal] = useState<Animal | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const initialCached = id ? apiCache.get<Animal>(`animal:detail:${id}`) : null;
+  const [animal, setAnimal] = useState<Animal | null>(initialCached);
+  const [loading, setLoading] = useState<boolean>(!initialCached);
   const [error, setError] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -47,12 +48,14 @@ const AnimalDetail: React.FC = () => {
   const isAdmin = isAuthenticated && (user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN');
 
   useEffect(() => {
+    if (!id) return;
     const fetchAnimal = async () => {
-      setLoading(true);
+      if (!initialCached) {
+        setLoading(true);
+      }
       setError(null);
       try {
-        const res = await axios.get(`/animals/${id}`);
-        const data = res.data.result || res.data;
+        const data = await fetchAnimalById(id);
         setAnimal(data);
       } catch (err) {
         console.warn("백엔드 연결 실패 - 데모 데이터를 로드합니다.", err);
@@ -73,7 +76,8 @@ const AnimalDetail: React.FC = () => {
     };
 
     fetchAnimal();
-  }, [id]);
+  }, [id, initialCached]);
+
 
   const handleDelete = async () => {
     if (!id) return;

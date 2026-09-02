@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import styles from '../styles/AdoptionReviewListPage.module.css';
-import { getReviewsCursor, getReviews } from '../api/review';
+import { getReviewsCursor, getReviews, prefetchReviewById } from '../api/review';
 import { Link, useNavigate } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
+import ImageWithFallback from '../components/ImageWithFallback';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { ReviewItem, PostResponseDto } from '../types/review';
 import { SliceResponse, PageResponse } from '../types/common';
 import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, User, PawPrint, Search, X } from 'lucide-react';
+
 
 export interface CategoryOption {
   key: string;
@@ -249,19 +251,17 @@ const AdoptionReviewListPage: React.FC = () => {
                 to={`/reviews/${review.id}`}
                 key={review.id}
                 className={styles.card}
+                onMouseEnter={() => prefetchReviewById(review.id)}
               >
                 <div className={styles.imageWrapper}>
                   {review.img ? (
-                    <img
+                    <ImageWithFallback
                       src={review.img}
                       alt={cleanTitle}
                       className={styles.thumbnail}
-                      loading="lazy"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        target.onerror = null;
-                        target.style.display = 'none';
-                      }}
+                      aspectRatio="16/9"
+                      fetchPriority={index < 3 ? 'high' : 'auto'}
+                      fallbackText={catInfo.label}
                     />
                   ) : (
                     <div
@@ -278,6 +278,7 @@ const AdoptionReviewListPage: React.FC = () => {
                     </div>
                   )}
                 </div>
+
                 <div className={styles.cardContent}>
                   <div
                     className={`${styles.categoryBadge} ${

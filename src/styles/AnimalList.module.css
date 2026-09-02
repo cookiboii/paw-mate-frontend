@@ -127,11 +127,13 @@
   box-shadow: var(--shadow-glow-primary);
 }
 
-/* 실시간 검색 & 필터 결과 카운트 뱃지 */
+/* 실시간 검색 & 필터 결과 카운트 뱃지 & 컨트롤 헤더 */
 .resultsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
   margin-bottom: 24px;
   padding: 0 4px;
 }
@@ -164,6 +166,90 @@
 .resetBtn:hover {
   color: var(--primary-color);
 }
+
+/* 뷰 모드 토글 (무한스크롤 vs 페이지네이션) */
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.viewToggleGroup {
+  display: inline-flex;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 2px;
+}
+
+.viewToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.viewToggleBtn:hover {
+  color: var(--text-primary);
+}
+
+.viewToggleBtn.activeToggle {
+  background-color: var(--surface-color);
+  color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+
+/* 무한스크롤 하단 로더 & 종단 배너 */
+.infiniteLoader {
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.endOfList {
+  margin-top: 48px;
+  padding: 32px 16px;
+  text-align: center;
+  background-color: var(--surface-color);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.endOfListTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.endOfListDesc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
 
 /* 동물 카드 그리드 */
 .list {

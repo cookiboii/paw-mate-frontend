@@ -1,5 +1,6 @@
 import axios from './axiosInstance';
 import { Animal, AnimalFormData, PageResponse, SliceResponse } from '../types';
+import { apiCache } from '../utils/apiCache';
 
 const API_BASE_URL = '/animals';
 
@@ -8,6 +9,7 @@ const API_BASE_URL = '/animals';
  */
 export const registerAnimal = async (animalData: AnimalFormData | FormData) => {
   const response = await axios.post(`${API_BASE_URL}/register`, animalData);
+  apiCache.invalidateByPrefix('animal');
   return response.data;
 };
 
@@ -15,8 +17,15 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData) => {
  * 🔍 전체 동물 목록 조회 (오프셋 페이징)
  */
 export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse<Animal> | { result: PageResponse<Animal> }> => {
-  const response = await axios.get(`${API_BASE_URL}/list?page=${page}&size=${size}`);
-  return response.data;
+  const cacheKey = `animal:list:page=${page}:size=${size}`;
+  return apiCache.fetchWithCache(
+    cacheKey,
+    async () => {
+      const response = await axios.get(`${API_BASE_URL}/list?page=${page}&size=${size}`);
+      return response.data;
+    },
+    { ttl: 60 * 1000 } // 1분 캐시
+  );
 };
 
 /**
@@ -43,18 +52,44 @@ export const fetchAnimalListBySpecies = async (
   page = 0,
   size = 10
 ): Promise<PageResponse<Animal> | { result: PageResponse<Animal> }> => {
-  const response = await axios.get(
-    `${API_BASE_URL}/species?species=${encodeURIComponent(species)}&page=${page}&size=${size}`
+  const cacheKey = `animal:species:${species}:page=${page}:size=${size}`;
+  return apiCache.fetchWithCache(
+    cacheKey,
+    async () => {
+      const response = await axios.get(
+        `${API_BASE_URL}/species?species=${encodeURIComponent(species)}&page=${page}&size=${size}`
+      );
+      return response.data;
+    },
+    { ttl: 60 * 1000 }
   );
-  return response.data;
 };
 
 /**
- * 🔎 ID로 단일 동물 조회
+ * 🔎 ID로 단일 동물 조회 (캐시 지원)
  */
 export const fetchAnimalById = async (id: string | number): Promise<Animal> => {
-  const response = await axios.get(`${API_BASE_URL}/${id}`);
-  return response.data.result || response.data;
+  const cacheKey = `animal:detail:${id}`;
+  return apiCache.fetchWithCache(
+    cacheKey,
+    async () => {
+      const response = await axios.get(`${API_BASE_URL}/${id}`);
+      return response.data.result || response.data;
+    },
+    { ttl: 3 * 60 * 1000 } // 3분 캐시
+  );
+};
+
+/**
+ * 🚀 마우스 호버 시 단일 동물 상세 미리 가져오기 (Hover Prefetch)
+ */
+export const prefetchAnimalById = (id: string | number): void => {
+  if (!id) return;
+  const cacheKey = `animal:detail:${id}`;
+  apiCache.prefetch(cacheKey, async () => {
+    const response = await axios.get(`${API_BASE_URL}/${id}`);
+    return response.data.result || response.data;
+  });
 };
 
 /**
@@ -62,6 +97,7 @@ export const fetchAnimalById = async (id: string | number): Promise<Animal> => {
  */
 export const updateAnimalStatus = async (id: string | number, status: string): Promise<Animal> => {
   const response = await axios.put(`${API_BASE_URL}/${id}/status`, { status });
+  apiCache.invalidateByPrefix('animal');
   return response.data.result || response.data;
 };
 
@@ -70,6 +106,8 @@ export const updateAnimalStatus = async (id: string | number, status: string): P
  */
 export const deleteAnimal = async (id: string | number) => {
   const response = await axios.delete(`${API_BASE_URL}/${id}`);
+  apiCache.invalidateByPrefix('animal');
   return response.data;
 };
+
 
