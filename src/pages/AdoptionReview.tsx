@@ -2,7 +2,7 @@ import React, { useState, useRef, ChangeEvent, FormEvent, DragEvent, MouseEvent 
 import styles from '../styles/AdoptionReview.module.css';
 import axios from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
 import { CATEGORY_PREFIX } from './AdoptionReviewListPage';
@@ -20,10 +20,14 @@ const AdoptionReview: React.FC = () => {
   usePageTitle('후기 / 제보 작성');
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('REVIEW');
+  const catParam = searchParams.get('category');
+  const initialCategory = ['REVIEW', 'FREE_ADOPTION', 'REPORT'].includes(catParam || '') ? (catParam as string) : 'REVIEW';
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [form, setForm] = useState({
     content: '',
     img: '',
@@ -118,7 +122,7 @@ const AdoptionReview: React.FC = () => {
       setForm({ title: '', content: '', img: '' });
       setSelectedFile(null);
       setPreview(null);
-      navigate('/reviews');
+      navigate(selectedCategory !== 'ALL' ? `/reviews?category=${selectedCategory}` : '/reviews');
     } catch (error: any) {
       console.error('글 등록 실패:', error);
       showToast(
