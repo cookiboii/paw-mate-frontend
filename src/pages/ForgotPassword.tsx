@@ -7,6 +7,7 @@ import { useToast } from '../context/ToastContext';
 import usePageTitle from '../hooks/usePageTitle';
 import { EyeIcon, EyeOffIcon } from '../components/Icons';
 import { ArrowLeft } from 'lucide-react';
+import { getErrorMessage } from '../utils/error';
 
 const ForgotPassword: React.FC = () => {
   usePageTitle('비밀번호 찾기');
@@ -59,11 +60,8 @@ const ForgotPassword: React.FC = () => {
       setStep(2);
       setTimeLeft(180);
       setTimerActive(true);
-    } catch (err: any) {
-      const errMsg =
-        err.response?.data?.message ||
-        err.response?.data ||
-        '존재하지 않는 계정이거나 이메일 전송에 실패했습니다.';
+    } catch (err: unknown) {
+      const errMsg = getErrorMessage(err, '존재하지 않는 계정이거나 이메일 전송에 실패했습니다.');
       showToast(errMsg, 'error');
     } finally {
       setLoading(false);
@@ -86,11 +84,8 @@ const ForgotPassword: React.FC = () => {
       showToast('인증이 완료되었습니다. 새 비밀번호를 입력해주세요.', 'info');
       setTimerActive(false);
       setStep(3);
-    } catch (err: any) {
-      const errMsg =
-        err.response?.data?.message ||
-        err.response?.data ||
-        '인증코드가 올바르지 않거나 만료되었습니다.';
+    } catch (err: unknown) {
+      const errMsg = getErrorMessage(err, '인증코드가 올바르지 않거나 만료되었습니다.');
       showToast(errMsg, 'error');
     } finally {
       setLoading(false);
@@ -119,11 +114,8 @@ const ForgotPassword: React.FC = () => {
       });
       showToast('비밀번호가 성공적으로 변경되었습니다! 로그인해 주세요.', 'info');
       navigate('/login');
-    } catch (err: any) {
-      const errMsg =
-        err.response?.data?.message ||
-        err.response?.data ||
-        '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.';
+    } catch (err: unknown) {
+      const errMsg = getErrorMessage(err, '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.');
       showToast(errMsg, 'error');
     } finally {
       setLoading(false);

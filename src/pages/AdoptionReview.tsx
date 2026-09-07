@@ -9,6 +9,7 @@ import { CATEGORY_PREFIX } from './AdoptionReviewListPage';
 import usePageTitle from '../hooks/usePageTitle';
 import { uploadImageToBlob } from '../utils/imageUpload';
 import { HeartHandshake, Gift, AlertTriangle, Camera, X, MapPin, Calendar, PawPrint, Phone, AlertCircle, Heart } from 'lucide-react';
+import { getErrorMessage } from '../utils/error';
 
 const CATEGORY_OPTIONS = [
   { key: 'REVIEW', label: '입양 후기', desc: '입양 후 반려동물과의 소중한 이야기를 공유해요', icon: <HeartHandshake size={16} />, prefix: CATEGORY_PREFIX.REVIEW },
@@ -123,13 +124,9 @@ const AdoptionReview: React.FC = () => {
       setSelectedFile(null);
       setPreview(null);
       navigate(selectedCategory !== 'ALL' ? `/reviews?category=${selectedCategory}` : '/reviews');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('글 등록 실패:', error);
-      showToast(
-        '등록 중 오류가 발생했습니다: ' +
-          (error.response?.data?.statusMessage || error.response?.data?.message || '다시 시도해 주세요.'),
-        'error'
-      );
+      showToast('등록 중 오류가 발생했습니다: ' + getErrorMessage(error, '다시 시도해 주세요.'), 'error');
     } finally {
       setIsSubmitting(false);
     }

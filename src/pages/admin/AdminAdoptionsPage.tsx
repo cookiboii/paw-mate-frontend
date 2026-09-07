@@ -7,6 +7,7 @@ import { formatDateTime, formatDate } from '../../utils/date';
 import usePageTitle from '../../hooks/usePageTitle';
 import { AdoptionResponseDto as AdminAdoptionItem } from '../../types/adoption';
 import { ClipboardList, PawPrint, FileText, X } from 'lucide-react';
+import { getErrorMessage } from '../../utils/error';
 
 const AdminAdoptionsPage: React.FC = () => {
   usePageTitle('입양 신청 관리 (Admin)');
@@ -69,9 +70,9 @@ const AdminAdoptionsPage: React.FC = () => {
       }
 
       fetchAdoptions();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('상태 변경 실패:', err);
-      showToast('상태 변경에 실패했습니다: ' + (err.response?.data?.message || err.message), 'error');
+      showToast('상태 변경에 실패했습니다: ' + getErrorMessage(err), 'error');
     } finally {
       setProcessingId(null);
     }

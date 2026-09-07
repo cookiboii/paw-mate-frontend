@@ -1,12 +1,13 @@
 import axiosInstance from './axiosInstance';
 import { User } from '../types/auth';
+import { unwrapResult } from './apiHelper';
 
 /**
  * 👤 내 회원 정보 조회
  */
 export const getMyInfo = async (): Promise<User> => {
   const response = await axiosInstance.get('/adoptmate/myInfo');
-  return response.data.result || response.data;
+  return unwrapResult<User>(response.data);
 };
 
 /**
@@ -14,14 +15,14 @@ export const getMyInfo = async (): Promise<User> => {
  */
 export const getAllUsers = async (): Promise<User[]> => {
   const response = await axiosInstance.get('/adoptmate/all');
-  return response.data.result || response.data || [];
+  return unwrapResult<User[]>(response.data) || [];
 };
 
 /**
  * 🗑️ 회원 탈퇴
  */
-export const deleteMyAccount = async () => {
-  return await axiosInstance.delete('/adoptmate/delete');
+export const deleteMyAccount = async (): Promise<void> => {
+  await axiosInstance.delete('/adoptmate/delete');
 };
 
 /**
@@ -32,6 +33,6 @@ export const updatePassword = async (payload: {
   newPassword?: string;
   passwd?: string;
   new_passwd?: string;
-}) => {
-  return await axiosInstance.post('/adoptmate/password', payload);
+}): Promise<void> => {
+  await axiosInstance.post('/adoptmate/password', payload);
 };

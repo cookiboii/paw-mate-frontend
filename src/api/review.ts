@@ -8,17 +8,22 @@ import {
 } from '../types/review';
 import { SliceResponse, PageResponse } from '../types/common';
 import { apiCache } from '../utils/apiCache';
+import { unwrapResult } from './apiHelper';
 
 /**
  * 💌 전체 게시글(후기/분양/제보) 목록 조회 (오프셋 페이징)
  */
-export const getReviews = async (page = 0, size = 10, sort = 'id,desc'): Promise<PageResponse<PostResponseDto> | { result: PageResponse<PostResponseDto> }> => {
+export const getReviews = async (
+  page = 0,
+  size = 10,
+  sort = 'id,desc'
+): Promise<PageResponse<PostResponseDto>> => {
   const cacheKey = `review:list:page=${page}:size=${size}:sort=${sort}`;
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
       const response = await axiosInstance.get(`/post/list?page=${page}&size=${size}&sort=${sort}`);
-      return response.data.result || response.data;
+      return unwrapResult<PageResponse<PostResponseDto>>(response.data);
     },
     { ttl: 60 * 1000 }
   );
@@ -30,14 +35,14 @@ export const getReviews = async (page = 0, size = 10, sort = 'id,desc'): Promise
 export const getReviewsCursor = async (
   lastPostId?: number | string,
   size = 10
-): Promise<SliceResponse<PostResponseDto> | { result: SliceResponse<PostResponseDto> }> => {
+): Promise<SliceResponse<PostResponseDto>> => {
   const params = new URLSearchParams();
   if (lastPostId !== undefined && lastPostId !== null) {
     params.append('lastPostId', String(lastPostId));
   }
   params.append('size', String(size));
   const response = await axiosInstance.get(`/post/cursor?${params.toString()}`);
-  return response.data.result || response.data;
+  return unwrapResult<SliceResponse<PostResponseDto>>(response.data);
 };
 
 /**
@@ -49,7 +54,7 @@ export const getReviewById = async (id: number | string): Promise<PostResponseDt
     cacheKey,
     async () => {
       const response = await axiosInstance.get(`/post/${id}`);
-      return response.data.result || response.data;
+      return unwrapResult<PostResponseDto>(response.data);
     },
     { ttl: 3 * 60 * 1000 }
   );
@@ -63,35 +68,37 @@ export const prefetchReviewById = (id: number | string): void => {
   const cacheKey = `review:detail:${id}`;
   apiCache.prefetch(cacheKey, async () => {
     const response = await axiosInstance.get(`/post/${id}`);
-    return response.data.result || response.data;
+    return unwrapResult<PostResponseDto>(response.data);
   });
 };
 
 /**
  * ✍️ 게시글 작성
  */
-export const createReview = async (payload: PostCreateRequestDto) => {
+export const createReview = async (payload: PostCreateRequestDto): Promise<PostResponseDto> => {
   const response = await axiosInstance.post('/post/create', payload);
   apiCache.invalidateByPrefix('review');
-  return response.data;
+  return unwrapResult<PostResponseDto>(response.data);
 };
 
 /**
  * ✏️ 게시글 수정
  */
-export const updateReview = async (id: number | string, payload: PostUpdateRequestDto) => {
+export const updateReview = async (
+  id: number | string,
+  payload: PostUpdateRequestDto
+): Promise<PostResponseDto> => {
   const response = await axiosInstance.put(`/post/${id}`, payload);
   apiCache.invalidateByPrefix('review');
-  return response.data;
+  return unwrapResult<PostResponseDto>(response.data);
 };
 
 /**
  * 🗑️ 게시글 삭제
  */
-export const deleteReview = async (id: number | string) => {
-  const response = await axiosInstance.delete(`/post/${id}`);
+export const deleteReview = async (id: number | string): Promise<void> => {
+  await axiosInstance.delete(`/post/${id}`);
   apiCache.invalidateByPrefix('review');
-  return response.data;
 };
 
 /**
@@ -99,34 +106,37 @@ export const deleteReview = async (id: number | string) => {
  */
 export const getComments = async (postId: number | string): Promise<CommentResponseDto[]> => {
   const response = await axiosInstance.get(`/comment/${postId}`);
-  return response.data.result || response.data || [];
+  return unwrapResult<CommentResponseDto[]>(response.data) || [];
 };
 
 /**
  * 💬 댓글 작성
  */
-export const createComment = async (postId: number | string, payload: CommentDto) => {
+export const createComment = async (
+  postId: number | string,
+  payload: CommentDto
+): Promise<CommentResponseDto> => {
   const response = await axiosInstance.post(`/comment/${postId}`, payload);
-  return response.data;
+  return unwrapResult<CommentResponseDto>(response.data);
 };
 
 /**
  * ✏️ 댓글 수정
  */
-export const updateComment = async (commentId: number | string, content: string) => {
+export const updateComment = async (
+  commentId: number | string,
+  content: string
+): Promise<CommentResponseDto> => {
   const response = await axiosInstance.put(`/comment/${commentId}`, {
     commentId: Number(commentId),
     content,
   });
-  return response.data;
+  return unwrapResult<CommentResponseDto>(response.data);
 };
 
 /**
  * 🗑️ 댓글 삭제
  */
-export const deleteComment = async (commentId: number | string) => {
-  const response = await axiosInstance.delete(`/comment/${commentId}`);
-  return response.data;
+export const deleteComment = async (commentId: number | string): Promise<void> => {
+  await axiosInstance.delete(`/comment/${commentId}`);
 };
-
-

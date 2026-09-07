@@ -19,14 +19,15 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { deleteAnimal, fetchAnimalById } from '../api/animal';
-import { apiCache } from '../utils/apiCache';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import Skeleton from '../components/Skeleton';
 import { AnimalStatus, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
 import usePageTitle from '../hooks/usePageTitle';
+import useCachedApi from '../hooks/useCachedApi';
 import { Animal } from '../types/animal';
+import { getErrorMessage } from '../utils/error';
 
 const AnimalDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,10 +36,18 @@ const AnimalDetail: React.FC = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
 
-  const initialCached = id ? apiCache.get<Animal>(`animal:detail:${id}`) : null;
-  const [animal, setAnimal] = useState<Animal | null>(initialCached);
-  const [loading, setLoading] = useState<boolean>(!initialCached);
-  const [error, setError] = useState<string | null>(null);
+  const cacheKey = id ? `animal:detail:${id}` : null;
+  const { data: animal, isLoading: loading, error } = useCachedApi<Animal>(
+    cacheKey,
+    () => fetchAnimalById(id!),
+    {
+      enabled: !!id,
+      onError: (err) => {
+        console.warn('동물 정보 조회 실패:', err);
+      },
+    }
+  );
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -46,38 +55,6 @@ const AnimalDetail: React.FC = () => {
   usePageTitle(animal ? `${animal.breed || animal.species} - 입양 상세 정보` : '동물 상세 정보');
 
   const isAdmin = isAuthenticated && (user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN');
-
-  useEffect(() => {
-    if (!id) return;
-    const fetchAnimal = async () => {
-      if (!initialCached) {
-        setLoading(true);
-      }
-      setError(null);
-      try {
-        const data = await fetchAnimalById(id);
-        setAnimal(data);
-      } catch (err) {
-        console.warn("백엔드 연결 실패 - 데모 데이터를 로드합니다.", err);
-        setAnimal({
-          id: id || '1',
-          species: "개",
-          breed: "골든 리트리버",
-          age: 2,
-          gender: "MALE",
-          color: "크림색 (Cream)",
-          status: "PROTECTED",
-          image: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=1000",
-        });
-        setError(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAnimal();
-  }, [id, initialCached]);
-
 
   const handleDelete = async () => {
     if (!id) return;
@@ -87,8 +64,8 @@ const AnimalDetail: React.FC = () => {
       setIsDeleteModalOpen(false);
       showToast('동물 정보가 삭제되었습니다.', 'info');
       setTimeout(() => navigate('/animals'), 800);
-    } catch (err: any) {
-      showToast('삭제 실패: ' + (err.response?.data?.message || err.message), 'error');
+    } catch (err: unknown) {
+      showToast('삭제 실패: ' + getErrorMessage(err), 'error');
     } finally {
       setIsDeleting(false);
     }
@@ -193,7 +170,7 @@ const AnimalDetail: React.FC = () => {
     );
   }
 
-  if (error) return <p className={styles.error}>오류 발생: {error}</p>;
+  if (error) return <p className={styles.error}>오류 발생: {error.message}</p>;
 
   const canAdopt = animal?.status === AnimalStatus.PROTECTED;
   const favorite = animal ? isFavorite(animal.id) : false;

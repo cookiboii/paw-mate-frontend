@@ -53,19 +53,12 @@ const AdminDashboardPage: React.FC = () => {
     setLoading(true);
     try {
       const [animalRes, userRes, adoptionRes] = await Promise.all([
-        fetchAnimalList(0, 100).catch(() => ({ content: [] })),
+        fetchAnimalList(0, 100).catch(() => ({ content: [] as Animal[] })),
         getAllUsers().catch(() => []),
         getAllAdoptions().catch(() => []),
       ]);
 
-      const animalData =
-        'result' in animalRes && animalRes.result
-          ? animalRes.result.content || []
-          : 'content' in animalRes
-          ? animalRes.content || []
-          : [];
-
-      setAnimals(animalData as Animal[]);
+      setAnimals(animalRes.content || []);
       setUsers(userRes || []);
       setAdoptions(adoptionRes || []);
     } catch (err) {

@@ -9,6 +9,7 @@ import { STATUS_OPTIONS } from '../../constants/animal';
 import usePageTitle from '../../hooks/usePageTitle';
 import { Animal } from '../../types/animal';
 import { Edit3 } from 'lucide-react';
+import { getErrorMessage } from '../../utils/error';
 
 const AnimalStatusEditPage: React.FC = () => {
   usePageTitle('동물 보호 상태 변경 (Admin)');
@@ -53,8 +54,8 @@ const AnimalStatusEditPage: React.FC = () => {
       await axios.put(`/animals/${id}/status`, { status });
       showToast('동물 상태가 성공적으로 변경되었습니다.', 'success');
       navigate(`/animals/${id}`);
-    } catch (err: any) {
-      showToast('상태 수정 실패: ' + (err.response?.data?.message || err.message), 'error');
+    } catch (err: unknown) {
+      showToast('상태 수정 실패: ' + getErrorMessage(err), 'error');
     }
   };
 

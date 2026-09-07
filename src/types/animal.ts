@@ -1,6 +1,6 @@
-export type AnimalStatus = 'WAITING' | 'PROTECTED' | 'ADOPTED';
-export type AnimalSpecies = 'DOG' | 'CAT' | 'ETC' | string;
-export type AnimalGender = 'MALE' | 'FEMALE' | 'M' | 'F' | string;
+export type AnimalStatus = 'WAITING' | 'PROTECTED' | 'ADOPTED' | (string & {});
+export type AnimalSpecies = 'DOG' | 'CAT' | 'ETC' | (string & {});
+export type AnimalGender = 'MALE' | 'FEMALE' | 'M' | 'F' | (string & {});
 
 export interface Animal {
   id: number | string;

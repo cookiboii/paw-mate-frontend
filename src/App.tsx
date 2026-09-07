@@ -8,10 +8,8 @@ import FloatingScrollTop from './components/FloatingScrollTop';
 import ErrorBoundary from './components/ErrorBoundary';
 import Spinner from './components/Spinner';
 
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { ToastProvider } from './context/ToastContext';
-import { FavoritesProvider } from './context/FavoritesContext';
+import AppProviders from './components/AppProviders';
+import { useAuth } from './context/AuthContext';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 // 🚀 Code Splitting: Lazy loading pages for optimal performance
@@ -138,23 +136,15 @@ const AppRoutes: React.FC = () => {
 // 👇 최상위 App 컴포넌트
 const App: React.FC = () => {
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
-        <ToastProvider>
-          <AuthProvider>
-            <FavoritesProvider>
-              <ScrollToTop />
-              <Layout>
-                <ToastContainer />
-                <ThemeToggleFloating />
-                <FloatingScrollTop />
-                <AppRoutes />
-              </Layout>
-            </FavoritesProvider>
-          </AuthProvider>
-        </ToastProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+    <AppProviders>
+      <ScrollToTop />
+      <Layout>
+        <ToastContainer />
+        <ThemeToggleFloating />
+        <FloatingScrollTop />
+        <AppRoutes />
+      </Layout>
+    </AppProviders>
   );
 };
 

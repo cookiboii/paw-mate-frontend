@@ -1,13 +1,17 @@
 import axiosInstance from './axiosInstance';
 import { AdoptionCreateRequest, AdoptionResponseDto } from '../types/adoption';
 import { PageResponse } from '../types/common';
+import { unwrapResult } from './apiHelper';
 
 /**
  * 🐾 입양 신청서 제출
  */
-export const submitAdoption = async (animalId: number | string, payload: AdoptionCreateRequest) => {
+export const submitAdoption = async (
+  animalId: number | string,
+  payload: AdoptionCreateRequest
+): Promise<AdoptionResponseDto> => {
   const response = await axiosInstance.post(`/adoptions/animals/${animalId}`, payload);
-  return response.data;
+  return unwrapResult<AdoptionResponseDto>(response.data);
 };
 
 /**
@@ -15,7 +19,7 @@ export const submitAdoption = async (animalId: number | string, payload: Adoptio
  */
 export const getMyAdoptions = async (): Promise<AdoptionResponseDto[]> => {
   const response = await axiosInstance.get('/adoptions/myAdoption');
-  return response.data.result || response.data || [];
+  return unwrapResult<AdoptionResponseDto[]>(response.data) || [];
 };
 
 /**
@@ -23,7 +27,7 @@ export const getMyAdoptions = async (): Promise<AdoptionResponseDto[]> => {
  */
 export const getAllAdoptions = async (): Promise<AdoptionResponseDto[]> => {
   const response = await axiosInstance.get('/adoptions/all');
-  return response.data.result || response.data || [];
+  return unwrapResult<AdoptionResponseDto[]>(response.data) || [];
 };
 
 /**
@@ -32,16 +36,18 @@ export const getAllAdoptions = async (): Promise<AdoptionResponseDto[]> => {
 export const getAdoptionsPaged = async (
   page = 0,
   size = 10
-): Promise<PageResponse<AdoptionResponseDto> | { result: PageResponse<AdoptionResponseDto> }> => {
+): Promise<PageResponse<AdoptionResponseDto>> => {
   const response = await axiosInstance.get(`/adoptions/list?page=${page}&size=${size}`);
-  return response.data.result || response.data || [];
+  return unwrapResult<PageResponse<AdoptionResponseDto>>(response.data);
 };
 
 /**
  * ✏️ 입양 신청 상태 변경 (관리자 전용)
  */
-export const updateAdoptionStatus = async (adoptionId: number | string, status: string) => {
+export const updateAdoptionStatus = async (
+  adoptionId: number | string,
+  status: string
+): Promise<AdoptionResponseDto> => {
   const response = await axiosInstance.put(`/adoptions/${adoptionId}/status`, { adoptionStatus: status });
-  return response.data;
+  return unwrapResult<AdoptionResponseDto>(response.data);
 };
-

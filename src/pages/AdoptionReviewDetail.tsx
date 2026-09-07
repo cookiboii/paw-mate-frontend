@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReviewById, deleteReview } from '../api/review';
 import { getMyInfo } from '../api/user';
-import { apiCache } from '../utils/apiCache';
 import styles from '../styles/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
@@ -10,8 +9,10 @@ import ConfirmModal from '../components/ConfirmModal';
 import Skeleton from '../components/Skeleton';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
+import useCachedApi from '../hooks/useCachedApi';
+import { getErrorMessage } from '../utils/error';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
-import { ReviewDetailData } from '../types/review';
+import { ReviewDetailData, PostResponseDto } from '../types/review';
 import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2, Share2, Check } from 'lucide-react';
 
 const renderCategoryIcon = (cat: string, size = 16) => {
@@ -31,49 +32,42 @@ const AdoptionReviewDetail: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const initialCached = id ? apiCache.get<ReviewDetailData>(`review:detail:${id}`) : null;
-  const [review, setReview] = useState<ReviewDetailData | null>(initialCached);
+  const cacheKey = id ? `review:detail:${id}` : null;
+  const { data: rawReview, isLoading: isReviewLoading } = useCachedApi<PostResponseDto>(
+    cacheKey,
+    () => getReviewById(id!),
+    { enabled: !!id }
+  );
+
+  const review: ReviewDetailData | null = rawReview
+    ? {
+        ...rawReview,
+        email: (rawReview.email || '').trim().toLowerCase(),
+      }
+    : null;
+
   const [currentUser, setCurrentUser] = useState<{ email: string; role: string }>({ email: '', role: '' });
-  const [isLoaded, setIsLoaded] = useState<boolean>(!!initialCached);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
-
 
   const cleanTitle = review ? getCleanTitle(review.title) : '';
   usePageTitle(cleanTitle || '후기 상세');
 
   useEffect(() => {
-    if (!id) return;
-    const fetchData = async () => {
-      try {
-        const [reviewData, userData] = await Promise.all([
-          getReviewById(id).catch(() => null),
-          getMyInfo().catch(() => null),
-        ]);
-
-        if (reviewData) {
-          setReview({
-            ...reviewData,
-            email: (reviewData.email || '').trim().toLowerCase(),
-          });
-        }
-
+    getMyInfo()
+      .then((userData) => {
         if (userData) {
           setCurrentUser({
-            email: (userData?.email || '').trim().toLowerCase(),
-            role: (userData?.role || '').trim().toUpperCase(),
+            email: (userData.email || '').trim().toLowerCase(),
+            role: (userData.role || '').trim().toUpperCase(),
           });
         }
+      })
+      .catch(() => {});
+  }, []);
 
-        setIsLoaded(true);
-      } catch (err) {
-        console.error('데이터 조회 실패:', err);
-      }
-    };
-
-    fetchData();
-  }, [id]);
+  const isLoaded = !isReviewLoading && !!review;
 
   const handleDelete = async () => {
     if (!id) return;
@@ -83,9 +77,8 @@ const AdoptionReviewDetail: React.FC = () => {
       setIsDeleteModalOpen(false);
       showToast('게시글이 성공적으로 삭제되었습니다.', 'success');
       setTimeout(() => navigate('/reviews'), 800);
-    } catch (err) {
-      showToast('삭제에 실패했습니다. 다시 시도해주세요.', 'error');
-      console.error(err);
+    } catch (err: unknown) {
+      showToast('삭제 실패: ' + getErrorMessage(err), 'error');
     } finally {
       setIsDeleting(false);
     }

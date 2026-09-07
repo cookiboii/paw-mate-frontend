@@ -103,9 +103,8 @@ const AdoptionReviewListPage: React.FC = () => {
     setIsLoading(true);
     try {
       // ⚡ No-Offset 커서 기반 고속 페이징 API 호출
-      const res = await getReviewsCursor(isReset ? undefined : currentLastId, 12);
-      const sliceData = 'result' in res && res.result ? res.result : (res as SliceResponse<PostResponseDto>);
-      const rawContent = (sliceData.content || []) as unknown as ReviewItem[];
+      const sliceData = await getReviewsCursor(isReset ? undefined : currentLastId, 12);
+      const rawContent = sliceData.content || [];
       const nextHasNext = sliceData.hasNext !== undefined ? sliceData.hasNext : (!sliceData.isLast && rawContent.length > 0);
 
       if (isReset) {
@@ -125,9 +124,8 @@ const AdoptionReviewListPage: React.FC = () => {
     } catch (err) {
       console.warn('커서 페이징 실패, 기존 페이징으로 폴백 시도:', err);
       try {
-        const fallbackRes = await getReviews(0, 12, 'id,desc');
-        const pageData = 'result' in fallbackRes && fallbackRes.result ? fallbackRes.result : (fallbackRes as PageResponse<PostResponseDto>);
-        const fallbackContent = (pageData.content || []) as unknown as ReviewItem[];
+        const pageData = await getReviews(0, 12, 'id,desc');
+        const fallbackContent = pageData.content || [];
         setReviews(fallbackContent);
         setHasNext(false);
       } catch (fallbackErr) {

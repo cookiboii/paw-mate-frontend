@@ -208,14 +208,18 @@ const MyPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className={styles.favoritesGrid}>
-                    {favorites.map((animal) => (
-                      <AnimalCard
-                        key={animal.id}
-                        animal={animal}
-                        showStatus
-                        onRemove={() => toggleFavorite(animal as any)}
-                      />
-                    ))}
+                    {favorites.map((animal) => {
+                      const favId = animal.id ?? (animal as { animalId?: string | number }).animalId;
+                      if (!favId) return null;
+                      return (
+                        <AnimalCard
+                          key={favId}
+                          animal={animal}
+                          showStatus
+                          onRemove={() => toggleFavorite({ ...animal, id: favId })}
+                        />
+                      );
+                    })}
                   </div>
 
                 )}

@@ -47,13 +47,10 @@ const AnimalList: React.FC = () => {
   const loadPaginationData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data =
+      const pageData =
         speciesFilter === 'ALL'
           ? await fetchAnimalList(page, pageSize)
           : await fetchAnimalListBySpecies(speciesFilter, page, pageSize);
-
-      const pageData: PageResponse<Animal> =
-        'result' in data && data.result ? (data.result as PageResponse<Animal>) : (data as PageResponse<Animal>);
 
       setAnimals(pageData.content || []);
       setTotalPages(pageData.totalPages || 1);
@@ -74,8 +71,7 @@ const AnimalList: React.FC = () => {
     try {
       if (speciesFilter === 'ALL') {
         // 🚀 No-Offset 커서 기반 고속 API 호출 (Count 쿼리 0%)
-        const res = await fetchAnimalCursorList(undefined, pageSize);
-        const sliceData = 'result' in res && res.result ? res.result : (res as SliceResponse<Animal>);
+        const sliceData = await fetchAnimalCursorList(undefined, pageSize);
         const content = sliceData.content || [];
         setAnimals(content);
         setHasNext(sliceData.hasNext ?? content.length >= pageSize);
@@ -84,10 +80,8 @@ const AnimalList: React.FC = () => {
           setLastAnimalId(lastItem.id ?? lastItem.animalId);
         }
       } else {
-        // 종별 필터는 백엔드 지원에 맞춰 초기 페이지 로드
-        const data = await fetchAnimalListBySpecies(speciesFilter, 0, pageSize * 2);
-        const pageData: PageResponse<Animal> =
-          'result' in data && data.result ? (data.result as PageResponse<Animal>) : (data as PageResponse<Animal>);
+        // 종별 필터는 백엔드 전용 API 호출
+        const pageData = await fetchAnimalListBySpecies(speciesFilter, 0, pageSize * 2);
         setAnimals(pageData.content || []);
         setHasNext(false);
       }
@@ -104,8 +98,7 @@ const AnimalList: React.FC = () => {
 
     setIsFetchingMore(true);
     try {
-      const res = await fetchAnimalCursorList(lastAnimalId, pageSize);
-      const sliceData = 'result' in res && res.result ? res.result : (res as SliceResponse<Animal>);
+      const sliceData = await fetchAnimalCursorList(lastAnimalId, pageSize);
       const newItems = sliceData.content || [];
 
       if (newItems.length > 0) {

@@ -1,28 +1,29 @@
 import axios from './axiosInstance';
 import { Animal, AnimalFormData, PageResponse, SliceResponse } from '../types';
 import { apiCache } from '../utils/apiCache';
+import { unwrapResult } from './apiHelper';
 
 const API_BASE_URL = '/animals';
 
 /**
  * 🔐 관리자 전용 동물 등록 API
  */
-export const registerAnimal = async (animalData: AnimalFormData | FormData) => {
+export const registerAnimal = async (animalData: AnimalFormData | FormData): Promise<Animal> => {
   const response = await axios.post(`${API_BASE_URL}/register`, animalData);
   apiCache.invalidateByPrefix('animal');
-  return response.data;
+  return unwrapResult<Animal>(response.data);
 };
 
 /**
  * 🔍 전체 동물 목록 조회 (오프셋 페이징)
  */
-export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse<Animal> | { result: PageResponse<Animal> }> => {
+export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse<Animal>> => {
   const cacheKey = `animal:list:page=${page}:size=${size}`;
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
       const response = await axios.get(`${API_BASE_URL}/list?page=${page}&size=${size}`);
-      return response.data;
+      return unwrapResult<PageResponse<Animal>>(response.data);
     },
     { ttl: 60 * 1000 } // 1분 캐시
   );
@@ -34,14 +35,14 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
 export const fetchAnimalCursorList = async (
   lastAnimalId?: number | string,
   size = 10
-): Promise<SliceResponse<Animal> | { result: SliceResponse<Animal> }> => {
+): Promise<SliceResponse<Animal>> => {
   const params = new URLSearchParams();
   if (lastAnimalId !== undefined && lastAnimalId !== null) {
     params.append('lastAnimalId', String(lastAnimalId));
   }
   params.append('size', String(size));
   const response = await axios.get(`${API_BASE_URL}/cursor?${params.toString()}`);
-  return response.data;
+  return unwrapResult<SliceResponse<Animal>>(response.data);
 };
 
 /**
@@ -51,7 +52,7 @@ export const fetchAnimalListBySpecies = async (
   species: string,
   page = 0,
   size = 10
-): Promise<PageResponse<Animal> | { result: PageResponse<Animal> }> => {
+): Promise<PageResponse<Animal>> => {
   const cacheKey = `animal:species:${species}:page=${page}:size=${size}`;
   return apiCache.fetchWithCache(
     cacheKey,
@@ -59,7 +60,7 @@ export const fetchAnimalListBySpecies = async (
       const response = await axios.get(
         `${API_BASE_URL}/species?species=${encodeURIComponent(species)}&page=${page}&size=${size}`
       );
-      return response.data;
+      return unwrapResult<PageResponse<Animal>>(response.data);
     },
     { ttl: 60 * 1000 }
   );
@@ -74,7 +75,7 @@ export const fetchAnimalById = async (id: string | number): Promise<Animal> => {
     cacheKey,
     async () => {
       const response = await axios.get(`${API_BASE_URL}/${id}`);
-      return response.data.result || response.data;
+      return unwrapResult<Animal>(response.data);
     },
     { ttl: 3 * 60 * 1000 } // 3분 캐시
   );
@@ -88,7 +89,7 @@ export const prefetchAnimalById = (id: string | number): void => {
   const cacheKey = `animal:detail:${id}`;
   apiCache.prefetch(cacheKey, async () => {
     const response = await axios.get(`${API_BASE_URL}/${id}`);
-    return response.data.result || response.data;
+    return unwrapResult<Animal>(response.data);
   });
 };
 
@@ -98,16 +99,13 @@ export const prefetchAnimalById = (id: string | number): void => {
 export const updateAnimalStatus = async (id: string | number, status: string): Promise<Animal> => {
   const response = await axios.put(`${API_BASE_URL}/${id}/status`, { status });
   apiCache.invalidateByPrefix('animal');
-  return response.data.result || response.data;
+  return unwrapResult<Animal>(response.data);
 };
 
 /**
  * 🗑️ 보호 동물 삭제 (관리자 전용)
  */
-export const deleteAnimal = async (id: string | number) => {
-  const response = await axios.delete(`${API_BASE_URL}/${id}`);
+export const deleteAnimal = async (id: string | number): Promise<void> => {
+  await axios.delete(`${API_BASE_URL}/${id}`);
   apiCache.invalidateByPrefix('animal');
-  return response.data;
 };
-
-

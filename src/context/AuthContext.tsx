@@ -1,15 +1,9 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { useToast } from './ToastContext';
 import { User, AuthContextType } from '../types/auth';
 
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  user: null,
-  isAdmin: false,
-  login: () => {},
-  logout: async () => {},
-});
+const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -21,6 +15,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   });
 
   const [user, setUser] = useState<User | null>(() => {
+    try {
+      const storedUser = localStorage.getItem('paw_user_info');
+      if (storedUser) {
+        return JSON.parse(storedUser);
+      }
+    } catch {
+      // fallback to legacy keys
+    }
     const role = localStorage.getItem('role');
     const email = localStorage.getItem('email');
     const name = localStorage.getItem('name');
@@ -35,10 +37,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
     }
+    localStorage.setItem('paw_user_info', JSON.stringify(userInfo));
     if (userInfo.role) localStorage.setItem('role', userInfo.role);
     if (userInfo.email) localStorage.setItem('email', userInfo.email);
     if (userInfo.name) localStorage.setItem('name', userInfo.name);
     if (userInfo.provider) localStorage.setItem('provider', userInfo.provider);
+
     setIsAuthenticated(true);
     setUser(userInfo);
   };
@@ -58,6 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('paw_user_info');
     localStorage.removeItem('role');
     localStorage.removeItem('email');
     localStorage.removeItem('name');
@@ -82,11 +87,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     user?.role?.toUpperCase() === 'ROLE_ADMIN'
   );
 
+  const value = useMemo(
+    () => ({ isAuthenticated, user, isAdmin, login, logout }),
+    [isAuthenticated, user, isAdmin]
+  );
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, isAdmin, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = (): AuthContextType => useContext(AuthContext);
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

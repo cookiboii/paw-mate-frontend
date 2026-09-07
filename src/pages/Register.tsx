@@ -7,6 +7,7 @@ import FloatingInput from "../components/FloatingInput";
 import usePageTitle from "../hooks/usePageTitle";
 import { useToast } from "../context/ToastContext";
 import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, CheckIcon, AlertIcon } from "../components/Icons";
+import { getErrorMessage } from "../utils/error";
 
 const Register: React.FC = () => {
   usePageTitle('회원가입');
@@ -107,8 +108,8 @@ const Register: React.FC = () => {
       setTimer(180);
       setIsTimerActive(true);
       setMessage("인증 코드가 이메일로 전송되었습니다.");
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "이메일 인증 요청 실패";
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, "이메일 인증 요청 실패");
       setError(msg);
       setMessage("");
       setEmailSent(false);
@@ -133,8 +134,8 @@ const Register: React.FC = () => {
         setMessage("이메일 인증 완료!");
         setError("");
       }
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "인증 코드가 올바르지 않습니다.";
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, "인증 코드가 올바르지 않습니다.");
       setError(msg);
     }
   };
@@ -153,8 +154,8 @@ const Register: React.FC = () => {
       await registerUser(form); // form: name, email, password
       showToast("회원가입이 완료되었습니다! 로그인해 주세요.", "success");
       navigate("/login");
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "회원가입 실패";
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, "회원가입 실패");
       setError(msg);
     } finally {
       setIsSubmitting(false);

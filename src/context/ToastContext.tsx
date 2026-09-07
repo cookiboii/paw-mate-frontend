@@ -8,15 +8,14 @@ interface ToastContextType {
   removeToast: (id: string) => void;
 }
 
-const ToastContext = createContext<ToastContextType>({
-  toasts: [],
-  addToast: () => {},
-  showToast: () => {},
-  removeToast: () => {},
-});
+const ToastContext = createContext<ToastContextType | null>(null);
 
 export const useToast = (): ToastContextType => {
-  return useContext(ToastContext);
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
 };
 
 interface ToastProviderProps {

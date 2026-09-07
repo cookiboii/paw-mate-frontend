@@ -8,6 +8,7 @@ import FloatingInput from "../components/FloatingInput";
 import kakaoLoginImg from "../assets/kakao_login_medium_narrow.png";
 import axios from "../api/axiosInstance";
 import usePageTitle from "../hooks/usePageTitle";
+import { getErrorMessage } from "../utils/error";
 
 interface LoginProps {
   onLoginSuccess?: () => void;
@@ -23,7 +24,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const { login } = useAuth();
   const { showToast } = useToast();
 
-  const redirectPath = (location.state as any)?.from || "/";
+  const locationState = location.state as { from?: string } | null;
+  const redirectPath = locationState?.from || "/";
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app";
   const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID || "16a5cc3c2d930524373be21f6bf96353";
@@ -66,9 +68,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       login(token, userInfo, refreshToken);
       if (onLoginSuccess) onLoginSuccess();
       navigate(redirectPath);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      const errMsg = err.response?.data?.statusMessage || err.response?.data?.message || "로그인에 실패했습니다.";
+      const errMsg = getErrorMessage(err, "로그인에 실패했습니다.");
       setError(errMsg);
       showToast(errMsg, "error");
     }

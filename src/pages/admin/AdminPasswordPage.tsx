@@ -7,6 +7,7 @@ import usePageTitle from '../../hooks/usePageTitle';
 import FloatingInput from '../../components/FloatingInput';
 import { EyeIcon, EyeOffIcon, LockIcon } from '../../components/Icons';
 import styles from '../../styles/AdminPasswordPage.module.css';
+import { getErrorMessage } from '../../utils/error';
 
 const AdminPasswordPage: React.FC = () => {
   usePageTitle('관리자 비밀번호 변경');
@@ -63,11 +64,8 @@ const AdminPasswordPage: React.FC = () => {
       showToast('비밀번호가 성공적으로 변경되었습니다. 다시 로그인해 주세요.', 'info');
       logout();
       navigate('/login');
-    } catch (err: any) {
-      const errMsg =
-        err.response?.data?.message ||
-        err.response?.data ||
-        '비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.';
+    } catch (err: unknown) {
+      const errMsg = getErrorMessage(err, '비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.');
       showToast(errMsg, 'error');
     } finally {
       setLoading(false);

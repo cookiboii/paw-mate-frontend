@@ -74,13 +74,7 @@ const AdminAnimalsPage: React.FC = () => {
     setIsLoadingList(true);
     try {
       const data = await fetchAnimalList(0, 100);
-      const list =
-        'result' in data && data.result
-          ? data.result.content || []
-          : 'content' in data
-          ? data.content || []
-          : [];
-      setAnimals(list as Animal[]);
+      setAnimals(data.content || []);
     } catch (err) {
       console.error('동물 목록 로드 실패:', err);
       showToast('동물 목록을 불러오지 못했습니다.', 'error');

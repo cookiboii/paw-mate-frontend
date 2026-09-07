@@ -115,8 +115,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
         }}
         loading={loading}
         decoding="async"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        {...({ fetchpriority: fetchPriority } as any)}
+        fetchPriority={fetchPriority}
         {...props}
       />
     </div>

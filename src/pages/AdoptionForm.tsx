@@ -9,6 +9,7 @@ import usePageTitle from '../hooks/usePageTitle';
 import { Animal } from '../types/animal';
 import { formatPhoneNumber, isValidPhoneNumber } from '../utils/validation';
 import { FileText, Lock } from 'lucide-react';
+import { getErrorMessage } from '../utils/error';
 
 const AdoptionForm: React.FC = () => {
   usePageTitle('입양 신청서 작성');
@@ -78,6 +79,10 @@ const AdoptionForm: React.FC = () => {
       showToast('입양 필수 동의 사항에 체크해 주세요.', 'error');
       return;
     }
+    if (!animalId) {
+      showToast('동물 정보를 찾을 수 없습니다.', 'error');
+      return;
+    }
     if (isSubmitting) return;
 
     setIsSubmitting(true);
@@ -95,19 +100,10 @@ const AdoptionForm: React.FC = () => {
 
       showToast('입양 신청이 성공적으로 접수되었습니다! 담당자가 검토 후 연락드립니다.', 'success');
       navigate(`/animals/${animalId}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('입양 신청 에러:', err);
-      if (err.response?.status === 401) {
-        showToast('로그인이 만료되었습니다. 다시 로그인해 주세요.', 'error');
-        navigate('/login');
-      } else {
-        const errorMsg =
-          err.response?.data?.statusMessage ||
-          err.response?.data?.message ||
-          err.response?.data?.error ||
-          '신청 중 오류가 발생했습니다. 다시 시도해 주세요.';
-        showToast(errorMsg, 'error');
-      }
+      const errorMsg = getErrorMessage(err, '신청 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      showToast(errorMsg, 'error');
     } finally {
       setIsSubmitting(false);
     }

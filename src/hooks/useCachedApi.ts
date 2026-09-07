@@ -5,6 +5,7 @@ import { apiCache } from '../utils/apiCache';
 interface UseCachedApiOptions<T> {
   ttl?: number;
   enabled?: boolean;
+  initialData?: T;
   onSuccess?: (data: T) => void;
   onError?: (err: Error) => void;
 }
@@ -26,11 +27,11 @@ export function useCachedApi<T>(
   fetcher: () => Promise<T>,
   options: UseCachedApiOptions<T> = {}
 ): UseCachedApiResult<T> {
-  const { ttl, enabled = true, onSuccess, onError } = options;
+  const { ttl, enabled = true, initialData, onSuccess, onError } = options;
 
   const initialCached = key ? apiCache.get<T>(key) : null;
-  const [data, setData] = useState<T | null>(initialCached);
-  const [isLoading, setIsLoading] = useState<boolean>(!initialCached && enabled && !!key);
+  const [data, setData] = useState<T | null>(initialCached ?? initialData ?? null);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialCached && !initialData && enabled && !!key);
   const [isRevalidating, setIsRevalidating] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
