@@ -170,7 +170,7 @@ const AnimalDetail: React.FC = () => {
     );
   }
 
-  if (error) return <p className={styles.error}>오류 발생: {error.message}</p>;
+  if (error && !animal) return <p className={styles.error}>오류 발생: {error.message}</p>;
 
   const canAdopt = animal?.status === AnimalStatus.PROTECTED;
   const favorite = animal ? isFavorite(animal.id) : false;

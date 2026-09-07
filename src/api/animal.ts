@@ -6,12 +6,34 @@ import { unwrapResult } from './apiHelper';
 const API_BASE_URL = '/animals';
 
 /**
+ * 🐾 백엔드 응답 데이터를 프론트엔드 표준 모델로 정규화 (animalId/id, image/imageUrl 호환)
+ */
+export function normalizeAnimal(raw: Partial<Animal>): Animal {
+  const id = raw.animalId ?? raw.id ?? '';
+  return {
+    ...raw,
+    id,
+    animalId: id,
+    species: raw.species || 'DOG',
+    breed: raw.breed || raw.name || '',
+    name: raw.name || raw.breed || '',
+    gender: raw.gender || '',
+    age: raw.age !== undefined ? Number(raw.age) : 0,
+    color: raw.color || '',
+    status: raw.status || 'PROTECTED',
+    image: raw.image || raw.imageUrl || raw.profileImageUrl || '',
+    imageUrl: raw.imageUrl || raw.image || '',
+    profileImageUrl: raw.profileImageUrl || raw.image || '',
+  };
+}
+
+/**
  * 🔐 관리자 전용 동물 등록 API
  */
 export const registerAnimal = async (animalData: AnimalFormData | FormData): Promise<Animal> => {
   const response = await axios.post(`${API_BASE_URL}/register`, animalData);
   apiCache.invalidateByPrefix('animal');
-  return unwrapResult<Animal>(response.data);
+  return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
 
 /**
@@ -23,7 +45,14 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
     cacheKey,
     async () => {
       const response = await axios.get(`${API_BASE_URL}/list?page=${page}&size=${size}`);
-      return unwrapResult<PageResponse<Animal>>(response.data);
+      const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
+      const content = Array.isArray(unwrapped.content)
+        ? unwrapped.content.map(normalizeAnimal)
+        : [];
+      return {
+        ...unwrapped,
+        content,
+      };
     },
     { ttl: 60 * 1000 } // 1분 캐시
   );
@@ -37,12 +66,19 @@ export const fetchAnimalCursorList = async (
   size = 10
 ): Promise<SliceResponse<Animal>> => {
   const params = new URLSearchParams();
-  if (lastAnimalId !== undefined && lastAnimalId !== null) {
+  if (lastAnimalId !== undefined && lastAnimalId !== null && lastAnimalId !== '') {
     params.append('lastAnimalId', String(lastAnimalId));
   }
   params.append('size', String(size));
   const response = await axios.get(`${API_BASE_URL}/cursor?${params.toString()}`);
-  return unwrapResult<SliceResponse<Animal>>(response.data);
+  const unwrapped = unwrapResult<SliceResponse<Animal>>(response.data);
+  const content = Array.isArray(unwrapped.content)
+    ? unwrapped.content.map(normalizeAnimal)
+    : [];
+  return {
+    ...unwrapped,
+    content,
+  };
 };
 
 /**
@@ -60,7 +96,14 @@ export const fetchAnimalListBySpecies = async (
       const response = await axios.get(
         `${API_BASE_URL}/species?species=${encodeURIComponent(species)}&page=${page}&size=${size}`
       );
-      return unwrapResult<PageResponse<Animal>>(response.data);
+      const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
+      const content = Array.isArray(unwrapped.content)
+        ? unwrapped.content.map(normalizeAnimal)
+        : [];
+      return {
+        ...unwrapped,
+        content,
+      };
     },
     { ttl: 60 * 1000 }
   );
@@ -75,7 +118,8 @@ export const fetchAnimalById = async (id: string | number): Promise<Animal> => {
     cacheKey,
     async () => {
       const response = await axios.get(`${API_BASE_URL}/${id}`);
-      return unwrapResult<Animal>(response.data);
+      const unwrapped = unwrapResult<Animal>(response.data);
+      return normalizeAnimal(unwrapped);
     },
     { ttl: 3 * 60 * 1000 } // 3분 캐시
   );
@@ -88,8 +132,7 @@ export const prefetchAnimalById = (id: string | number): void => {
   if (!id) return;
   const cacheKey = `animal:detail:${id}`;
   apiCache.prefetch(cacheKey, async () => {
-    const response = await axios.get(`${API_BASE_URL}/${id}`);
-    return unwrapResult<Animal>(response.data);
+    return fetchAnimalById(id);
   });
 };
 
@@ -99,7 +142,7 @@ export const prefetchAnimalById = (id: string | number): void => {
 export const updateAnimalStatus = async (id: string | number, status: string): Promise<Animal> => {
   const response = await axios.put(`${API_BASE_URL}/${id}/status`, { status });
   apiCache.invalidateByPrefix('animal');
-  return unwrapResult<Animal>(response.data);
+  return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
 
 /**

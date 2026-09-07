@@ -52,13 +52,11 @@ const HomePage: React.FC = () => {
     const loadData = async () => {
       setIsLoadingAnimals(true);
       try {
-        const res =
+        const pageData =
           selectedSpecies === 'ALL'
             ? await fetchAnimalList(0, 6)
             : await fetchAnimalListBySpecies(selectedSpecies, 0, 6);
 
-        const pageData: PageResponse<Animal> =
-          'result' in res && res.result ? (res.result as PageResponse<Animal>) : (res as PageResponse<Animal>);
         setRecentAnimals(pageData.content || []);
       } catch (error) {
         console.error("Failed to load recent animals:", error);

@@ -106,42 +106,45 @@ paw-mate-frontend/
 ├── src/
 │   ├── api/                    # 도메인별 API 모듈 및 Axios 인스턴스
 │   │   ├── axiosInstance.ts    # JWT 토큰 인터셉터 및 401 무중단 갱신 큐
+│   │   ├── apiHelper.ts        # 백엔드 ApiResponse data/result 언래핑 유틸
 │   │   ├── auth.ts             # 로그인/회원가입/토큰재발급 API
 │   │   ├── user.ts             # 내 정보/회원 관리/탈퇴 API
-│   │   ├── animal.ts           # 보호 동물 목록/등록/수정/삭제 API
+│   │   ├── animal.ts           # 보호 동물 목록/등록/수정/삭제 API (캐싱 & 프리페치)
 │   │   ├── adoption.ts         # 입양 신청서 제출/심사 관리 API
 │   │   └── review.ts           # 후기·분양·제보 게시글 & 댓글 API
 │   ├── assets/                 # 이미지 및 정적 미디어 리소스
 │   ├── components/             # 공통 UI 컴포넌트
+│   │   ├── AppProviders.tsx    # 📦 Provider Hell 해소 및 전역 Context 합성 래퍼
 │   │   ├── Header.tsx          # 상단 네비게이션 & 모바일 드로어
 │   │   ├── Footer.tsx          # 하단 푸터
 │   │   ├── Layout.tsx          # 페이지 공통 레이아웃
-│   │   ├── AnimalCard.tsx      # 동물 카드 (하트 바운스 마이크로 애니메이션)
+│   │   ├── AnimalCard.tsx      # 동물 카드 (마우스 호버 프리페치 & 하트 바운스)
 │   │   ├── Pagination.tsx      # 번호 목록 선택 재사용 페이지네이션
 │   │   ├── CommentSection.tsx  # 계층형 댓글/대댓글 컴포넌트
 │   │   ├── ConfirmModal.tsx    # 커스텀 삭제/확인 모달
 │   │   ├── FloatingInput.tsx   # 플로팅 라벨 인풋 필드
-│   │   ├── ImageWithFallback.tsx # 비동기 디코딩(async) & 지연 로딩 이미지
+│   │   ├── ImageWithFallback.tsx # React 19 fetchPriority & 비동기 디코딩(async) 지연 로딩
 │   │   ├── Toast.tsx / ToastContainer.tsx # 실시간 접근성(A11y) 토스트 알림
 │   │   ├── Skeleton.tsx        # 스켈레톤 로더
 │   │   └── ErrorBoundary.tsx   # React 에러 바운더리
 │   ├── constants/              # 공통 상수 및 라벨 매핑 (animal, category 등)
-│   ├── context/                # 글로벌 상태 관리 (React Context)
-│   │   ├── AuthContext.tsx     # 사용자 인증 & 관리자 권한 상태
+│   ├── context/                # 글로벌 상태 관리 (React Context + Invariant Guard)
+│   │   ├── AuthContext.tsx     # 사용자 인증 & 관리자 권한 상태 (JSON 직렬화 무결성)
 │   │   ├── ThemeContext.tsx    # 라이트/다크 테마 상태 (FOUC 방지)
 │   │   ├── ToastContext.tsx    # 토스트 알림 디스패처
 │   │   └── FavoritesContext.tsx # 계정별 독립 격리 찜(관심 동물) 상태
 │   ├── hooks/                  # 커스텀 훅
+│   │   ├── useCachedApi.ts     # ⚡ SWR 기반 Stale-While-Revalidate 고성능 캐싱 훅
 │   │   ├── usePageTitle.ts     # 페이지별 브라우저 타이틀 관리
 │   │   ├── useDebounce.ts      # 검색창 및 입력 지연(300ms) 디바운스
 │   │   └── useScrollReveal.ts  # 메모이제이션 Intersection Observer 인터랙션
 │   ├── pages/                  # 라우트 페이지 컴포넌트
 │   │   ├── HomePage.tsx        # 메인 홈 (히어로 슬라이더, 최신 동물)
-│   │   ├── AnimalList.tsx      # 동물 목록 (디바운스 검색, 카운트 뱃지, 페이지네이션)
-│   │   ├── AnimalDetail.tsx    # 동물 상세
+│   │   ├── AnimalList.tsx      # 동물 목록 (No-Offset 커서 & 페이지네이션 전환)
+│   │   ├── AnimalDetail.tsx    # 동물 상세 (useCachedApi 캐시 우선 로딩 & 호버 프리페치 대응)
 │   │   ├── AdoptionForm.tsx    # 입양 신청서 (실시간 전화번호 포맷터)
 │   │   ├── AdoptionReviewListPage.tsx # 커뮤니티 목록 (무한 스크롤 & 종단 UI)
-│   │   ├── AdoptionReviewDetail.tsx   # 커뮤니티 상세
+│   │   ├── AdoptionReviewDetail.tsx   # 커뮤니티 상세 (useCachedApi 캐싱 적용)
 │   │   ├── AdoptionReview.tsx         # 글쓰기 (Vercel Blob 이미지 업로드)
 │   │   ├── AdoptionReviewEdit.tsx     # 글 수정
 │   │   ├── Login.tsx / Register.tsx   # 로그인 / 이메일 인증 회원가입
@@ -153,17 +156,19 @@ paw-mate-frontend/
 │   ├── styles/                 # CSS Modules 및 글로벌 디자인 토큰
 │   │   ├── global.css          # CSS 변수, 테마 토큰, 리셋
 │   │   └── *.module.css        # 스코프 보장 컴포넌트별 모듈러 스타일
-│   ├── types/                  # TypeScript 도메인 타입 정의 (Single Source of Truth)
+│   ├── types/                  # TypeScript 도메인 타입 정의 (엄격 모드 & 자동완성 보존)
 │   ├── utils/                  # 유틸리티 함수
+│   │   ├── error.ts            # 🛡️ AxiosError/unknown 안전 에러 메시지 추출기
+│   │   ├── apiCache.ts         # 인메모리 TTL 캐시 & In-flight 요청 중복 방지기
 │   │   ├── validation.ts       # 전화번호 실시간 자동 하이픈 및 유효성 검사
 │   │   ├── date.ts             # 날짜 및 시간 포맷터
 │   │   └── imageUpload.ts      # Vercel Blob 이미지 업로드 헬퍼
-│   ├── App.tsx                 # 코드 스플리팅 & 라우팅 정의
+│   ├── App.tsx                 # AppProviders 기반 평탄화된 라우팅 정의
 │   ├── main.tsx                # React 19 엔트리 포인트
 │   └── vite-env.d.ts           # Vite 환경 타입 선언
 ├── index.html                  # HTML 템플릿 (웹폰트 Preconnect & 비차단 로드)
 ├── package.json
-├── tsconfig.json               # TypeScript 설정
+├── tsconfig.app.json           # TypeScript 엄격 모드 (strict: true) 설정
 └── vite.config.ts              # Vite 설정 (Vendor Chunk 분리 & 빌드 최적화)
 ```
 
@@ -198,15 +203,31 @@ sequenceDiagram
     end
 ```
 
-### 2. ⚡ 성능 최적화 (Performance Optimization)
+### 2. 💎 TypeScript 엄격 모드 & Zero `any` 아키텍처
+- **`strict: true` 컴파일 보장**: 컴파일러 수준에서 `strictNullChecks`, `noImplicitAny` 등을 강제하여 런타임 잠재 결함 원천 차단.
+- **유니온 축소(Widening) 방어**: `(string & {})` 패턴을 적용하여 임의 문자열 확장성을 허용하면서도 IDE 리터럴 자동완성 및 타입 체크를 온전히 보존.
+- **안전한 에러 핸들러 (`error.ts`)**: `catch (err: unknown)` 패턴과 `getErrorMessage()` 헬퍼를 도입하여 프로젝트 내 `as any` 및 임의 타입 캐스팅을 100% 제거.
+- **API 응답 언래핑 표준화 (`apiHelper.ts`)**: `unwrapResult<T>`를 통해 백엔드 래퍼 응답(`res.data.result` / `res.data`)을 단일 제네릭 모델(`PageResponse<T>`, `SliceResponse<T>`)로 일원화.
+
+### 3. ⚡ SWR 기반 API 캐싱 & 호버 프리페치 레이어 (`useCachedApi`)
+- **Stale-While-Revalidate (SWR) 패턴**: 상세 페이지(`AnimalDetail`, `AdoptionReviewDetail`) 진입 시 인메모리 캐시를 즉시 화면에 렌더링하고, 백그라운드에서 최신 데이터를 안전하게 재검증.
+- **마우스 호버 프리페치 (Hover Prefetch)**: `AnimalCard`에 마우스 커서를 올리는 즉시 상세 API를 선행 호출(`prefetchAnimalById`)하여 상세 페이지 클릭 시 체감 로딩 지연 0ms(Instant Page Transition) 구현.
+- **In-flight 요청 중복 방지 (Deduplication)**: 동일한 키로 동시에 여러 비동기 요청이 발생할 경우 단일 Promise를 공유하여 불필요한 백엔드 트래픽 낭비 차단.
+
+### 4. 📦 Provider 합성 패턴 (`AppProviders`) & Invariant Guard
+- **Provider Hell 완전 평탄화**: `ThemeProvider`, `ToastProvider`, `AuthProvider`, `FavoritesProvider`, `ErrorBoundary`를 `AppProviders` 단일 컴포넌트로 합성하여 `App.tsx`의 가독성과 유지보수성 극대화.
+- **Context Invariant Guard**: `useAuth`, `useToast`, `useTheme` 등 커스텀 훅에 프로바이더 외부 호출 검증 가드를 적용하여 잘못된 컨텍스트 접근 시 명확한 런타임 에러를 출력.
+- **사용자 인증 데이터 직렬화 무결성**: 로컬스토리지에 산발적으로 보관되던 유저 정보를 JSON 직렬화 구조(`paw_user_info`)로 통합 관리하면서도 레거시 키와의 완벽한 하위 호환성 유지.
+
+### 5. ⚡ 성능 최적화 (Performance Optimization)
 - **Code Splitting**: `React.lazy()` 및 `Suspense`를 통해 모든 페이지 컴포넌트를 청크 단위로 분할 로딩.
 - **Vendor Chunk Splitting**: `vite.config.ts`의 `manualChunks` 설정으로 거의 변하지 않는 핵심 라이브러리(`react`, `react-dom`, `react-router-dom`, `axios`)를 독립 번들로 분리하여 브라우저 장기 캐싱 효율 극대화.
 - **웹폰트 비차단 로드 (Render-Blocking 해소)**: `index.html` 상단에 `<link rel="preconnect">`를 적용하고 CSS `@import`를 제거하여 FCP/LCP 단축.
-- **이미지 비동기 디코딩**: `ImageWithFallback`에 `loading="lazy"` 및 `decoding="async"`를 적용하여 스크롤 중 UI 버벅임(Jank) 차단.
+- **이미지 비동기 디코딩**: `ImageWithFallback`에 `loading="lazy"` 및 `decoding="async"`, React 19 네이티브 `fetchPriority`를 적용하여 스크롤 중 UI 버벅임(Jank) 차단.
 - **이벤트 리스너 패시브 최적화**: 전역 `scroll` 및 `resize` 이벤트에 `{ passive: true }`를 적용하여 60fps 부드러운 스크롤 보장.
 - **입력 디바운스 (`useDebounce`)**: 검색창 타이핑 시 불필요한 과도한 리렌더링과 필터링 연산 방지.
 
-### 3. 🎯 사용자 중심 기능 & 마이크로 인터랙션
+### 6. 🎯 사용자 중심 기능 & 마이크로 인터랙션
 - **마이크로 바운스 인터랙션**: 하트 찜 토글 시 CSS 키프레임 바운스 팝 애니메이션 적용.
 - **계정별 찜(Favorites) 목록 격리**: 사용자 이메일별 로컬스토리지 키(`paw_mate_favs_${email}`)를 통해 계정 간 찜 목록 혼선 완벽 차단.
 - **전화번호 실시간 자동 하이픈 (`validation.ts`)**: 입양 신청서 및 폼 입력 시 `010-XXXX-XXXX` 형식 자동 변환.
@@ -291,6 +312,9 @@ npm run lint
 ## 🗺️ 로드맵 (Roadmap)
 
 - [x] **React 19 & Vite 7 마이그레이션**
+- [x] **TypeScript Strict Mode (`strict: true`) 및 Zero `any` 아키텍처 구축**
+- [x] **SWR 기반 Stale-While-Revalidate 캐싱(`useCachedApi`) & 호버 프리페치 적용**
+- [x] **Provider 합성(`AppProviders`)을 통한 Provider Hell 평탄화 & Invariant Guard**
 - [x] **공통 `AnimalCard` 및 숫자 `Pagination` 모듈화**
 - [x] **무한 스크롤 종단 UI 및 마이크로 바운스 인터랙션**
 - [ ] **💬 실시간 1:1 입양 문의 채팅 (WebSocket 연동)**

@@ -37,7 +37,7 @@ export const getReviewsCursor = async (
   size = 10
 ): Promise<SliceResponse<PostResponseDto>> => {
   const params = new URLSearchParams();
-  if (lastPostId !== undefined && lastPostId !== null) {
+  if (lastPostId !== undefined && lastPostId !== null && lastPostId !== '') {
     params.append('lastPostId', String(lastPostId));
   }
   params.append('size', String(size));
@@ -67,8 +67,7 @@ export const prefetchReviewById = (id: number | string): void => {
   if (!id) return;
   const cacheKey = `review:detail:${id}`;
   apiCache.prefetch(cacheKey, async () => {
-    const response = await axiosInstance.get(`/post/${id}`);
-    return unwrapResult<PostResponseDto>(response.data);
+    return getReviewById(id);
   });
 };
 
