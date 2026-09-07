@@ -24,6 +24,7 @@ export interface PostCreateRequestDto {
   title: string;
   content: string;
   img?: string;
+  image?: string;
   name?: string;
   dateTime?: string;
 }
@@ -32,6 +33,7 @@ export interface PostUpdateRequestDto {
   title: string;
   content: string;
   img?: string;
+  image?: string;
 }
 
 export interface PostResponseDto {
@@ -43,6 +45,7 @@ export interface PostResponseDto {
   createAt?: string;
   createdAt?: string;
   img?: string;
+  image?: string;
 }
 
 export type AdoptionReview = PostResponseDto;

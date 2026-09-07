@@ -1,6 +1,7 @@
 import React, { useState, useRef, ChangeEvent, FormEvent, DragEvent, MouseEvent } from 'react';
 import styles from '../styles/AdoptionReview.module.css';
 import axios from '../api/axiosInstance';
+import { createReview } from '../api/review';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
@@ -105,10 +106,11 @@ const AdoptionReview: React.FC = () => {
       // 제목에 카테고리 접두사를 붙여 저장
       const finalTitle = `${activeCat.prefix} ${form.title.trim()}`;
 
-      await axios.post('/post/create', {
+      await createReview({
         title: finalTitle,
         content: form.content,
         img: uploadedImageUrl,
+        image: uploadedImageUrl,
         name: user?.name || '익명',
         dateTime: new Date().toISOString(),
       });

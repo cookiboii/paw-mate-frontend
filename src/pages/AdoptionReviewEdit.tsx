@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, ChangeEvent, FormEvent, DragEvent, MouseEvent } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import axios from '../api/axiosInstance';
+import { updateReview } from '../api/review';
 import styles from '../styles/AdoptionReview.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -145,20 +146,13 @@ const AdoptionReviewEdit: React.FC = () => {
         uploadedImageUrl = await uploadImageToBlob(selectedFile);
       }
 
-      await axios.put(
-        `/post/${id}`,
-        {
-          title: finalTitle,
-          content: form.content,
-          img: uploadedImageUrl,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      if (!id) return;
+      await updateReview(id, {
+        title: finalTitle,
+        content: form.content,
+        img: uploadedImageUrl,
+        image: uploadedImageUrl,
+      });
 
       showToast('게시글이 성공적으로 수정되었습니다!', 'success');
       navigate(`/reviews/${id}`);

@@ -48,6 +48,9 @@ export const updateAdoptionStatus = async (
   adoptionId: number | string,
   status: string
 ): Promise<AdoptionResponseDto> => {
-  const response = await axiosInstance.put(`/adoptions/${adoptionId}/status`, { adoptionStatus: status });
+  const response = await axiosInstance.put(`/adoptions/${adoptionId}/status`, {
+    status,
+    adoptionStatus: status,
+  });
   return unwrapResult<AdoptionResponseDto>(response.data);
 };

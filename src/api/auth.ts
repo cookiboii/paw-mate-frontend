@@ -67,3 +67,46 @@ export const refreshAccessToken = async (refreshToken: string) => {
 export const deleteAccount = async () => {
   return await axiosInstance.delete('/adoptmate/delete');
 };
+
+/**
+ * ✉️ 회원가입용 이메일 인증 코드 발송 (POST /adoptmate/verify-email)
+ */
+export const verifyEmail = async (email: string) => {
+  return await axiosInstance.post('/adoptmate/verify-email', { email });
+};
+
+/**
+ * ✉️ 회원가입용 이메일 인증 코드 검증 (POST /adoptmate/verify-code)
+ */
+export const verifyCode = async (email: string, code: string) => {
+  return await axiosInstance.post('/adoptmate/verify-code', { email, code });
+};
+
+/**
+ * 🔑 비밀번호 재설정 인증 코드 이메일 발송 (POST /adoptmate/send-reset-code?email=...)
+ */
+export const sendResetCode = async (email: string) => {
+  return await axiosInstance.post('/adoptmate/send-reset-code', null, {
+    params: { email },
+  });
+};
+
+/**
+ * 🔑 비밀번호 재설정 인증 코드 검증 (POST /adoptmate/verify-reset-code?email=...&code=...)
+ */
+export const verifyResetCode = async (email: string, code: string) => {
+  return await axiosInstance.post('/adoptmate/verify-reset-code', null, {
+    params: { email, code },
+  });
+};
+
+/**
+ * 🔒 비밀번호 재설정 실행 (PATCH /adoptmate/password)
+ */
+export const resetPassword = async (email: string, newPassword: string) => {
+  return await axiosInstance.patch('/adoptmate/password', {
+    email,
+    password: newPassword,
+    newPassword,
+  });
+};

@@ -140,7 +140,10 @@ export const prefetchAnimalById = (id: string | number): void => {
  * ✏️ 보호 동물 상태 수정 (관리자 전용)
  */
 export const updateAnimalStatus = async (id: string | number, status: string): Promise<Animal> => {
-  const response = await axios.put(`${API_BASE_URL}/${id}/status`, { status });
+  const response = await axios.put(`${API_BASE_URL}/${id}/status`, {
+    status,
+    animalStatus: status,
+  });
   apiCache.invalidateByPrefix('animal');
   return normalizeAnimal(unwrapResult<Animal>(response.data));
 };

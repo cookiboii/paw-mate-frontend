@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from '../api/axiosInstance';
+import { sendResetCode, verifyResetCode, resetPassword } from '../api/auth';
 import styles from '../styles/ForgotPassword.module.css';
 import FloatingInput from '../components/FloatingInput';
 import { useToast } from '../context/ToastContext';
@@ -53,9 +53,7 @@ const ForgotPassword: React.FC = () => {
     setLoading(true);
 
     try {
-      await axios.post('/adoptmate/send-reset-code', null, {
-        params: { email },
-      });
+      await sendResetCode(email);
       showToast('인증코드가 이메일로 전송되었습니다.', 'info');
       setStep(2);
       setTimeLeft(180);
@@ -78,9 +76,7 @@ const ForgotPassword: React.FC = () => {
     setLoading(true);
 
     try {
-      await axios.post('/adoptmate/verify-reset-code', null, {
-        params: { email, code },
-      });
+      await verifyResetCode(email, code);
       showToast('인증이 완료되었습니다. 새 비밀번호를 입력해주세요.', 'info');
       setTimerActive(false);
       setStep(3);
@@ -108,10 +104,7 @@ const ForgotPassword: React.FC = () => {
     setLoading(true);
 
     try {
-      await axios.patch('/adoptmate/password', {
-        email,
-        password: newPassword,
-      });
+      await resetPassword(email, newPassword);
       showToast('비밀번호가 성공적으로 변경되었습니다! 로그인해 주세요.', 'info');
       navigate('/login');
     } catch (err: unknown) {

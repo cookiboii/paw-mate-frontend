@@ -1,7 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import styles from "../styles/Register.module.css";
-import { registerUser } from "../api/auth";
-import axios from "../api/axiosInstance";
+import { registerUser, verifyEmail, verifyCode } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import usePageTitle from "../hooks/usePageTitle";
@@ -103,7 +102,7 @@ const Register: React.FC = () => {
     try {
       setError("");
       setMessage("인증 메일을 전송 중입니다...");
-      await axios.post("/adoptmate/verify-email", { email: form.email });
+      await verifyEmail(form.email);
       setEmailSent(true);
       setTimer(180);
       setIsTimerActive(true);
@@ -124,16 +123,11 @@ const Register: React.FC = () => {
     }
     try {
       setError("");
-      const res = await axios.post("/adoptmate/verify-code", {
-        email: form.email,
-        code: emailCode,
-      });
-      if (res.status === 200) {
-        setEmailVerified(true);
-        setIsTimerActive(false);
-        setMessage("이메일 인증 완료!");
-        setError("");
-      }
+      await verifyCode(form.email, emailCode);
+      setEmailVerified(true);
+      setIsTimerActive(false);
+      setMessage("이메일 인증 완료!");
+      setError("");
     } catch (err: unknown) {
       const msg = getErrorMessage(err, "인증 코드가 올바르지 않습니다.");
       setError(msg);
