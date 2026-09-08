@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import styles from '../styles/pages/AdoptionReviewListPage.module.css';
+import styles from '../styles/AdoptionReviewListPage.module.css';
 
 export interface CategoryOption {
   key: string;
@@ -10,16 +10,16 @@ export interface CategoryOption {
 }
 
 export const CATEGORIES: CategoryOption[] = [
-  { key: 'ALL', label: '?�체', icon: <LayoutGrid size={16} /> },
-  { key: 'REVIEW', label: '?�양 ?�기', icon: <HeartHandshake size={16} /> },
+  { key: 'ALL', label: '전체', icon: <LayoutGrid size={16} /> },
+  { key: 'REVIEW', label: '입양 후기', icon: <HeartHandshake size={16} /> },
   { key: 'FREE_ADOPTION', label: '무료 분양', icon: <Gift size={16} /> },
-  { key: 'REPORT', label: '?�기?�물 ?�보', icon: <AlertTriangle size={16} /> },
+  { key: 'REPORT', label: '유기동물 제보', icon: <AlertTriangle size={16} /> },
 ];
 
 export const CATEGORY_PREFIX: Record<string, string> = {
-  REVIEW: '[?�양?�기]',
+  REVIEW: '[입양후기]',
   FREE_ADOPTION: '[무료분양]',
-  REPORT: '[?�기?�물?�보]',
+  REPORT: '[유기동물제보]',
 };
 
 export interface ReviewCategoryTabsProps {
@@ -31,7 +31,8 @@ export interface ReviewCategoryTabsProps {
 }
 
 /**
- * ?�� 커�??�티 카테고리 ?? 검???�풋 �?글?�기 ?�션 �? */
+ * 💌 커뮤니티 카테고리 탭, 검색 인풋 및 글쓰기 액션 바
+ */
 const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
   activeCategory,
   onCategoryChange,
@@ -41,7 +42,7 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
 }) => {
   return (
     <div className={styles.controlsWrapper}>
-      {/* 검??�?*/}
+      {/* 검색 바 */}
       <div className={styles.searchBox}>
         <span
           className={styles.searchIcon}
@@ -51,17 +52,17 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
         </span>
         <input
           type="text"
-          placeholder="?�목, ?�용, ?�성??검??.."
+          placeholder="제목, 내용, 작성자 검색..."
           value={searchKeyword}
           onChange={(e) => onSearchChange(e.target.value)}
-          aria-label="게시글 검??
+          aria-label="게시글 검색"
           className={styles.searchInput}
         />
         {searchKeyword && (
           <button
             type="button"
             onClick={() => onSearchChange('')}
-            aria-label="검?�어 지?�기"
+            aria-label="검색어 지우기"
             className={styles.searchClearBtn}
           >
             <X size={16} />
@@ -69,8 +70,8 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
         )}
       </div>
 
-      {/* 카테고리 ??& 글?�기 버튼 */}
-      <div className={styles.tabBar} role="tablist" aria-label="게시??카테고리">
+      {/* 카테고리 탭 & 글쓰기 버튼 */}
+      <div className={styles.tabBar} role="tablist" aria-label="게시판 카테고리">
         {CATEGORIES.map((tab) => (
           <button
             key={tab.key}
@@ -90,7 +91,7 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
           className={styles.writeBtn}
         >
           <PenSquare size={16} />
-          <span>글?�기</span>
+          <span>글쓰기</span>
         </Link>
       </div>
     </div>

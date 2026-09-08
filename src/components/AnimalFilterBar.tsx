@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, X, Dog, Cat, PawPrint, RotateCcw, Infinity as InfinityIcon, LayoutGrid, Sparkles } from 'lucide-react';
-import styles from '../styles/pages/AnimalList.module.css';
+import styles from '../styles/AnimalList.module.css';
 
 export interface AnimalFilterBarProps {
   searchQuery: string;
@@ -17,7 +17,7 @@ export interface AnimalFilterBarProps {
 }
 
 /**
- * ?�� ?�물 목록 검??& ?�중 ?�터 & �?모드 ?��? 컴포?�트
+ * 🐾 동물 목록 검색 & 다중 필터 & 뷰 모드 토글 컴포넌트
  */
 const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
   searchQuery,
@@ -34,23 +34,23 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
 }) => {
   return (
     <>
-      <section className={styles.filterSection} aria-label="보호 ?�물 검??�??�터">
-        {/* 검???�력�?*/}
+      <section className={styles.filterSection} aria-label="보호 동물 검색 및 필터">
+        {/* 검색 입력창 */}
         <div className={styles.searchBarWrapper}>
           <Search className={styles.searchIcon} size={20} aria-hidden="true" />
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="?�종 ?�는 ?�름?�로 검?�해 보세??(?? 말티�? 코숏)"
+            placeholder="품종 또는 이름으로 검색해 보세요 (예: 말티즈, 코숏)"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            aria-label="?�물 ?�종 ?�는 ?�름 검??
+            aria-label="동물 품종 또는 이름 검색"
           />
           {searchQuery && (
             <button
               className={styles.clearSearchBtn}
               onClick={() => onSearchChange('')}
-              aria-label="검?�어 지?�기"
+              aria-label="검색어 지우기"
               type="button"
             >
               <X size={18} />
@@ -58,17 +58,17 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
           )}
         </div>
 
-        {/* 축종 & ?�별 ?�터 �?*/}
+        {/* 축종 & 성별 필터 칩 */}
         <div className={styles.filterControls}>
-          {/* 축종 ?�택 */}
+          {/* 축종 선택 */}
           <div className={styles.filterGroup}>
-            <span className={styles.filterLabel}>?�물 종류:</span>
+            <span className={styles.filterLabel}>동물 종류:</span>
             <button
               type="button"
               className={`${styles.filterChip} ${speciesFilter === 'ALL' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('ALL')}
             >
-              ?�체
+              전체
             </button>
             <button
               type="button"
@@ -84,56 +84,57 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
               onClick={() => onSpeciesChange('CAT')}
             >
               <Cat size={16} className={styles.chipIcon} />
-              고양??            </button>
+              고양이
+            </button>
             <button
               type="button"
               className={`${styles.filterChip} ${speciesFilter === 'ETC' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('ETC')}
             >
               <PawPrint size={16} className={styles.chipIcon} />
-              기�?
+              기타
             </button>
           </div>
 
-          {/* ?�별 ?�택 */}
+          {/* 성별 선택 */}
           <div className={styles.filterGroup}>
-            <span className={styles.filterLabel}>?�별:</span>
+            <span className={styles.filterLabel}>성별:</span>
             <button
               type="button"
               className={`${styles.filterChip} ${genderFilter === 'ALL' ? styles.activeChip : ''}`}
               onClick={() => onGenderChange('ALL')}
             >
-              ?�체
+              전체
             </button>
             <button
               type="button"
               className={`${styles.filterChip} ${genderFilter === 'MALE' ? styles.activeChip : ''}`}
               onClick={() => onGenderChange('MALE')}
             >
-              ?�아
+              남아
             </button>
             <button
               type="button"
               className={`${styles.filterChip} ${genderFilter === 'FEMALE' ? styles.activeChip : ''}`}
               onClick={() => onGenderChange('FEMALE')}
             >
-              ?�아
+              여아
             </button>
           </div>
         </div>
 
-        {/* ?���??�용???�터 ?�그 �?(Active Tag Chips) */}
+        {/* 🏷️ 적용된 필터 태그 칩 (Active Tag Chips) */}
         {hasActiveFilter && (
           <div className={styles.activeTagsContainer}>
-            <span className={styles.activeTagsLabel}>?�용???�터:</span>
+            <span className={styles.activeTagsLabel}>적용된 필터:</span>
             {speciesFilter !== 'ALL' && (
               <span className={styles.activeTagChip}>
-                <span>{speciesFilter === 'DOG' ? '강아지' : speciesFilter === 'CAT' ? '고양?? : '기�? 축종'}</span>
+                <span>{speciesFilter === 'DOG' ? '강아지' : speciesFilter === 'CAT' ? '고양이' : '기타 축종'}</span>
                 <button
                   type="button"
                   onClick={() => onSpeciesChange('ALL')}
                   className={styles.activeTagRemoveBtn}
-                  aria-label="축종 ?�터 ?�제"
+                  aria-label="축종 필터 해제"
                 >
                   <X size={14} />
                 </button>
@@ -142,12 +143,12 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
 
             {genderFilter !== 'ALL' && (
               <span className={styles.activeTagChip}>
-                <span>{genderFilter === 'MALE' ? '?�아' : '?�아'}</span>
+                <span>{genderFilter === 'MALE' ? '남아' : '여아'}</span>
                 <button
                   type="button"
                   onClick={() => onGenderChange('ALL')}
                   className={styles.activeTagRemoveBtn}
-                  aria-label="?�별 ?�터 ?�제"
+                  aria-label="성별 필터 해제"
                 >
                   <X size={14} />
                 </button>
@@ -156,12 +157,12 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
 
             {searchQuery.trim() !== '' && (
               <span className={styles.activeTagChip}>
-                <span>검?? "{searchQuery.trim()}"</span>
+                <span>검색: "{searchQuery.trim()}"</span>
                 <button
                   type="button"
                   onClick={() => onSearchChange('')}
                   className={styles.activeTagRemoveBtn}
-                  aria-label="검?�어 초기??
+                  aria-label="검색어 초기화"
                 >
                   <X size={14} />
                 </button>
@@ -173,27 +174,29 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
               onClick={onReset}
               className={`${styles.resetBtn} ${styles.resetBtnSmall}`}
             >
-              ?�체 ?�제
+              전체 해제
             </button>
           </div>
         )}
       </section>
 
-      {/* 결과 ?�더 (카운??뱃�?, 리셋 버튼, �?모드 ?��?) */}
+      {/* 결과 헤더 (카운트 뱃지, 리셋 버튼, 뷰 모드 토글) */}
       <div className={styles.resultsHeader}>
         <div className={styles.resultCountBadge}>
           <Sparkles size={18} color="var(--primary-color)" />
           <span>
-            �?<strong className={styles.countHighlight}>{totalCount}</strong>마리???�이?�이 기다리고 ?�어??          </span>
+            총 <strong className={styles.countHighlight}>{totalCount}</strong>마리의 아이들이 기다리고 있어요
+          </span>
           {hasActiveFilter && (
             <button
               type="button"
               className={styles.resetBtn}
               onClick={onReset}
-              title="?�터 초기??
+              title="필터 초기화"
             >
               <RotateCcw size={13} className={styles.resetIcon} />
-              ?�터 초기??            </button>
+              필터 초기화
+            </button>
           )}
         </div>
 
@@ -203,19 +206,19 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
               type="button"
               className={`${styles.viewToggleBtn} ${viewMode === 'infinite' ? styles.activeToggle : ''}`}
               onClick={() => onViewModeChange('infinite')}
-              title="?�크롤하???�속?�로 ?�러보기"
+              title="스크롤하여 연속으로 둘러보기"
             >
               <InfinityIcon size={16} />
-              ?�드�?보기
+              피드로 보기
             </button>
             <button
               type="button"
               className={`${styles.viewToggleBtn} ${viewMode === 'pagination' ? styles.activeToggle : ''}`}
               onClick={() => onViewModeChange('pagination')}
-              title="?�이지 번호�??�누??보기"
+              title="페이지 번호로 나누어 보기"
             >
               <LayoutGrid size={16} />
-              ?�이지�?보기
+              페이지별 보기
             </button>
           </div>
         </div>
