@@ -21,7 +21,7 @@
 - [🔧 기술 스택 (Tech Stack)](#-기술-스택-tech-stack)
 - [📁 프로젝트 구조 (Package Structure)](#-프로젝트-구조-package-structure)
 - [🚀 주요 기능 및 핵심 아키텍처](#-주요-기능-및-핵심-아키텍처)
-- [⚡ Spring Batch 대용량 데이터 최적화 & 라이프사이클 자동화](#-spring-batch-대용량-데이터-최적화--도메인-자동화)
+- [⚡ API 레벨 대용량 페이징 최적화 (Page vs Slice & No-Offset)](#-api-레벨-대용량-페이징-최적화-page-vs-slice--no-offset-커서-페이징)
 - [📊 인증 아키텍처 실측 벤치마크 및 Trade-off 분석 (JWT vs Session)](#-인증-아키텍처-실측-벤치마크-및-trade-off-분석-jwt-vs-session)
 - [🛡️ 동시성 제어 & 데이터 무결성 아키텍처](#️-동시성-제어--데이터-무결성-아키텍처-concurrency--integrity)
 - [⚙️ 환경 설정 및 실행 가이드 (Getting Started)](#️-환경-설정-및-실행-가이드-getting-started)
@@ -35,7 +35,6 @@
 ### Backend Framework & Language
 - **Language**: Java 17 (OpenJDK 17)
 - **Framework**: Spring Boot 3.5.3
-- **Batch Processing**: **Spring Batch 5.x** (Chunk-oriented Processing, Keyset Pagination, Job/Step Scope)
 - **Build Tool**: Gradle 8.x
 - **Config Management**: Dotenv (`io.github.cdimascio:dotenv-java 3.0.0`) 기반 `.env` 환경변수 자동 로드
 
@@ -74,7 +73,7 @@
 - **State Machine**: 입양 상태 전이 유효성 검증 및 다중 신청 연쇄 처리 (승인 시 타 신청 자동 반려)
 - **Cache / In-Memory DB**: Redis (Spring Data Redis, Lettuce 최신 클라이언트 구성, JSON/Hash 직렬화, SSL 지원)
 - **Mail**: JavaMailSender (Gmail SMTP 이메일 인증 및 비밀번호 재설정)
-- **Testing & Productivity**: JUnit 5, `@SpringBatchTest`, AssertJ, Mockito (153개 테스트 100% 통과, `@Tag("benchmark")` 태깅 및 전용 태스크 분리로 빌드 및 CI 속도 극대화)
+- **Testing & Productivity**: JUnit 5, AssertJ, Mockito (`@Tag("benchmark")` 태깅 및 전용 태스크 분리로 빌드 및 CI 속도 극대화)
 - **API Documentation**: SpringDoc OpenAPI UI (Swagger 3) + **Swagger Docs Interface 분리 패턴** (`*Docs.java`)
 
 ---
@@ -106,10 +105,10 @@ com.kindtail.adoptmate
 │   ├── controller      # CommentController & CommentControllerDocs
 │   ├── domain          # Comment (validateAuthorOrAdmin 도메인 메서드 캡슐화)
 │   └── service         # CommentService
-├── 📂 common           # 불변 공통 응답 DTO(Record), 글로벌 예외 처리기, 분산 락 템플릿, BaseTimeEntity
+├── 📂 common           # 불변 공통 응답 DTO(Record), 표준 성공/에러 코드, 글로벌 예외 처리기, 분산 락 템플릿, BaseTimeEntity
 │   ├── controller      # EmailVerificationController, KakaoAuthController & Docs
-│   ├── dto             # CommonResDto (Java 17 Record 불변 객체, Setter 0개), CommonErrorDto
-│   ├── exception       # GlobalExceptionHandler (401, 403, @Valid 필드 상세화, 409, 413)
+│   ├── dto             # CommonResDto (Java 17 Record 불변 객체), SuccessCode (표준 성공 코드), CommonErrorDto
+│   ├── exception       # CustomException, ErrorCode (표준 비즈니스 에러 코드), GlobalExceptionHandler
 │   └── lock            # DistributedLockTemplate (Redisson 분산 락 실행기)
 ├── 📂 config           # SecurityConfig, RedisConfig, RedissonConfig, SwaggerConfig, CorsConfig
 ├── 📂 member           # 회원가입, 로그인, 정보 조회, 이메일 인증, 회원 탈퇴
@@ -187,58 +186,25 @@ com.kindtail.adoptmate
 - **JPA Entity 외부 노출 원천 차단**:
   - 모든 서비스/퍼사드 레이어가 Controller에 DTO만 반환하여 트랜잭션 외부 `LazyInitializationException` 및 의도치 않은 엔티티 상태 오염 방지
 
-### 🚨 7. 전역 예외 처리 고도화 (`GlobalExceptionHandler`)
+### 🎯 7. 컨트롤러 응답 및 비즈니스 예외 일원화 (`SuccessCode` & `ErrorCode` Enum 패턴)
+- **`SuccessCode` 표준 Enum & 정적 팩토리 메서드 (`CommonResDto.toResponseEntity`)**:
+  - 컨트롤러 전반에서 산발적으로 문자열/상태코드를 직접 하드코딩하던 방식을 폐기하고, 도메인별 표준 성공 코드(`MEMBER_REGISTER_SUCCESS`, `POST_CREATE_SUCCESS` 등)를 정의
+  - `CommonResDto.toResponseEntity(SuccessCode.XXX, data)` 패턴으로 단 한 줄의 선언적이고 타입 안전한 Controller 응답 규격 완성
+- **도메인별 비즈니스 예외 표준화 (`ErrorCode`)**:
+  - 회원(`Mxxx`), 보호 동물(`Axxx`), 입양 신청(`ADxxx`), 게시판/댓글(`Pxxx`, `CMxxx`), 동시성 락(`Lxxx`), 이메일 인증(`Exxx`), 공통(`Cxxx`) 체계 구축
+  - 서비스 계층의 원시 예외(`IllegalArgumentException`, `RuntimeException`)를 `CustomException(ErrorCode.XXX)`로 일원화하여 예외 추적성 및 예측 가능성 극대화
+
+### 🚨 8. 전역 예외 처리 고도화 (`GlobalExceptionHandler`)
+- `CustomException (비즈니스 예외)`: `ErrorCode`에 정의된 HTTP 상태 코드와 메시지를 자동으로 매핑하여 일관된 `CommonErrorDto` 반환
 - `AccessDeniedException (403)` / `AuthenticationException (401)`: 보안 인가 실패 시 일관된 표준 JSON 에러 반환
 - `MethodArgumentNotValidException (400)`: `@Valid` 실패 시 `[email] 이메일 형식이 올바르지 않습니다.` 형태로 구체적 필드명 명시
 - `MaxUploadSizeExceededException (413)`: 파일 업로드 10MB 초과 시 친절한 안내 메시지 반환
 - `OptimisticLockingFailureException (409)`: 데이터 동시 수정 충돌 시 안전한 안내 반환
+- `DataIntegrityViolationException (409)`: DB 제약조건 위반 시 명확한 에러 메시지 반환
 
 ---
 
-## ⚡ Spring Batch 대용량 데이터 최적화 & 도메인 자동화
-
-Spring Batch 5.x를 도입하여 **대용량 입양 데이터 처리의 $O(N)$ I/O 병목을 해결**하고, **방치된 입양 신청 건의 도메인 라이프사이클을 자동화**했습니다.
-
-### 1. No-Offset(Zero-Offset) 커서 페이징을 통한 9.9배 I/O 성능 개선
-
-#### 📌 문제 정의 (Why No-Offset?)
-* **Limit-Offset 방식의 $O(N)$ 디스크 I/O 병목**:
-  - 기본 `JpaPagingItemReader`는 `OFFSET 50000 LIMIT 1000` 쿼리를 실행하여 앞선 50,000건을 디스크에서 모두 읽고 버리는(Skip) 심각한 성능 저하가 발생합니다.
-* **Page Drift (데이터 누락 및 중복 현상)**:
-  - 배치 처리 중 레코드 상태가 변경(`PENDING` $\rightarrow$ `REJECTED`)되면 인덱스 위치가 밀려 특정 데이터가 누락되거나 중복 처리되는 데이터 정합성 결함이 발생합니다.
-
-#### 🛠️ 해결 전략 (How?)
-* **Keyset Pagination 커스텀 `ZeroOffsetAdoptionReader` 개발**:
-  - `OFFSET`을 완전히 제거하고 Clustered Index(`id`) 기반의 `WHERE a.id > :lastId ORDER BY a.id ASC LIMIT :pageSize` 쿼리를 적용했습니다.
-  - B-Tree 인덱스를 통해 다음 읽을 레코드 위치를 $O(\log N)$으로 즉시 탐색하며, 내부 큐(Queue) 버퍼링을 통해 Spring Batch `ItemStreamReader` 규격에 맞게 1건씩 스트리밍 소비합니다.
-
-#### 📊 10만 건 실측 벤치마크 결과 (`BatchReaderPerformanceTest.java`)
-| 페이징 방식 | 1회차 실행 | 2회차 실행 | 3회차 실행 | **3회 평균 소요 시간** | **성능 개선율** |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Limit-Offset (`JpaPagingItemReader`)** | 2,284 ms | 2,190 ms | 2,171 ms | **2,215 ms** | 기준 (1.0x) |
-| **Zero-Offset (`ZeroOffsetAdoptionReader`)** | 231 ms | 221 ms | 217 ms | **223 ms** | **🚀 9.90배 (990%) 향상** |
-
----
-
-### 2. 장기 미처리 입양 신청 자동 만료 및 상태 복구 배치 (`ExpiredAdoptionBatchConfig.java`)
-
-#### 📌 비즈니스 문제 정의 및 페이징 건너뜀(Page Skipping) 결함 해결
-* **비즈니스 문제 정의**:
-  - 입양 신청 시 대상 동물은 `WAITING`(입양 대기) 상태로 잠겨 다른 사용자의 신청이 제한됩니다.
-  - 하지만 신청자 또는 보호소 측에서 장기간(14일 이상) 방치(`PENDING`)할 경우 **동물이 영구히 대기 상태에 갇혀 다른 입양 희망자가 신청하지 못하는 비즈니스 병목**이 발생합니다.
-* **`JpaPagingItemReader` Page-Skipping 결함 해결**:
-  - `WHERE a.status = 'PENDING'` 조건으로 데이터를 청크 단위로 조회한 뒤 상태를 변경(`REJECTED`)할 때, 기본 `JpaPagingItemReader`의 오프셋 증가 방식(`firstResult = page * pageSize`)을 사용하면 **이미 상태가 변경된 데이터가 뷰에서 사라져 후속 데이터의 절반 이상을 건너뛰는(Skip) 심각한 누락 버그**가 발생합니다.
-  - 이를 방지하기 위해 `getPage() { return 0; }` 오버라이딩을 적용하여, 처리된 레코드가 사라져도 **항상 첫 번째 페이지(Offset 0)를 소비하도록 보정함으로써 단 1건의 누락도 없이 전체 만료 대상을 완벽하게 처리**하도록 데이터 무결성을 보장했습니다.
-
-#### 🛠️ 배치 파이프라인 아키텍처
-* **Reader (`expiredAdoptionReader`)**: `@StepScope` 파라미터(`thresholdDate`)와 `Fetch Join`을 적용하여 14일 경과된 `PENDING` 건을 N+1 없이 청크 단위로 조회 (`getPage() { return 0; }` 무결성 페이징 적용)
-* **Processor (`expiredAdoptionProcessor`)**: 입양 신청 상태를 `REJECTED`(자동 반려)로 전이하고, 연관 동물의 상태를 `PROTECTED`(입양 가능)로 복구
-* **Writer (`expiredAdoptionWriter`)**: 단일 트랜잭션 내에서 `Adoption` 및 `Animal` 변경 사항을 일괄 영속화
-* **트랜잭션 격리**: `Chunk(100)` 단위 트랜잭션 분할로 롱 트랜잭션 및 Undo Log 폭증을 방지하고 결함 격리(Fault Isolation) 보장
-
----
-
-### 3. API 레벨 대용량 페이징 최적화: `Page` vs `Slice` & No-Offset 커서 페이징
+## ⚡ API 레벨 대용량 페이징 최적화: `Page` vs `Slice` & No-Offset 커서 페이징
 
 대용량 트래픽 및 데이터 증가 환경에서 목록 조회 API(`/animals/cursor`, `/post/cursor`)의 성능 병목을 해결하기 위해 **`Slice`와 No-Offset(Keyset) 커서 페이징 아키텍처**를 도입했습니다.
 
@@ -430,7 +396,7 @@ docker compose up -d --build
 # 1) 일반 단위/통합 테스트 실행 (대용량 벤치마크 제외로 빠른 빌드 & CI 루프 보장)
 ./gradlew test
 
-# 2) 대용량 벤치마크 테스트 단독 실행 (10만 건 배치 및 1만 건 세션 vs JWT 부하 측정)
+# 2) 대용량 벤치마크 테스트 단독 실행 (1만 건 세션 vs JWT 부하 측정)
 ./gradlew benchmarkTest
 ```
 
@@ -663,25 +629,62 @@ erDiagram
 
 ## 📋 REST API 명세서
 
-### 📦 공통 응답 포맷 (`CommonResDto` - Java 17 Record 불변 객체)
-> 모든 API 응답은 가변 `@Setter`가 완전히 제거된 불변 `record CommonResDto(int statusCode, String statusMessage, Object result)` 표준 규격을 준수합니다.
+### 📦 공통 응답 포맷 (`CommonResDto` & `SuccessCode`)
+> 모든 API 응답은 가변 `@Setter`가 완전히 제거된 불변 `record CommonResDto<T>(int statusCode, String statusMessage, T result)` 표준 규격을 준수하며, `SuccessCode` Enum을 통한 정적 팩토리 메서드로 일관되게 생성됩니다.
 
 ```json
 {
   "statusCode": 200,
-  "statusMessage": "성공 메시지",
+  "statusMessage": "회원가입성공",
   "result": { ... }
 }
 ```
 
-### 🚨 공통 에러 포맷 (`CommonErrorDto`)
+```java
+// Controller 응답 표준화 패턴 (CommonResDto.toResponseEntity)
+return CommonResDto.toResponseEntity(SuccessCode.MEMBER_REGISTER_SUCCESS, responseDto);
+return CommonResDto.toResponseEntity(SuccessCode.POST_CREATE_SUCCESS, result);
+return CommonResDto.toResponseEntity(SuccessCode.EMAIL_SEND_SUCCESS);
+```
+
+### 🚨 공통 에러 포맷 (`CommonErrorDto` & `ErrorCode`)
+> 비즈니스 예외는 모두 `CustomException(ErrorCode)`으로 표준화되어 있으며, `GlobalExceptionHandler`를 통해 예측 가능한 JSON 규격으로 반환됩니다.
+
 ```json
 {
   "statusCode": 400,
-  "code": "C001",
-  "statusMessage": "[email] 유효하지 않은 이메일 형식입니다."
+  "code": "M002",
+  "statusMessage": "이미 존재하는 이메일입니다."
 }
 ```
+
+#### 🏷️ 도메인별 표준 에러 코드 (`ErrorCode`) 명세
+| 분류 | 에러 코드 (Code) | HTTP Status | 메시지 (Message) | 설명 |
+| :--- | :--- | :---: | :--- | :--- |
+| **Common** | `C001` (`INVALID_INPUT_VALUE`) | 400 | 유효하지 않은 입력값입니다. | `@Valid` 유효성 검사 실패 및 요청 파라미터 결함 |
+| | `C002` (`METHOD_NOT_ALLOWED`) | 405 | 지원하지 않는 HTTP 메서드입니다. | 엔드포인트에 허용되지 않은 HTTP Method 요청 |
+| | `C003` (`INTERNAL_SERVER_ERROR`) | 500 | 서버 내부 오류가 발생했습니다. | 핸들링되지 않은 최상위 서버 오류 |
+| | `C004` (`UNAUTHORIZED_AUTHOR`) | 403 | 본인 또는 관리자만 수정/삭제 권한이 있습니다. | 게시글/댓글 작성자 또는 관리자가 아닌 경우 |
+| **Member** | `M001` (`MEMBER_NOT_FOUND`) | 404 | 존재하지 않는 회원입니다. | 요청된 ID/이메일에 해당하는 회원 부재 |
+| | `M002` (`EMAIL_ALREADY_EXISTS`) | 400 | 이미 존재하는 이메일입니다. | 회원가입 또는 이메일 인증 시 중복 이메일 유입 |
+| | `M003` (`INVALID_PASSWORD`) | 400 | 비밀번호가 일치하지 않습니다. | 로그인 또는 비밀번호 변경 시 불일치 |
+| | `M004` (`UNAUTHORIZED`) | 401 | 인증 정보가 유효하지 않습니다. | 인증 토큰 누락 또는 유효하지 않은 인증 정보 |
+| | `M005` (`LOGOUT_TOKEN`) | 401 | 이미 로그아웃 처리된 토큰입니다. | 블랙리스트에 등록된 만료/로그아웃 토큰 사용 |
+| **Animal** | `A001` (`ANIMAL_NOT_FOUND`) | 404 | 존재하지 않는 보호 동물입니다. | 요청한 동물 ID 부재 |
+| | `A002` (`INVALID_ANIMAL_STATUS`) | 400 | 유효하지 않은 동물 상태입니다. | 존재하지 않는 상태값으로 변경 시도 |
+| **Adoption** | `AD001` (`ADOPTION_NOT_FOUND`) | 404 | 존재하지 않는 입양 신청입니다. | 요청한 입양 신청 ID 부재 |
+| | `AD002` (`ADOPTION_ALREADY_EXISTS`) | 400 | 이미 입양 신청한 동물입니다. | 동일 회원이 동일 동물에 중복 신청 제출 |
+| | `AD003` (`NOT_PROTECTED_ANIMAL`) | 400 | 보호 중인 동물만 입양 신청이 가능합니다. | 대기 중이거나 이미 입양된 동물에 신청 시도 |
+| | `AD004` (`INVALID_ADOPTION_STATUS_TRANSITION`) | 400 | 대기 중(PENDING)인 신청만 승인 또는 반려 처리가 가능합니다. | 입양 상태 머신 상태 전이 규칙 위반 |
+| **Post/Comment** | `P001` (`POST_NOT_FOUND`) | 404 | 존재하지 않는 게시글입니다. | 요청한 게시글 ID 부재 |
+| | `CM001` (`COMMENT_NOT_FOUND`) | 404 | 존재하지 않는 댓글입니다. | 요청한 댓글 ID 부재 |
+| **Lock** | `L001` (`LOCK_ACQUISITION_FAILED`) | 409 | 요청이 집중되어 처리에 실패했습니다. 잠시 후 다시 시도해주세요. | Redisson 분산 락 대기 타임아웃 초과 |
+| | `L002` (`CONCURRENT_UPDATE_CONFLICT`) | 409 | 다른 요청에 의해 데이터가 이미 변경되었습니다. 최신 정보를 확인 후 다시 시도해주세요. | JPA 낙관적 락(@Version) 동시 수정 충돌 |
+| **Email** | `E001` (`EMAIL_VERIFICATION_CODE_EXPIRED`) | 400 | 인증 코드가 만료되었습니다. 다시 전송해주세요. | 이메일 인증 코드 유효 시간(3분) 경과 |
+| | `E002` (`EMAIL_VERIFICATION_CODE_MISMATCH`) | 400 | 인증 코드가 일치하지 않습니다. | 6자리 난수 불일치 (잔여 시도 횟수 안내) |
+| | `E003` (`EMAIL_VERIFICATION_BLOCKED`) | 429 | 5회 이상 인증에 실패하여 차단된 상태입니다. 30분 후 다시 시도해주세요. | 무차별 대입(Brute-Force) 방어 30분 차단 |
+| | `E004` (`EMAIL_NOT_VERIFIED`) | 401 | 이메일 인증이 완료되지 않았습니다. 인증을 먼저 진행해주세요. | 인증 완료 토큰 없이 회원가입/비밀번호 변경 시도 |
+| | `E005` (`EMAIL_SEND_FAILED`) | 500 | 이메일 발송 중 오류가 발생했습니다. | SMTP 서버 발송 실패 (네트워크/인증 오류) |
 
 ---
 

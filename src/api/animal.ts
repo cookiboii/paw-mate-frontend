@@ -29,12 +29,30 @@ export function normalizeAnimal(raw: Partial<Animal>): Animal {
 
 /**
  * 🔐 관리자 전용 동물 등록 API
+ * Body: AnimalCreateRequest { species, breed, color, image, age, gender, status }
  */
 export const registerAnimal = async (animalData: AnimalFormData | FormData): Promise<Animal> => {
-  const response = await axios.post(`${API_BASE_URL}/register`, animalData);
+  let payload: unknown = animalData;
+
+  // FormData가 아닌 일반 객체일 경우 백엔드 AnimalCreateRequest 규격 7개 필드만 안전하게 추출
+  if (!(animalData instanceof FormData) && typeof animalData === 'object' && animalData !== null) {
+    const d = animalData as AnimalFormData;
+    payload = {
+      species: d.species,
+      breed: d.breed || '',
+      color: d.color || '',
+      image: d.image || '',
+      age: Number(d.age || 0),
+      gender: d.gender || 'MALE',
+      status: d.status || 'PROTECTED',
+    };
+  }
+
+  const response = await axios.post(`${API_BASE_URL}/register`, payload);
   apiCache.invalidateByPrefix('animal');
   return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
+
 
 /**
  * 🔍 전체 동물 목록 조회 (오프셋 페이징)
@@ -138,15 +156,16 @@ export const prefetchAnimalById = (id: string | number): void => {
 
 /**
  * ✏️ 보호 동물 상태 수정 (관리자 전용)
+ * Body: AnimalStatusUpdateRequest { status }
  */
 export const updateAnimalStatus = async (id: string | number, status: string): Promise<Animal> => {
   const response = await axios.put(`${API_BASE_URL}/${id}/status`, {
     status,
-    animalStatus: status,
   });
   apiCache.invalidateByPrefix('animal');
   return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
+
 
 /**
  * 🗑️ 보호 동물 삭제 (관리자 전용)

@@ -7,6 +7,9 @@ import { CommentItem } from '../types/review';
 import { User } from '../types/auth';
 import { useToast } from '../context/ToastContext';
 import { MessageSquare, Send, CornerDownRight } from 'lucide-react';
+import { getErrorMessage } from '../utils/error';
+import { formatDate } from '../utils/date';
+
 
 interface CommentSectionProps {
   postId: string | number;
@@ -71,7 +74,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       await refreshComments();
     } catch (err) {
       console.error('댓글 등록 실패:', err);
-      showToast('댓글 등록에 실패했습니다.', 'error');
+      showToast(getErrorMessage(err, '댓글 등록에 실패했습니다.'), 'error');
     } finally {
       setLoadingMap((prev) => ({ ...prev, [key]: false }));
     }
@@ -87,7 +90,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       await refreshComments();
     } catch (err) {
       console.error('댓글 삭제 실패:', err);
-      showToast('댓글 삭제에 실패했습니다.', 'error');
+      showToast(getErrorMessage(err, '댓글 삭제에 실패했습니다.'), 'error');
     } finally {
       setLoadingMap((prev) => ({ ...prev, [commentId]: false }));
     }
@@ -111,7 +114,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       await refreshComments();
     } catch (err) {
       console.error('댓글 수정 실패:', err);
-      showToast('댓글 수정에 실패했습니다.', 'error');
+      showToast(getErrorMessage(err, '댓글 수정에 실패했습니다.'), 'error');
     } finally {
       setLoadingMap((prev) => ({ ...prev, [commentId]: false }));
     }
@@ -126,7 +129,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         <div key={comment.id} className={styles.commentBox}>
           <div className={styles.commentContent}>
             <div className={styles.commentHeader}>
-              <strong className={styles.authorName}>{comment.authorName || '익명'}</strong>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <strong className={styles.authorName}>{comment.authorName || '익명'}</strong>
+                {comment.createdAt && (
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    {formatDate(comment.createdAt)}
+                  </span>
+                )}
+              </div>
               {(isAuthor || isAdmin) && !editModeMap[comment.id] && (
                 <div className={styles.actions}>
                   {isAuthor && (

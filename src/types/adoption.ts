@@ -43,20 +43,20 @@ export interface AdoptionUpdateRequestDto {
  */
 export interface AdoptionResponseDto {
   adoptionId: number | string;
-  memberName: string;
-  status: AdoptionStatus | string;
-  interviewer?: string;
-  animalImage?: string;
-  applyDate?: string;
-  // 상세 정보 (서버가 추가로 반환하는 경우 대비)
   animalId?: number | string;
-  animalName?: string;
   animalBreed?: string;
+  animalImage?: string;
+  userName?: string;
+  memberName?: string;
   phone?: string;
   housingType?: string;
   hasPet?: string;
   reason?: string;
-  userName?: string;
+  status: AdoptionStatus | string;
+  applyDate?: string;
+  // 레거시/확장 호환 필드
+  animalName?: string;
+  interviewer?: string;
   interview?: string;
 }
 

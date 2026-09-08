@@ -15,6 +15,7 @@ import usePageTitle from '../hooks/usePageTitle';
 import { User as UserType } from '../types/auth';
 import { AdoptionHistoryItem } from '../types/adoption';
 import { User, Heart, ClipboardList, ShieldCheck, PawPrint, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { getErrorMessage } from '../utils/error';
 
 const MyPage: React.FC = () => {
   usePageTitle('마이페이지');
@@ -67,8 +68,8 @@ const MyPage: React.FC = () => {
         logout();
         navigate('/');
       })
-      .catch(() => {
-        showToast('회원 탈퇴에 실패했습니다.', 'error');
+      .catch((err) => {
+        showToast(getErrorMessage(err, '회원 탈퇴에 실패했습니다.'), 'error');
       });
   };
 
@@ -84,6 +85,11 @@ const MyPage: React.FC = () => {
       return;
     }
 
+    if (form.new_passwd.length < 6) {
+      showToast('새 비밀번호는 최소 6자 이상이어야 합니다.', 'error');
+      return;
+    }
+
     updatePassword({
       currentPassword: form.passwd,
       newPassword: form.new_passwd,
@@ -93,8 +99,8 @@ const MyPage: React.FC = () => {
         logout();
         navigate('/');
       })
-      .catch(() => {
-        showToast('비밀번호 변경에 실패했습니다.', 'error');
+      .catch((err) => {
+        showToast(getErrorMessage(err, '비밀번호 변경에 실패했습니다.'), 'error');
       });
   };
 

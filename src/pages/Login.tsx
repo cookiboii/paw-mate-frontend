@@ -84,9 +84,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const urlName = searchParams.get("name") || undefined;
     const urlCode = searchParams.get("code");
 
+    const urlRefreshToken = searchParams.get("refreshToken") || undefined;
+
     if (urlToken) {
       const userInfo = { email: urlEmail, role: urlRole, name: urlName, provider: "KAKAO" };
-      login(urlToken, userInfo);
+      login(urlToken, userInfo, urlRefreshToken);
       if (onLoginSuccess) onLoginSuccess();
       navigate(redirectPath, { replace: true });
       return;
@@ -100,11 +102,12 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             try { resData = JSON.parse(resData); } catch { return; }
           }
           const token = resData?.token || resData?.result?.token || resData?.data?.token;
+          const refreshToken = resData?.refreshToken || resData?.result?.refreshToken || resData?.data?.refreshToken;
           const role = resData?.role || resData?.result?.role || resData?.data?.role || "USER";
           const email = resData?.email || resData?.result?.email || resData?.data?.email || resData?.id;
           const name = resData?.name || resData?.result?.name;
           if (token) {
-            login(token, { email, role, name, provider: "KAKAO" });
+            login(token, { email, role, name, provider: "KAKAO" }, refreshToken);
             if (onLoginSuccess) onLoginSuccess();
             navigate(redirectPath, { replace: true });
           }
@@ -138,7 +141,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         console.warn("Blocked OAuth message from unexpected origin:", event.origin);
       }
 
-      const { type, token, id, role, provider, email, name } = payload;
+      const { type, token, id, role, provider, email, name, refreshToken } = payload;
       const isOAuthSuccess = type === "OAUTH_SUCCESS" || type === "KAKAO_LOGIN_SUCCESS" || !!token;
 
       if (isOAuthSuccess && token) {
@@ -148,7 +151,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           provider: provider || "KAKAO",
           name
         };
-        login(token, userInfo);
+        login(token, userInfo, refreshToken);
         if (onLoginSuccess) onLoginSuccess();
         navigate(redirectPath);
       }

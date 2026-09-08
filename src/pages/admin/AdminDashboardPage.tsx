@@ -12,6 +12,7 @@ import { Animal } from '../../types/animal';
 import { User } from '../../types/auth';
 import { AdoptionResponseDto } from '../../types/adoption';
 import { formatDateTime } from '../../utils/date';
+import { getErrorMessage } from '../../utils/error';
 import {
   PawPrint,
   Users,
@@ -125,8 +126,7 @@ const AdminDashboardPage: React.FC = () => {
         prev.map((item) => (item.adoptionId === adoptionId ? { ...item, status } : item))
       );
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      showToast('상태 변경 실패: ' + errorMsg, 'error');
+      showToast('상태 변경 실패: ' + getErrorMessage(err, '상태 변경에 실패했습니다.'), 'error');
     }
   };
 

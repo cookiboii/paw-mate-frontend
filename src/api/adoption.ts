@@ -43,13 +43,13 @@ export const getAdoptionsPaged = async (
 
 /**
  * ✏️ 입양 신청 상태 변경 (관리자 전용)
+ * Body: AdoptionUpdateRequestDto { adoptionStatus: AdoptionStatus }
  */
 export const updateAdoptionStatus = async (
   adoptionId: number | string,
   status: string
 ): Promise<AdoptionResponseDto> => {
   const response = await axiosInstance.put(`/adoptions/${adoptionId}/status`, {
-    status,
     adoptionStatus: status,
   });
   return unwrapResult<AdoptionResponseDto>(response.data);

@@ -34,20 +34,22 @@ const KakaoCallback: React.FC = () => {
         return;
       }
 
+      const refreshTokenParam = searchParams.get('refreshToken') || undefined;
+
       // Case 1: Backend redirected to callback with token already
       if (token) {
         const userInfo = { email, role, name, provider: 'KAKAO' };
 
         if (window.opener) {
           window.opener.postMessage(
-            { type: 'OAUTH_SUCCESS', token, role, email, name, provider: 'KAKAO' },
+            { type: 'OAUTH_SUCCESS', token, refreshToken: refreshTokenParam, role, email, name, provider: 'KAKAO' },
             '*'
           );
           window.close();
           return;
         }
 
-        login(token, userInfo);
+        login(token, userInfo, refreshTokenParam);
         navigate('/', { replace: true });
         return;
       }
@@ -73,6 +75,12 @@ const KakaoCallback: React.FC = () => {
             resData?.result?.token ||
             resData?.data?.token;
 
+          const jwtRefreshToken =
+            resData?.refreshToken ||
+            resData?.result?.refreshToken ||
+            resData?.data?.refreshToken ||
+            refreshTokenParam;
+
           const userRole =
             resData?.role ||
             resData?.result?.role ||
@@ -95,14 +103,14 @@ const KakaoCallback: React.FC = () => {
 
             if (window.opener) {
               window.opener.postMessage(
-                { type: 'OAUTH_SUCCESS', token: jwtToken, role: userRole, email: userEmail, name: userName, provider: 'KAKAO' },
+                { type: 'OAUTH_SUCCESS', token: jwtToken, refreshToken: jwtRefreshToken, role: userRole, email: userEmail, name: userName, provider: 'KAKAO' },
                 '*'
               );
               window.close();
               return;
             }
 
-            login(jwtToken, userInfo);
+            login(jwtToken, userInfo, jwtRefreshToken);
             navigate('/', { replace: true });
           } else {
             setStatusMsg('로그인 토큰을 받지 못했습니다.');

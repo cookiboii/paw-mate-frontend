@@ -33,7 +33,18 @@ export interface SliceResponse<T> {
   empty?: boolean;
 }
 
+/**
+ * 📦 api.md 기준 백엔드 불변 표준 공통 응답 DTO 규격 (CommonResDto<T>)
+ */
+export interface CommonResDto<T = unknown> {
+  statusCode: number;
+  statusMessage: string;
+  result: T;
+}
+
 export interface ApiResponse<T = unknown> {
+  statusCode?: number;
+  statusMessage?: string;
   isSuccess?: boolean;
   success?: boolean;
   message?: string;

@@ -102,11 +102,12 @@ export const verifyResetCode = async (email: string, code: string) => {
 
 /**
  * 🔒 비밀번호 재설정 실행 (PATCH /adoptmate/password)
+ * Body: PasswordResetRequestDto { email: string, password: string }
  */
 export const resetPassword = async (email: string, newPassword: string) => {
   return await axiosInstance.patch('/adoptmate/password', {
     email,
     password: newPassword,
-    newPassword,
   });
 };
+

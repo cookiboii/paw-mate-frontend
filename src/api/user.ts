@@ -27,6 +27,7 @@ export const deleteMyAccount = async (): Promise<void> => {
 
 /**
  * 🔒 비밀번호 변경
+ * Body: PasswordChangeRequestDto { currentPassword: string, newPassword: string }
  */
 export const updatePassword = async (payload: {
   currentPassword?: string;
@@ -34,5 +35,12 @@ export const updatePassword = async (payload: {
   passwd?: string;
   new_passwd?: string;
 }): Promise<void> => {
-  await axiosInstance.post('/adoptmate/password', payload);
+  const currentPassword = payload.currentPassword || payload.passwd || '';
+  const newPassword = payload.newPassword || payload.new_passwd || '';
+
+  await axiosInstance.post('/adoptmate/password', {
+    currentPassword,
+    newPassword,
+  });
 };
+

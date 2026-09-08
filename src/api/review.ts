@@ -73,21 +73,33 @@ export const prefetchReviewById = (id: number | string): void => {
 
 /**
  * ✍️ 게시글 작성
+ * Body: PostCreateRequestDto { title, content, img }
  */
 export const createReview = async (payload: PostCreateRequestDto): Promise<PostResponseDto> => {
-  const response = await axiosInstance.post('/post/create', payload);
+  const body = {
+    title: payload.title,
+    content: payload.content,
+    img: payload.img || payload.image || '',
+  };
+  const response = await axiosInstance.post('/post/create', body);
   apiCache.invalidateByPrefix('review');
   return unwrapResult<PostResponseDto>(response.data);
 };
 
 /**
  * ✏️ 게시글 수정
+ * Body: PostUpdateRequestDto { title, content, img }
  */
 export const updateReview = async (
   id: number | string,
   payload: PostUpdateRequestDto
 ): Promise<PostResponseDto> => {
-  const response = await axiosInstance.put(`/post/${id}`, payload);
+  const body = {
+    title: payload.title,
+    content: payload.content,
+    img: payload.img || payload.image || '',
+  };
+  const response = await axiosInstance.put(`/post/${id}`, body);
   apiCache.invalidateByPrefix('review');
   return unwrapResult<PostResponseDto>(response.data);
 };
@@ -110,17 +122,23 @@ export const getComments = async (postId: number | string): Promise<CommentRespo
 
 /**
  * 💬 댓글 작성
+ * Body: CommentDto { parentId: Long | null, content: String }
  */
 export const createComment = async (
   postId: number | string,
   payload: CommentDto
 ): Promise<CommentResponseDto> => {
-  const response = await axiosInstance.post(`/comment/${postId}`, payload);
+  const body = {
+    parentId: payload.parentId ? Number(payload.parentId) : null,
+    content: payload.content,
+  };
+  const response = await axiosInstance.post(`/comment/${postId}`, body);
   return unwrapResult<CommentResponseDto>(response.data);
 };
 
 /**
  * ✏️ 댓글 수정
+ * Body: CommentUpdateDto { commentId: Long, content: String }
  */
 export const updateComment = async (
   commentId: number | string,

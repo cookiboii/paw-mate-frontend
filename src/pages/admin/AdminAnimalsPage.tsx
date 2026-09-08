@@ -13,6 +13,8 @@ import { SPECIES_OPTIONS, STATUS_OPTIONS, GENDER_OPTIONS, getGenderLabel, getSpe
 import usePageTitle from '../../hooks/usePageTitle';
 import { uploadImageToBlob } from '../../utils/imageUpload';
 import { Animal, AnimalRegisterForm } from '../../types/animal';
+import { getErrorMessage } from '../../utils/error';
+
 import {
   PawPrint,
   PlusCircle,
@@ -126,7 +128,7 @@ const AdminAnimalsPage: React.FC = () => {
       showToast(`동물(#${animalId})의 보호 상태가 '${getStatusLabel(newStatus)}'(으)로 변경되었습니다.`, 'success');
     } catch (err) {
       console.error('상태 변경 실패:', err);
-      showToast('상태 변경에 실패했습니다.', 'error');
+      showToast(getErrorMessage(err, '상태 변경에 실패했습니다.'), 'error');
       loadAnimals(); // 롤백
     }
   };
@@ -142,7 +144,7 @@ const AdminAnimalsPage: React.FC = () => {
       setDeleteTarget(null);
     } catch (err) {
       console.error('삭제 실패:', err);
-      showToast('동물 정보 삭제에 실패했습니다.', 'error');
+      showToast(getErrorMessage(err, '동물 정보 삭제에 실패했습니다.'), 'error');
     } finally {
       setIsDeleting(false);
     }
@@ -240,7 +242,7 @@ const AdminAnimalsPage: React.FC = () => {
       setActiveTab('list');
     } catch (err) {
       console.error('동물 등록 실패:', err);
-      showToast('동물 등록에 실패했습니다.', 'error');
+      showToast(getErrorMessage(err, '동물 등록에 실패했습니다.'), 'error');
     } finally {
       setIsSubmitting(false);
     }
