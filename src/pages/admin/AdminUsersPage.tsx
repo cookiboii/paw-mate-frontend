@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { getAllUsers } from '../../api/user';
+import { getAllUsers, deleteUserByAdmin } from '../../api/user';
 import styles from '../../styles/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import usePageTitle from '../../hooks/usePageTitle';
 import ConfirmModal from '../../components/ConfirmModal';
 import { User } from '../../types/auth';
-import { Users, Crown, User as UserIcon, Search, BarChart3, ShieldAlert } from 'lucide-react';
+import { Users, Crown, User as UserIcon, Search, BarChart3, ShieldCheck, Trash2, X } from 'lucide-react';
+import { getErrorMessage } from '../../utils/error';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -91,14 +92,20 @@ const AdminUsersPage: React.FC = () => {
     setRoleTargetUser(null);
   };
 
-  // 회원 강제 탈퇴 실행
-  const handleConfirmDelete = () => {
-    if (!deleteTargetUser) return;
-
-    // 낙관적 UI 업데이트
-    setUsers((prev) => prev.filter((u) => u.id !== deleteTargetUser.id));
-    showToast(`'${deleteTargetUser.name || deleteTargetUser.email}' 회원이 성공적으로 탈퇴 처리되었습니다.`, 'success');
+  // 회원 강제 탈퇴 실행 (서버 DELETE /adoptmate/admin/{memberId} 연동)
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetUser || deleteTargetUser.id === undefined || deleteTargetUser.id === null) return;
+    const target = deleteTargetUser;
+    const targetId: string | number = target.id;
     setDeleteTargetUser(null);
+
+    try {
+      await deleteUserByAdmin(targetId);
+      setUsers((prev) => prev.filter((u) => u.id !== targetId));
+      showToast(`'${target.name || target.email}' 회원이 성공적으로 삭제(탈퇴)되었습니다.`, 'success');
+    } catch (err) {
+      showToast('회원 삭제 실패: ' + getErrorMessage(err), 'error');
+    }
   };
 
   return (
@@ -155,6 +162,29 @@ const AdminUsersPage: React.FC = () => {
             onChange={(e) => setSearchKeyword(e.target.value)}
             className={styles.searchInput}
           />
+          {searchKeyword && (
+            <button
+              type="button"
+              onClick={() => setSearchKeyword('')}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '4px',
+              }}
+              title="검색어 지우기"
+              aria-label="검색어 지우기"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
         <div className={styles.filterTabs}>
@@ -218,14 +248,20 @@ const AdminUsersPage: React.FC = () => {
                     <button
                       className={styles.actionBtn}
                       onClick={() => setRoleTargetUser(user)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                      title="권한 변경"
                     >
-                      권한
+                      <ShieldCheck size={14} />
+                      <span>권한</span>
                     </button>
                     <button
                       className={`${styles.actionBtn} ${styles.dangerBtn}`}
                       onClick={() => setDeleteTargetUser(user)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                      title="회원 강제 탈퇴"
                     >
-                      삭제
+                      <Trash2 size={14} />
+                      <span>삭제</span>
                     </button>
                   </td>
                 </tr>

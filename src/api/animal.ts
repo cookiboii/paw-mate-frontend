@@ -174,3 +174,48 @@ export const deleteAnimal = async (id: string | number): Promise<void> => {
   await axios.delete(`${API_BASE_URL}/${id}`);
   apiCache.invalidateByPrefix('animal');
 };
+
+/**
+ * ⭐ 관심 동물 찜하기 토글 (등록 / 취소)
+ * POST /animals/{id}/favorite -> FavoriteToggleResponseDto { animalId, isFavorite, favoriteCount }
+ */
+export const toggleAnimalFavorite = async (
+  id: string | number
+): Promise<{ animalId: number | string; isFavorite: boolean; favoriteCount: number }> => {
+  const response = await axios.post(`${API_BASE_URL}/${id}/favorite`);
+  apiCache.invalidateByPrefix('animal');
+  apiCache.invalidateByPrefix('favorite');
+  return unwrapResult(response.data);
+};
+
+/**
+ * ❌ 관심 동물 찜 명시적 취소
+ * DELETE /animals/{id}/favorite -> FavoriteToggleResponseDto
+ */
+export const removeAnimalFavorite = async (
+  id: string | number
+): Promise<{ animalId: number | string; isFavorite: boolean; favoriteCount: number }> => {
+  const response = await axios.delete(`${API_BASE_URL}/${id}/favorite`);
+  apiCache.invalidateByPrefix('animal');
+  apiCache.invalidateByPrefix('favorite');
+  return unwrapResult(response.data);
+};
+
+/**
+ * 📂 내가 찜한 보호 동물 목록 조회 (최신순 페이징)
+ * GET /animals/favorites/my?page=0&size=10
+ */
+export const fetchMyFavoriteAnimals = async (
+  page = 0,
+  size = 10
+): Promise<PageResponse<Animal>> => {
+  const response = await axios.get(`${API_BASE_URL}/favorites/my`, {
+    params: { page, size },
+  });
+
+  const pageData = unwrapResult<PageResponse<Animal>>(response.data);
+  return {
+    ...pageData,
+    content: (pageData.content || []).map(normalizeAnimal),
+  };
+};

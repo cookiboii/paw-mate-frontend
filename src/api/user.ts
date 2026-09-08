@@ -44,3 +44,11 @@ export const updatePassword = async (payload: {
   });
 };
 
+/**
+ * 👑 관리자 전용 회원 강제 삭제 (Soft Delete)
+ * DELETE /adoptmate/admin/{memberId}
+ */
+export const deleteUserByAdmin = async (memberId: string | number): Promise<void> => {
+  await axiosInstance.delete(`/adoptmate/admin/${memberId}`);
+};
+

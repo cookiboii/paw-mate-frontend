@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { PawPrint, BookOpen, MessageSquare, User, Heart, ShieldCheck, Crown, X, LogOut, Sun, Moon } from 'lucide-react';
+import { PawPrint, BookOpen, MessageSquare, User, Heart, ShieldCheck, Crown, X, LogOut } from 'lucide-react';
 import styles from '../styles/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
-import { useTheme } from '../context/ThemeContext';
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, isAdmin, logout } = useAuth();
   const { favorites } = useFavorites();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -89,18 +87,6 @@ const Header: React.FC = () => {
         {/* 데스크톱 유저 액션 */}
         <div className={styles.userActions}>
           <ul className={styles.navList}>
-            {/* 다크모드 토글 버튼 */}
-            <li>
-              <button
-                onClick={toggleTheme}
-                className={styles.themeToggleBtn}
-                title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-                aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-              >
-                {theme === 'dark' ? <Sun size={18} color="#e2a852" /> : <Moon size={18} color="var(--primary-color)" />}
-              </button>
-            </li>
-
             {isAuthenticated ? (
               <>
                 {!isAdmin && (
@@ -125,17 +111,8 @@ const Header: React.FC = () => {
           </ul>
         </div>
 
-        {/* 모바일 햄버거 버튼 & 테마 토글 */}
+        {/* 모바일 햄버거 버튼 */}
         <div className={styles.mobileControls} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button
-            onClick={toggleTheme}
-            className={styles.themeToggleBtn}
-            style={{ width: '36px', height: '36px' }}
-            title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-            aria-label="테마 전환"
-          >
-            {theme === 'dark' ? <Sun size={17} color="#e2a852" /> : <Moon size={17} color="var(--primary-color)" />}
-          </button>
           <button 
             className={`${styles.hamburgerBtn} ${isMobileMenuOpen ? styles.hamburgerOpen : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -225,23 +202,13 @@ const Header: React.FC = () => {
           </ul>
         </nav>
 
-        <div className={styles.drawerFooter}>
-          <button onClick={toggleTheme} className={styles.drawerThemeToggle}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              {theme === 'dark' ? <Sun size={18} color="#e2a852" /> : <Moon size={18} color="var(--primary-color)" />}
-              <span>{theme === 'dark' ? '라이트 모드로 보기' : '다크 모드로 보기'}</span>
-            </span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              {theme === 'dark' ? 'Light' : 'Dark'}
-            </span>
-          </button>
-
-          {isAuthenticated && (
-            <button onClick={handleLogout} className={styles.drawerLogoutBtn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '10px', width: '100%' }}>
+        {isAuthenticated && (
+          <div className={styles.drawerFooter}>
+            <button onClick={handleLogout} className={styles.drawerLogoutBtn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%' }}>
               <LogOut size={16} /> 로그아웃
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </header>
   );

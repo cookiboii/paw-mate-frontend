@@ -24,6 +24,14 @@ export interface Animal {
   noticeEndDate?: string;
   createdAt?: string;
   updatedAt?: string;
+  isFavorite?: boolean;
+  favoriteCount?: number;
+}
+
+export interface FavoriteToggleResponseDto {
+  animalId: number | string;
+  isFavorite: boolean;
+  favoriteCount: number;
 }
 
 export interface AnimalCreateRequest {
