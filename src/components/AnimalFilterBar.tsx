@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, X, Dog, Cat, PawPrint, RotateCcw, Infinity as InfinityIcon, LayoutGrid, Sparkles } from 'lucide-react';
-import styles from '../styles/AnimalList.module.css';
+import styles from '../styles/pages/AnimalList.module.css';
 
 export interface AnimalFilterBarProps {
   searchQuery: string;

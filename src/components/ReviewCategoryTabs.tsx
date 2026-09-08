@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import styles from '../styles/AdoptionReviewListPage.module.css';
+import styles from '../styles/pages/AdoptionReviewListPage.module.css';
 
 export interface CategoryOption {
   key: string;
