@@ -81,24 +81,34 @@ const AdminDashboardPage: React.FC = () => {
     const waitingAnimals = animals.filter((a) => (a.status || '').toUpperCase() === 'WAITING').length;
     const adoptedAnimals = animals.filter((a) => (a.status || '').toUpperCase() === 'ADOPTED').length;
 
+    // 종별 통계 (DOG, CAT, ETC)
+    const dogCount = animals.filter((a) => (a.species || '').toUpperCase() === 'DOG').length;
+    const catCount = animals.filter((a) => (a.species || '').toUpperCase() === 'CAT').length;
+    const etcCount = totalAnimals - dogCount - catCount;
+
     const totalUsers = users.length;
     const adminCount = users.filter((u) => u.role === 'ADMIN' || u.role === 'ROLE_ADMIN').length;
 
     const totalAdoptions = adoptions.length;
     const pendingAdoptions = adoptions.filter((a) => (a.status || 'PENDING').toUpperCase() === 'PENDING');
     const approvedAdoptions = adoptions.filter((a) => (a.status || '').toUpperCase() === 'APPROVED').length;
+    const rejectedAdoptions = adoptions.filter((a) => (a.status || '').toUpperCase() === 'REJECTED').length;
 
     return {
       totalAnimals,
       protectedAnimals,
       waitingAnimals,
       adoptedAnimals,
+      dogCount,
+      catCount,
+      etcCount,
       totalUsers,
       adminCount,
       totalAdoptions,
       pendingCount: pendingAdoptions.length,
       pendingList: pendingAdoptions.slice(0, 5), // 상위 5건
       approvedAdoptions,
+      rejectedAdoptions,
     };
   }, [animals, users, adoptions]);
 
@@ -375,97 +385,207 @@ const AdminDashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. 보호 현황 프로그레스 */}
+          {/* 2. 보호 동물 종별 분포 도넛 차트 (SVG) */}
           <div className={styles.sectionCard}>
             <div className={styles.sectionHeader}>
               <div className={styles.sectionTitle}>
-                <ShieldCheck size={18} color="var(--primary-color)" />
-                <span>보호 동물 상태 현황</span>
+                <PawPrint size={18} color="var(--primary-color)" />
+                <span>보호 동물 축종별 분포</span>
               </div>
             </div>
             <div className={styles.sectionBody}>
-              <div className={styles.statusBreakdown}>
-                {/* 보호중 */}
-                <div className={styles.progressBarWrapper}>
-                  <div className={styles.progressBarHeader}>
-                    <span>보호중</span>
-                    <span>
-                      {stats.protectedAnimals}마리 (
-                      {stats.totalAnimals > 0
-                        ? Math.round((stats.protectedAnimals / stats.totalAnimals) * 100)
-                        : 0}
-                      %)
-                    </span>
-                  </div>
-                  <div className={styles.progressBar}>
-                    <div
-                      className={styles.progressFill}
-                      style={{
-                        width: `${
-                          stats.totalAnimals > 0
-                            ? (stats.protectedAnimals / stats.totalAnimals) * 100
-                            : 0
-                        }%`,
-                        backgroundColor: '#10b981',
-                      }}
-                    />
-                  </div>
-                </div>
+              {stats.totalAnimals === 0 ? (
+                <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px 0' }}>
+                  등록된 동물이 없습니다.
+                </p>
+              ) : (
+                <div className={styles.chartContainer}>
+                  {/* SVG 도넛 차트 */}
+                  <div className={styles.donutWrapper}>
+                    {(() => {
+                      const total = stats.totalAnimals;
+                      const dogPct = total > 0 ? (stats.dogCount / total) * 100 : 0;
+                      const catPct = total > 0 ? (stats.catCount / total) * 100 : 0;
+                      const etcPct = total > 0 ? (stats.etcCount / total) * 100 : 0;
 
-                {/* 대기중 */}
-                <div className={styles.progressBarWrapper}>
-                  <div className={styles.progressBarHeader}>
-                    <span>대기중</span>
-                    <span>
-                      {stats.waitingAnimals}마리 (
-                      {stats.totalAnimals > 0
-                        ? Math.round((stats.waitingAnimals / stats.totalAnimals) * 100)
-                        : 0}
-                      %)
-                    </span>
-                  </div>
-                  <div className={styles.progressBar}>
-                    <div
-                      className={styles.progressFill}
-                      style={{
-                        width: `${
-                          stats.totalAnimals > 0
-                            ? (stats.waitingAnimals / stats.totalAnimals) * 100
-                            : 0
-                        }%`,
-                        backgroundColor: '#f59e0b',
-                      }}
-                    />
-                  </div>
-                </div>
+                      const radius = 60;
+                      const circumference = 2 * Math.PI * radius; // ~376.99
 
-                {/* 입양완료 */}
-                <div className={styles.progressBarWrapper}>
-                  <div className={styles.progressBarHeader}>
-                    <span>입양완료</span>
-                    <span>
-                      {stats.adoptedAnimals}마리 (
-                      {stats.totalAnimals > 0
-                        ? Math.round((stats.adoptedAnimals / stats.totalAnimals) * 100)
-                        : 0}
-                      %)
-                    </span>
+                      const dogStroke = (dogPct / 100) * circumference;
+                      const catStroke = (catPct / 100) * circumference;
+                      const etcStroke = (etcPct / 100) * circumference;
+
+                      const dogOffset = 0;
+                      const catOffset = -dogStroke;
+                      const etcOffset = -(dogStroke + catStroke);
+
+                      return (
+                        <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+                          {/* 배경 서클 */}
+                          <circle
+                            cx="80"
+                            cy="80"
+                            r={radius}
+                            fill="transparent"
+                            stroke="var(--border-color)"
+                            strokeWidth="20"
+                          />
+                          {/* 강아지 (Dog) */}
+                          {dogStroke > 0 && (
+                            <circle
+                              cx="80"
+                              cy="80"
+                              r={radius}
+                              fill="transparent"
+                              stroke="#587057"
+                              strokeWidth="20"
+                              strokeDasharray={`${dogStroke} ${circumference}`}
+                              strokeDashoffset={dogOffset}
+                              strokeLinecap="round"
+                            />
+                          )}
+                          {/* 고양이 (Cat) */}
+                          {catStroke > 0 && (
+                            <circle
+                              cx="80"
+                              cy="80"
+                              r={radius}
+                              fill="transparent"
+                              stroke="#c99368"
+                              strokeWidth="20"
+                              strokeDasharray={`${catStroke} ${circumference}`}
+                              strokeDashoffset={catOffset}
+                              strokeLinecap="round"
+                            />
+                          )}
+                          {/* 기타 (Etc) */}
+                          {etcStroke > 0 && (
+                            <circle
+                              cx="80"
+                              cy="80"
+                              r={radius}
+                              fill="transparent"
+                              stroke="#436d85"
+                              strokeWidth="20"
+                              strokeDasharray={`${etcStroke} ${circumference}`}
+                              strokeDashoffset={etcOffset}
+                              strokeLinecap="round"
+                            />
+                          )}
+                        </svg>
+                      );
+                    })()}
+                    <div className={styles.donutCenterText}>
+                      <div className={styles.donutCenterNumber}>{stats.totalAnimals}</div>
+                      <div className={styles.donutCenterLabel}>전체 마리</div>
+                    </div>
                   </div>
-                  <div className={styles.progressBar}>
-                    <div
-                      className={styles.progressFill}
-                      style={{
-                        width: `${
-                          stats.totalAnimals > 0
-                            ? (stats.adoptedAnimals / stats.totalAnimals) * 100
-                            : 0
-                        }%`,
-                        backgroundColor: '#6366f1',
-                      }}
-                    />
+
+                  {/* 차트 범례 */}
+                  <div className={styles.chartLegendList}>
+                    <div className={styles.chartLegendItem}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span className={styles.chartLegendColor} style={{ backgroundColor: '#587057' }} />
+                        <span style={{ fontWeight: 600 }}>강아지 (DOG)</span>
+                      </div>
+                      <span style={{ fontWeight: 700 }}>
+                        {stats.dogCount}마리 ({stats.totalAnimals > 0 ? Math.round((stats.dogCount / stats.totalAnimals) * 100) : 0}%)
+                      </span>
+                    </div>
+
+                    <div className={styles.chartLegendItem}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span className={styles.chartLegendColor} style={{ backgroundColor: '#c99368' }} />
+                        <span style={{ fontWeight: 600 }}>고양이 (CAT)</span>
+                      </div>
+                      <span style={{ fontWeight: 700 }}>
+                        {stats.catCount}마리 ({stats.totalAnimals > 0 ? Math.round((stats.catCount / stats.totalAnimals) * 100) : 0}%)
+                      </span>
+                    </div>
+
+                    {stats.etcCount > 0 && (
+                      <div className={styles.chartLegendItem}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span className={styles.chartLegendColor} style={{ backgroundColor: '#436d85' }} />
+                          <span style={{ fontWeight: 600 }}>기타 동물 (ETC)</span>
+                        </div>
+                        <span style={{ fontWeight: 700 }}>
+                          {stats.etcCount}마리 ({Math.round((stats.etcCount / stats.totalAnimals) * 100)}%)
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
+              )}
+            </div>
+          </div>
+
+          {/* 3. 입양 심사 처리 현황 스택 프로그레스 */}
+          <div className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <div className={styles.sectionTitle}>
+                <ClipboardList size={18} color="var(--primary-color)" />
+                <span>입양 신청 처리 비율</span>
               </div>
+            </div>
+            <div className={styles.sectionBody}>
+              {stats.totalAdoptions === 0 ? (
+                <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '16px 0' }}>
+                  접수된 입양 신청이 없습니다.
+                </p>
+              ) : (
+                <div className={styles.stackedBarWrapper}>
+                  {/* 스택 바 */}
+                  <div className={styles.stackedBar}>
+                    {stats.approvedAdoptions > 0 && (
+                      <div
+                        className={styles.stackedSegment}
+                        style={{
+                          width: `${(stats.approvedAdoptions / stats.totalAdoptions) * 100}%`,
+                          backgroundColor: '#10b981',
+                        }}
+                        title={`승인: ${stats.approvedAdoptions}건`}
+                      />
+                    )}
+                    {stats.pendingCount > 0 && (
+                      <div
+                        className={styles.stackedSegment}
+                        style={{
+                          width: `${(stats.pendingCount / stats.totalAdoptions) * 100}%`,
+                          backgroundColor: '#f59e0b',
+                        }}
+                        title={`대기: ${stats.pendingCount}건`}
+                      />
+                    )}
+                    {stats.rejectedAdoptions > 0 && (
+                      <div
+                        className={styles.stackedSegment}
+                        style={{
+                          width: `${(stats.rejectedAdoptions / stats.totalAdoptions) * 100}%`,
+                          backgroundColor: '#ef4444',
+                        }}
+                        title={`반려: ${stats.rejectedAdoptions}건`}
+                      />
+                    )}
+                  </div>
+
+                  {/* 스택 범례 */}
+                  <div className={styles.stackedLegend}>
+                    <span className={styles.stackedLegendItem}>
+                      <span className={styles.stackedDot} style={{ backgroundColor: '#10b981' }} />
+                      승인 {stats.approvedAdoptions}건 ({Math.round((stats.approvedAdoptions / stats.totalAdoptions) * 100)}%)
+                    </span>
+                    <span className={styles.stackedLegendItem}>
+                      <span className={styles.stackedDot} style={{ backgroundColor: '#f59e0b' }} />
+                      심사대기 {stats.pendingCount}건 ({Math.round((stats.pendingCount / stats.totalAdoptions) * 100)}%)
+                    </span>
+                    <span className={styles.stackedLegendItem}>
+                      <span className={styles.stackedDot} style={{ backgroundColor: '#ef4444' }} />
+                      반려 {stats.rejectedAdoptions}건 ({Math.round((stats.rejectedAdoptions / stats.totalAdoptions) * 100)}%)
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

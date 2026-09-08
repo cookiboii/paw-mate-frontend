@@ -127,6 +127,59 @@
   box-shadow: var(--shadow-glow-primary);
 }
 
+/* 활성 필터 태그 칩 영역 */
+.activeTagsContainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.activeTagsLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+.activeTagChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(88, 112, 87, 0.25);
+  transition: all var(--transition-fast);
+}
+
+.activeTagChip:hover {
+  background-color: rgba(88, 112, 87, 0.2);
+}
+
+.activeTagRemoveBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  border-radius: 50%;
+  transition: transform var(--transition-fast);
+}
+
+.activeTagRemoveBtn:hover {
+  transform: scale(1.2);
+}
+
 /* 실시간 검색 & 필터 결과 카운트 뱃지 & 컨트롤 헤더 */
 .resultsHeader {
   display: flex;

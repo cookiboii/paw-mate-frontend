@@ -180,10 +180,6 @@ const MyPage: React.FC = () => {
                   <span className={styles.label}>이메일</span>
                   <span className={styles.value}>{userInfo.email}</span>
                 </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.label}>가입 유형</span>
-                  <span className={styles.value}>{provider || 'LOCAL'}</span>
-                </div>
               </div>
               <div className={styles.cardFooter}>
                 <button className={styles.deleteButton} onClick={handleDeleteAccount}>

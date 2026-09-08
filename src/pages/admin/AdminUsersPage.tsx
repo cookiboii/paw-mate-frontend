@@ -177,7 +177,6 @@ const AdminUsersPage: React.FC = () => {
             <tr>
               <th>유저 정보</th>
               <th>아이디(ID)</th>
-              <th>가입 유형</th>
               <th>권한</th>
               <th className={styles.textRight}>관리</th>
             </tr>
@@ -185,7 +184,7 @@ const AdminUsersPage: React.FC = () => {
           <tbody>
             {paginatedUsers.length === 0 ? (
               <tr>
-                <td colSpan={5} className={styles.emptyRow}>
+                <td colSpan={4} className={styles.emptyRow}>
                   조건에 맞는 유저가 없습니다.
                 </td>
               </tr>
@@ -204,7 +203,6 @@ const AdminUsersPage: React.FC = () => {
                     </div>
                   </td>
                   <td className={styles.lightText}>#{user.id}</td>
-                  <td className={styles.lightText}>{user.provider || 'LOCAL'}</td>
                   <td>
                     <span
                       className={`${styles.badge} ${

@@ -122,6 +122,63 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             </button>
           </div>
         </div>
+
+        {/* 🏷️ 적용된 필터 태그 칩 (Active Tag Chips) */}
+        {hasActiveFilter && (
+          <div className={styles.activeTagsContainer}>
+            <span className={styles.activeTagsLabel}>적용된 필터:</span>
+            {speciesFilter !== 'ALL' && (
+              <span className={styles.activeTagChip}>
+                <span>{speciesFilter === 'DOG' ? '강아지' : speciesFilter === 'CAT' ? '고양이' : '기타 축종'}</span>
+                <button
+                  type="button"
+                  onClick={() => onSpeciesChange('ALL')}
+                  className={styles.activeTagRemoveBtn}
+                  aria-label="축종 필터 해제"
+                >
+                  <X size={14} />
+                </button>
+              </span>
+            )}
+
+            {genderFilter !== 'ALL' && (
+              <span className={styles.activeTagChip}>
+                <span>{genderFilter === 'MALE' ? '남아' : '여아'}</span>
+                <button
+                  type="button"
+                  onClick={() => onGenderChange('ALL')}
+                  className={styles.activeTagRemoveBtn}
+                  aria-label="성별 필터 해제"
+                >
+                  <X size={14} />
+                </button>
+              </span>
+            )}
+
+            {searchQuery.trim() !== '' && (
+              <span className={styles.activeTagChip}>
+                <span>검색: "{searchQuery.trim()}"</span>
+                <button
+                  type="button"
+                  onClick={() => onSearchChange('')}
+                  className={styles.activeTagRemoveBtn}
+                  aria-label="검색어 초기화"
+                >
+                  <X size={14} />
+                </button>
+              </span>
+            )}
+
+            <button
+              type="button"
+              onClick={onReset}
+              className={styles.resetBtn}
+              style={{ fontSize: '0.82rem', marginLeft: '4px' }}
+            >
+              전체 해제
+            </button>
+          </div>
+        )}
       </section>
 
       {/* 결과 헤더 (카운트 뱃지, 리셋 버튼, 뷰 모드 토글) */}
