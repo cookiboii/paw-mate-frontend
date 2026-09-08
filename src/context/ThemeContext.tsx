@@ -18,13 +18,7 @@ export const useTheme = (): ThemeContextType => {
 
 const getInitialTheme = (): ThemeType => {
   try {
-    const savedTheme = localStorage.getItem('pawmate-theme');
-    if (savedTheme === 'dark' || savedTheme === 'light') {
-      return savedTheme as ThemeType;
-    }
-    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
+    localStorage.removeItem('pawmate-theme');
   } catch {
     // fallback
   }
@@ -36,12 +30,12 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeType>(getInitialTheme);
+  const [theme, setTheme] = useState<ThemeType>('light');
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', 'light');
     try {
-      localStorage.setItem('pawmate-theme', theme);
+      localStorage.removeItem('pawmate-theme');
     } catch {
       // ignore
     }

@@ -158,27 +158,6 @@
   color: var(--danger-color);
 }
 
-.themeToggleBtn {
-  background: var(--surface-color);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-}
-
-.themeToggleBtn:hover {
-  transform: translateY(-2px) rotate(15deg);
-  box-shadow: var(--shadow-md);
-  background: var(--bg-color);
-}
 
 /* 모바일 햄버거 & 컨트롤 */
 .mobileControls {
@@ -464,49 +443,6 @@
   cursor: pointer;
 }
 
-.themeToggleBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-color);
-  background-color: var(--surface-color);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-xs);
-}
-
-.themeToggleBtn:hover {
-  background-color: var(--surface-secondary);
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-  transform: scale(1.08) rotate(12deg);
-}
-
-.drawerThemeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 12px 16px;
-  margin-top: 16px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  background-color: var(--surface-color);
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.drawerThemeToggle:hover {
-  border-color: var(--primary-color);
-  background-color: var(--surface-secondary);
-}
 
 .drawerLoginBtn {
   text-align: center;

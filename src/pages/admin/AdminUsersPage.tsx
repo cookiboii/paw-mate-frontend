@@ -94,9 +94,9 @@ const AdminUsersPage: React.FC = () => {
 
   // 회원 강제 탈퇴 실행 (서버 DELETE /adoptmate/admin/{memberId} 연동)
   const handleConfirmDelete = async () => {
-    if (!deleteTargetUser || deleteTargetUser.id === undefined || deleteTargetUser.id === null) return;
     const target = deleteTargetUser;
-    const targetId: string | number = target.id;
+    if (!target || target.id === undefined || target.id === null) return;
+    const targetId = target.id!;
     setDeleteTargetUser(null);
 
     try {
