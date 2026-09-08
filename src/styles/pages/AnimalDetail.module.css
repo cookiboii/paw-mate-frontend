@@ -376,15 +376,47 @@
 }
 
 @media (max-width: 768px) {
+  .detailContainer {
+    margin: 20px auto 80px;
+    padding: 0 16px;
+  }
+
   .imageContainer {
-    height: 320px;
+    height: 280px;
   }
   
   .info {
-    padding: 24px;
+    padding: 20px 16px;
   }
   
   .breed {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
+  }
+
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .statusBanner {
+    padding: 14px 16px;
+    font-size: 0.92rem;
+    gap: 10px;
+  }
+
+  .adoptActionBtn {
+    padding: 14px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageContainer {
+    height: 240px;
+  }
+
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }

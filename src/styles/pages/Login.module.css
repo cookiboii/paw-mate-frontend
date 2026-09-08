@@ -146,3 +146,17 @@
 .signupLink:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 480px) {
+  .loginContainer {
+    width: calc(100% - 32px);
+    margin: 32px auto 60px;
+    padding: 28px 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .title {
+    font-size: 1.6rem;
+    margin-bottom: 24px;
+  }
+}

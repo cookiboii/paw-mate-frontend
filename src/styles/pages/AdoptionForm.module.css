@@ -229,13 +229,17 @@
 }
 
 @media (max-width: 640px) {
+  .pageWrapper {
+    padding: 30px 16px 80px;
+  }
+
   .formGrid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
 
   .cardHeader, .form, .animalSummary {
-    padding: 24px;
+    padding: 20px 16px;
   }
 
   .btnRow {

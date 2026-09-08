@@ -136,8 +136,18 @@
 }
 
 @media (max-width: 768px) {
+  .footer {
+    padding: 40px 0 24px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
   .topSection {
     grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-bottom: 36px;
   }
   
   .brandColumn {
@@ -149,14 +159,22 @@
     gap: 16px;
     text-align: center;
   }
+
+  .legalLinks {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 14px;
+  }
 }
 
 @media (max-width: 576px) {
   .topSection {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
   
   .brandColumn {
     grid-column: span 1;
   }
 }
+

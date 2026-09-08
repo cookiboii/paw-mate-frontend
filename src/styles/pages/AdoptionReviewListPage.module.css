@@ -321,12 +321,16 @@
 
 
 @media (max-width: 768px) {
+  .container {
+    padding: 0 16px 80px;
+  }
+
   .pageHeader {
-    padding: 40px 0 28px;
+    padding: 32px 0 24px;
   }
 
   .pageHeader h2 {
-    font-size: clamp(1.6rem, 4vw, 2rem);
+    font-size: clamp(1.5rem, 5vw, 1.8rem);
   }
 
   .tabBar {
@@ -335,6 +339,7 @@
     padding-bottom: 12px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    gap: 6px;
   }
 
   .tabBar::-webkit-scrollbar {
@@ -343,19 +348,25 @@
 
   .tabBtn {
     flex-shrink: 0;
-    padding: 8px 16px;
-    font-size: 0.9rem;
+    padding: 8px 14px;
+    font-size: 0.88rem;
   }
 
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
   }
 
   .writeBtn {
-    margin-left: 0;
-    width: 100%;
-    justify-content: center;
+    flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
 
