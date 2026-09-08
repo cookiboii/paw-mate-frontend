@@ -339,30 +339,60 @@
 
 @media (max-width: 768px) {
   .heroSection {
-    height: 400px;
+    height: 320px;
   }
   
   .heroOverlay {
-    padding: 32px 24px;
+    padding: 24px 16px;
   }
   
   .title {
-    font-size: 2rem;
+    font-size: clamp(1.4rem, 5vw, 1.8rem);
   }
   
   .contentSection {
-    padding: 32px 24px;
+    padding: 24px 16px;
   }
   
   .actions {
     position: static;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     justify-content: flex-end;
   }
   
   .commentWrapper {
-    margin: 0 24px;
-    padding: 24px;
+    margin: 0 16px;
+    padding: 24px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroSection {
+    height: 230px;
+  }
+
+  .heroOverlay {
+    padding: 16px 12px;
+  }
+
+  .contentSection {
+    padding: 18px 14px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .shareBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .commentWrapper {
+    margin: 0 10px;
+    padding: 16px 12px;
   }
 }
 

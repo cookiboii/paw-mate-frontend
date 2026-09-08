@@ -225,17 +225,16 @@
 /* Modal */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 24px;
+  padding: 16px;
 }
 
 .modalContent {
@@ -247,13 +246,16 @@
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   animation: slideUpFade 0.3s ease-out;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+  padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-color);
 }
@@ -283,6 +285,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow-y: auto;
 }
 
 .modalSection h4 {
@@ -321,10 +324,88 @@
 }
 
 .modalFooter {
-  padding: 20px 24px;
+  padding: 16px 24px;
   background: var(--bg-color);
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 14px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .filterTabs {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .filterTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filterTab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 0.88rem;
+    padding: 7px 14px;
+  }
+
+  .tableWrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px 10px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .modalContent {
+    border-radius: var(--radius-lg);
+  }
+
+  .modalHeader,
+  .modalBody,
+  .modalFooter {
+    padding: 16px;
+  }
+
+  .modalGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px 10px;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .modalFooter {
+    flex-direction: column-reverse;
+  }
+
+  .modalFooter button {
+    width: 100%;
+    justify-content: center;
+  }
 }

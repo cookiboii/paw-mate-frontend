@@ -366,7 +366,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 20px 16px;
+    padding: 20px 14px;
   }
 
   .title {
@@ -395,4 +395,31 @@
     white-space: nowrap;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px 10px;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .pagination {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .pageBtn {
+    padding: 6px 10px;
+    font-size: 0.82rem;
+  }
+
+  .pageNum {
+    width: 30px;
+    height: 30px;
+    font-size: 0.82rem;
+  }
+}
+
 

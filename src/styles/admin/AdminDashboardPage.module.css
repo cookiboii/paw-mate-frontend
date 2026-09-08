@@ -444,19 +444,102 @@
 }
 
 @media (max-width: 1024px) {
+  .container {
+    padding: 28px 20px;
+  }
+
   .dashboardGrid {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 20px 16px;
+    padding: 20px 14px;
   }
-  
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .statCard {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .statIcon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .statValue {
+    font-size: 1.5rem;
+  }
+
+  .sectionHeader {
+    padding: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sectionBody {
+    padding: 16px;
+  }
+
+  .tableWrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .quickActionItem {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px 10px;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+
   .statsGrid {
     grid-template-columns: 1fr;
-    gap: 16px;
+  }
+
+  .actionBtns {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .btnSm {
+    width: 100%;
+    text-align: center;
+    padding: 6px 8px;
   }
 }
 

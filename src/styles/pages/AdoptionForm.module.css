@@ -247,6 +247,16 @@
   }
 }
 
+@media (max-width: 480px) {
+  .promptCard {
+    padding: 28px 16px;
+  }
+
+  .cardHeader h2 {
+    font-size: 1.5rem;
+  }
+}
+
 .promptLink {
   margin-top: 16px;
   display: inline-block;

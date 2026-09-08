@@ -375,6 +375,24 @@
   cursor: pointer;
 }
 
+@media (max-width: 1024px) {
+  .detailContainer {
+    margin: 30px auto 80px;
+  }
+
+  .imageContainer {
+    height: 380px;
+  }
+
+  .info {
+    padding: 30px 24px;
+  }
+
+  .breed {
+    font-size: 1.9rem;
+  }
+}
+
 @media (max-width: 768px) {
   .detailContainer {
     margin: 20px auto 80px;
@@ -390,12 +408,22 @@
   }
   
   .breed {
-    font-size: 1.6rem;
+    font-size: 1.55rem;
   }
 
   .infoGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+  }
+
+  .infoCard {
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .cardIcon {
+    width: 38px;
+    height: 38px;
   }
 
   .statusBanner {
@@ -412,11 +440,32 @@
 
 @media (max-width: 480px) {
   .imageContainer {
-    height: 240px;
+    height: 230px;
   }
 
   .infoGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
+
+  .infoCard {
+    padding: 10px 8px;
+    gap: 8px;
+  }
+
+  .cardIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .adminActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .adminActions button {
+    width: 100%;
+    justify-content: center;
+  }
 }
+
