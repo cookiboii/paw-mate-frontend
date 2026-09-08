@@ -59,7 +59,7 @@ const AdoptionForm: React.FC = () => {
     return (
       <div className={styles.loginPrompt}>
         <div className={styles.promptCard}>
-          <span style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+          <span>
             <Lock size={44} color="var(--text-muted)" />
           </span>
           <h3>로그인이 필요한 서비스입니다</h3>
@@ -67,8 +67,7 @@ const AdoptionForm: React.FC = () => {
           <Link
             to="/login"
             state={{ from: `/adopt/${animalId}` }}
-            className="btn-primary"
-            style={{ marginTop: '16px', display: 'inline-block' }}
+            className={`btn-primary ${styles.promptLink}`}
           >
             로그인하러 가기
           </Link>
@@ -81,28 +80,26 @@ const AdoptionForm: React.FC = () => {
   if (hasAlreadyApplied) {
     return (
       <div className={styles.loginPrompt}>
-        <div className={styles.promptCard} style={{ maxWidth: '480px' }}>
-          <span style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+        <div className={styles.promptCard}>
+          <span>
             <CheckCircle2 size={52} color="var(--primary-color)" />
           </span>
           <h3>이미 입양 신청이 접수된 아이입니다</h3>
-          <p style={{ lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '24px' }}>
+          <p className={styles.promptDesc}>
             회원님께서 제출하신 입양 신청서가 정상 접수되어 현재 보호소 담당자가 정성껏 심사 중입니다.<br />
             동일 동물에 대한 중복 신청은 제한됩니다.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div className={styles.promptButtonGroup}>
             <Link
               to="/mypage"
-              className="btn-primary"
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px' }}
+              className={`btn-primary ${styles.promptButton}`}
             >
               <ClipboardList size={18} />
               <span>내 입양 신청 내역 확인하기</span>
             </Link>
             <Link
               to="/animals"
-              className="btn-secondary"
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px' }}
+              className={`btn-secondary ${styles.promptButton}`}
             >
               <ArrowLeft size={18} />
               <span>다른 아이들 보러가기</span>
@@ -164,7 +161,7 @@ const AdoptionForm: React.FC = () => {
     <div className={styles.pageWrapper}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <h2 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <h2>
             <FileText size={24} color="var(--primary-color)" />
             <span>입양 신청서 작성</span>
           </h2>
@@ -245,9 +242,9 @@ const AdoptionForm: React.FC = () => {
           </div>
 
           <div className={styles.fieldGroupFull}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <label className={styles.label} style={{ marginBottom: 0 }}>입양 동기 및 돌봄 계획 *</label>
-              <span style={{ fontSize: '0.82rem', color: interview.trim().length < 10 ? 'var(--danger-color, #e63946)' : 'var(--text-muted)' }}>
+            <div className={styles.fieldHeader}>
+              <label className={`${styles.label} ${styles.fieldHeaderLabel}`}>입양 동기 및 돌봄 계획 *</label>
+              <span className={interview.trim().length < 10 ? styles.charCountError : styles.charCount}>
                 {interview.length}자 {interview.trim().length < 10 && '(최소 10자 이상)'}
               </span>
             </div>

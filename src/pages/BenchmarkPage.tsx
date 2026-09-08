@@ -256,23 +256,23 @@ export default function () {
       {activeTab === 'concurrency' && (
         <div>
           <div className={styles.card}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem', marginBottom: '1.2rem' }}>
-              <h2 className={styles.cardTitle} style={{ margin: 0 }}>
+            <div className={styles.cardHeaderRow}>
+              <h2 className={`${styles.cardTitle} ${styles.cardTitleNoMargin}`}>
                 <Activity size={20} color="var(--primary-color)" /> 실제 백엔드 API 동시성 & 부하 테스트
               </h2>
-              <div style={{ fontSize: '0.8rem', background: 'var(--primary-light)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-full)', color: 'var(--primary-color)', fontWeight: 600 }}>
+              <div className={styles.serverBadge}>
                 🌐 연결 서버: Cloudtype Live Backend
               </div>
             </div>
 
             <div className={styles.controlGrid}>
               <div className={styles.controlGroup}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className={styles.labelRow}>
                   <label className={styles.label}>테스트 대상 API 엔드포인트</label>
                   <button
                     type="button"
                     onClick={() => setIsCustomEndpoint(!isCustomEndpoint)}
-                    style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    className={styles.textToggleBtn}
                   >
                     {isCustomEndpoint ? '기본 목록 선택' : '직접 URL 입력'}
                   </button>
@@ -303,17 +303,17 @@ export default function () {
               </div>
 
               <div className={styles.controlGroup}>
-                <label className={styles.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                <label className={`${styles.label} ${styles.checkboxLabel}`}>
                   <span>타임스탬프 캐시 무효화 (_t 강제 파라미터)</span>
                   <input
                     type="checkbox"
                     checked={bypassCache}
                     onChange={(e) => setBypassCache(e.target.checked)}
                     disabled={isRunning}
-                    style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)' }}
+                    className={styles.checkboxInput}
                   />
                 </label>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <p className={styles.controlHint}>
                   {bypassCache
                     ? '⚠️ 매 요청마다 고유 파라미터를 붙여 브라우저/서버 캐시를 무효화합니다 (DB 직격 부하).'
                     : '✅ 표준 REST 요청으로 실제 운영 환경과 동일하게 측정합니다.'}
@@ -382,7 +382,7 @@ export default function () {
             )}
 
             <div className={styles.actionRow}>
-              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <div className={styles.actionHint}>
                 {isRunning
                   ? `진행 중... (${progress.completed} / ${progress.total})`
                   : '설정을 마친 후 [동시성 테스트 발사]를 클릭하세요.'}
@@ -457,7 +457,7 @@ export default function () {
 
                 <div className={styles.metricCard}>
                   <div className={styles.metricLabel}>Min / Max</div>
-                  <div className={styles.metricVal} style={{ fontSize: '1.2rem' }}>
+                  <div className={`${styles.metricVal} ${styles.metricValSmall}`}>
                     {testResult ? `${testResult.minDuration}ms / ${testResult.maxDuration}ms` : '-'}
                   </div>
                 </div>
@@ -466,7 +466,7 @@ export default function () {
               {/* 상태 코드 뱃지 */}
               {testResult && (
                 <div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                  <div className={styles.statusLabel}>
                     응답 상태 코드 분포:
                   </div>
                   <div className={styles.statusBadgeGroup}>
@@ -493,7 +493,7 @@ export default function () {
               <div className={styles.timelineContainer}>
                 <div className={styles.timelineTitle}>
                   <span>요청별 Latency 타임라인 (높을수록 응답 지연)</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  <span className={styles.timelineLegend}>
                     🟢 성공 | 🔴 실패
                   </span>
                 </div>
@@ -529,24 +529,23 @@ export default function () {
           <h2 className={styles.cardTitle}>
             <Zap size={20} color="var(--primary-color)" /> React 19 동시성 렌더링(Concurrent Mode) 스트레스
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
+          <p className={styles.cardSubDesc}>
             수천 개의 복잡한 DOM 요소를 실시간으로 필터링할 때, React 19의 <code>useTransition</code>을 켰을 때와
             껐을 때의 <strong>입력 지연(Input Latency) 및 반응 속도 차이</strong>를 직접 비교해 보세요.
           </p>
 
           <div className={styles.stressControls}>
-            <div style={{ flex: 1, minWidth: '240px' }}>
+            <div className={styles.flexInputCol}>
               <input
                 type="text"
-                className={styles.input}
-                style={{ width: '100%' }}
+                className={`${styles.input} ${styles.fullWidthInput}`}
                 placeholder="동물 이름, 품종(골든 리트리버 등) 검색..."
                 value={searchQuery}
                 onChange={handleSearchChange}
               />
             </div>
 
-            <div style={{ minWidth: '180px' }}>
+            <div className={styles.sliderCol}>
               <label className={styles.label}>
                 가상 데이터 수: <strong>{itemCount.toLocaleString()}개</strong>
               </label>
@@ -587,7 +586,7 @@ export default function () {
 
             <div className={styles.renderStatsItem}>
               <span>동시성 상태:</span>
-              <strong style={{ color: isPending ? 'var(--warning-color)' : 'var(--success-color)' }}>
+              <strong className={isPending ? styles.statusPending : styles.statusStable}>
                 {isPending ? '⏳ 백그라운드 렌더링 중 (입력 끊김 없음)' : '✅ 안정 상태'}
               </strong>
             </div>
@@ -597,16 +596,16 @@ export default function () {
           <div className={styles.renderGrid}>
             {filteredPets.slice(0, 100).map((pet) => (
               <div key={pet.id} className={styles.mockAnimalCard}>
-                <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{pet.name}</div>
-                <div style={{ color: 'var(--text-muted)' }}>{pet.breed}</div>
-                <div style={{ fontSize: '0.75rem', color: pet.status === 'ADOPTED' ? 'var(--info-color)' : 'var(--primary-color)' }}>
+                <div className={styles.mockPetName}>{pet.name}</div>
+                <div className={styles.mockPetBreed}>{pet.breed}</div>
+                <div className={`${styles.mockPetStatus} ${pet.status === 'ADOPTED' ? styles.petStatusAdopted : styles.petStatusProtecting}`}>
                   {pet.status === 'ADOPTED' ? '입양 완료' : '보호 중'} ({pet.age}살)
                 </div>
               </div>
             ))}
           </div>
           {filteredPets.length > 100 && (
-            <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+            <div className={styles.renderLimitNotice}>
               * UI 과부하 방지를 위해 상위 100개 카드만 표시 중입니다. (전체 {filteredPets.length}개 연산 완료)
             </div>
           )}
@@ -620,7 +619,7 @@ export default function () {
             <h2 className={styles.cardTitle}>
               <Gauge size={20} color="var(--primary-color)" /> 실시간 Core Web Vitals & FPS HUD
             </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
+            <p className={styles.cardSubDesc}>
               Google Lighthouse 및 브라우저 성능 표준 지표(LCP, INP, CLS, TTFB, FCP)를 실시간 측정합니다.
             </p>
 
@@ -637,8 +636,8 @@ export default function () {
                     {fps >= 50 ? 'Smooth' : 'Drop'}
                   </span>
                 </div>
-                <div className={styles.vitalValue} style={{ color: fps >= 50 ? 'var(--success-color)' : 'var(--danger-color)' }}>
-                  {fps} <span style={{ fontSize: '1rem', fontWeight: 500 }}>fps</span>
+                <div className={`${styles.vitalValue} ${fps >= 50 ? styles.vitalFpsGood : styles.vitalFpsDrop}`}>
+                  {fps} <span className={styles.vitalUnit}>fps</span>
                 </div>
                 <div className={styles.vitalDesc}>초당 화면 프레임 레이트 (60 FPS 목표)</div>
               </div>
@@ -733,22 +732,22 @@ export default function () {
           <h2 className={styles.cardTitle}>
             <Terminal size={20} color="var(--primary-color)" /> k6 백엔드 동시성 & 부하 테스트 가이드
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+          <p className={styles.k6IntroText}>
             k6는 터미널에서 백엔드 서버로 수백~수천 개의 가상 사용자(VU) 동시 요청을 발생시켜
             Race Condition(동시성 이슈)과 서버 한계 부하를 측정하는 최고의 도구입니다.
           </p>
 
-          <div style={{ marginTop: '1.2rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+          <div className={styles.k6StepSection}>
+            <h3 className={styles.k6StepTitle}>
               1. k6 설치 (Windows)
             </h3>
-            <div style={{ background: 'var(--surface-secondary)', padding: '0.8rem 1rem', borderRadius: 'var(--radius-sm)', fontFamily: 'monospace', fontSize: '0.9rem' }}>
+            <div className={styles.commandBox}>
               winget install k6 --source winget
             </div>
           </div>
 
-          <div style={{ marginTop: '1.2rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+          <div className={styles.k6StepSection}>
+            <h3 className={styles.k6StepTitle}>
               2. 동시성 부하 테스트 스크립트 (<code>k6/concurrency-test.js</code>)
             </h3>
             <div className={styles.codeBlockWrapper}>
@@ -760,14 +759,14 @@ export default function () {
             </div>
           </div>
 
-          <div style={{ marginTop: '1.2rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+          <div className={styles.k6StepSection}>
+            <h3 className={styles.k6StepTitle}>
               3. 실시간 웹 대시보드와 함께 실행하기
             </h3>
-            <div style={{ background: 'var(--surface-secondary)', padding: '0.8rem 1rem', borderRadius: 'var(--radius-sm)', fontFamily: 'monospace', fontSize: '0.9rem' }}>
+            <div className={styles.commandBox}>
               K6_WEB_DASHBOARD=1 k6 run k6/concurrency-test.js
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
+            <p className={styles.commandHint}>
               * 실행 후 터미널에 출력되는 웹 브라우저 링크(http://localhost:5665)를 열면 실시간 부하 차트가 표시됩니다.
             </p>
           </div>

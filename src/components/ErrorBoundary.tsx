@@ -44,7 +44,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return (
         <div className={styles.errorWrapper}>
           <div className={styles.errorCard}>
-            <div className={styles.iconWrapper} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className={styles.iconWrapper}>
               <AlertCircle size={48} color="var(--danger-color, #e63946)" />
             </div>
             <h2 className={styles.title}>일시적인 오류가 발생했습니다</h2>

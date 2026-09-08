@@ -245,6 +245,8 @@
   font-size: 2.8rem;
   margin-bottom: 14px;
   opacity: 0.8;
+  display: flex;
+  justify-content: center;
 }
 
 .uploadPlaceholder p {
@@ -340,6 +342,52 @@
 .submitBtnFreeAdoption:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .form {
+    padding: 24px 20px;
+  }
+  
+  .cardHeader {
+    padding: 24px 20px;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.uploadReportTip {
+  font-size: 0.85rem;
+  margin-top: 8px;
+  color: var(--danger-color);
+}
+
+.uploadAdoptionTip {
+  font-size: 0.85rem;
+  margin-top: 8px;
+  color: #2d6a4f;
+}
+
+.fieldHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.fieldHeaderLabel {
+  margin-bottom: 0 !important;
+}
+
+.charCount {
+  font-size: 0.82rem;
+  color: var(--text-muted);
 }
 
 @media (max-width: 576px) {

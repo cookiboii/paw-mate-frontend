@@ -25,7 +25,9 @@
 
 .promptCard span {
   font-size: 3rem;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 16px;
 }
 
@@ -60,6 +62,9 @@
   color: var(--text-primary);
   margin-bottom: 8px;
   letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .cardHeader p {
@@ -236,4 +241,50 @@
   .btnRow {
     flex-direction: column-reverse;
   }
+}
+
+.promptLink {
+  margin-top: 16px;
+  display: inline-block;
+}
+
+.promptDesc {
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.promptButtonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.promptButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+}
+
+.fieldHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.fieldHeaderLabel {
+  margin-bottom: 0 !important;
+}
+
+.charCount {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.charCountError {
+  font-size: 0.82rem;
+  color: var(--danger-color, #e63946);
 }

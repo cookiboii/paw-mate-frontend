@@ -10,7 +10,7 @@ interface DashboardChartsProps {
 
 export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className={styles.chartsColumn}>
       {/* 1. 빠른 관리 액션 */}
       <div className={styles.sectionCard}>
         <div className={styles.sectionHeader}>
@@ -27,7 +27,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               </div>
               <div>
                 <div>보호 동물 관리 및 상태 변경</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <div className={styles.quickActionDesc}>
                   보호중/대기/입양완료 원클릭 관리
                 </div>
               </div>
@@ -39,7 +39,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               </div>
               <div>
                 <div>신규 보호 동물 등록</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <div className={styles.quickActionDesc}>
                   사진 및 상세 정보 업로드
                 </div>
               </div>
@@ -51,7 +51,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               </div>
               <div>
                 <div>회원 및 관리자 권한 관리</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <div className={styles.quickActionDesc}>
                   권한 부여 및 가입 현황
                 </div>
               </div>
@@ -59,15 +59,14 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
 
             <Link
               to="/benchmark"
-              className={styles.quickActionItem}
-              style={{ borderColor: 'rgba(234, 88, 12, 0.3)' }}
+              className={`${styles.quickActionItem} ${styles.benchmarkQuickAction}`}
             >
-              <div className={styles.quickActionIcon} style={{ color: '#ea580c' }}>
+              <div className={`${styles.quickActionIcon} ${styles.benchmarkQuickActionIcon}`}>
                 <TrendingUp size={18} />
               </div>
               <div>
-                <div style={{ color: '#ea580c' }}>성능 & 동시성 테스트 랩</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <div className={styles.benchmarkQuickActionTitle}>성능 & 동시성 테스트 랩</div>
+                <div className={styles.quickActionDesc}>
                   No-Offset 커서 속도 실시간 벤치마크
                 </div>
               </div>
@@ -86,25 +85,23 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
         </div>
         <div className={styles.sectionBody}>
           {stats.totalAnimals === 0 ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px 0' }}>
+            <p className={styles.chartEmptyText}>
               등록된 동물이 없습니다.
             </p>
           ) : (
-            <div className={styles.chartContainer}>
-              {/* SVG 도넛 차트 */}
-              <div className={styles.donutWrapper}>
+            <div>
+              {/* SVG 원형 도넛 차트 */}
+              <div className={styles.donutContainer}>
                 {(() => {
-                  const total = stats.totalAnimals;
-                  const dogPct = total > 0 ? (stats.dogCount / total) * 100 : 0;
-                  const catPct = total > 0 ? (stats.catCount / total) * 100 : 0;
-                  const etcPct = total > 0 ? (stats.etcCount / total) * 100 : 0;
-
                   const radius = 60;
                   const circumference = 2 * Math.PI * radius;
+                  const dogRatio = stats.totalAnimals > 0 ? stats.dogCount / stats.totalAnimals : 0;
+                  const catRatio = stats.totalAnimals > 0 ? stats.catCount / stats.totalAnimals : 0;
+                  const etcRatio = stats.totalAnimals > 0 ? stats.etcCount / stats.totalAnimals : 0;
 
-                  const dogStroke = (dogPct / 100) * circumference;
-                  const catStroke = (catPct / 100) * circumference;
-                  const etcStroke = (etcPct / 100) * circumference;
+                  const dogStroke = dogRatio * circumference;
+                  const catStroke = catRatio * circumference;
+                  const etcStroke = etcRatio * circumference;
 
                   const dogOffset = 0;
                   const catOffset = -dogStroke;
@@ -115,7 +112,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                       width="160"
                       height="160"
                       viewBox="0 0 160 160"
-                      style={{ transform: 'rotate(-90deg)' }}
+                      className={styles.donutSvg}
                     >
                       {/* 배경 서클 */}
                       <circle
@@ -180,22 +177,22 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               {/* 차트 범례 */}
               <div className={styles.chartLegendList}>
                 <div className={styles.chartLegendItem}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span className={styles.chartLegendColor} style={{ backgroundColor: '#587057' }} />
-                    <span style={{ fontWeight: 600 }}>강아지 (DOG)</span>
+                  <div className={styles.legendLabelGroup}>
+                    <span className={`${styles.chartLegendColor} ${styles.legendColorDog}`} />
+                    <span className={styles.legendName}>강아지 (DOG)</span>
                   </div>
-                  <span style={{ fontWeight: 700 }}>
+                  <span className={styles.legendCount}>
                     {stats.dogCount}마리 (
                     {stats.totalAnimals > 0 ? Math.round((stats.dogCount / stats.totalAnimals) * 100) : 0}%)
                   </span>
                 </div>
 
                 <div className={styles.chartLegendItem}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span className={styles.chartLegendColor} style={{ backgroundColor: '#c99368' }} />
-                    <span style={{ fontWeight: 600 }}>고양이 (CAT)</span>
+                  <div className={styles.legendLabelGroup}>
+                    <span className={`${styles.chartLegendColor} ${styles.legendColorCat}`} />
+                    <span className={styles.legendName}>고양이 (CAT)</span>
                   </div>
-                  <span style={{ fontWeight: 700 }}>
+                  <span className={styles.legendCount}>
                     {stats.catCount}마리 (
                     {stats.totalAnimals > 0 ? Math.round((stats.catCount / stats.totalAnimals) * 100) : 0}%)
                   </span>
@@ -203,11 +200,11 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
 
                 {stats.etcCount > 0 && (
                   <div className={styles.chartLegendItem}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span className={styles.chartLegendColor} style={{ backgroundColor: '#436d85' }} />
-                      <span style={{ fontWeight: 600 }}>기타 동물 (ETC)</span>
+                    <div className={styles.legendLabelGroup}>
+                      <span className={`${styles.chartLegendColor} ${styles.legendColorEtc}`} />
+                      <span className={styles.legendName}>기타 동물 (ETC)</span>
                     </div>
-                    <span style={{ fontWeight: 700 }}>
+                    <span className={styles.legendCount}>
                       {stats.etcCount}마리 ({Math.round((stats.etcCount / stats.totalAnimals) * 100)}%)
                     </span>
                   </div>
@@ -228,7 +225,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
         </div>
         <div className={styles.sectionBody}>
           {stats.totalAdoptions === 0 ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '16px 0' }}>
+            <p className={styles.chartEmptyText}>
               접수된 입양 신청이 없습니다.
             </p>
           ) : (
@@ -237,30 +234,27 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               <div className={styles.stackedBar}>
                 {stats.approvedAdoptions > 0 && (
                   <div
-                    className={styles.stackedSegment}
+                    className={`${styles.stackedSegment} ${styles.segmentApproved}`}
                     style={{
                       width: `${(stats.approvedAdoptions / stats.totalAdoptions) * 100}%`,
-                      backgroundColor: '#10b981',
                     }}
                     title={`승인: ${stats.approvedAdoptions}건`}
                   />
                 )}
                 {stats.pendingCount > 0 && (
                   <div
-                    className={styles.stackedSegment}
+                    className={`${styles.stackedSegment} ${styles.segmentWaiting}`}
                     style={{
                       width: `${(stats.pendingCount / stats.totalAdoptions) * 100}%`,
-                      backgroundColor: '#f59e0b',
                     }}
                     title={`대기: ${stats.pendingCount}건`}
                   />
                 )}
                 {stats.rejectedAdoptions > 0 && (
                   <div
-                    className={styles.stackedSegment}
+                    className={`${styles.stackedSegment} ${styles.segmentRejected}`}
                     style={{
                       width: `${(stats.rejectedAdoptions / stats.totalAdoptions) * 100}%`,
-                      backgroundColor: '#ef4444',
                     }}
                     title={`반려: ${stats.rejectedAdoptions}건`}
                   />
@@ -270,17 +264,17 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               {/* 스택 범례 */}
               <div className={styles.stackedLegend}>
                 <span className={styles.stackedLegendItem}>
-                  <span className={styles.stackedDot} style={{ backgroundColor: '#10b981' }} />
+                  <span className={`${styles.stackedDot} ${styles.stackedDotApproved}`} />
                   승인 {stats.approvedAdoptions}건 (
                   {Math.round((stats.approvedAdoptions / stats.totalAdoptions) * 100)}%)
                 </span>
                 <span className={styles.stackedLegendItem}>
-                  <span className={styles.stackedDot} style={{ backgroundColor: '#f59e0b' }} />
+                  <span className={`${styles.stackedDot} ${styles.stackedDotWaiting}`} />
                   심사대기 {stats.pendingCount}건 (
                   {Math.round((stats.pendingCount / stats.totalAdoptions) * 100)}%)
                 </span>
                 <span className={styles.stackedLegendItem}>
-                  <span className={styles.stackedDot} style={{ backgroundColor: '#ef4444' }} />
+                  <span className={`${styles.stackedDot} ${styles.stackedDotRejected}`} />
                   반려 {stats.rejectedAdoptions}건 (
                   {Math.round((stats.rejectedAdoptions / stats.totalAdoptions) * 100)}%)
                 </span>

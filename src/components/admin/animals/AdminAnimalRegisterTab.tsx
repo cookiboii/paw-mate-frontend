@@ -129,7 +129,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <div className={styles.formCenterWrapper}>
       <div className={styles.formCard}>
         <form onSubmit={handleRegisterSubmit} className={styles.formContent}>
           <div className={styles.formLayout}>
@@ -229,7 +229,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                   ref={fileInputRef}
                   onChange={handleImageChange}
                   accept="image/*"
-                  style={{ display: 'none' }}
+                  className={styles.hiddenFileInput}
                 />
 
                 {preview ? (

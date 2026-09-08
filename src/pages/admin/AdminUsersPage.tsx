@@ -111,7 +111,7 @@ const AdminUsersPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <h1 className={styles.title}>
           <Users size={26} color="var(--primary-color)" />
           <span>회원 관리</span>
         </h1>
@@ -121,7 +121,7 @@ const AdminUsersPage: React.FC = () => {
       {/* 통계 대시보드 */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statIcon} style={{ display: 'flex', alignItems: 'center' }}>
+          <span className={styles.statIcon}>
             <BarChart3 size={24} color="var(--primary-color)" />
           </span>
           <div className={styles.statInfo}>
@@ -130,7 +130,7 @@ const AdminUsersPage: React.FC = () => {
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon} style={{ display: 'flex', alignItems: 'center' }}>
+          <span className={styles.statIcon}>
             <Crown size={24} color="#f59e0b" />
           </span>
           <div className={styles.statInfo}>
@@ -139,7 +139,7 @@ const AdminUsersPage: React.FC = () => {
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon} style={{ display: 'flex', alignItems: 'center' }}>
+          <span className={styles.statIcon}>
             <UserIcon size={24} color="#3b82f6" />
           </span>
           <div className={styles.statInfo}>
@@ -152,7 +152,7 @@ const AdminUsersPage: React.FC = () => {
       {/* 검색 및 필터 컨트롤 */}
       <div className={styles.controls}>
         <div className={styles.searchBox}>
-          <span className={styles.searchIcon} style={{ display: 'flex', alignItems: 'center' }}>
+          <span className={styles.searchIcon}>
             <Search size={18} />
           </span>
           <input
@@ -166,21 +166,8 @@ const AdminUsersPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setSearchKeyword('')}
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '4px',
-              }}
-              title="검색어 지우기"
-              aria-label="검색어 지우기"
+              className={styles.searchClearBtn}
+              title="검색어 초기화"
             >
               <X size={16} />
             </button>
@@ -248,7 +235,6 @@ const AdminUsersPage: React.FC = () => {
                     <button
                       className={styles.actionBtn}
                       onClick={() => setRoleTargetUser(user)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                       title="권한 변경"
                     >
                       <ShieldCheck size={14} />
@@ -257,7 +243,6 @@ const AdminUsersPage: React.FC = () => {
                     <button
                       className={`${styles.actionBtn} ${styles.dangerBtn}`}
                       onClick={() => setDeleteTargetUser(user)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                       title="회원 강제 탈퇴"
                     >
                       <Trash2 size={14} />

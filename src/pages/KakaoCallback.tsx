@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from '../api/axiosInstance';
 import Spinner from '../components/Spinner';
+import styles from '../styles/KakaoCallback.module.css';
 
 const KakaoCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -133,21 +134,10 @@ const KakaoCallback: React.FC = () => {
   }, [searchParams, login, navigate, showToast]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '60vh',
-        gap: '1.5rem',
-        textAlign: 'center',
-        padding: '2rem',
-      }}
-    >
+    <div className={styles.container}>
       <Spinner />
-      <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', margin: 0 }}>{statusMsg}</h3>
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0 }}>잠시만 기다려주세요.</p>
+      <h3 className={styles.title}>{statusMsg}</h3>
+      <p className={styles.subtitle}>잠시만 기다려주세요.</p>
     </div>
   );
 };

@@ -114,11 +114,11 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
       {/* 동물 목록 테이블 */}
       <div className={styles.tableCard}>
         {isLoadingList ? (
-          <div style={{ padding: '60px', display: 'flex', justifyContent: 'center' }}>
+          <div className={styles.tableLoading}>
             <Spinner />
           </div>
         ) : filteredAnimals.length === 0 ? (
-          <div style={{ padding: '40px' }}>
+          <div className={styles.tableEmpty}>
             <EmptyState
               icon={<PawPrint size={48} color="var(--text-muted)" />}
               title="조건에 맞는 보호 동물이 없습니다."
@@ -136,7 +136,7 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                   <th>종 / 성별 / 나이</th>
                   <th>색상</th>
                   <th>보호 상태 (원클릭 변경)</th>
-                  <th style={{ textAlign: 'right' }}>관리</th>
+                  <th className={styles.textRight}>관리</th>
                 </tr>
               </thead>
               <tbody>
@@ -183,8 +183,8 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                           <option value="ADOPTED">🟣 입양완료</option>
                         </select>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div className={styles.actionCell} style={{ justifyContent: 'flex-end' }}>
+                      <td className={styles.textRight}>
+                        <div className={`${styles.actionCell} ${styles.actionCellEnd}`}>
                           <Link
                             to={`/animals/${animalId}`}
                             className={styles.iconBtn}

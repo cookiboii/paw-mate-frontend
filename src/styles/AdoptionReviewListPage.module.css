@@ -159,6 +159,9 @@
 
 .noImagePlaceholder span {
   font-size: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .reportPlaceholder {
@@ -244,6 +247,9 @@
 .authorName {
   font-size: 0.82rem;
   color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .cardDate {
@@ -295,6 +301,24 @@
   border-radius: var(--radius-full);
 }
 
+.endOfList p {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.scrollSentinel {
+  height: 20px;
+  margin: 20px 0;
+}
+
+.fetchingMore {
+  text-align: center;
+  padding: 24px 0;
+  color: var(--text-muted);
+}
+
 
 @media (max-width: 768px) {
   .pageHeader {
@@ -333,4 +357,64 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+.skeletonContent {
+  padding: 20px;
+}
+
+/* Tabs and Search Controls */
+.controlsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.searchBox {
+  position: relative;
+  max-width: 440px;
+  width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 38px 10px 40px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  border-color: var(--primary-color);
+}
+
+.searchClearBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 0;
 }

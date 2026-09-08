@@ -191,3 +191,27 @@
   gap: 12px;
 }
 
+.commentMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.commentDate {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.loginNotice {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.emptyComments {
+  color: var(--text-light);
+  text-align: center;
+  padding: 24px 0;
+  font-size: 0.9rem;
+}
+

@@ -19,6 +19,9 @@
   font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .subtitle {
@@ -62,8 +65,14 @@
 
 .emptyCard span {
   font-size: 3rem;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 16px;
+}
+
+.textCenter {
+  text-align: center;
 }
 
 /* Table */
@@ -247,6 +256,12 @@
   padding: 24px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-color);
+}
+
+.modalTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .modalHeader h3 {

@@ -41,15 +41,7 @@ const AdminAdoptionsPage = lazy(() => import('./pages/admin/AdminAdoptionsPage')
 const AdminPasswordPage = lazy(() => import('./pages/admin/AdminPasswordPage'));
 
 const PageLoader: React.FC = () => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '50vh',
-      width: '100%',
-    }}
-  >
+  <div className="page-loader">
     <Spinner />
   </div>
 );

@@ -129,10 +129,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         <div key={comment.id} className={styles.commentBox}>
           <div className={styles.commentContent}>
             <div className={styles.commentHeader}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <div className={styles.commentMeta}>
                 <strong className={styles.authorName}>{comment.authorName || '익명'}</strong>
                 {comment.createdAt && (
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  <span className={styles.commentDate}>
                     {formatDate(comment.createdAt)}
                   </span>
                 )}
@@ -230,7 +230,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
           )}
         </form>
       ) : (
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}>
+        <p className={styles.loginNotice}>
           댓글을 작성하려면 로그인이 필요합니다.
         </p>
       )}
@@ -239,7 +239,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         {comments.length > 0 ? (
           renderComments(comments)
         ) : (
-          <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: '24px 0', fontSize: '0.9rem' }}>
+          <p className={styles.emptyComments}>
             따뜻한 응원의 한마디를 남겨보세요.
           </p>
         )}

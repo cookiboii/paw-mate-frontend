@@ -178,7 +178,6 @@ const AdoptionReviewEdit: React.FC = () => {
               type="button"
               className={`${styles.categoryTab} ${selectedCategory === cat.key ? styles.categoryTabActive : ''}`}
               onClick={() => setSelectedCategory(cat.key)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
               {cat.icon}
               <span>{cat.label}</span>
@@ -226,7 +225,7 @@ const AdoptionReviewEdit: React.FC = () => {
                 accept="image/*"
                 onChange={handleImageChange}
                 ref={fileInputRef}
-                style={{ display: 'none' }}
+                className={styles.hiddenFileInput}
               />
               {preview ? (
                 <div className={styles.previewContainer}>
@@ -237,7 +236,7 @@ const AdoptionReviewEdit: React.FC = () => {
                 </div>
               ) : (
                 <div className={styles.uploadPlaceholder}>
-                  <span className={styles.uploadIcon} style={{ display: 'flex', justifyContent: 'center' }}>
+                  <span className={styles.uploadIcon}>
                     <Camera size={36} color="var(--primary-color)" />
                   </span>
                   <p><strong>클릭</strong>하여 사진을 선택하거나<br />여기로 <strong>드래그 앤 드롭</strong> 하세요</p>
@@ -247,9 +246,9 @@ const AdoptionReviewEdit: React.FC = () => {
           </div>
 
           <div className={styles.fieldGroup}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <label className={styles.label} style={{ marginBottom: 0 }}>상세 내용 *</label>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            <div className={styles.fieldHeader}>
+              <label className={`${styles.label} ${styles.fieldHeaderLabel}`}>상세 내용 *</label>
+              <span className={styles.charCount}>
                 {form.content.length}자
               </span>
             </div>

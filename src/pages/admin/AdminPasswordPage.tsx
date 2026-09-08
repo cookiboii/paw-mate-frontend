@@ -69,7 +69,7 @@ const AdminPasswordPage: React.FC = () => {
       <div className={styles.card}>
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           {/* 현재 비밀번호 */}
-          <div style={{ position: 'relative' }}>
+          <div className={styles.inputWrapper}>
             <FloatingInput
               label="현재 비밀번호"
               type={showCurrent ? 'text' : 'password'}
@@ -88,7 +88,7 @@ const AdminPasswordPage: React.FC = () => {
           </div>
 
           {/* 새 비밀번호 */}
-          <div style={{ position: 'relative' }}>
+          <div className={styles.inputWrapper}>
             <FloatingInput
               label="새 비밀번호 (8자 이상)"
               type={showNew ? 'text' : 'password'}
@@ -107,7 +107,7 @@ const AdminPasswordPage: React.FC = () => {
           </div>
 
           {/* 새 비밀번호 확인 */}
-          <div style={{ position: 'relative' }}>
+          <div className={styles.inputWrapper}>
             <FloatingInput
               label="새 비밀번호 확인"
               type={showConfirm ? 'text' : 'password'}

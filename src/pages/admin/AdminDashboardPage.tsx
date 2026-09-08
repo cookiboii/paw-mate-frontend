@@ -132,7 +132,7 @@ const AdminDashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={styles.container} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <div className={`${styles.container} ${styles.loadingContainer}`}>
         <Spinner />
       </div>
     );

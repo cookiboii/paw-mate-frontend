@@ -230,7 +230,7 @@ const AdoptionReviewWrite: React.FC = () => {
                 accept="image/*"
                 onChange={handleImageChange}
                 ref={fileInputRef}
-                style={{ display: 'none' }}
+                className={styles.hiddenFileInput}
               />
               {preview ? (
                 <div className={styles.previewContainer}>
@@ -241,18 +241,18 @@ const AdoptionReviewWrite: React.FC = () => {
                 </div>
               ) : (
                 <div className={styles.uploadPlaceholder}>
-                  <span className={styles.uploadIcon} style={{ display: 'flex', justifyContent: 'center' }}>
+                  <span className={styles.uploadIcon}>
                     {selectedCategory === 'REPORT' ? <AlertTriangle size={36} color="#e63946" /> : selectedCategory === 'FREE_ADOPTION' ? <Gift size={36} color="#4361ee" /> : <Camera size={36} color="var(--primary-color)" />}
                   </span>
                   <p><strong>클릭</strong>하여 사진을 선택하거나<br />여기로 <strong>드래그 앤 드롭</strong> 하세요</p>
                   {selectedCategory === 'REPORT' && (
-                    <p style={{ fontSize: '0.85rem', marginTop: '8px', color: 'var(--danger-color)' }}>
+                    <p className={styles.uploadReportTip}>
                       현장 사진을 첨부하면 빠른 구조에 도움이 됩니다
                     </p>
                   )}
                   {selectedCategory === 'FREE_ADOPTION' && (
-                    <p style={{ fontSize: '0.85rem', marginTop: '8px', color: '#2d6a4f' }}>
-                      아이의 매력이 돋보이는 선명한 사진을 올려주세요
+                    <p className={styles.uploadAdoptionTip}>
+                       아이의 매력이 돋보이는 선명한 사진을 올려주세요
                     </p>
                   )}
                 </div>
@@ -262,9 +262,9 @@ const AdoptionReviewWrite: React.FC = () => {
 
           {/* 내용 */}
           <div className={styles.fieldGroup}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <label className={styles.label} style={{ marginBottom: 0 }}>상세 내용 *</label>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            <div className={styles.fieldHeader}>
+              <label className={`${styles.label} ${styles.fieldHeaderLabel}`}>상세 내용 *</label>
+              <span className={styles.charCount}>
                 {form.content.length}자
               </span>
             </div>

@@ -144,7 +144,7 @@ const AdoptionReviewListPage: React.FC = () => {
     Array.from({ length: count }).map((_, idx) => (
       <div key={`skeleton-${idx}`} className={styles.card}>
         <Skeleton type="image" height="220px" width="100%" />
-        <div style={{ padding: '20px' }}>
+        <div className={styles.skeletonContent}>
           <Skeleton type="text" height="22px" width="70%" />
           <Skeleton type="text" height="16px" width="100%" />
         </div>
@@ -203,7 +203,7 @@ const AdoptionReviewListPage: React.FC = () => {
                           : ''
                       }`}
                     >
-                      <span style={{ display: 'flex', justifyContent: 'center' }}>
+                      <span>
                         {renderCategoryIcon(cat, 32)}
                       </span>
                       <p>{catInfo.label}</p>
@@ -220,7 +220,6 @@ const AdoptionReviewListPage: React.FC = () => {
                         ? styles.badgeFreeAdoption
                         : styles.badgeReview
                     }`}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                   >
                     {renderCategoryIcon(cat, 13)}
                     <span>{catInfo.label}</span>
@@ -228,7 +227,7 @@ const AdoptionReviewListPage: React.FC = () => {
                   <h3>{cleanTitle}</h3>
                   <p>{review.content?.slice(0, 65) ?? '내용 없음'}...</p>
                   <div className={styles.cardMeta}>
-                    <span className={styles.authorName} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <span className={styles.authorName}>
                       <User size={13} /> {review.name || '익명'}
                     </span>
                     {(review.createdAt || review.createAt) && (
@@ -243,7 +242,7 @@ const AdoptionReviewListPage: React.FC = () => {
           })
         ) : !isLoading ? (
           <div className={styles.emptyState}>
-            <span style={{ display: 'flex', justifyContent: 'center' }}>
+            <span>
               {renderCategoryIcon(activeCategory, 44)}
             </span>
             <p>
@@ -265,11 +264,11 @@ const AdoptionReviewListPage: React.FC = () => {
       </div>
 
       {/* 무한 스크롤 관찰 센서 타겟 */}
-      <div ref={targetRef} style={{ height: '20px', margin: '20px 0' }} />
+      <div ref={targetRef} className={styles.scrollSentinel} />
 
       {/* 추가 페칭 로딩 스피너 */}
       {isFetchingMore && (
-        <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-muted)' }}>
+        <div className={styles.fetchingMore}>
           <span>이야기를 더 불러오는 중...</span>
         </div>
       )}
@@ -278,7 +277,7 @@ const AdoptionReviewListPage: React.FC = () => {
       {!isLoading && displayedReviews.length > 0 && !hasNext && (
         <div className={styles.endOfList}>
           <div className={styles.endOfListDivider} />
-          <p style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <p>
             <span>모든 이야기를 다 불러왔습니다</span>
             <PawPrint size={14} />
           </p>

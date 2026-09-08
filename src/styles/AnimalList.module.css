@@ -220,6 +220,23 @@
   color: var(--primary-color);
 }
 
+.chipIcon {
+  display: inline;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.resetBtnSmall {
+  font-size: 0.82rem;
+  margin-left: 4px;
+}
+
+.resetIcon {
+  display: inline;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
 /* 뷰 모드 토글 (무한스크롤 vs 페이지네이션) */
 .headerControls {
   display: flex;

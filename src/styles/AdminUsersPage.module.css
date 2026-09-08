@@ -16,6 +16,9 @@
   margin-bottom: 8px;
   color: var(--text-primary);
   letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .subtitle {
@@ -99,6 +102,22 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-light);
+  display: flex;
+  align-items: center;
+}
+
+.searchClearBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 4px;
 }
 
 .searchInput {
@@ -266,6 +285,9 @@
   cursor: pointer;
   margin-left: 8px;
   transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .actionBtn:hover {

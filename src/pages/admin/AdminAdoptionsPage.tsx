@@ -103,7 +103,7 @@ const AdminAdoptionsPage: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h2 className={styles.title} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <h2 className={styles.title}>
             <ClipboardList size={22} color="var(--primary-color)" />
             <span>입양 신청 관리</span>
           </h2>
@@ -126,7 +126,7 @@ const AdminAdoptionsPage: React.FC = () => {
 
       {filteredAdoptions.length === 0 ? (
         <div className={styles.emptyCard}>
-          <span style={{ display: 'flex', justifyContent: 'center' }}><PawPrint size={40} color="var(--text-muted)" /></span>
+          <span><PawPrint size={40} color="var(--text-muted)" /></span>
           <p>해당 조건의 입양 신청 내역이 없습니다.</p>
         </div>
       ) : (
@@ -140,7 +140,7 @@ const AdminAdoptionsPage: React.FC = () => {
                 <th>주거 / 반려동물</th>
                 <th>신청일</th>
                 <th>상태</th>
-                <th style={{ textAlign: 'center' }}>관리 / 심사</th>
+                <th className={styles.textCenter}>관리 / 심사</th>
               </tr>
             </thead>
             <tbody>
@@ -184,7 +184,7 @@ const AdminAdoptionsPage: React.FC = () => {
                   <td>{renderStatusBadge(adoption.status)}</td>
 
                   {/* 관리 버튼 */}
-                  <td style={{ textAlign: 'center' }}>
+                  <td className={styles.textCenter}>
                     <div className={styles.actionCell}>
                       <button
                         className={styles.viewDetailBtn}
@@ -225,7 +225,7 @@ const AdminAdoptionsPage: React.FC = () => {
         <div className={styles.modalOverlay} onClick={() => setSelectedAdoption(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h3 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <h3 className={styles.modalTitle}>
                 <FileText size={20} color="var(--primary-color)" />
                 <span>입양 신청서 상세 보기</span>
               </h3>

@@ -29,14 +29,14 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
         </Link>
       </div>
 
-      <div className={styles.sectionBody} style={{ padding: 0 }}>
+      <div className={`${styles.sectionBody} ${styles.noPadding}`}>
         {pendingList.length === 0 ? (
-          <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-            <CheckCircle2 size={40} color="#10b981" style={{ marginBottom: '12px' }} />
-            <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+          <div className={styles.emptyAdoptions}>
+            <CheckCircle2 size={40} color="#10b981" className={styles.emptyCheckIcon} />
+            <p className={styles.emptyTitle}>
               현재 처리 대기 중인 입양 신청이 없습니다!
             </p>
-            <span style={{ fontSize: '0.85rem' }}>모든 신청서가 신속하게 검토되었습니다.</span>
+            <span className={styles.emptyDesc}>모든 신청서가 신속하게 검토되었습니다.</span>
           </div>
         ) : (
           <div className={styles.tableWrapper}>
@@ -47,7 +47,7 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
                   <th>신청 대상</th>
                   <th>신청 일시</th>
                   <th>상태</th>
-                  <th style={{ textAlign: 'right' }}>빠른 처리</th>
+                  <th className={styles.textRight}>빠른 처리</th>
                 </tr>
               </thead>
               <tbody>
@@ -55,26 +55,26 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
                   <tr key={item.adoptionId}>
                     <td>
                       <strong>{item.memberName || item.userName || '신청자'}</strong>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      <div className={styles.applicantEmail}>
                         {item.phone || '-'}
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 600 }}>동물 #{item.animalId || '-'}</span>
+                      <span className={styles.animalIdHighlight}>동물 #{item.animalId || '-'}</span>
                       {item.animalBreed && (
-                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '4px' }}>
+                        <span className={styles.animalBreedSub}>
                           ({item.animalBreed})
                         </span>
                       )}
                     </td>
-                    <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    <td className={styles.applyDateCell}>
                       {item.applyDate ? formatDateTime(item.applyDate) : '-'}
                     </td>
                     <td>
                       <span className={`${styles.badge} ${styles.badgePending}`}>심사 대기</span>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div className={styles.actionBtns} style={{ justifyContent: 'flex-end' }}>
+                    <td className={styles.textRight}>
+                      <div className={`${styles.actionBtns} ${styles.actionBtnsEnd}`}>
                         <button
                           type="button"
                           className={`${styles.btnSm} ${styles.btnApprove}`}

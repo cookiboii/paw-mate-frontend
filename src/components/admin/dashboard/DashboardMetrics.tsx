@@ -53,8 +53,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ stats }) => 
             )}
           </div>
           <div
-            className={styles.statValue}
-            style={{ color: stats.pendingCount > 0 ? '#d97706' : 'inherit' }}
+            className={`${styles.statValue} ${stats.pendingCount > 0 ? styles.statValuePending : ''}`}
           >
             {stats.pendingCount}건
           </div>

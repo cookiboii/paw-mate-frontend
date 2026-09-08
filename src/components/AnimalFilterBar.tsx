@@ -75,7 +75,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
               className={`${styles.filterChip} ${speciesFilter === 'DOG' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('DOG')}
             >
-              <Dog size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+              <Dog size={16} className={styles.chipIcon} />
               강아지
             </button>
             <button
@@ -83,7 +83,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
               className={`${styles.filterChip} ${speciesFilter === 'CAT' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('CAT')}
             >
-              <Cat size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+              <Cat size={16} className={styles.chipIcon} />
               고양이
             </button>
             <button
@@ -91,7 +91,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
               className={`${styles.filterChip} ${speciesFilter === 'ETC' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('ETC')}
             >
-              <PawPrint size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+              <PawPrint size={16} className={styles.chipIcon} />
               기타
             </button>
           </div>
@@ -172,8 +172,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             <button
               type="button"
               onClick={onReset}
-              className={styles.resetBtn}
-              style={{ fontSize: '0.82rem', marginLeft: '4px' }}
+              className={`${styles.resetBtn} ${styles.resetBtnSmall}`}
             >
               전체 해제
             </button>
@@ -195,7 +194,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
               onClick={onReset}
               title="필터 초기화"
             >
-              <RotateCcw size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} />
+              <RotateCcw size={13} className={styles.resetIcon} />
               필터 초기화
             </button>
           )}

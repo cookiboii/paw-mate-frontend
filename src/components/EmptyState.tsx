@@ -43,9 +43,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
       {actionLabel && (actionPath || onAction) && (
         <button
-          className="btn-primary"
+          className={`btn-primary ${styles.actionBtn}`}
           onClick={handleAction}
-          style={{ marginTop: '24px' }}
         >
           {actionLabel}
         </button>

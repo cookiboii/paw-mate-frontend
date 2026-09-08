@@ -119,10 +119,10 @@ const AdoptionReviewDetail: React.FC = () => {
         <article className={styles.article}>
           <Skeleton type="image" height={320} />
           <div className={styles.contentSection}>
-            <Skeleton type="title" width="70%" height={32} style={{ marginBottom: '16px' }} />
-            <Skeleton type="text" width="40%" height={20} style={{ marginBottom: '24px' }} />
-            <Skeleton type="text" height={18} style={{ marginBottom: '8px' }} />
-            <Skeleton type="text" height={18} style={{ marginBottom: '8px' }} />
+            <Skeleton type="title" width="70%" height={32} className={styles.skeletonTitle} />
+            <Skeleton type="text" width="40%" height={20} className={styles.skeletonSubtitle} />
+            <Skeleton type="text" height={18} className={styles.skeletonLine} />
+            <Skeleton type="text" height={18} className={styles.skeletonLine} />
             <Skeleton type="text" width="80%" height={18} />
           </div>
         </article>
@@ -186,7 +186,7 @@ const AdoptionReviewDetail: React.FC = () => {
                   : ''
               }`}
             >
-              <span style={{ display: 'flex', justifyContent: 'center' }}>{renderCategoryIcon(cat, 56)}</span>
+              <span>{renderCategoryIcon(cat, 56)}</span>
               <p>{catInfo.label}</p>
             </div>
           )}
@@ -201,7 +201,6 @@ const AdoptionReviewDetail: React.FC = () => {
                     ? styles.heroBadgeFreeAdoption
                     : styles.heroBadgeReview
                 }`}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
                 {renderCategoryIcon(cat, 14)}
                 <span>{catInfo.label}</span>
@@ -224,29 +223,16 @@ const AdoptionReviewDetail: React.FC = () => {
 
         {/* Content Section */}
         <div className={styles.contentSection}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+          <div className={styles.toolbar}>
             <button
               onClick={handleShare}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid var(--border-color)',
-                background: 'var(--surface-color)',
-                color: 'var(--text-primary)',
-                cursor: 'pointer',
-                fontSize: '0.88rem',
-                fontWeight: 500,
-                transition: 'all var(--transition-fast)'
-              }}
+              className={styles.shareBtn}
               title="링크 복사 및 공유하기"
             >
               {isCopied ? (
                 <>
                   <Check size={15} color="var(--primary-color)" />
-                  <span style={{ color: 'var(--primary-color)' }}>링크 복사됨</span>
+                  <span className={styles.shareCopiedText}>링크 복사됨</span>
                 </>
               ) : (
                 <>
@@ -257,9 +243,9 @@ const AdoptionReviewDetail: React.FC = () => {
             </button>
 
             {(isAuthor || isAdmin) && (
-              <div className={styles.actions} style={{ margin: 0 }}>
+              <div className={styles.inlineActions}>
                 {isAuthor && (
-                  <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)}>
                     <Edit3 size={15} />
                     <span>수정</span>
                   </button>
@@ -268,7 +254,6 @@ const AdoptionReviewDetail: React.FC = () => {
                   className={styles.deleteBtn}
                   onClick={() => setIsDeleteModalOpen(true)}
                   disabled={isDeleting}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
                   <Trash2 size={15} />
                   <span>{isDeleting ? '삭제 중...' : '삭제'}</span>
@@ -280,7 +265,7 @@ const AdoptionReviewDetail: React.FC = () => {
           {/* 유기동물 제보 긴급 안내 */}
           {isReport && (
             <div className={styles.reportBanner}>
-              <strong style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <strong>
                 <AlertTriangle size={18} color="#e63946" />
                 <span>이 글은 유기동물 제보 게시글입니다</span>
               </strong>
@@ -291,7 +276,7 @@ const AdoptionReviewDetail: React.FC = () => {
           {/* 무료 분양 안내 */}
           {isFreeAdoption && (
             <div className={styles.freeAdoptionBanner}>
-              <strong style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <strong>
                 <Gift size={18} color="#4361ee" />
                 <span>무료 분양 안내</span>
               </strong>
@@ -306,7 +291,7 @@ const AdoptionReviewDetail: React.FC = () => {
           </div>
 
           {/* 목록으로 버튼 */}
-          <button className={styles.backBtn} onClick={() => navigate('/reviews')} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <button className={styles.backBtn} onClick={() => navigate('/reviews')}>
             <ArrowLeft size={16} />
             <span>목록으로</span>
           </button>

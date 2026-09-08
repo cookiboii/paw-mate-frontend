@@ -452,3 +452,11 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   }
 }
 
+.page-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  width: 100%;
+}
+

@@ -41,20 +41,11 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
   isAuthenticated,
 }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
+    <div className={styles.controlsWrapper}>
       {/* 검색 바 */}
-      <div style={{ position: 'relative', maxWidth: '440px', width: '100%' }}>
+      <div className={styles.searchBox}>
         <span
-          style={{
-            position: 'absolute',
-            left: '14px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: 'var(--text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            pointerEvents: 'none',
-          }}
+          className={styles.searchIcon}
           aria-hidden="true"
         >
           <Search size={18} />
@@ -65,36 +56,14 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
           value={searchKeyword}
           onChange={(e) => onSearchChange(e.target.value)}
           aria-label="게시글 검색"
-          style={{
-            width: '100%',
-            padding: '10px 38px 10px 40px',
-            borderRadius: 'var(--radius-full)',
-            border: '1px solid var(--border-color)',
-            backgroundColor: 'var(--surface-color)',
-            color: 'var(--text-primary)',
-            fontSize: '0.95rem',
-            outline: 'none',
-            boxSizing: 'border-box',
-          }}
+          className={styles.searchInput}
         />
         {searchKeyword && (
           <button
             type="button"
             onClick={() => onSearchChange('')}
             aria-label="검색어 지우기"
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              padding: 0,
-            }}
+            className={styles.searchClearBtn}
           >
             <X size={16} />
           </button>

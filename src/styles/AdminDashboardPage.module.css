@@ -5,6 +5,13 @@
   min-height: 100vh;
 }
 
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
 .header {
   margin-bottom: 32px;
 }
@@ -452,3 +459,144 @@
     gap: 16px;
   }
 }
+
+/* Dashboard Subcomponents Helper Classes */
+.statValuePending {
+  color: #d97706;
+}
+
+.noPadding {
+  padding: 0 !important;
+}
+
+.emptyAdoptions {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.emptyCheckIcon {
+  margin-bottom: 12px;
+}
+
+.emptyTitle {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.emptyDesc {
+  font-size: 0.85rem;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.applicantEmail {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.animalIdHighlight {
+  font-weight: 600;
+}
+
+.animalBreedSub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.applyDateCell {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.actionBtnsEnd {
+  justify-content: flex-end;
+}
+
+.chartsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.quickActionDesc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.benchmarkQuickAction {
+  border-color: rgba(234, 88, 12, 0.3) !important;
+}
+
+.benchmarkQuickActionIcon {
+  color: #ea580c !important;
+}
+
+.benchmarkQuickActionTitle {
+  color: #ea580c !important;
+  font-weight: 700;
+}
+
+.chartEmptyText {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px 0;
+}
+
+.donutSvg {
+  transform: rotate(-90deg);
+}
+
+.legendLabelGroup {
+  display: flex;
+  align-items: center;
+}
+
+.legendColorDog {
+  background-color: #587057;
+}
+
+.legendColorCat {
+  background-color: #c99368;
+}
+
+.legendColorEtc {
+  background-color: #436d85;
+}
+
+.legendName {
+  font-weight: 600;
+}
+
+.legendCount {
+  font-weight: 700;
+}
+
+.stackedDotApproved {
+  background-color: #10b981;
+}
+
+.stackedDotWaiting {
+  background-color: #f59e0b;
+}
+
+.stackedDotRejected {
+  background-color: #ef4444;
+}
+
+.segmentApproved {
+  background-color: #10b981;
+}
+
+.segmentWaiting {
+  background-color: #f59e0b;
+}
+
+.segmentRejected {
+  background-color: #ef4444;
+}
+
+

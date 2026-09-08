@@ -551,3 +551,178 @@
     justify-content: center;
   }
 }
+
+/* 추가 추출 클래스 */
+.cardHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.cardTitleNoMargin {
+  margin: 0;
+}
+
+.serverBadge {
+  font-size: 0.8rem;
+  background: var(--primary-light);
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.textToggleBtn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.checkboxInput {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+}
+
+.controlHint {
+  margin: 4px 0 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.actionHint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.metricValSmall {
+  font-size: 1.2rem;
+}
+
+.statusLabel {
+  font-size: 0.85rem;
+  fontWeight: 600;
+  color: var(--text-muted);
+}
+
+.timelineLegend {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cardSubDesc {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 1.5rem;
+}
+
+.flexInputCol {
+  flex: 1;
+  min-width: 240px;
+}
+
+.fullWidthInput {
+  width: 100%;
+}
+
+.sliderCol {
+  min-width: 180px;
+}
+
+.statusPending {
+  color: var(--warning-color);
+}
+
+.statusStable {
+  color: var(--success-color);
+}
+
+.mockPetName {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mockPetBreed {
+  color: var(--text-muted);
+}
+
+.mockPetStatus {
+  font-size: 0.75rem;
+}
+
+.petStatusAdopted {
+  color: var(--info-color);
+}
+
+.petStatusProtecting {
+  color: var(--primary-color);
+}
+
+.renderLimitNotice {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.vitalFpsGood {
+  color: var(--success-color);
+}
+
+.vitalFpsDrop {
+  color: var(--danger-color);
+}
+
+.vitalUnit {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.k6IntroText {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.k6StepSection {
+  margin-top: 1.2rem;
+}
+
+.k6StepTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.commandBox {
+  background: var(--surface-secondary);
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.commandHint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}

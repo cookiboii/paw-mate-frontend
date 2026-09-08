@@ -83,6 +83,11 @@
   font-weight: 700;
 }
 
+.noImage span {
+  display: flex;
+  justify-content: center;
+}
+
 .noImageReport {
   background: linear-gradient(135deg, var(--danger-light) 0%, var(--bg-color) 100%);
   color: var(--danger-color);
@@ -212,6 +217,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .editBtn {
@@ -246,7 +254,9 @@
 }
 
 .reportBanner strong {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--danger-color);
   margin-bottom: 6px;
   font-size: 0.95rem;
@@ -268,7 +278,9 @@
 }
 
 .freeAdoptionBanner strong {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--info-color);
   margin-bottom: 6px;
   font-size: 0.95rem;
@@ -296,7 +308,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
   padding: 10px 20px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -353,4 +364,50 @@
     margin: 0 24px;
     padding: 24px;
   }
+}
+
+.skeletonTitle {
+  margin-bottom: 16px;
+}
+
+.skeletonSubtitle {
+  margin-bottom: 24px;
+}
+
+.skeletonLine {
+  margin-bottom: 8px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.shareCopiedText {
+  color: var(--primary-color);
+}
+
+.inlineActions {
+  display: flex;
+  gap: 12px;
+  margin: 0 !important;
 }

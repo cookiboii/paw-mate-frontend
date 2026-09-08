@@ -44,7 +44,7 @@ const AdoptionGuide: React.FC = () => {
       </div>
 
       <div className={styles.noticeSection}>
-        <h3 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <h3>
           <Lightbulb size={20} color="var(--primary-color)" />
           <span>입양 전 반드시 읽어주세요!</span>
         </h3>

@@ -436,3 +436,31 @@
     padding: 20px 16px;
   }
 }
+
+.tableLoading {
+  padding: 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.tableEmpty {
+  padding: 40px;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.actionCellEnd {
+  justify-content: flex-end;
+}
+
+.formCenterWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
