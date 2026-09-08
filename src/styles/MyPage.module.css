@@ -16,6 +16,39 @@
   gap: 24px;
 }
 
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.cardHeaderTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.centerIcon {
+  display: flex;
+  justify-content: center;
+}
+
+.emptyStateLink {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+.badgeFlex {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.submitBtnMargin {
+  margin-top: 16px !important;
+}
+
 .userProfile {
   background-color: var(--surface-color);
   border-radius: var(--radius-xl);

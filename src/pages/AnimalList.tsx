@@ -197,7 +197,7 @@ const AnimalList: React.FC = () => {
         ) : (
           <ul className={styles.list}>
             {filteredAnimals.map((animal, idx) => (
-              <li key={animal.id ?? animal.animalId ?? idx} style={{ listStyle: 'none' }}>
+              <li key={animal.id ?? animal.animalId ?? idx}>
                 <AnimalCard animal={animal} showStatus priority={idx < 3} />
               </li>
             ))}
@@ -212,7 +212,7 @@ const AnimalList: React.FC = () => {
         {/* 2. 무한 스크롤 뷰 하단 센서 & 상태 UI */}
         {viewMode === 'infinite' && (
           <>
-            <div ref={targetRef} style={{ height: '20px', margin: '10px 0' }} />
+            <div ref={targetRef} className={styles.scrollSentinel} />
 
             {isFetchingMore && (
               <div className={styles.infiniteLoader}>

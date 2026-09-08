@@ -30,6 +30,10 @@
 
 .categoryTab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 18px 16px;
   border: none;
   background: var(--bg-color);
@@ -133,6 +137,18 @@
   border-top: 1px solid rgba(196, 79, 56, 0.2);
   color: var(--text-muted);
   font-size: 0.88rem;
+}
+
+.guideHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.guideItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* 무료 분양 가이드 배너 */

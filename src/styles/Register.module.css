@@ -89,6 +89,14 @@
   color: var(--primary-color);
 }
 
+.inputWithTimer {
+  padding-right: 80px !important;
+}
+
+.inputWithEye {
+  padding-right: 48px !important;
+}
+
 .passwordToggle {
   position: absolute;
   right: 16px;

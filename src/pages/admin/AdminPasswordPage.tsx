@@ -7,7 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import usePageTitle from '../../hooks/usePageTitle';
 import FloatingInput from '../../components/FloatingInput';
-import { EyeIcon, EyeOffIcon, LockIcon } from '../../components/Icons';
+import { Eye, EyeOff, Lock } from 'lucide-react';
 import styles from '../../styles/AdminPasswordPage.module.css';
 import { getErrorMessage } from '../../utils/error';
 import { passwordChangeSchema, PasswordChangeFormData } from '../../schemas/authSchema';
@@ -56,7 +56,7 @@ const AdminPasswordPage: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.iconBadge}>
-          <LockIcon size={24} />
+          <Lock size={24} />
         </div>
         <div>
           <h2 className={styles.title}>관리자 비밀번호 변경</h2>
@@ -74,7 +74,7 @@ const AdminPasswordPage: React.FC = () => {
               label="현재 비밀번호"
               type={showCurrent ? 'text' : 'password'}
               error={errors.currentPassword?.message}
-              icon={<LockIcon />}
+              icon={<Lock size={18} />}
               {...register('currentPassword')}
             />
             <button
@@ -83,7 +83,7 @@ const AdminPasswordPage: React.FC = () => {
               className={styles.eyeBtn}
               aria-label="현재 비밀번호 표시 전환"
             >
-              {showCurrent ? <EyeOffIcon /> : <EyeIcon />}
+              {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
@@ -93,7 +93,7 @@ const AdminPasswordPage: React.FC = () => {
               label="새 비밀번호 (8자 이상)"
               type={showNew ? 'text' : 'password'}
               error={errors.newPassword?.message}
-              icon={<LockIcon />}
+              icon={<Lock size={18} />}
               {...register('newPassword')}
             />
             <button
@@ -102,7 +102,7 @@ const AdminPasswordPage: React.FC = () => {
               className={styles.eyeBtn}
               aria-label="새 비밀번호 표시 전환"
             >
-              {showNew ? <EyeOffIcon /> : <EyeIcon />}
+              {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
@@ -112,7 +112,7 @@ const AdminPasswordPage: React.FC = () => {
               label="새 비밀번호 확인"
               type={showConfirm ? 'text' : 'password'}
               error={errors.newPasswordConfirm?.message}
-              icon={<LockIcon />}
+              icon={<Lock size={18} />}
               {...register('newPasswordConfirm')}
             />
             <button
@@ -121,7 +121,7 @@ const AdminPasswordPage: React.FC = () => {
               className={styles.eyeBtn}
               aria-label="새 비밀번호 확인 표시 전환"
             >
-              {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
+              {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 

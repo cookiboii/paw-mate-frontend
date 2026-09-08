@@ -2,7 +2,6 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import styles from '../styles/MyPage.module.css';
 import { getMyInfo, deleteMyAccount, updatePassword } from '../api/user';
 import { getMyAdoptions } from '../api/adoption';
-import AdminUsersPage from './admin/AdminUsersPage';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -106,14 +105,10 @@ const MyPage: React.FC = () => {
 
   if (!userInfo) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+      <div className={styles.loadingContainer}>
         <Spinner />
       </div>
     );
-  }
-
-  if (userInfo.role?.toUpperCase() === 'ADMIN' || userInfo.role?.toUpperCase() === 'ROLE_ADMIN') {
-    return <AdminUsersPage />;
   }
 
   return (
@@ -129,7 +124,6 @@ const MyPage: React.FC = () => {
             <button
               className={`${styles.navItem} ${activeTab === 'profile' ? styles.active : ''}`}
               onClick={() => setActiveTab('profile')}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <User size={16} />
               <span>내 프로필</span>
@@ -137,7 +131,6 @@ const MyPage: React.FC = () => {
             <button
               className={`${styles.navItem} ${activeTab === 'favorites' ? styles.active : ''}`}
               onClick={() => setActiveTab('favorites')}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <Heart size={16} />
               <span>관심 동물 ({favorites.length})</span>
@@ -145,7 +138,6 @@ const MyPage: React.FC = () => {
             <button
               className={`${styles.navItem} ${activeTab === 'adoptions' ? styles.active : ''}`}
               onClick={() => setActiveTab('adoptions')}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <ClipboardList size={16} />
               <span>입양 신청 내역</span>
@@ -154,7 +146,6 @@ const MyPage: React.FC = () => {
               <button
                 className={`${styles.navItem} ${activeTab === 'password' ? styles.active : ''}`}
                 onClick={() => setActiveTab('password')}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
               >
                 <ShieldCheck size={16} />
                 <span>보안 설정</span>
@@ -193,7 +184,7 @@ const MyPage: React.FC = () => {
           {activeTab === 'favorites' && (
             <section className={styles.card}>
               <div className={styles.cardHeader}>
-                <h3 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <h3 className={styles.cardHeaderTitle}>
                   <Heart size={20} color="#ff4d4f" fill="#ff4d4f" />
                   <span>관심 동물 목록 ({favorites.length})</span>
                 </h3>
@@ -202,9 +193,9 @@ const MyPage: React.FC = () => {
               <div className={styles.cardBody}>
                 {favorites.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <span style={{ display: 'flex', justifyContent: 'center' }}><PawPrint size={40} color="var(--text-muted)" /></span>
+                    <span className={styles.centerIcon}><PawPrint size={40} color="var(--text-muted)" /></span>
                     <p>아직 관심 동물로 등록한 아이가 없습니다.</p>
-                    <Link to="/animals" className="btn-primary" style={{ display: 'inline-block', marginTop: '16px' }}>
+                    <Link to="/animals" className={`btn-primary ${styles.emptyStateLink}`}>
                       동물 둘러보기
                     </Link>
                   </div>
@@ -239,7 +230,7 @@ const MyPage: React.FC = () => {
               <div className={styles.cardBody}>
                 {adoptionList.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <span style={{ display: 'flex', justifyContent: 'center' }}><PawPrint size={40} color="var(--text-muted)" /></span>
+                    <span className={styles.centerIcon}><PawPrint size={40} color="var(--text-muted)" /></span>
                     <p>아직 입양 신청 내역이 없습니다.</p>
                   </div>
                 ) : (
@@ -260,8 +251,7 @@ const MyPage: React.FC = () => {
                                 : adoption.status === 'REJECTED'
                                 ? styles.statusRejected
                                 : styles.statusPending
-                            }`}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            } ${styles.badgeFlex}`}
                           >
                             {adoption.status === 'APPROVED' ? (
                               <><CheckCircle2 size={13} /> 입양 승인</>
@@ -340,7 +330,7 @@ const MyPage: React.FC = () => {
                     required
                   />
                 </div>
-                <button type="submit" className="btn-primary" style={{ marginTop: '16px' }}>
+                <button type="submit" className={`btn-primary ${styles.submitBtnMargin}`}>
                   비밀번호 변경
                 </button>
               </form>

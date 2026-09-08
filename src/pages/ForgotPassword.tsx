@@ -1,12 +1,11 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { sendResetCode, verifyResetCode, resetPassword } from '../api/auth';
 import styles from '../styles/ForgotPassword.module.css';
 import FloatingInput from '../components/FloatingInput';
 import { useToast } from '../context/ToastContext';
 import usePageTitle from '../hooks/usePageTitle';
-import { EyeIcon, EyeOffIcon } from '../components/Icons';
-import { ArrowLeft } from 'lucide-react';
 import { getErrorMessage } from '../utils/error';
 
 const ForgotPassword: React.FC = () => {
@@ -34,7 +33,7 @@ const ForgotPassword: React.FC = () => {
       }, 1000);
     } else if (timeLeft === 0 && timerActive) {
       setTimerActive(false);
-      showToast('인증 시간이 만료되었습니다. 인증번호를 다시 요청해 주세요.', 'warning');
+      showToast('인증 시간이 만료되었습니다. 인증번호를 다시 요청해 주세요.', 'error');
     }
     return () => {
       if (timer) clearInterval(timer);
@@ -42,74 +41,83 @@ const ForgotPassword: React.FC = () => {
   }, [timerActive, timeLeft, showToast]);
 
   const formatTime = (seconds: number) => {
-    const validSec = Math.max(0, Math.floor(seconds || 0));
-    const mins = Math.floor(validSec / 60);
-    const secs = validSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  const handleEmailSubmit = async (e?: FormEvent) => {
-    if (e) e.preventDefault();
-    setLoading(true);
-
-    try {
-      await sendResetCode(email);
-      showToast('인증코드가 이메일로 전송되었습니다.', 'info');
-      setStep(2);
-      setTimeLeft(180);
-      setTimerActive(true);
-    } catch (err: unknown) {
-      const errMsg = getErrorMessage(err, '존재하지 않는 계정이거나 이메일 전송에 실패했습니다.');
-      showToast(errMsg, 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCodeVerify = async (e: FormEvent) => {
+  // 1단계: 인증코드 발송
+  const handleSendCode = async (e: FormEvent) => {
     e.preventDefault();
-    if (timeLeft <= 0) {
-      showToast('인증번호가 만료되었습니다. 재전송을 눌러주세요.', 'error');
+    if (!email.trim()) {
+      showToast('이메일을 입력해 주세요.', 'error');
       return;
     }
 
     setLoading(true);
-
     try {
-      await verifyResetCode(email, code);
-      showToast('인증이 완료되었습니다. 새 비밀번호를 입력해주세요.', 'info');
-      setTimerActive(false);
-      setStep(3);
+      await sendResetCode(email);
+      showToast('입력하신 이메일로 6자리 인증 코드가 전송되었습니다.', 'success');
+      setStep(2);
+      setTimeLeft(180);
+      setTimerActive(true);
     } catch (err: unknown) {
-      const errMsg = getErrorMessage(err, '인증코드가 올바르지 않거나 만료되었습니다.');
-      showToast(errMsg, 'error');
+      const msg = getErrorMessage(err, '인증 코드 전송에 실패했습니다. 이메일을 확인해 주세요.');
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePasswordReset = async (e: FormEvent) => {
+  // 2단계: 인증코드 검증
+  const handleVerifyCode = async (e: FormEvent) => {
     e.preventDefault();
+    if (!code.trim()) {
+      showToast('인증 코드를 입력해 주세요.', 'error');
+      return;
+    }
+
+    if (timeLeft === 0) {
+      showToast('인증 시간이 만료되었습니다. 코드를 재발송해 주세요.', 'error');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await verifyResetCode(email, code);
+      showToast('인증이 완료되었습니다. 새 비밀번호를 설정해 주세요.', 'success');
+      setTimerActive(false);
+      setStep(3);
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, '인증 코드가 올바르지 않거나 만료되었습니다.');
+      showToast(msg, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 3단계: 새 비밀번호 설정
+  const handleResetPassword = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (newPassword.length < 8) {
+      showToast('비밀번호는 최소 8자 이상이어야 합니다.', 'error');
+      return;
+    }
 
     if (newPassword !== newPasswordConfirm) {
       showToast('비밀번호 확인이 일치하지 않습니다.', 'error');
       return;
     }
 
-    if (newPassword.length < 8) {
-      showToast('비밀번호는 8자 이상이어야 합니다.', 'error');
-      return;
-    }
-
     setLoading(true);
-
     try {
       await resetPassword(email, newPassword);
-      showToast('비밀번호가 성공적으로 변경되었습니다! 로그인해 주세요.', 'info');
+      showToast('비밀번호가 성공적으로 재설정되었습니다! 새 비밀번호로 로그인해 주세요.', 'success');
       navigate('/login');
     } catch (err: unknown) {
-      const errMsg = getErrorMessage(err, '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.');
-      showToast(errMsg, 'error');
+      const msg = getErrorMessage(err, '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.');
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -120,146 +128,117 @@ const ForgotPassword: React.FC = () => {
       <div className={styles.header}>
         <h2 className={styles.title}>비밀번호 찾기</h2>
         <p className={styles.subtitle}>
-          {step === 1 && '가입하신 이메일 주소로 인증번호를 전송해 드립니다.'}
-          {step === 2 && '이메일로 발송된 6자리 인증 코드를 입력하세요.'}
-          {step === 3 && '새로운 비밀번호를 설정하세요.'}
+          {step === 1 && '가입 시 사용한 이메일 주소를 입력하시면 인증 코드를 보내드립니다.'}
+          {step === 2 && '이메일로 전송된 6자리 인증 코드를 입력해 주세요.'}
+          {step === 3 && '새로운 비밀번호를 입력해 주세요.'}
         </p>
       </div>
 
-      {/* 단계 인디케이터 */}
+      {/* 진행 단계 표시 */}
       <div className={styles.stepIndicator}>
-        <div className={`${styles.stepDot} ${step === 1 ? styles.stepActive : styles.stepCompleted}`}>1</div>
+        <div className={`${styles.stepDot} ${step >= 1 ? styles.stepActive : ''}`}>1</div>
         <div className={`${styles.stepLine} ${step >= 2 ? styles.stepLineActive : ''}`} />
-        <div className={`${styles.stepDot} ${step === 2 ? styles.stepActive : step > 2 ? styles.stepCompleted : ''}`}>2</div>
+        <div className={`${styles.stepDot} ${step >= 2 ? styles.stepActive : ''} ${step > 2 ? styles.stepCompleted : ''}`}>2</div>
         <div className={`${styles.stepLine} ${step >= 3 ? styles.stepLineActive : ''}`} />
         <div className={`${styles.stepDot} ${step === 3 ? styles.stepActive : ''}`}>3</div>
       </div>
 
-      {/* Step 1: 이메일 입력 */}
+      {/* 1단계: 이메일 입력 */}
       {step === 1 && (
-        <form onSubmit={handleEmailSubmit} className={styles.form}>
+        <form onSubmit={handleSendCode} className={styles.form}>
           <FloatingInput
-            label="가입한 이메일"
+            label="가입한 이메일 주소"
             type="email"
-            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={loading}
           />
           <button type="submit" className={styles.submitBtn} disabled={loading}>
-            {loading ? '전송 중...' : '인증번호 받기'}
+            {loading ? '코드 발송 중...' : '인증 코드 발송'}
           </button>
         </form>
       )}
 
-      {/* Step 2: 인증 코드 입력 & 타이머 */}
+      {/* 2단계: 인증코드 입력 */}
       {step === 2 && (
-        <form onSubmit={handleCodeVerify} className={styles.form}>
-          <FloatingInput
-            label="인증 코드 (6자리)"
-            type="text"
-            name="code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            required
-            style={{ paddingRight: timerActive ? '80px' : '16px' }}
-          >
+        <form onSubmit={handleVerifyCode} className={styles.form}>
+          <div className={styles.inputRelative}>
+            <FloatingInput
+              label="인증 코드 6자리"
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value.trim())}
+              required
+              disabled={loading}
+            />
             {timerActive && (
-              <span className={`${styles.timerBadge} ${timeLeft < 30 ? styles.timerUrgent : ''}`}>
+              <span className={`${styles.timerBadge} ${timeLeft < 60 ? styles.timerUrgent : ''}`}>
                 {formatTime(timeLeft)}
               </span>
             )}
-          </FloatingInput>
+          </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div className={styles.codeRow}>
+            <div className={styles.codeInput}>
+              <button
+                type="button"
+                className={styles.backBtn}
+                onClick={handleSendCode}
+                disabled={loading}
+              >
+                인증코드 재발송
+              </button>
+            </div>
             <button
-              type="button"
-              onClick={() => handleEmailSubmit()}
-              disabled={loading}
-              style={{
-                flex: '1',
-                padding: '14px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'var(--bg-color)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-color)',
-                fontSize: '0.92rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
-              }}
+              type="submit"
+              className={`${styles.submitBtn} ${styles.codeSubmitBtn}`}
+              disabled={loading || timeLeft === 0}
             >
-              재전송
-            </button>
-            <button type="submit" className={styles.submitBtn} disabled={loading || timeLeft === 0} style={{ flex: '2', marginTop: 0 }}>
-              {loading ? '확인 중...' : '인증 확인'}
+              {loading ? '확인 중...' : '인증 완료'}
             </button>
           </div>
         </form>
       )}
 
-      {/* Step 3: 새 비밀번호 입력 */}
+      {/* 3단계: 새 비밀번호 설정 */}
       {step === 3 && (
-        <form onSubmit={handlePasswordReset} className={styles.form}>
-          <div style={{ position: 'relative' }}>
+        <form onSubmit={handleResetPassword} className={styles.form}>
+          <div className={styles.inputRelative}>
             <FloatingInput
               label="새 비밀번호 (8자 이상)"
               type={showPassword ? 'text' : 'password'}
-              name="newPassword"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              disabled={loading}
             />
             <button
               type="button"
+              className={styles.eyeBtn}
               onClick={() => setShowPassword(!showPassword)}
-              aria-label="비밀번호 표시 전환"
-              style={{
-                position: 'absolute',
-                right: '14px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                color: 'var(--text-muted)',
-                cursor: 'pointer',
-                padding: '4px',
-                display: 'flex',
-                alignItems: 'center',
-              }}
+              aria-label="비밀번호 보기"
             >
-              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
-          <div style={{ position: 'relative' }}>
+          <div className={styles.inputRelative}>
             <FloatingInput
               label="새 비밀번호 확인"
               type={showPasswordConfirm ? 'text' : 'password'}
-              name="newPasswordConfirm"
               value={newPasswordConfirm}
               onChange={(e) => setNewPasswordConfirm(e.target.value)}
               required
+              disabled={loading}
             />
             <button
               type="button"
+              className={styles.eyeBtn}
               onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-              aria-label="비밀번호 확인 표시 전환"
-              style={{
-                position: 'absolute',
-                right: '14px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                color: 'var(--text-muted)',
-                cursor: 'pointer',
-                padding: '4px',
-                display: 'flex',
-                alignItems: 'center',
-              }}
+              aria-label="비밀번호 확인 보기"
             >
-              {showPasswordConfirm ? <EyeOffIcon /> : <EyeIcon />}
+              {showPasswordConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
@@ -271,9 +250,8 @@ const ForgotPassword: React.FC = () => {
 
       <div className={styles.footerActions}>
         {step > 1 ? (
-          <button className={styles.backBtn} onClick={() => setStep((prev) => prev - 1)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <ArrowLeft size={16} />
-            <span>이전 단계로</span>
+          <button className={styles.backBtn} onClick={() => setStep((prev) => prev - 1)}>
+            <ArrowLeft size={16} /> 이전 단계
           </button>
         ) : (
           <span />

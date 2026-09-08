@@ -11,6 +11,7 @@ interface ConfirmModalProps {
   variant?: 'danger' | 'default';
   onConfirm: () => void;
   onCancel: () => void;
+  children?: React.ReactNode;
 }
 
 /**
@@ -25,6 +26,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   variant = 'default',
   onConfirm,
   onCancel,
+  children,
 }) => {
   // ESC 키로 닫기
   useEffect(() => {
@@ -49,11 +51,12 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <div className={styles.overlay} onClick={onCancel} role="dialog" aria-modal="true" aria-labelledby="confirm-title">
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`}>
           {variant === 'danger' ? <AlertTriangle size={24} color="var(--danger-color, #e63946)" /> : <Info size={24} color="var(--primary-color, #4361ee)" />}
         </div>
         <h3 id="confirm-title" className={styles.title}>{title}</h3>
         {message && <p className={styles.message}>{message}</p>}
+        {children}
         <div className={styles.actions}>
           <button className={styles.cancelBtn} onClick={onCancel}>
             {cancelText}

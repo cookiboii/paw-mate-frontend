@@ -20,7 +20,7 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const AnimalListPage = lazy(() => import('./pages/AnimalList'));
 const AnimalDetail = lazy(() => import('./pages/AnimalDetail'));
 const AdoptionForm = lazy(() => import('./pages/AdoptionForm'));
-const AdoptionReview = lazy(() => import('./pages/AdoptionReview'));
+const AdoptionReviewWrite = lazy(() => import('./pages/AdoptionReviewWrite'));
 const AdoptionReviewListPage = lazy(() => import('./pages/AdoptionReviewListPage'));
 const AdoptionReviewDetail = lazy(() => import('./pages/AdoptionReviewDetail'));
 const AdoptionReviewEdit = lazy(() => import('./pages/AdoptionReviewEdit'));
@@ -39,7 +39,6 @@ const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
 const AdminAnimalsPage = lazy(() => import('./pages/admin/AdminAnimalsPage'));
 const AdminAdoptionsPage = lazy(() => import('./pages/admin/AdminAdoptionsPage'));
 const AdminPasswordPage = lazy(() => import('./pages/admin/AdminPasswordPage'));
-const AnimalStatusEditPage = lazy(() => import('./pages/admin/AnimalStatusEditPage'));
 
 const PageLoader: React.FC = () => (
   <div
@@ -74,10 +73,11 @@ const AppRoutes: React.FC = () => {
         <Route path="/oauth/kakao/callback" element={<KakaoCallback />} />
         <Route path="/animals" element={<AnimalListPage />} />
         <Route path="/animals/:id" element={<AnimalDetail />} />
-        <Route path="/review" element={<AdoptionReview />} />
         <Route path="/adopt/:animalId" element={<AdoptionForm />} />
         <Route path="/community" element={<Navigate to="/reviews" replace />} />
         <Route path="/reviews" element={<AdoptionReviewListPage />} />
+        <Route path="/reviews/write" element={<AdoptionReviewWrite />} />
+        <Route path="/review" element={<AdoptionReviewWrite />} />
         <Route path="/reviews/:id" element={<AdoptionReviewDetail />} />
         <Route path="/reviews/:id/edit" element={<AdoptionReviewEdit />} />
         
@@ -116,15 +116,6 @@ const AppRoutes: React.FC = () => {
         </Route>
 
 
-        {/* 레거시 동물 상태 수정 라우트 */}
-        <Route
-          path="/animals/edit/:id"
-          element={
-            <AdminRoute>
-              <AnimalStatusEditPage />
-            </AdminRoute>
-          }
-        />
 
         {/* Catch-all 404 Route */}
         <Route path="*" element={<NotFound />} />

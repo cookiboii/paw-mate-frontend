@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from '../styles/NotFound.module.css';
 import EmptyState from '../components/EmptyState';
 import usePageTitle from '../hooks/usePageTitle';
 import { Dog } from 'lucide-react';
@@ -6,7 +7,7 @@ import { Dog } from 'lucide-react';
 const NotFound: React.FC = () => {
   usePageTitle('404 페이지를 찾을 수 없습니다');
   return (
-    <div style={{ padding: '40px 24px', minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
+    <div className={styles.notFoundContainer}>
       <EmptyState
         icon={<Dog size={52} color="var(--text-muted)" />}
         title="404 - 페이지를 찾을 수 없습니다"

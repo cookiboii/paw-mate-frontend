@@ -314,6 +314,15 @@
   margin: 0;
 }
 
+.list > li {
+  list-style: none;
+}
+
+.scrollSentinel {
+  height: 20px;
+  margin: 10px 0;
+}
+
 .card {
   background: var(--surface-color);
   border-radius: var(--radius-lg);

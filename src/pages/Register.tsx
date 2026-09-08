@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import usePageTitle from "../hooks/usePageTitle";
 import { useToast } from "../context/ToastContext";
-import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, CheckIcon, AlertIcon } from "../components/Icons";
+import { User, Mail, Lock, Eye, EyeOff, Check, AlertCircle } from "lucide-react";
 import { getErrorMessage } from "../utils/error";
 
 const Register: React.FC = () => {
@@ -173,11 +173,11 @@ const Register: React.FC = () => {
             value={form.name}
             onChange={handleChange}
             required
-            icon={<UserIcon />}
+            icon={<User size={18} />}
           />
           {form.name && !nameRegex.test(form.name) && (
             <p className={`${styles.helperText} ${styles.error}`}>
-              <AlertIcon /> 이름은 한글 또는 영문 2자 이상이어야 합니다.
+              <AlertCircle size={14} /> 이름은 한글 또는 영문 2자 이상이어야 합니다.
             </p>
           )}
         </div>
@@ -193,7 +193,7 @@ const Register: React.FC = () => {
               onChange={handleChange}
               disabled={emailVerified}
               required
-              icon={<MailIcon />}
+              icon={<Mail size={18} />}
             />
             <button
               type="button"
@@ -208,12 +208,12 @@ const Register: React.FC = () => {
           </div>
           {form.email && !emailRegex.test(form.email) && (
             <p className={`${styles.helperText} ${styles.error}`}>
-              <AlertIcon /> 올바른 이메일 형식을 입력해주세요.
+              <AlertCircle size={14} /> 올바른 이메일 형식을 입력해주세요.
             </p>
           )}
           {emailVerified && (
             <p className={`${styles.helperText} ${styles.success}`}>
-              <CheckIcon /> 이메일 인증이 완료되었습니다.
+              <Check size={14} /> 이메일 인증이 완료되었습니다.
             </p>
           )}
         </div>
@@ -229,8 +229,8 @@ const Register: React.FC = () => {
                 value={emailCode}
                 onChange={(e) => setEmailCode(e.target.value)}
                 required
-                icon={<LockIcon />}
-                style={{ paddingRight: isTimerActive ? '80px' : '16px' }}
+                icon={<Lock size={18} />}
+                className={isTimerActive ? styles.inputWithTimer : undefined}
               >
                 {isTimerActive && (
                   <span className={styles.timerBadge}>{formatTimer(timer)}</span>
@@ -257,8 +257,8 @@ const Register: React.FC = () => {
             value={form.password}
             onChange={handleChange}
             required
-            icon={<LockIcon />}
-            style={{ paddingRight: '48px' }}
+            icon={<Lock size={18} />}
+            className={styles.inputWithEye}
           >
             <button
               type="button"
@@ -266,21 +266,21 @@ const Register: React.FC = () => {
               className={styles.passwordToggle}
               tabIndex={-1}
             >
-              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </FloatingInput>
           {form.password && (
             <div className={styles.requirements}>
               <div className={`${styles.requirementItem} ${hasLetter ? styles.valid : ""}`}>
-                <span className={styles.requirementIcon}><CheckIcon /></span>
+                <span className={styles.requirementIcon}><Check size={12} /></span>
                 영문 포함
               </div>
               <div className={`${styles.requirementItem} ${hasNumber ? styles.valid : ""}`}>
-                <span className={styles.requirementIcon}><CheckIcon /></span>
+                <span className={styles.requirementIcon}><Check size={12} /></span>
                 숫자 포함
               </div>
               <div className={`${styles.requirementItem} ${isLengthOk ? styles.valid : ""}`}>
-                <span className={styles.requirementIcon}><CheckIcon /></span>
+                <span className={styles.requirementIcon}><Check size={12} /></span>
                 8자 이상
               </div>
             </div>
@@ -296,8 +296,8 @@ const Register: React.FC = () => {
             value={form.confirmPassword}
             onChange={handleChange}
             required
-            icon={<LockIcon />}
-            style={{ paddingRight: '48px' }}
+            icon={<Lock size={18} />}
+            className={styles.inputWithEye}
           >
             <button
               type="button"
@@ -305,18 +305,18 @@ const Register: React.FC = () => {
               className={styles.passwordToggle}
               tabIndex={-1}
             >
-              {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </FloatingInput>
           {form.confirmPassword && (
             <div className={`${styles.helperText} ${isConfirmPasswordValid ? styles.success : styles.error}`}>
               {isConfirmPasswordValid ? (
                 <>
-                  <CheckIcon /> 비밀번호가 일치합니다.
+                  <Check size={14} /> 비밀번호가 일치합니다.
                 </>
               ) : (
                 <>
-                  <AlertIcon /> 비밀번호가 일치하지 않습니다.
+                  <AlertCircle size={14} /> 비밀번호가 일치하지 않습니다.
                 </>
               )}
             </div>
@@ -326,12 +326,12 @@ const Register: React.FC = () => {
         {/* API 에러 및 메시지 */}
         {error && (
           <p className={`${styles.helperText} ${styles.error}`}>
-            <AlertIcon /> {error}
+            <AlertCircle size={14} /> {error}
           </p>
         )}
         {message && !error && (
           <p className={`${styles.helperText} ${styles.success}`}>
-            <CheckIcon /> {message}
+            <Check size={14} /> {message}
           </p>
         )}
 

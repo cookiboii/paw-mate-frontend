@@ -77,7 +77,7 @@ const HomePage: React.FC = () => {
       <section className={styles.heroSection}>
         <div className={`${styles.heroContent} animate-slide-up`}>
           <span className={styles.heroBadge}>
-            <ShieldCheck size={14} style={{ marginRight: '6px' }} />
+            <ShieldCheck size={14} />
             생명 존중과 책임 있는 입양의 시작
           </span>
           <h1>한 생명의 평생을 함께할<br />가족을 기다립니다</h1>
@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
             철저한 건강 검진과 투명한 심사를 거쳐 평생 가족을 연결합니다.
           </p>
           <div className={styles.heroActions}>
-            <Link to="/animals" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <Link to="/animals" className={`btn-primary ${styles.heroPrimaryBtn}`}>
               <span>보호 중인 동물 확인하기</span>
               <ArrowRight size={18} />
             </Link>
@@ -150,7 +150,7 @@ const HomePage: React.FC = () => {
       <section className={styles.newArrivalsSection} ref={newArrivalsRef}>
         <div className={styles.sectionHeader}>
           <span className={styles.sectionSubTitle}>
-            <Sparkles size={14} style={{ display: 'inline', marginRight: '4px' }} />
+            <Sparkles size={14} />
             NEW ARRIVALS
           </span>
           <h2>가족을 기다리는 아이들</h2>
@@ -191,13 +191,13 @@ const HomePage: React.FC = () => {
               <div key={`skeleton-${i}`} className={styles.animalCardSkeleton}>
                 <div className={styles.skeletonImage} />
                 <div className={styles.skeletonContent}>
-                  <div className={styles.skeletonLine} style={{ width: '65%', height: '20px' }} />
-                  <div className={styles.skeletonLine} style={{ width: '45%', height: '14px' }} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonTitle}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonSub}`} />
                 </div>
               </div>
             ))
           ) : recentAnimals.length === 0 ? (
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className={styles.gridFullWidth}>
               <EmptyState
                 title="현재 조건에 맞는 아이가 없습니다."
                 description="새로운 가족을 기다리는 아이들이 곧 등록될 예정입니다."
@@ -216,8 +216,8 @@ const HomePage: React.FC = () => {
             ))
           )}
         </div>
-        <div style={{ textAlign: 'center', marginTop: '48px' }}>
-          <Link to="/animals" className={styles.viewAllBtn} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <div className={styles.viewAllWrapper}>
+          <Link to="/animals" className={styles.viewAllBtn}>
             <span>보호 중인 아이들 전체 보기 ({recentAnimals.length > 0 ? '더보기' : '이동'})</span>
             <ArrowRight size={18} />
           </Link>
@@ -286,7 +286,7 @@ const HomePage: React.FC = () => {
         <div className={styles.ctaContent}>
           <h2>사지 마세요, 입양하세요.<br />한 생명의 세상을 바꿀 수 있습니다.</h2>
           <p>당신의 따뜻한 결심이 한 아이에게는 평생의 기적이 됩니다.</p>
-          <Link to="/animals" className={styles.primaryBtnLarge} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <Link to="/animals" className={styles.primaryBtnLarge}>
             <HeartHandshake size={20} />
             <span>새로운 가족 맞이하기</span>
           </Link>

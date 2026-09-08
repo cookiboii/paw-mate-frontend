@@ -9,6 +9,12 @@
   margin-bottom: 24px;
 }
 
+.topNavRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .backLink {
   color: var(--text-muted);
   text-decoration: none;
@@ -20,6 +26,30 @@
 }
 
 .backLink:hover {
+  color: var(--primary-color);
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.shareBtn:hover {
+  background: var(--bg-color);
+  border-color: var(--primary-color);
+}
+
+.copiedText {
   color: var(--primary-color);
 }
 
@@ -52,6 +82,23 @@
   transform: scale(1.03);
 }
 
+.zoomBadge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
 .favBtn {
   position: absolute;
   top: 24px;
@@ -63,8 +110,9 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 1rem;
   font-weight: 700;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
   box-shadow: var(--shadow-md);
@@ -82,7 +130,6 @@
   color: var(--danger-color);
 }
 
-/* 비로그인 잠금 상태 */
 .favBtn.favLocked {
   background: rgba(0, 0, 0, 0.4);
   color: rgba(255, 255, 255, 0.85);
@@ -159,7 +206,6 @@
   color: var(--text-primary);
 }
 
-/* 뱃지 및 배너 */
 .statusBadge {
   display: inline-block;
   padding: 6px 14px;
@@ -217,10 +263,58 @@
 
 .bannerIcon {
   font-size: 1.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .adoptBtnWrapper {
   margin-top: 16px;
+}
+
+.appliedNoticeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background-color: var(--primary-light);
+  border: 1px solid var(--primary-color);
+  text-align: center;
+}
+
+.appliedTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.appliedText {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.appliedBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 12px;
+}
+
+.adoptActionBtn {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .adminButtons {
@@ -237,6 +331,9 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   border: 1px solid var(--border-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .editButton {
@@ -257,6 +354,25 @@
 .deleteButton:hover {
   background: var(--danger-color);
   color: white;
+}
+
+.statusModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.statusSelect {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {

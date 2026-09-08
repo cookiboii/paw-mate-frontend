@@ -118,9 +118,8 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
         ))}
 
         <Link
-          to={isAuthenticated ? '/review' : '/login'}
+          to={isAuthenticated ? '/reviews/write' : '/login'}
           className={styles.writeBtn}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
         >
           <PenSquare size={16} />
           <span>글쓰기</span>

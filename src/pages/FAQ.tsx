@@ -45,7 +45,7 @@ const FAQ: React.FC = () => {
                   id={`faq-btn-${idx}`}
                 >
                   <span>Q. {faq.q}</span>
-                  <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`} style={{ display: 'flex', alignItems: 'center' }}>
+                  <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}>
                     <ChevronDown size={18} />
                   </span>
                 </button>
