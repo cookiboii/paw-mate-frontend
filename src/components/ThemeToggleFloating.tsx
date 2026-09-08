@@ -5,18 +5,26 @@ import styles from '../styles/ThemeToggleFloating.module.css';
 
 const ThemeToggleFloating: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <button
+      type="button"
       className={styles.floatingBtn}
       onClick={toggleTheme}
-      aria-label="테마 전환 (라이트/다크 모드)"
-      title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+      aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
+      title={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
     >
-      <span className={styles.icon} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+      <span className={styles.iconWrapper}>
+        {isDark ? (
+          <Sun size={19} color="#f59e0b" />
+        ) : (
+          <Moon size={18} color="var(--primary-color)" />
+        )}
       </span>
-      <span className={styles.tooltip}>{theme === 'light' ? '다크 모드' : '라이트 모드'}</span>
+      <span className={styles.tooltip}>
+        {isDark ? '☀️ 라이트 모드로 전환' : '🌙 다크 모드로 전환'}
+      </span>
     </button>
   );
 };

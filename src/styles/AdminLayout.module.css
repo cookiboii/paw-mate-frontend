@@ -81,6 +81,10 @@
   transform: none;
 }
 
+.benchmarkNavLink {
+  color: var(--primary-color);
+}
+
 .mainContent {
   flex: 1;
   min-width: 0;

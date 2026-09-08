@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.topSection}>
           <div className={styles.brandColumn}>
-            <h3 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <h3>
               <PawPrint size={22} color="var(--primary-color, #ff6b6b)" />
               AdoptMate
             </h3>
@@ -31,7 +31,7 @@ const Footer: React.FC = () => {
               <li><Link to="/reviews">커뮤니티</Link></li>
               {isAdmin && (
                 <li>
-                  <Link to="/benchmark" style={{ color: 'var(--primary-color)', fontWeight: 600 }}>
+                  <Link to="/benchmark" className={styles.benchmarkLink}>
                     ⚡ 성능/동시성 랩
                   </Link>
                 </li>
@@ -49,12 +49,12 @@ const Footer: React.FC = () => {
 
           <div className={styles.linksColumn}>
             <h4>긴급 제보 & 상담</h4>
-            <ul className={styles.contactList}>
-              <li style={{ color: 'var(--primary-color)', fontWeight: '700', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ul>
+              <li className={styles.contactPhone}>
                 <Phone size={18} /> 1577-0954
               </li>
-              <li style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>동물보호 상담센터 (평일 09:00~18:00)</li>
-              <li style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>응급 구조 신고: 국번없이 120 / 112</li>
+              <li className={styles.contactNote}>동물보호 상담센터 (평일 09:00~18:00)</li>
+              <li className={styles.contactNote}>응급 구조 신고: 국번없이 120 / 112</li>
             </ul>
           </div>
         </div>

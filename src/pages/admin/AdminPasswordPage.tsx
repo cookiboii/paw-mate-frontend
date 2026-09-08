@@ -1,5 +1,7 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import axios from '../../api/axiosInstance';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
@@ -8,14 +10,10 @@ import FloatingInput from '../../components/FloatingInput';
 import { EyeIcon, EyeOffIcon, LockIcon } from '../../components/Icons';
 import styles from '../../styles/AdminPasswordPage.module.css';
 import { getErrorMessage } from '../../utils/error';
+import { passwordChangeSchema, PasswordChangeFormData } from '../../schemas/authSchema';
 
 const AdminPasswordPage: React.FC = () => {
   usePageTitle('관리자 비밀번호 변경');
-  const [form, setForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    newPasswordConfirm: '',
-  });
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -25,40 +23,22 @@ const AdminPasswordPage: React.FC = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PasswordChangeFormData>({
+    resolver: zodResolver(passwordChangeSchema),
+    mode: 'onTouched',
+  });
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!form.currentPassword) {
-      showToast('현재 비밀번호를 입력해주세요.', 'error');
-      return;
-    }
-
-    if (form.newPassword.length < 8) {
-      showToast('새 비밀번호는 8자 이상이어야 합니다.', 'error');
-      return;
-    }
-
-    if (form.newPassword !== form.newPasswordConfirm) {
-      showToast('새 비밀번호 확인이 일치하지 않습니다.', 'error');
-      return;
-    }
-
-    if (form.currentPassword === form.newPassword) {
-      showToast('현재 비밀번호와 다른 새로운 비밀번호를 입력해주세요.', 'error');
-      return;
-    }
-
+  const onSubmit = async (data: PasswordChangeFormData) => {
     setLoading(true);
 
     try {
       await axios.post('/adoptmate/password', {
-        currentPassword: form.currentPassword,
-        newPassword: form.newPassword,
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
       });
 
       showToast('비밀번호가 성공적으로 변경되었습니다. 다시 로그인해 주세요.', 'info');
@@ -87,17 +67,15 @@ const AdminPasswordPage: React.FC = () => {
       </div>
 
       <div className={styles.card}>
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           {/* 현재 비밀번호 */}
           <div style={{ position: 'relative' }}>
             <FloatingInput
               label="현재 비밀번호"
               type={showCurrent ? 'text' : 'password'}
-              name="currentPassword"
-              value={form.currentPassword}
-              onChange={handleChange}
-              required
+              error={errors.currentPassword?.message}
               icon={<LockIcon />}
+              {...register('currentPassword')}
             />
             <button
               type="button"
@@ -114,11 +92,9 @@ const AdminPasswordPage: React.FC = () => {
             <FloatingInput
               label="새 비밀번호 (8자 이상)"
               type={showNew ? 'text' : 'password'}
-              name="newPassword"
-              value={form.newPassword}
-              onChange={handleChange}
-              required
+              error={errors.newPassword?.message}
               icon={<LockIcon />}
+              {...register('newPassword')}
             />
             <button
               type="button"
@@ -135,11 +111,9 @@ const AdminPasswordPage: React.FC = () => {
             <FloatingInput
               label="새 비밀번호 확인"
               type={showConfirm ? 'text' : 'password'}
-              name="newPasswordConfirm"
-              value={form.newPasswordConfirm}
-              onChange={handleChange}
-              required
+              error={errors.newPasswordConfirm?.message}
               icon={<LockIcon />}
+              {...register('newPasswordConfirm')}
             />
             <button
               type="button"

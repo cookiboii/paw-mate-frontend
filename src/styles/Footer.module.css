@@ -14,7 +14,7 @@
 
 .topSection {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr;
   gap: 40px;
   margin-bottom: 60px;
 }
@@ -84,6 +84,25 @@
 
 .linksColumn a:hover {
   color: var(--primary-color);
+}
+
+.benchmarkLink {
+  color: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+.contactPhone {
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contactNote {
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .bottomSection {

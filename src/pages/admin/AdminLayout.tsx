@@ -20,7 +20,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <NavLink
               to="/admin/dashboard"
               className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <LayoutDashboard size={16} />
               <span>대시보드 개요</span>
@@ -30,18 +29,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <NavLink
               to="/admin/animals"
               className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <PawPrint size={16} />
               <span>동물 관리 & 등록</span>
             </NavLink>
           </li>
-
           <li>
             <NavLink
               to="/admin/users"
               className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <Users size={16} />
               <span>사용자 관리</span>
@@ -51,7 +47,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <NavLink
               to="/admin/adoptions"
               className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <ClipboardList size={16} />
               <span>입양 신청 관리</span>
@@ -61,7 +56,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <NavLink
               to="/admin/password"
               className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <KeyRound size={16} />
               <span>비밀번호 변경</span>
@@ -70,10 +64,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <li>
             <NavLink
               to="/benchmark"
-              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeLink : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}
+              className={({ isActive }) =>
+                `${styles.navLink} ${styles.benchmarkNavLink} ${isActive ? styles.activeLink : ''}`
+              }
             >
-              <span style={{ fontSize: '1rem' }}>⚡</span>
+              <span>⚡</span>
               <span>성능/동시성 랩</span>
             </NavLink>
           </li>

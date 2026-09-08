@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import Layout from './components/Layout';
 import AdminRoute from './components/AdminRoute';
 import ToastContainer from './components/ToastContainer';
+import ThemeToggleFloating from './components/ThemeToggleFloating';
 import ScrollToTop from './components/ScrollToTop';
 import FloatingScrollTop from './components/FloatingScrollTop';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -139,6 +140,7 @@ const App: React.FC = () => {
       <ScrollToTop />
       <Layout>
         <ToastContainer />
+        <ThemeToggleFloating />
         <FloatingScrollTop />
         <AppRoutes />
       </Layout>

@@ -1,0 +1,52 @@
+.scrollTopBtn {
+  position: fixed;
+  bottom: 84px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-color);
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 890;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.scrollTopBtn:hover {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.05);
+}
+
+.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(14px) scale(0.85);
+}
+
+@media (max-width: 768px) {
+  .scrollTopBtn {
+    bottom: 124px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+  }
+}
