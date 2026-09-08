@@ -13,7 +13,8 @@ import useCachedApi from '../hooks/useCachedApi';
 import { getErrorMessage } from '../utils/error';
 import { getCategoryFromTitle, getCleanTitle, CATEGORIES } from './AdoptionReviewListPage';
 import { ReviewDetailData, PostResponseDto } from '../types/review';
-import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2, Share2, Check } from 'lucide-react';
+import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2, Share2, Check, Maximize2 } from 'lucide-react';
+import ImageLightboxModal from '../components/ImageLightboxModal';
 
 const renderCategoryIcon = (cat: string, size = 16) => {
   switch (cat) {
@@ -50,6 +51,7 @@ const AdoptionReviewDetail: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
 
   const cleanTitle = review ? getCleanTitle(review.title) : '';
   usePageTitle(cleanTitle || '후기 상세');
@@ -152,7 +154,28 @@ const AdoptionReviewDetail: React.FC = () => {
           }`}
         >
           {review.img ? (
-            <img src={review.img} alt={cleanTitle} className={styles.heroImage} />
+            <>
+              <img 
+                src={review.img} 
+                alt={cleanTitle} 
+                className={styles.heroImage} 
+                onClick={() => setIsLightboxOpen(true)} 
+                title="클릭하여 크게 보기"
+              />
+              <button
+                type="button"
+                className={styles.heroExpandBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLightboxOpen(true);
+                }}
+                title="사진 크게 보기"
+                aria-label="사진 크게 보기"
+              >
+                <Maximize2 size={15} />
+                <span>크게 보기</span>
+              </button>
+            </>
           ) : (
             <div
               className={`${styles.noImage} ${
@@ -305,6 +328,17 @@ const AdoptionReviewDetail: React.FC = () => {
         onConfirm={handleDelete}
         onCancel={() => setIsDeleteModalOpen(false)}
       />
+
+      {/* 이미지 라이트박스 모달 */}
+      {review?.img && (
+        <ImageLightboxModal
+          isOpen={isLightboxOpen}
+          imageUrl={review.img}
+          alt={cleanTitle}
+          caption={`${cleanTitle}${review.name ? ` • 작성자: ${review.name}` : ''}`}
+          onClose={() => setIsLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 };

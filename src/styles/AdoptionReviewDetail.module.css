@@ -35,6 +35,38 @@
   height: 100%;
   object-fit: cover;
   opacity: 0.8;
+  cursor: zoom-in;
+  transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.heroImage:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.heroExpandBtn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 3;
+  transition: all var(--transition-fast);
+}
+
+.heroExpandBtn:hover {
+  background: rgba(0, 0, 0, 0.75);
+  transform: scale(1.05);
 }
 
 .noImage {

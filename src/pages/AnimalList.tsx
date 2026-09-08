@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Dog, Sparkles } from 'lucide-react';
 import styles from '../styles/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
@@ -18,18 +19,39 @@ type ViewMode = 'infinite' | 'pagination';
 const AnimalList: React.FC = () => {
   usePageTitle('가족을 기다리는 아이들');
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL Query Parameters 초기값 파싱
+  const initialMode = searchParams.get('mode') === 'pagination' ? 'pagination' : 'infinite';
+  const initialSpecies = searchParams.get('species') || 'ALL';
+  const initialGender = (['MALE', 'FEMALE'].includes(searchParams.get('gender') || '') 
+    ? searchParams.get('gender') 
+    : 'ALL') as 'ALL' | 'MALE' | 'FEMALE';
+  const initialPage = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
+
   // 1. 뷰 모드 및 필터 상태
-  const [viewMode, setViewMode] = useState<ViewMode>('infinite');
-  const [speciesFilter, setSpeciesFilter] = useState<string>('ALL');
-  const [genderFilter, setGenderFilter] = useState<'ALL' | 'MALE' | 'FEMALE'>('ALL');
+  const [viewMode, setViewMode] = useState<ViewMode>(initialMode);
+  const [speciesFilter, setSpeciesFilter] = useState<string>(initialSpecies);
+  const [genderFilter, setGenderFilter] = useState<'ALL' | 'MALE' | 'FEMALE'>(initialGender);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // 2. 페이지네이션 모드 상태
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(initialPage);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [paginationAnimals, setPaginationAnimals] = useState<Animal[]>([]);
   const [isPaginationLoading, setIsPaginationLoading] = useState<boolean>(false);
+
+  // URL 쿼리 파라미터 동기화 (필터 및 뷰 모드 변경 시)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (viewMode !== 'infinite') params.set('mode', viewMode);
+    if (speciesFilter !== 'ALL') params.set('species', speciesFilter);
+    if (genderFilter !== 'ALL') params.set('gender', genderFilter);
+    if (viewMode === 'pagination' && page > 0) params.set('page', String(page));
+
+    setSearchParams(params, { replace: true });
+  }, [viewMode, speciesFilter, genderFilter, page, setSearchParams]);
 
   // 3. 무한 스크롤 커서 페칭 콜백
   const cursorFetcher = useCallback(

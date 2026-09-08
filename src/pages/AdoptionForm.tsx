@@ -2,14 +2,15 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { submitAdoption } from '../api/adoption';
+import { submitAdoption, getMyAdoptions } from '../api/adoption';
 import { fetchAnimalById } from '../api/animal';
 import styles from '../styles/AdoptionForm.module.css';
 import usePageTitle from '../hooks/usePageTitle';
 import { Animal } from '../types/animal';
 import { formatPhoneNumber, isValidPhoneNumber } from '../utils/validation';
-import { FileText, Lock } from 'lucide-react';
+import { FileText, Lock, CheckCircle2, ClipboardList, ArrowLeft } from 'lucide-react';
 import { getErrorMessage } from '../utils/error';
+
 
 const AdoptionForm: React.FC = () => {
   usePageTitle('입양 신청서 작성');
@@ -25,9 +26,11 @@ const AdoptionForm: React.FC = () => {
   const [interview, setInterview] = useState<string>('');
   const [agreed, setAgreed] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [hasAlreadyApplied, setHasAlreadyApplied] = useState<boolean>(false);
 
   useEffect(() => {
     if (!animalId) return;
+
     // 동물 정보 조회
     const fetchAnimal = async () => {
       try {
@@ -38,7 +41,19 @@ const AdoptionForm: React.FC = () => {
       }
     };
     fetchAnimal();
-  }, [animalId]);
+
+    // 로그인 상태일 때 해당 동물 입양 신청 중복 여부 확인
+    if (isAuthenticated) {
+      getMyAdoptions()
+        .then((adoptions) => {
+          const found = adoptions.some((item) => String(item.animalId) === String(animalId));
+          setHasAlreadyApplied(found);
+        })
+        .catch((err) => {
+          console.warn('내 입양 신청 내역 확인 실패:', err);
+        });
+    }
+  }, [animalId, isAuthenticated]);
 
   if (!isAuthenticated) {
     return (
@@ -57,6 +72,42 @@ const AdoptionForm: React.FC = () => {
           >
             로그인하러 가기
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // 이미 해당 동물에 대해 입양 신청서를 제출한 경우
+  if (hasAlreadyApplied) {
+    return (
+      <div className={styles.loginPrompt}>
+        <div className={styles.promptCard} style={{ maxWidth: '480px' }}>
+          <span style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+            <CheckCircle2 size={52} color="var(--primary-color)" />
+          </span>
+          <h3>이미 입양 신청이 접수된 아이입니다</h3>
+          <p style={{ lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '24px' }}>
+            회원님께서 제출하신 입양 신청서가 정상 접수되어 현재 보호소 담당자가 정성껏 심사 중입니다.<br />
+            동일 동물에 대한 중복 신청은 제한됩니다.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <Link
+              to="/mypage"
+              className="btn-primary"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px' }}
+            >
+              <ClipboardList size={18} />
+              <span>내 입양 신청 내역 확인하기</span>
+            </Link>
+            <Link
+              to="/animals"
+              className="btn-secondary"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px' }}
+            >
+              <ArrowLeft size={18} />
+              <span>다른 아이들 보러가기</span>
+            </Link>
+          </div>
         </div>
       </div>
     );

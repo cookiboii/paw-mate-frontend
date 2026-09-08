@@ -13,21 +13,27 @@ import {
   Edit3, 
   Trash2,
   Share2,
-  Check
+  Check,
+  CheckCircle2,
+  ClipboardList,
+  Maximize2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { deleteAnimal, fetchAnimalById } from '../api/animal';
+import { getMyAdoptions } from '../api/adoption';
 import styles from '../styles/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
 import ImageWithFallback from '../components/ImageWithFallback';
+import ImageLightboxModal from '../components/ImageLightboxModal';
 import Skeleton from '../components/Skeleton';
 import { AnimalStatus, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
 import usePageTitle from '../hooks/usePageTitle';
 import useCachedApi from '../hooks/useCachedApi';
 import { Animal } from '../types/animal';
 import { getErrorMessage } from '../utils/error';
+
 
 const AnimalDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,6 +57,25 @@ const AnimalDetail: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
+  const [hasApplied, setHasApplied] = useState<boolean>(false);
+
+  // 🐾 로그인 사용자의 해당 동물 입양 신청 중복 여부 확인
+  useEffect(() => {
+    if (!isAuthenticated || !id) {
+      setHasApplied(false);
+      return;
+    }
+
+    getMyAdoptions()
+      .then((adoptions) => {
+        const found = adoptions.some((item) => String(item.animalId) === String(id));
+        setHasApplied(found);
+      })
+      .catch((err) => {
+        console.warn('내 입양 신청 내역 조회 실패:', err);
+      });
+  }, [isAuthenticated, id]);
 
   usePageTitle(animal ? `${animal.breed || animal.species} - 입양 상세 정보` : '동물 상세 정보');
 
@@ -219,17 +244,46 @@ const AnimalDetail: React.FC = () => {
 
         {animal ? (
           <div className={styles.card}>
-            <div className={styles.imageContainer}>
+            <div
+              className={styles.imageContainer}
+              onClick={() => animal.image && setIsLightboxOpen(true)}
+              style={{ cursor: animal.image ? 'zoom-in' : 'default', position: 'relative' }}
+              title={animal.image ? '클릭하여 사진 크게 보기' : undefined}
+            >
               <ImageWithFallback
                 src={animal.image}
                 alt={`${animal.breed || animal.species} 사진`}
                 className={styles.image}
                 fallbackText="동물 사진 준비 중입니다"
               />
+              {animal.image && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '12px',
+                  right: '12px',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  color: '#ffffff',
+                  padding: '6px 12px',
+                  borderRadius: 'var(--radius-full)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: 500,
+                  backdropFilter: 'blur(4px)',
+                  pointerEvents: 'none'
+                }}>
+                  <Maximize2 size={13} />
+                  <span>크게 보기</span>
+                </div>
+              )}
               {/* 찜하기 플로팅 버튼 */}
               <button
                 className={`${styles.favBtn} ${favorite ? styles.favActive : ''} ${!isAuthenticated ? styles.favLocked : ''}`}
-                onClick={handleFavClick}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFavClick();
+                }}
                 aria-label={!isAuthenticated ? '로그인 후 찜하기 가능' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
                 aria-pressed={isAuthenticated ? favorite : undefined}
                 title={!isAuthenticated ? '로그인 후 찜하기 가능합니다' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
@@ -300,10 +354,37 @@ const AnimalDetail: React.FC = () => {
               {/* 상태에 따른 맞춤 안내 배너 */}
               {getStatusBanner(animal.status)}
 
-              {/* 일반 사용자: 입양 신청 버튼 */}
+              {/* 일반 사용자: 입양 신청 버튼 (중복 신청 방어 분기) */}
               {!isAdmin && canAdopt && (
                 <div className={styles.adoptBtnWrapper}>
-                  {isAuthenticated ? (
+                  {hasApplied ? (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
+                      padding: '18px',
+                      borderRadius: 'var(--radius-lg, 12px)',
+                      backgroundColor: 'var(--primary-light, #eef2ff)',
+                      border: '1px solid var(--primary-color, #4361ee)',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--primary-color)', fontWeight: 700, fontSize: '1.05rem' }}>
+                        <CheckCircle2 size={20} />
+                        <span>이미 입양 신청서가 접수된 아이입니다</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+                        현재 보호소에서 신청서를 정성껏 심사 중입니다. 심사 진행 상태는 마이페이지에서 확인하실 수 있습니다.
+                      </p>
+                      <button
+                        onClick={() => navigate('/mypage')}
+                        className="btn-secondary"
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '6px', padding: '12px' }}
+                      >
+                        <ClipboardList size={16} />
+                        <span>내 입양 신청 내역 확인하기</span>
+                      </button>
+                    </div>
+                  ) : isAuthenticated ? (
                     <button
                       onClick={() => navigate(`/adopt/${id}`)}
                       className="btn-primary"
@@ -353,6 +434,15 @@ const AnimalDetail: React.FC = () => {
           <p className={styles.message}>동물 정보를 찾을 수 없습니다.</p>
         )}
       </section>
+
+      {/* 고화질 사진 확대 라이트박스 모달 */}
+      <ImageLightboxModal
+        isOpen={isLightboxOpen}
+        imageUrl={animal?.image}
+        alt={`${animal?.breed || animal?.species} 고화질 사진`}
+        caption={`${animal?.breed || animal?.species} (${getSpeciesLabel(animal?.species || 'DOG')} • ${getGenderLabel(animal?.gender || 'M')} • ${animal?.age || 0}살)`}
+        onClose={() => setIsLightboxOpen(false)}
+      />
 
       {/* 커스텀 삭제 확인 모달 */}
       <ConfirmModal
