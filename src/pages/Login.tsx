@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import styles from "../styles/Login.module.css";
+import styles from "../styles/pages/Login.module.css";
 import { loginUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";

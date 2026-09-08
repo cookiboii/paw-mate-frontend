@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllAdoptions, updateAdoptionStatus } from '../../api/adoption';
 import { useToast } from '../../context/ToastContext';
-import styles from '../../styles/AdminAdoptionsPage.module.css';
+import styles from '../../styles/admin/AdminAdoptionsPage.module.css';
 import ConfirmModal from '../../components/ConfirmModal';
 import { formatDateTime, formatDate } from '../../utils/date';
 import usePageTitle from '../../hooks/usePageTitle';

@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import styles from '../styles/Skeleton.module.css';
+import styles from '../styles/components/Skeleton.module.css';
 
 interface SkeletonProps {
   type?: 'text' | 'title' | 'avatar' | 'image' | 'card' | 'badge';

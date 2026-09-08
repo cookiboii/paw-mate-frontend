@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../styles/NotFound.module.css';
+import styles from '../styles/pages/NotFound.module.css';
 import EmptyState from '../components/EmptyState';
 import usePageTitle from '../hooks/usePageTitle';
 import { Dog } from 'lucide-react';

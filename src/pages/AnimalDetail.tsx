@@ -23,7 +23,7 @@ import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { deleteAnimal, fetchAnimalById, updateAnimalStatus } from '../api/animal';
 import { getMyAdoptions } from '../api/adoption';
-import styles from '../styles/AnimalDetail.module.css';
+import styles from '../styles/pages/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import ImageLightboxModal from '../components/ImageLightboxModal';

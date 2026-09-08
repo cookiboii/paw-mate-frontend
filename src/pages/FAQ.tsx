@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from '../styles/StaticPage.module.css';
+import styles from '../styles/pages/StaticPage.module.css';
 import usePageTitle from '../hooks/usePageTitle';
 import { ChevronDown } from 'lucide-react';
 

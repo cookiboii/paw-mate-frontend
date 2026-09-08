@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../styles/AdoptionGuide.module.css';
+import styles from '../styles/pages/AdoptionGuide.module.css';
 import useScrollReveal from '../hooks/useScrollReveal';
 import usePageTitle from '../hooks/usePageTitle';
 import { Lightbulb } from 'lucide-react';

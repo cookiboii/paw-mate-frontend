@@ -8,7 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import usePageTitle from '../../hooks/usePageTitle';
 import FloatingInput from '../../components/FloatingInput';
 import { Eye, EyeOff, Lock } from 'lucide-react';
-import styles from '../../styles/AdminPasswordPage.module.css';
+import styles from '../../styles/admin/AdminPasswordPage.module.css';
 import { getErrorMessage } from '../../utils/error';
 import { passwordChangeSchema, PasswordChangeFormData } from '../../schemas/authSchema';
 

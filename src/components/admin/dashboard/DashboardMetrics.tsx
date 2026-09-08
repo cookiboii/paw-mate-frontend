@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PawPrint, Clock, Users, HeartHandshake } from 'lucide-react';
-import styles from '../../../styles/AdminDashboardPage.module.css';
+import styles from '../../../styles/admin/AdminDashboardPage.module.css';
 
 export interface DashboardStats {
   totalAnimals: number;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, PawPrint, PlusCircle, Users, TrendingUp, ClipboardList } from 'lucide-react';
-import styles from '../../../styles/AdminDashboardPage.module.css';
+import styles from '../../../styles/admin/AdminDashboardPage.module.css';
 import { DashboardStats } from './DashboardMetrics';
 
 interface DashboardChartsProps {

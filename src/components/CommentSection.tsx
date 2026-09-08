@@ -1,7 +1,7 @@
 import React, { useEffect, useState, FormEvent } from 'react';
 import { getComments, createComment, updateComment, deleteComment } from '../api/review';
 import { getMyInfo } from '../api/user';
-import styles from '../styles/CommentSection.module.css';
+import styles from '../styles/components/CommentSection.module.css';
 import Spinner from '../components/Spinner';
 import { CommentItem } from '../types/review';
 import { User } from '../types/auth';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useToast } from '../context/ToastContext';
 import Toast from './Toast';
-import styles from '../styles/Toast.module.css';
+import styles from '../styles/components/Toast.module.css';
 
 const ToastContainer: React.FC = () => {
   const { toasts } = useToast();

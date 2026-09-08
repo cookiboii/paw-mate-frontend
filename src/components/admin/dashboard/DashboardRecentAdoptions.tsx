@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ClipboardList, ArrowRight, CheckCircle2 } from 'lucide-react';
-import styles from '../../../styles/AdminDashboardPage.module.css';
+import styles from '../../../styles/admin/AdminDashboardPage.module.css';
 import { AdoptionResponseDto } from '../../../types/adoption';
 import { formatDateTime } from '../../../utils/date';
 

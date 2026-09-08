@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, ChangeEvent, FormEvent, DragEvent, 
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import axios from '../api/axiosInstance';
 import { updateReview } from '../api/review';
-import styles from '../styles/AdoptionReview.module.css';
+import styles from '../styles/pages/AdoptionReview.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';

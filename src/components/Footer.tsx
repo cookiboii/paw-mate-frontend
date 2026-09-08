@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { PawPrint, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import styles from '../styles/Footer.module.css';
+import styles from '../styles/components/Footer.module.css';
 
 const Footer: React.FC = () => {
   const { isAdmin } = useAuth();

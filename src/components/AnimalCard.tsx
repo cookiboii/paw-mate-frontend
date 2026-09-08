@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Lock, X } from 'lucide-react';
-import styles from '../styles/AnimalCard.module.css';
+import styles from '../styles/components/AnimalCard.module.css';
 import ImageWithFallback from './ImageWithFallback';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';

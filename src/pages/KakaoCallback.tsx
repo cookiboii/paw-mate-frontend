@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from '../api/axiosInstance';
 import Spinner from '../components/Spinner';
-import styles from '../styles/KakaoCallback.module.css';
+import styles from '../styles/pages/KakaoCallback.module.css';
 
 const KakaoCallback: React.FC = () => {
   const [searchParams] = useSearchParams();

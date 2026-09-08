@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { PawPrint, BookOpen, MessageSquare, User, Heart, ShieldCheck, Crown, X, LogOut } from 'lucide-react';
-import styles from '../styles/Header.module.css';
+import styles from '../styles/components/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
 

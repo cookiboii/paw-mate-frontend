@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReviewById, deleteReview } from '../api/review';
 import { getMyInfo } from '../api/user';
-import styles from '../styles/AdoptionReviewDetail.module.css';
+import styles from '../styles/pages/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
 import ConfirmModal from '../components/ConfirmModal';

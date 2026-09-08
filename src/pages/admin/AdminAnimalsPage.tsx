@@ -3,7 +3,7 @@ import { useSearchParams, Navigate } from 'react-router-dom';
 import { PawPrint, PlusCircle } from 'lucide-react';
 import { fetchAnimalList, updateAnimalStatus, deleteAnimal } from '../../api/animal';
 import { useAuth } from '../../context/AuthContext';
-import styles from '../../styles/AdminAnimalsPage.module.css';
+import styles from '../../styles/admin/AdminAnimalsPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import ConfirmModal from '../../components/ConfirmModal';
 import { getStatusLabel } from '../../constants/animal';

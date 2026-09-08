@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getAllUsers, deleteUserByAdmin } from '../../api/user';
-import styles from '../../styles/AdminUsersPage.module.css';
+import styles from '../../styles/admin/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import usePageTitle from '../../hooks/usePageTitle';
 import ConfirmModal from '../../components/ConfirmModal';

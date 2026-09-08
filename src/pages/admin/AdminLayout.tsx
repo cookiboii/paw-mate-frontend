@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import styles from '../../styles/AdminLayout.module.css';
+import styles from '../../styles/admin/AdminLayout.module.css';
 import { LayoutDashboard, PawPrint, Users, ClipboardList, KeyRound } from 'lucide-react';
 
 interface AdminLayoutProps {

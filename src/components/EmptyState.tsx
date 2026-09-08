@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
-import styles from '../styles/EmptyState.module.css';
+import styles from '../styles/components/EmptyState.module.css';
 
 interface EmptyStateProps {
   icon?: ReactNode;

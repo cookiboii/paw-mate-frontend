@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import styles from '../../styles/AdminDashboardPage.module.css';
+import styles from '../../styles/admin/AdminDashboardPage.module.css';
 import { fetchAnimalList } from '../../api/animal';
 import { getAllUsers } from '../../api/user';
 import { getAllAdoptions, updateAdoptionStatus } from '../../api/adoption';

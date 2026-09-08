@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Home, PawPrint, MessageSquare, Heart, User } from 'lucide-react';
 import { useFavorites } from '../context/FavoritesContext';
-import styles from '../styles/BottomNav.module.css';
+import styles from '../styles/components/BottomNav.module.css';
 
 const BottomNav: React.FC = () => {
   const { favorites } = useFavorites();

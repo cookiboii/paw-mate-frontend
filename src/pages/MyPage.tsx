@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import styles from '../styles/MyPage.module.css';
+import styles from '../styles/pages/MyPage.module.css';
 import { getMyInfo, deleteMyAccount, updatePassword } from '../api/user';
 import { getMyAdoptions } from '../api/adoption';
 import { useNavigate, Link } from 'react-router-dom';

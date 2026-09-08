@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Dog, Sparkles } from 'lucide-react';
-import styles from '../styles/AnimalList.module.css';
+import styles from '../styles/pages/AnimalList.module.css';
 import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import AnimalCard from '../components/AnimalCard';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import styles from "../styles/Register.module.css";
+import styles from "../styles/pages/Register.module.css";
 import { registerUser, verifyEmail, verifyCode } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";

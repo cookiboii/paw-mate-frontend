@@ -2,7 +2,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { sendResetCode, verifyResetCode, resetPassword } from '../api/auth';
-import styles from '../styles/ForgotPassword.module.css';
+import styles from '../styles/pages/ForgotPassword.module.css';
 import FloatingInput from '../components/FloatingInput';
 import { useToast } from '../context/ToastContext';
 import usePageTitle from '../hooks/usePageTitle';

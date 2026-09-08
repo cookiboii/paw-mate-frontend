@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import styles from '../styles/ConfirmModal.module.css';
+import styles from '../styles/components/ConfirmModal.module.css';
 import { AlertTriangle, Info } from 'lucide-react';
 
 interface ConfirmModalProps {

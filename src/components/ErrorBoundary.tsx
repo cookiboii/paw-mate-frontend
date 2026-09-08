@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import styles from '../styles/ErrorBoundary.module.css';
+import styles from '../styles/components/ErrorBoundary.module.css';
 import { AlertCircle } from 'lucide-react';
 
 interface ErrorBoundaryProps {

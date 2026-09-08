@@ -1,5 +1,5 @@
 import React, { useState, useRef, ChangeEvent, FormEvent, DragEvent, MouseEvent } from 'react';
-import styles from '../styles/AdoptionReview.module.css';
+import styles from '../styles/pages/AdoptionReview.module.css';
 import axios from '../api/axiosInstance';
 import { createReview } from '../api/review';
 import { useAuth } from '../context/AuthContext';

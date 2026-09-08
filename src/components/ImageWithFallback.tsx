@@ -1,5 +1,5 @@
 import React, { useState, ImgHTMLAttributes, CSSProperties } from 'react';
-import styles from '../styles/ImageWithFallback.module.css';
+import styles from '../styles/components/ImageWithFallback.module.css';
 
 interface ImageWithFallbackProps extends ImgHTMLAttributes<HTMLImageElement> {
   src?: string;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styles from '../styles/Toast.module.css';
+import styles from '../styles/components/Toast.module.css';
 import { useToast } from '../context/ToastContext';
 import { ToastItem, ToastType } from '../types/common';
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../styles/FloatingScrollTop.module.css';
+import styles from '../styles/components/FloatingScrollTop.module.css';
 
 const FloatingScrollTop: React.FC = () => {
   const [visible, setVisible] = useState(false);

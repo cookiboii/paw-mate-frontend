@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { submitAdoption, getMyAdoptions } from '../api/adoption';
 import { fetchAnimalById } from '../api/animal';
-import styles from '../styles/AdoptionForm.module.css';
+import styles from '../styles/pages/AdoptionForm.module.css';
 import usePageTitle from '../hooks/usePageTitle';
 import { Animal } from '../types/animal';
 import { formatPhoneNumber, isValidPhoneNumber } from '../utils/validation';

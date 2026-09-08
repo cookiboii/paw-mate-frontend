@@ -14,7 +14,7 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import styles from '../styles/Benchmark.module.css';
+import styles from '../styles/pages/Benchmark.module.css';
 import {
   runConcurrencyBenchmark,
   subscribeToWebVitals,

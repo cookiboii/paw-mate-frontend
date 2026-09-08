@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import styles from '../styles/ImageLightboxModal.module.css';
+import styles from '../styles/components/ImageLightboxModal.module.css';
 
 interface ImageLightboxModalProps {
   isOpen: boolean;

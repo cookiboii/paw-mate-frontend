@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import styles from '../styles/AdoptionReviewListPage.module.css';
+import styles from '../styles/pages/AdoptionReviewListPage.module.css';
 import { getReviewsCursor, getReviews, prefetchReviewById } from '../api/review';
 import { Link, useSearchParams } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';

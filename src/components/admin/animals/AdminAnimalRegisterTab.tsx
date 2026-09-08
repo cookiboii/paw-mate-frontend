@@ -1,6 +1,6 @@
 import React, { useState, useRef, ChangeEvent, FormEvent, DragEvent, MouseEvent } from 'react';
 import { Camera, X } from 'lucide-react';
-import styles from '../../../styles/AdminAnimalsPage.module.css';
+import styles from '../../../styles/admin/AdminAnimalsPage.module.css';
 import FloatingInput from '../../FloatingInput';
 import { AnimalRegisterForm } from '../../../types/animal';
 import { SPECIES_OPTIONS, STATUS_OPTIONS, GENDER_OPTIONS } from '../../../constants/animal';

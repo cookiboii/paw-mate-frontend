@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, InputHTMLAttributes, ReactNode } from 'react';
-import styles from '../styles/FloatingInput.module.css';
+import styles from '../styles/components/FloatingInput.module.css';
 
 export interface FloatingInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;

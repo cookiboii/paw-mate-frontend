@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart, Dog, Cat, Sparkles, PawPrint } from "lucide-react";
-import styles from "../styles/HomePage.module.css";
+import styles from "../styles/pages/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
 import { fetchAnimalList, fetchAnimalListBySpecies } from "../api/animal";

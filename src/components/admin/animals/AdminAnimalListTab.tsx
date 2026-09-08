@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, RotateCcw, PawPrint, ExternalLink, Trash2 } from 'lucide-react';
-import styles from '../../../styles/AdminAnimalsPage.module.css';
+import styles from '../../../styles/admin/AdminAnimalsPage.module.css';
 import Spinner from '../../Spinner';
 import EmptyState from '../../EmptyState';
 import { Animal } from '../../../types/animal';
