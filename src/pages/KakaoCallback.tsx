@@ -16,7 +16,7 @@ const KakaoCallback: React.FC = () => {
   useEffect(() => {
     const processKakaoAuth = async () => {
       const code = searchParams.get('code');
-      const token = searchParams.get('token');
+      const token = searchParams.get('token') || searchParams.get('accessToken');
       const role = searchParams.get('role') || 'USER';
       const email = searchParams.get('email') || searchParams.get('id') || undefined;
       const name = searchParams.get('name') || undefined;
@@ -73,8 +73,11 @@ const KakaoCallback: React.FC = () => {
 
           const jwtToken =
             resData?.token ||
+            resData?.accessToken ||
             resData?.result?.token ||
-            resData?.data?.token;
+            resData?.result?.accessToken ||
+            resData?.data?.token ||
+            resData?.data?.accessToken;
 
           const jwtRefreshToken =
             resData?.refreshToken ||

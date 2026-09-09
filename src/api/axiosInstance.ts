@@ -61,7 +61,13 @@ axiosInstance.interceptors.response.use(
 
       // 로그인/회원가입 요청 실패 시에는 리프레시를 시도하지 않음
       const url = originalRequest.url || '';
-      if (!refreshToken || url.includes('/login') || url.includes('/refresh-token')) {
+      const isPublicAuthRequest = /\/(login|register|verify-email|verify-code|send-reset-code|verify-reset-code|refresh-token)(?:[/?]|$)/.test(url);
+      if (url.includes('/login') || url.includes('/refresh-token') || isPublicAuthRequest) {
+        return Promise.reject(error);
+      }
+      if (!refreshToken) {
+        clearAuthData();
+        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         return Promise.reject(error);
       }
 

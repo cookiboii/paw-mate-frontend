@@ -43,7 +43,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     try {
       const res = await loginUser(form);
       const resData = res.data?.result || res.data?.data || res.data || {};
-      const token = resData.token;
+      const token = resData.token || resData.accessToken;
       const refreshToken = resData.refreshToken;
       const role = resData.role || "USER";
       const email = resData.email || form.email;
@@ -68,7 +68,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
   // URL search params check (e.g. redirected to /login?token=... or ?code=...)
   useEffect(() => {
-    const urlToken = searchParams.get("token");
+    const urlToken = searchParams.get("token") || searchParams.get("accessToken");
     const urlRole = searchParams.get("role") || "USER";
     const urlEmail = searchParams.get("email") || searchParams.get("id") || undefined;
     const urlName = searchParams.get("name") || undefined;
@@ -91,7 +91,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           if (typeof resData === "string") {
             try { resData = JSON.parse(resData); } catch { return; }
           }
-          const token = resData?.token || resData?.result?.token || resData?.data?.token;
+          const token = resData?.token || resData?.accessToken || resData?.result?.token || resData?.result?.accessToken || resData?.data?.token || resData?.data?.accessToken;
           const refreshToken = resData?.refreshToken || resData?.result?.refreshToken || resData?.data?.refreshToken;
           const role = resData?.role || resData?.result?.role || resData?.data?.role || "USER";
           const email = resData?.email || resData?.result?.email || resData?.data?.email || resData?.id;
@@ -127,7 +127,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       if (!payload || typeof payload !== "object") return;
       if (event.origin !== BACKEND_ORIGIN) return;
 
-      const { type, token, id, role, provider, email, name, refreshToken } = payload;
+      const { type, token: messageToken, accessToken, id, role, provider, email, name, refreshToken } = payload;
+      const token = messageToken || accessToken;
       const isOAuthSuccess = type === "OAUTH_SUCCESS";
 
       if (isOAuthSuccess && typeof token === "string" && token) {

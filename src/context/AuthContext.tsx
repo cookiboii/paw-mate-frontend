@@ -33,7 +33,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { showToast } = useToast();
 
   const login = (token: string, userInfo: User = {}, refreshToken: string | null = null) => {
-    localStorage.setItem('token', token);
+    // OAuth 제공자/백엔드에 따라 Bearer 접두사가 포함될 수 있으므로 한 번만 저장한다.
+    const normalizedToken = token.replace(/^Bearer\s+/i, '').trim();
+    localStorage.setItem('token', normalizedToken);
+    // 이전 세션의 refresh token이 새 로그인에 섞이지 않도록 교체한다.
+    localStorage.removeItem('refreshToken');
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
     }
@@ -43,7 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (userInfo.name) localStorage.setItem('name', userInfo.name);
     if (userInfo.provider) localStorage.setItem('provider', userInfo.provider);
 
-    setIsAuthenticated(true);
+    setIsAuthenticated(Boolean(normalizedToken));
     setUser(userInfo);
   };
 
