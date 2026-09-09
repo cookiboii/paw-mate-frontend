@@ -100,8 +100,8 @@ const ForgotPassword: React.FC = () => {
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (newPassword.length < 8) {
-      showToast('비밀번호는 최소 8자 이상이어야 합니다.', 'error');
+    if (newPassword.length < 6) {
+      showToast('비밀번호는 최소 6자 이상이어야 합니다.', 'error');
       return;
     }
 
@@ -206,7 +206,7 @@ const ForgotPassword: React.FC = () => {
         <form onSubmit={handleResetPassword} className={styles.form}>
           <div className={styles.inputRelative}>
             <FloatingInput
-              label="새 비밀번호 (8자 이상)"
+                label="새 비밀번호 (6자 이상)"
               type={showPassword ? 'text' : 'password'}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}

@@ -346,7 +346,7 @@ const MyPage: React.FC = () => {
                     onChange={handleChange}
                     required
                   />
-                  <span className={styles.helpText}>영문, 숫자, 특수문자 포함 8자 이상</span>
+                  <span className={styles.helpText}>6자 이상</span>
                 </div>
                 <div className={styles.formGroup}>
                   <label>새 비밀번호 확인</label>

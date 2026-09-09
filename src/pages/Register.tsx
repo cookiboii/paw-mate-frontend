@@ -72,10 +72,8 @@ const Register: React.FC = () => {
   const isNameValid = form.name === "" || nameRegex.test(form.name);
   const isEmailValid = form.email === "" || emailRegex.test(form.email);
 
-  const hasLetter = /[A-Za-z]/.test(form.password);
-  const hasNumber = /\d/.test(form.password);
-  const isLengthOk = form.password.length >= 8;
-  const isPasswordValid = hasLetter && hasNumber && isLengthOk;
+  const isLengthOk = form.password.length >= 6;
+  const isPasswordValid = isLengthOk;
 
   const isConfirmPasswordValid =
     form.confirmPassword === "" ||
@@ -84,7 +82,7 @@ const Register: React.FC = () => {
   const validateForm = () => {
     if (!nameRegex.test(form.name)) return "이름은 한글 또는 영문 2자 이상이어야 합니다.";
     if (!emailRegex.test(form.email)) return "유효한 이메일 형식이 아닙니다.";
-    if (!isPasswordValid) return "비밀번호는 영문과 숫자를 포함하여 8자 이상이어야 합니다.";
+    if (!isPasswordValid) return "비밀번호는 6자 이상이어야 합니다.";
     if (form.password !== form.confirmPassword) return "비밀번호가 일치하지 않습니다.";
     if (!emailVerified) return "이메일 인증을 완료해주세요.";
     return null;
@@ -271,17 +269,9 @@ const Register: React.FC = () => {
           </FloatingInput>
           {form.password && (
             <div className={styles.requirements}>
-              <div className={`${styles.requirementItem} ${hasLetter ? styles.valid : ""}`}>
-                <span className={styles.requirementIcon}><Check size={12} /></span>
-                영문 포함
-              </div>
-              <div className={`${styles.requirementItem} ${hasNumber ? styles.valid : ""}`}>
-                <span className={styles.requirementIcon}><Check size={12} /></span>
-                숫자 포함
-              </div>
               <div className={`${styles.requirementItem} ${isLengthOk ? styles.valid : ""}`}>
                 <span className={styles.requirementIcon}><Check size={12} /></span>
-                8자 이상
+                6자 이상
               </div>
             </div>
           )}

@@ -5,7 +5,7 @@ export const passwordChangeSchema = z
     currentPassword: z.string().min(1, '현재 비밀번호를 입력해주세요.'),
     newPassword: z
       .string()
-      .min(8, '새 비밀번호는 8자 이상이어야 합니다.')
+      .min(6, '새 비밀번호는 6자 이상이어야 합니다.')
       .max(30, '새 비밀번호는 최대 30자까지 가능합니다.'),
     newPasswordConfirm: z.string().min(1, '새 비밀번호 확인을 입력해주세요.'),
   })
