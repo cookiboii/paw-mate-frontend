@@ -1,5 +1,6 @@
 // src/api/axiosInstance.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { unwrapResult } from './apiHelper';
 
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -83,7 +84,7 @@ axiosInstance.interceptors.response.use(
       try {
         // 토큰 재발급 API 호출: POST /adoptmate/refresh-token
         const res = await axios.post(`${BASE_URL}/adoptmate/refresh-token`, { refreshToken });
-        const newToken = res.data.result?.token || res.data.token;
+        const newToken = unwrapResult<{ token?: string }>(res.data)?.token;
 
         if (newToken) {
           localStorage.setItem('token', newToken);
@@ -92,6 +93,8 @@ axiosInstance.interceptors.response.use(
           processQueue(null, newToken);
           return axiosInstance(originalRequest);
         }
+
+        throw new Error('토큰 재발급 응답에 Access Token이 없습니다.');
       } catch (refreshError) {
         processQueue(refreshError, null);
         clearAuthData();

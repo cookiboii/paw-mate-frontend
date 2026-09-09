@@ -4,6 +4,7 @@ import { apiCache } from '../utils/apiCache';
 import { unwrapResult } from './apiHelper';
 
 const API_BASE_URL = '/animals';
+const V1_ANIMAL_API_BASE_URL = '/api/v1/animals';
 
 /**
  * 🐾 백엔드 응답 데이터를 프론트엔드 표준 모델로 정규화 (animalId/id, image/imageUrl 호환)
@@ -48,7 +49,7 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData): Pro
     };
   }
 
-  const response = await axios.post(`${API_BASE_URL}/register`, payload);
+  const response = await axios.post(V1_ANIMAL_API_BASE_URL, payload);
   apiCache.invalidateByPrefix('animal');
   return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
@@ -62,7 +63,9 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axios.get(`${API_BASE_URL}/list?page=${page}&size=${size}`);
+      const response = await axios.get(V1_ANIMAL_API_BASE_URL, {
+        params: { page, size },
+      });
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
       const content = Array.isArray(unwrapped.content)
         ? unwrapped.content.map(normalizeAnimal)
@@ -111,9 +114,10 @@ export const fetchAnimalListBySpecies = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axios.get(
-        `${API_BASE_URL}/species?species=${encodeURIComponent(species)}&page=${page}&size=${size}`
-      );
+      // api.md에 종 필터의 v1 쿼리 규격은 명시되지 않아, 검증된 호환 경로를 유지한다.
+      const response = await axios.get(`${API_BASE_URL}/species`, {
+        params: { species, page, size },
+      });
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
       const content = Array.isArray(unwrapped.content)
         ? unwrapped.content.map(normalizeAnimal)

@@ -22,7 +22,9 @@ export const getReviews = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axiosInstance.get(`/post/list?page=${page}&size=${size}&sort=${sort}`);
+      const response = await axiosInstance.get('/api/v1/posts', {
+        params: { page, size, sort },
+      });
       return unwrapResult<PageResponse<PostResponseDto>>(response.data);
     },
     { ttl: 60 * 1000 }
@@ -81,7 +83,7 @@ export const createReview = async (payload: PostCreateRequestDto): Promise<PostR
     content: payload.content,
     img: payload.img || payload.image || '',
   };
-  const response = await axiosInstance.post('/post/create', body);
+  const response = await axiosInstance.post('/api/v1/posts', body);
   apiCache.invalidateByPrefix('review');
   return unwrapResult<PostResponseDto>(response.data);
 };

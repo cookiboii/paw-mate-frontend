@@ -1,4 +1,5 @@
 import axiosInstance from './axiosInstance';
+import { unwrapResult } from './apiHelper';
 import { LoginCredentials, RegisterPayload, User } from '../types/auth';
 
 /**
@@ -28,7 +29,7 @@ export const loginUser = async ({ email, password }: LoginCredentials) => {
  */
 export const fetchMyInfo = async (): Promise<User> => {
   const response = await axiosInstance.get('/adoptmate/myInfo');
-  return response.data.result || response.data;
+  return unwrapResult<User>(response.data);
 };
 
 /**
@@ -110,4 +111,3 @@ export const resetPassword = async (email: string, newPassword: string) => {
     password: newPassword,
   });
 };
-
