@@ -38,6 +38,7 @@ export interface SliceResponse<T> {
  */
 export interface CommonResDto<T = unknown> {
   statusCode: number;
+  code: string;
   statusMessage: string;
   result: T;
 }
@@ -58,4 +59,3 @@ export interface CommonErrorDto {
   code: string;
   statusMessage: string;
 }
-

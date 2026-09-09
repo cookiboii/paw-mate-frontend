@@ -48,7 +48,7 @@ const AdoptionReviewEdit: React.FC = () => {
       try {
         const [userRes, reviewRes] = await Promise.all([
           axios.get('/adoptmate/myInfo'),
-          axios.get(`/post/${id}`),
+          axios.get(`/api/v1/posts/${id}`),
         ]);
         const user = userRes.data.result || userRes.data;
         const review = reviewRes.data.result || reviewRes.data;

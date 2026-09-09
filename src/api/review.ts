@@ -43,7 +43,7 @@ export const getReviewsCursor = async (
     params.append('lastPostId', String(lastPostId));
   }
   params.append('size', String(size));
-  const response = await axiosInstance.get(`/post/cursor?${params.toString()}`);
+  const response = await axiosInstance.get(`/api/v1/posts/cursor?${params.toString()}`);
   return unwrapResult<SliceResponse<PostResponseDto>>(response.data);
 };
 
@@ -55,7 +55,7 @@ export const getReviewById = async (id: number | string): Promise<PostResponseDt
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axiosInstance.get(`/post/${id}`);
+      const response = await axiosInstance.get(`/api/v1/posts/${id}`);
       return unwrapResult<PostResponseDto>(response.data);
     },
     { ttl: 3 * 60 * 1000 }
@@ -101,7 +101,7 @@ export const updateReview = async (
     content: payload.content,
     img: payload.img || payload.image || '',
   };
-  const response = await axiosInstance.put(`/post/${id}`, body);
+  const response = await axiosInstance.put(`/api/v1/posts/${id}`, body);
   apiCache.invalidateByPrefix('review');
   return unwrapResult<PostResponseDto>(response.data);
 };
@@ -110,7 +110,7 @@ export const updateReview = async (
  * 🗑️ 게시글 삭제
  */
 export const deleteReview = async (id: number | string): Promise<void> => {
-  await axiosInstance.delete(`/post/${id}`);
+  await axiosInstance.delete(`/api/v1/posts/${id}`);
   apiCache.invalidateByPrefix('review');
 };
 

@@ -3,8 +3,7 @@ import { Animal, AnimalFormData, PageResponse, SliceResponse } from '../types';
 import { apiCache } from '../utils/apiCache';
 import { unwrapResult } from './apiHelper';
 
-const API_BASE_URL = '/animals';
-const V1_ANIMAL_API_BASE_URL = '/api/v1/animals';
+const API_BASE_URL = '/api/v1/animals';
 
 /**
  * 🐾 백엔드 응답 데이터를 프론트엔드 표준 모델로 정규화 (animalId/id, image/imageUrl 호환)
@@ -49,7 +48,7 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData): Pro
     };
   }
 
-  const response = await axios.post(V1_ANIMAL_API_BASE_URL, payload);
+  const response = await axios.post(API_BASE_URL, payload);
   apiCache.invalidateByPrefix('animal');
   return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
@@ -63,7 +62,7 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axios.get(V1_ANIMAL_API_BASE_URL, {
+      const response = await axios.get(API_BASE_URL, {
         params: { page, size },
       });
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
@@ -103,7 +102,7 @@ export const fetchAnimalCursorList = async (
 };
 
 /**
- * 🐕 종별 동물 목록 조회 (GET /animals/species)
+ * 🐕 종별 동물 목록 조회 (GET /api/v1/animals/species)
  */
 export const fetchAnimalListBySpecies = async (
   species: string,
@@ -114,7 +113,6 @@ export const fetchAnimalListBySpecies = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      // api.md에 종 필터의 v1 쿼리 규격은 명시되지 않아, 검증된 호환 경로를 유지한다.
       const response = await axios.get(`${API_BASE_URL}/species`, {
         params: { species, page, size },
       });
@@ -203,7 +201,7 @@ export const deleteAnimal = async (id: string | number): Promise<void> => {
 
 /**
  * ⭐ 관심 동물 찜하기 토글 (등록 / 취소)
- * POST /animals/{id}/favorite -> FavoriteToggleResponseDto { animalId, isFavorite, favoriteCount }
+ * POST /api/v1/animals/{id}/favorite -> FavoriteToggleResponseDto { animalId, isFavorite, favoriteCount }
  */
 export const toggleAnimalFavorite = async (
   id: string | number
@@ -216,7 +214,7 @@ export const toggleAnimalFavorite = async (
 
 /**
  * ❌ 관심 동물 찜 명시적 취소
- * DELETE /animals/{id}/favorite -> FavoriteToggleResponseDto
+ * DELETE /api/v1/animals/{id}/favorite -> FavoriteToggleResponseDto
  */
 export const removeAnimalFavorite = async (
   id: string | number
@@ -229,7 +227,7 @@ export const removeAnimalFavorite = async (
 
 /**
  * 📂 내가 찜한 보호 동물 목록 조회 (최신순 페이징)
- * GET /animals/favorites/my?page=0&size=10
+ * GET /api/v1/animals/favorites/my?page=0&size=10
  */
 export const fetchMyFavoriteAnimals = async (
   page = 0,

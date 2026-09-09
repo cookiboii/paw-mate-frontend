@@ -28,19 +28,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const redirectPath = locationState?.from || "/";
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app";
-  const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID || "16a5cc3c2d930524373be21f6bf96353";
-  const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI || `${API_BASE_URL}/adoptmate/kakao`;
   const BACKEND_ORIGIN = API_BASE_URL ? new URL(API_BASE_URL).origin : window.location.origin;
 
-  const kakaoAuthUrl = (() => {
-    const params = new URLSearchParams({
-      response_type: "code",
-      client_id: KAKAO_CLIENT_ID,
-      redirect_uri: KAKAO_REDIRECT_URI,
-    });
-
-    return `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
-  })();
+  const kakaoAuthUrl = `${API_BASE_URL.replace(/\/$/, '')}/oauth2/authorization/kakao`;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -134,17 +124,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         }
       }
 
-      if (typeof payload !== "object") return;
-
-      const allowedOrigins = new Set([BACKEND_ORIGIN, window.location.origin, "null"]);
-      if (event.origin && !allowedOrigins.has(event.origin)) {
-        console.warn("Blocked OAuth message from unexpected origin:", event.origin);
-      }
+      if (!payload || typeof payload !== "object") return;
+      if (event.origin !== BACKEND_ORIGIN) return;
 
       const { type, token, id, role, provider, email, name, refreshToken } = payload;
-      const isOAuthSuccess = type === "OAUTH_SUCCESS" || type === "KAKAO_LOGIN_SUCCESS" || !!token;
+      const isOAuthSuccess = type === "OAUTH_SUCCESS";
 
-      if (isOAuthSuccess && token) {
+      if (isOAuthSuccess && typeof token === "string" && token) {
         const userInfo = {
           email: email || id,
           role: role || "USER",
@@ -169,8 +155,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     );
 
     if (!popup || popup.closed || typeof popup.closed === "undefined") {
-      // 팝업이 차단되었으면 현재 창에서 이동
-      window.location.href = kakaoAuthUrl;
+      showToast('카카오 로그인을 위해 팝업을 허용한 뒤 다시 시도해 주세요.', 'info');
     }
   };
 

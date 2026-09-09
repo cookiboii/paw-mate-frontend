@@ -6,8 +6,8 @@ import { ApiResponse } from '../types/common';
 export function unwrapResult<T>(responseData: unknown): T {
   if (responseData && typeof responseData === 'object') {
     const apiRes = responseData as ApiResponse<T>;
-    if (apiRes.result !== undefined && apiRes.result !== null) {
-      return apiRes.result;
+    if ('result' in apiRes) {
+      return apiRes.result as T;
     }
     if (apiRes.data !== undefined && apiRes.data !== null) {
       return apiRes.data;

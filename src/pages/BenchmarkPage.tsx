@@ -40,7 +40,7 @@ const BenchmarkPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('concurrency');
 
   // ================= 1. API Concurrency Test State =================
-  const [endpoint, setEndpoint] = useState<string>('/animals/cursor?size=10');
+  const [endpoint, setEndpoint] = useState<string>('/api/v1/animals/cursor?size=10');
   const [isCustomEndpoint, setIsCustomEndpoint] = useState<boolean>(false);
   const [customUrl, setCustomUrl] = useState<string>('');
   const [totalRequests, setTotalRequests] = useState<number>(20);
@@ -188,14 +188,14 @@ const BASE_URL = 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtyp
 
 export default function () {
   // 1. No-Offset 커서 기반 고속 동물 목록 조회 (Count 쿼리 0%)
-  const animalRes = http.get(\`\${BASE_URL}/animals/cursor?size=10\`);
+  const animalRes = http.get(\`\${BASE_URL}/api/v1/animals/cursor?size=10\`);
   check(animalRes, {
     '동물 커서 조회 HTTP 200 OK': (r) => r.status === 200,
     '동물 조회 지연시간 < 500ms': (r) => r.timings.duration < 500,
   });
 
   // 2. No-Offset 커서 기반 고속 게시글 목록 조회 (Count 쿼리 0%)
-  const postRes = http.get(\`\${BASE_URL}/post/cursor?size=10\`);
+  const postRes = http.get(\`\${BASE_URL}/api/v1/posts/cursor?size=10\`);
   check(postRes, {
     '게시글 커서 조회 HTTP 200 OK': (r) => r.status === 200,
     '게시글 조회 지연시간 < 500ms': (r) => r.timings.duration < 500,
@@ -281,7 +281,7 @@ export default function () {
                   <input
                     type="text"
                     className={styles.input}
-                    placeholder="/animals/list 또는 전체 URL"
+                    placeholder="/api/v1/animals 또는 전체 URL"
                     value={customUrl}
                     onChange={(e) => setCustomUrl(e.target.value)}
                     disabled={isRunning}
@@ -293,11 +293,11 @@ export default function () {
                     onChange={(e) => setEndpoint(e.target.value)}
                     disabled={isRunning}
                   >
-                    <option value="/animals/cursor?size=10">/animals/cursor (보호 동물 No-Offset 커서 - 고성능)</option>
-                    <option value="/post/cursor?size=10">/post/cursor (게시글 No-Offset 커서 - 고성능)</option>
-                    <option value="/animals/list?page=0&size=10">/animals/list (동물 목록 조회 - 오프셋 페이징)</option>
-                    <option value="/post/list?page=0&size=10">/post/list (입양 후기 목록 조회 - 오프셋 페이징)</option>
-                    <option value="/animals/1">/animals/1 (동물 상세 조회)</option>
+                    <option value="/api/v1/animals/cursor?size=10">/api/v1/animals/cursor (보호 동물 No-Offset 커서 - 고성능)</option>
+                    <option value="/api/v1/posts/cursor?size=10">/api/v1/posts/cursor (게시글 No-Offset 커서 - 고성능)</option>
+                    <option value="/api/v1/animals?page=0&size=10">/api/v1/animals (동물 목록 조회 - 오프셋 페이징)</option>
+                    <option value="/api/v1/posts?page=0&size=10">/api/v1/posts (입양 후기 목록 조회 - 오프셋 페이징)</option>
+                    <option value="/api/v1/animals/1">/api/v1/animals/1 (동물 상세 조회)</option>
                   </select>
                 )}
               </div>

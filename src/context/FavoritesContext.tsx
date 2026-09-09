@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import { useToast } from './ToastContext';
 import { useAuth } from './AuthContext';
 import { Animal } from '../types/animal';
-import { fetchMyFavoriteAnimals, toggleAnimalFavorite } from '../api/animal';
+import { fetchMyFavoriteAnimals, toggleAnimalFavorite, removeAnimalFavorite } from '../api/animal';
 
 interface FavoritesContextType {
   favorites: Partial<Animal>[];
@@ -37,9 +37,14 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
 
     setIsLoading(true);
     try {
-      // 서버에서 찜 목록 페이징 조회 (최대 100건)
+      // 페이지당 최대 100건씩 전체 찜 목록 조회
       const res = await fetchMyFavoriteAnimals(0, 100);
-      const serverList = res.content || [];
+      const remainingPages = await Promise.all(
+        Array.from({ length: Math.max(0, (res.totalPages || 1) - 1) }, (_, index) =>
+          fetchMyFavoriteAnimals(index + 1, 100)
+        )
+      );
+      const serverList = [res, ...remainingPages].flatMap((page) => page.content || []);
       setFavorites(serverList);
 
       // 오프라인/빠른 로딩을 위한 로컬스토리지 백업
@@ -81,7 +86,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     [favorites]
   );
 
-  // 2. 찜 토글 (서버 API POST /animals/{id}/favorite 연동 + 낙관적 UI 업데이트)
+  // 2. 찜 등록/취소 요청과 낙관적 UI 업데이트
   const toggleFavorite = async (
     animal: Partial<Animal> & { id: string | number; species?: string; breed?: string }
   ) => {
@@ -120,13 +125,14 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
 
     // 서버 API 호출
     try {
-      const res = await toggleAnimalFavorite(animalId);
-      // 서버에서 반환된 실제 찜 상태에 따라 정합성 확인
-      if (res.isFavorite && !isFavorite(animalId)) {
-        // 방금 찜 완료
-      }
-      // 로컬 스토리지 동기화
-      localStorage.setItem(storageKey, JSON.stringify(favorites));
+      const res = await (exists ? removeAnimalFavorite(animalId) : toggleAnimalFavorite(animalId));
+      // 서버가 반환한 최종 상태를 목록과 로컬 캐시에 반영
+      setFavorites((current) => {
+        const others = current.filter((item) => String(item.id ?? item.animalId) !== String(animalId));
+        const next = res.isFavorite ? [{ ...animal, id: animalId }, ...others] : others;
+        localStorage.setItem(storageKey, JSON.stringify(next));
+        return next;
+      });
     } catch (err) {
       console.error('서버 찜하기 토글 실패, 롤백 수행:', err);
       // 실패 시 롤백
