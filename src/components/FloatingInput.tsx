@@ -23,6 +23,7 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
       icon,
       children,
       disabled = false,
+      className = '',
       ...props
     },
     ref
@@ -53,8 +54,8 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
             }}
             required={required}
             disabled={disabled}
-            className={`${styles.input} ${isActive ? styles.active : ''} ${icon ? styles.hasIcon : ''}`}
             {...props}
+            className={`${styles.input} ${isActive ? styles.active : ''} ${icon ? styles.hasIcon : ''} ${className}`}
           />
           <label
             htmlFor={name}
