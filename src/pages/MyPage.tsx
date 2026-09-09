@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import styles from '../styles/pages/MyPage.module.css';
 import { getMyInfo, deleteMyAccount, updatePassword } from '../api/user';
 import { getMyAdoptions } from '../api/adoption';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
