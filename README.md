@@ -24,9 +24,12 @@
 5. [핵심 아키텍처 & UX 포인트](#-핵심-아키텍처--ux-포인트)
 6. [환경 변수 가이드](#-환경-변수-가이드)
 7. [시작 가이드 (Getting Started)](#-시작-가이드-getting-started)
-8. [페이지 & 라우팅 구조](#-페이지--라우팅-구조)
-9. [컨벤션 & 기여 가이드](#-컨벤션--기여-가이드)
-10. [로드맵 (Roadmap)](#-로드맵-roadmap)
+8. [npm 스크립트](#-npm-스크립트)
+9. [API 연동 가이드](#-api-연동-가이드)
+10. [페이지 & 라우팅 구조](#-페이지--라우팅-구조)
+11. [컨벤션 & 기여 가이드](#-컨벤션--기여-가이드)
+12. [로드맵 (Roadmap)](#-로드맵-roadmap)
+13. [라이선스](#-라이선스)
 
 ---
 
@@ -48,6 +51,7 @@
 - **Build Tool**: Vite 7 (`^7.0.0`)
 - **Routing**: React Router DOM v7 (`^7.6.3`)
 - **HTTP Client**: Axios (`^1.10.0`)
+- **Forms & Validation**: React Hook Form, Zod
 - **Storage / Upload**: Vercel Blob (`@vercel/blob ^2.8.0`)
 
 ### Styling & Design System
@@ -86,7 +90,7 @@
 - **이메일 인증 시스템**: 회원가입 시 인증 코드 발송 및 실시간 카운트다운 타이머(3분)
 - **비밀번호 찾기 & 재설정**: 이메일 코드 검증 기반의 안전한 2단계 비밀번호 변경
 - **카카오 OAuth2 소셜 로그인**: 카카오 인가 코드를 수신하여 자동 로그인 및 토큰 발급 처리
-- **마이페이지**: 내 프로필 정보 조회, 관심 등록한 동물(찜 목록) 카드 그리드 바로가기, 회원 탈퇴
+- **마이페이지**: 내 프로필 정보 조회, 관심 등록한 동물(찜 목록) 카드 그리드 바로가기, 입양 신청 내역 확인, 회원 탈퇴
 
 ### 5. 👑 관리자 대시보드 (Admin Dashboard)
 - **관리자 전용 라우트 보호 (`AdminRoute`)**: `ROLE_ADMIN` 권한 검증 및 비인가 접근 차단
@@ -238,12 +242,28 @@ sequenceDiagram
 
 ## 🔑 환경 변수 가이드
 
-프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 아래 변수들을 설정합니다.
+`.env.example`을 복사하여 `.env` 파일을 생성하고 필요한 변수를 설정합니다.
+
+**Windows PowerShell:**
+```bash
+Copy-Item .env.example .env
+```
+
+**macOS / Linux:**
+```bash
+cp .env.example .env
+```
 
 | 환경 변수 | 필수 여부 | 설명 | 예시값 |
 | :--- | :---: | :--- | :--- |
-| `VITE_API_BASE_URL` | **필수** | 백엔드 Spring Boot API 서버 주소 | `https://port-0-paw-mate-be-...sel4.cloudtype.app` |
-| `BLOB_READ_WRITE_TOKEN` | 선택 | Vercel Blob 이미지 업로드 서버리스 토큰 | `vercel_blob_rw_...` |
+| `VITE_API_BASE_URL` | **필수** | 백엔드 Spring Boot API 서버 주소 | `https://port-0-paw-mate-be-m68k5w0efb6fae78.sel4.cloudtype.app` |
+| `VITE_UPLOAD_API_URL` | 정적 배포 시 | 배포 환경(Vercel 등)의 서버리스 업로드 엔드포인트 URL | `https://your-domain.vercel.app/api/upload` |
+| `VITE_KAKAO_CLIENT_ID` | 선택 | 카카오 JavaScript 키 | `kakao_client_id` |
+| `VITE_KAKAO_REDIRECT_URI` | 선택 | 카카오 로그인 콜백 리다이렉트 URI | `http://localhost:5173/oauth/kakao` |
+| `BLOB_READ_WRITE_TOKEN` | 이미지 업로드 시 | Vercel 서버리스 함수(`api/upload.ts`) 전용 Blob 쓰기 토큰 | `vercel_blob_rw_...` |
+| `UPLOAD_ALLOWED_ORIGIN` | 정적 배포 시 | 업로드 API 호출을 허용할 프론트엔드 Origin | `https://your-frontend.pages.dev` |
+
+> ⚠️ **보안 주의**: `VITE_`로 시작하는 환경 변수는 클라이언트 브라우저 번들에 평문으로 포함됩니다. `BLOB_READ_WRITE_TOKEN`과 같은 비밀 키에는 절대로 `VITE_` 접두사를 붙이지 마십시오.
 
 ---
 
@@ -258,17 +278,42 @@ npm install
 ```bash
 npm run dev
 ```
-브라우저에서 `http://localhost:5173`으로 접속합니다.
+기본적으로 `http://localhost:5173`에서 실행됩니다.
 
-### 3. 프로덕션 빌드 및 타입 검사
+### 3. 품질 확인 및 프로덕션 빌드
 ```bash
+npm run lint
 npm run build
 ```
 
-### 4. 린트 검사
-```bash
-npm run lint
-```
+이미지 업로드는 `api/upload.ts` Vercel 서버리스 함수가 처리합니다. GitHub Pages와 같이 서버리스 함수를 실행할 수 없는 정적 배포 환경에서는 `VITE_UPLOAD_API_URL`에 Vercel 등에 배포된 업로드 API의 전체 URL을 지정하세요.
+
+---
+
+## 📜 npm 스크립트
+
+| 명령어 | 설명 |
+| :--- | :--- |
+| `npm run dev` | Vite 로컬 개발 서버 실행 (`http://localhost:5173`) |
+| `npm run lint` | ESLint를 통한 코드 스타일 및 잠재 에러 정적 검사 |
+| `npm run build` | TypeScript 엄격 타입 검사 후 최적화된 프로덕션 번들 빌드 (`dist/`) |
+| `npm run preview` | 빌드된 프로덕션 번들 로컬 미리보기 서버 실행 |
+| `npm run deploy` | GitHub Pages 배포 실행 |
+
+---
+
+## 🔌 API 연동 가이드
+
+백엔드의 성공 응답은 `result` 필드에 실제 비즈니스 데이터를 담는 공통 래퍼 형식입니다. 프론트엔드는 `src/api/apiHelper.ts`의 `unwrapResult`를 통해 이를 일관되게 안전 언래핑하여 처리합니다.
+
+신규 API는 백엔드 권장 v1 엔드포인트를 우선적으로 사용합니다:
+- **동물 등록·목록**: `/api/v1/animals`
+- **게시글 작성·목록**: `/api/v1/posts`
+- 종별 조회, 커서 기반 조회, 관심 동물 찜, 입양 신청 및 댓글 등 호환 엔드포인트는 백엔드 스펙에 맞춰 연동되어 있습니다.
+
+인증 요청 중 `401 Unauthorized`를 수신하면 Axios 인터셉터가 백그라운드에서 Refresh Token으로 새 Access Token을 발급받아 대기 중이던 요청을 자동으로 재시도합니다. 갱신에 실패한 경우 인증 세션을 안전하게 정리하고 로그인 상태를 종료합니다.
+
+자세한 백엔드 API 계약 및 엔드포인트 명세는 [api.md](./api.md)를 참고하세요.
 
 ---
 
@@ -280,14 +325,15 @@ npm run lint
 | `/guide` | 입양 절차 및 안내 가이드 | 전체 공개 |
 | `/animals` | 보호 동물 목록 (검색, 결과 카운트, 번호 페이지네이션) | 전체 공개 |
 | `/animals/:id` | 동물 상세 정보 & 찜하기 | 전체 공개 (입양신청: 회원) |
-| `/adopt/:animalId` | 입양 신청서 작성 | 회원 전용 (`USER`) |
-| `/reviews` (`/community`) | 커뮤니티 (입양후기 / 무료분양 / 제보 목록 & 무한 스크롤) | 전체 공개 |
+| `/adopt/:animalId` | 온라인 입양 신청서 작성 | 회원 전용 (`USER`) |
+| `/reviews` (`/community`) | 커뮤니티 (입양후기 / 무료분양 / 제보 목록 & 무한 스크롤) | 전체 공개 (`/community`는 `/reviews`로 리다이렉트) |
 | `/reviews/:id` | 커뮤니티 상세 & 계층형 댓글 | 전체 공개 |
-| `/review` | 커뮤니티 글쓰기 (Vercel Blob 사진 첨부) | 회원 전용 (`USER`) |
+| `/reviews/write` | 커뮤니티 글쓰기 (Vercel Blob 사진 첨부) | 회원 전용 (`USER`) |
 | `/reviews/:id/edit` | 커뮤니티 글 수정 | 작성자 / 관리자 |
 | `/login` / `/register` | 로그인 / 이메일 인증 회원가입 | 비로그인 |
 | `/forgot-password` | 2단계 비밀번호 재설정 | 비로그인 |
-| `/mypage` | 마이페이지 (내 정보, 찜한 동물 목록 그리드, 탈퇴) | 회원 전용 (`USER`) |
+| `/mypage` | 마이페이지 (내 프로필, 찜한 동물 목록, 신청 내역, 회원 탈퇴) | 회원 전용 (`USER`) |
+| `/admin/dashboard` | 관리자 대시보드 메인 | 관리자 (`ADMIN`) |
 | `/admin/users` | [관리자] 회원 관리 (반응형 테이블) | 관리자 (`ADMIN`) |
 | `/admin/animals` | [관리자] 동물 등록 & 목록 관리 | 관리자 (`ADMIN`) |
 | `/admin/adoptions` | [관리자] 입양 신청 심사 관리 | 관리자 (`ADMIN`) |
@@ -296,6 +342,8 @@ npm run lint
 ---
 
 ## 🤝 컨벤션 & 기여 가이드
+
+변경 사항 작업 전 반드시 `npm run lint`와 `npm run build`를 실행하여 정적 분석 및 컴파일 검증을 수행해 주세요.
 
 ### Git 커밋 메시지 컨벤션
 [Conventional Commits](https://www.conventionalcommits.org/) 규칙을 준수합니다.

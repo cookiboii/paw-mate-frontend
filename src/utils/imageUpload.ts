@@ -1,5 +1,3 @@
-import { put } from '@vercel/blob';
-
 /**
  * 브라우저 Canvas를 활용하여 고화질 이미지의 해상도와 품질을 웹 최적화 수준으로 압축합니다.
  * @param file 원본 이미지 파일
@@ -83,32 +81,30 @@ export async function compressImage(
 }
 
 /**
- * Vercel Blob(Public Store)에 이미지를 최적화 압축 후 직접 업로드하고 CDN URL을 반환합니다.
+ * 이미지를 최적화한 뒤 서버리스 업로드 엔드포인트로 전송하고 CDN URL을 반환합니다.
  * @param file 업로드할 이미지 File 객체
  * @returns 업로드된 이미지의 Vercel Blob CDN URL (예: https://...public.blob.vercel-storage.com/...)
  */
 export async function uploadImageToBlob(file: File): Promise<string> {
-  const token =
-    (import.meta.env.VITE_BLOB_READ_WRITE_TOKEN as string) ||
-    'vercel_blob_rw_jK3opZm80MuGYj9t_1ElO3TZsFbeysHZguA0QrM7qot3Z49';
-
   try {
-    // ⚡ 고해상도 대용량 이미지를 브라우저단에서 사전 압축
     const optimizedFile = await compressImage(file);
+    const formData = new FormData();
+    formData.append('file', optimizedFile);
+    const uploadApiUrl = import.meta.env.VITE_UPLOAD_API_URL || '/api/upload';
 
-    const cleanName = optimizedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const uniqueFileName = `uploads/${Date.now()}-${cleanName}`;
-
-    // 🚀 Public Vercel Blob 스토리지로 직접 업로드
-    const blob = await put(uniqueFileName, optimizedFile, {
-      access: 'public',
-      token: token,
+    const response = await fetch(uploadApiUrl, {
+      method: 'POST',
+      body: formData,
     });
 
-    return blob.url;
+    const result = (await response.json()) as { url?: string; error?: string };
+    if (!response.ok || !result.url) {
+      throw new Error(result.error || '이미지 업로드에 실패했습니다.');
+    }
+
+    return result.url;
   } catch (error) {
     console.error('Blob upload error:', error);
     throw new Error('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
   }
 }
-
