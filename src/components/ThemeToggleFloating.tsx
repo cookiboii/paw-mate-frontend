@@ -23,7 +23,7 @@ const ThemeToggleFloating: React.FC = () => {
         )}
       </span>
       <span className={styles.tooltip}>
-        {isDark ? '☀️ 라이트 모드로 전환' : '🌙 다크 모드로 전환'}
+        {isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
       </span>
     </button>
   );

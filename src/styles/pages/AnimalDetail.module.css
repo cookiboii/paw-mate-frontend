@@ -461,8 +461,31 @@
 
   .mobileAdoptCta button {
     width: 100%;
-    min-height: 52px;
-    box-shadow: var(--shadow-lg);
+    min-height: 56px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    box-shadow: 0 12px 28px var(--primary-glow), var(--shadow-lg);
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  .mobileAdoptCta button:hover {
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+  }
+
+  .shareBtn {
+    min-width: 40px;
+    min-height: 40px;
+    justify-content: center;
+    padding: 8px 12px;
+  }
+
+  .favBtn {
+    top: 14px;
+    right: 14px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
   }
 }
 

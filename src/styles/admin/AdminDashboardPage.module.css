@@ -106,7 +106,7 @@
 }
 
 .statCard:hover {
-  transform: translateY(-4px);
+  transform: var(--interaction-card-lift);
   box-shadow: var(--shadow-md);
   border-color: var(--primary-color);
 }
@@ -752,4 +752,3 @@
 .segmentRejected {
   background-color: #ef4444;
 }
-

@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import styles from '../../styles/admin/AdminLayout.module.css';
-import { LayoutDashboard, PawPrint, Users, ClipboardList, KeyRound } from 'lucide-react';
+import { Gauge, LayoutDashboard, PawPrint, Users, ClipboardList, KeyRound } from 'lucide-react';
 
 interface AdminLayoutProps {
   children?: ReactNode;
@@ -68,7 +68,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 `${styles.navLink} ${styles.benchmarkNavLink} ${isActive ? styles.activeLink : ''}`
               }
             >
-              <span>⚡</span>
+              <Gauge size={16} />
               <span>성능/동시성 랩</span>
             </NavLink>
           </li>

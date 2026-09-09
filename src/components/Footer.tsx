@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { PawPrint, Phone } from 'lucide-react';
+import { Activity, PawPrint, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/components/Footer.module.css';
 
@@ -32,7 +32,8 @@ const Footer: React.FC = () => {
               {isAdmin && (
                 <li>
                   <Link to="/benchmark" className={styles.benchmarkLink}>
-                    ⚡ 성능/동시성 랩
+                    <Activity size={14} />
+                    성능/동시성 랩
                   </Link>
                 </li>
               )}

@@ -119,7 +119,7 @@
 .card:hover {
   box-shadow: var(--shadow-lg), var(--surface-highlight);
   border-color: var(--primary-color);
-  transform: translateY(-5px);
+  transform: var(--interaction-card-lift);
 }
 
 /* 이미지 영역 */
@@ -127,7 +127,7 @@
   width: 100%;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  background-color: var(--bg-color);
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-color));
   flex-shrink: 0;
 }
 
@@ -180,7 +180,7 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 8px;
+  gap: 10px;
 }
 
 /* 카테고리 뱃지 */
@@ -256,6 +256,9 @@
   font-size: 0.78rem;
   color: var(--text-light);
   white-space: nowrap;
+  padding: 3px 7px;
+  border-radius: var(--radius-full);
+  background: var(--surface-secondary);
 }
 
 /* 빈 상태 */

@@ -45,6 +45,9 @@
   
   --transition-fast: 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   --transition-normal: 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  --interaction-lift: translateY(-2px);
+  --interaction-card-lift: translateY(-3px);
+  --interaction-press: scale(0.98);
   --input-focus-ring: 0 0 0 3px rgba(88, 112, 87, 0.18);
   
   /* Layout */
@@ -213,6 +216,12 @@ button:focus-visible, a:focus-visible {
   border-radius: 4px;
 }
 
+/* Shared icon rhythm: navigational and action icons always align and use one stroke weight. */
+:where(.btn-primary, .btn-secondary, .navLink, .drawerLink, .navItem, .viewAllBtn, .writeBtn) > svg {
+  flex: 0 0 auto;
+  stroke-width: 2;
+}
+
 input:focus-visible, textarea:focus-visible, select:focus-visible {
   outline: none;
   border-color: var(--primary-color) !important;
@@ -309,12 +318,12 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 
 .btn-primary:hover {
   background: var(--primary-hover);
-  transform: translateY(-2px);
+  transform: var(--interaction-lift);
   box-shadow: var(--shadow-md);
 }
 
 .btn-primary:active {
-  transform: scale(0.98);
+  transform: var(--interaction-press);
 }
 
 .btn-secondary {
@@ -338,12 +347,12 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 .btn-secondary:hover {
   background-color: var(--bg-color);
   border-color: var(--text-muted);
-  transform: translateY(-2px);
+  transform: var(--interaction-lift);
   box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:active {
-  transform: scale(0.98);
+  transform: var(--interaction-press);
 }
 
 /* Structured Card Container */
@@ -357,7 +366,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 }
 
 .card-base:hover {
-  transform: translateY(-3px);
+  transform: var(--interaction-card-lift);
   box-shadow: var(--shadow-md);
   border-color: var(--text-muted);
 }
@@ -480,3 +489,14 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   width: 100%;
 }
 
+/* Keep motion comfortable for people who request less animation. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

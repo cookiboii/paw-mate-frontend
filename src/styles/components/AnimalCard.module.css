@@ -12,7 +12,7 @@
 }
 
 .card:hover {
-  transform: translateY(-6px);
+  transform: var(--interaction-card-lift);
   box-shadow: var(--shadow-md);
   border-color: var(--secondary-color);
 }
@@ -118,7 +118,7 @@
 }
 
 .favBtn:hover {
-  transform: scale(1.14);
+  transform: scale(1.08);
   background: #ffffff;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .favBtn:active {
-  transform: scale(0.92);
+  transform: var(--interaction-press);
 }
 
 .favActive {
@@ -229,4 +229,3 @@
   background: rgba(236, 72, 153, 0.22);
   color: #f472b6;
 }
-

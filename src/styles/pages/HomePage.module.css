@@ -345,7 +345,7 @@
 .viewAllBtn:hover {
   background: var(--primary-color);
   color: #ffffff;
-  transform: translateY(-3px);
+  transform: var(--interaction-card-lift);
   box-shadow: var(--shadow-md);
 }
 
@@ -376,7 +376,7 @@
 }
 
 .principleCard:hover {
-  transform: translateY(-4px);
+  transform: var(--interaction-card-lift);
   border-color: var(--primary-color);
 }
 
@@ -390,6 +390,8 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  border: 1px solid var(--primary-glow);
+  box-shadow: var(--shadow-xs);
 }
 
 .principleCard h4 {
@@ -704,4 +706,3 @@
     padding: 24px 18px;
   }
 }
-

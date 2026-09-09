@@ -231,9 +231,7 @@ const AdoptionReviewListPage: React.FC = () => {
                       <User size={13} /> {review.name || '익명'}
                     </span>
                     {(review.createdAt || review.createAt) && (
-                      <span className={styles.cardDate}>
-                        {formatDate(review.createdAt || review.createAt)}
-                      </span>
+                      <span className={styles.cardDate}>작성일 {formatDate(review.createdAt || review.createAt)}</span>
                     )}
                   </div>
                 </div>

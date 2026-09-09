@@ -100,7 +100,7 @@ const AdminAnimalsPage: React.FC = () => {
         </p>
       </div>
 
-      {/* 탭 네비게이션: [🐾 보호 동물 관리 목록] vs [➕ 신규 동물 등록] */}
+      {/* 탭 네비게이션: 보호 동물 관리 목록 vs 신규 동물 등록 */}
       <div className={styles.tabBar}>
         <button
           type="button"

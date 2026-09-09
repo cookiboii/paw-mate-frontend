@@ -93,6 +93,9 @@
 .benchmarkLink {
   color: var(--primary-color) !important;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .contactPhone {
@@ -181,4 +184,3 @@
     grid-column: span 1;
   }
 }
-

@@ -38,16 +38,24 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <div className={styles.iconWrapper}>
         <span className={styles.icon}>{icon || <PawPrint size={44} />}</span>
       </div>
+      <div className={styles.pawTrail} aria-hidden="true">
+        <PawPrint size={14} />
+        <PawPrint size={18} />
+        <PawPrint size={14} />
+      </div>
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.description}>{description}</p>
 
       {actionLabel && (actionPath || onAction) && (
-        <button
-          className={`btn-primary ${styles.actionBtn}`}
-          onClick={handleAction}
-        >
-          {actionLabel}
-        </button>
+        <div className={styles.actionArea}>
+          <p className={styles.actionHint}>다른 조건으로 다시 찾아볼까요?</p>
+          <button
+            className={`btn-primary ${styles.actionBtn}`}
+            onClick={handleAction}
+          >
+            {actionLabel}
+          </button>
+        </div>
       )}
     </div>
   );

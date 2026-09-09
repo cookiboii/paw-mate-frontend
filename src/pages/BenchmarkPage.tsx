@@ -187,14 +187,14 @@ export const options = {
 const BASE_URL = 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
 export default function () {
-  // ⚡ 1. No-Offset 커서 기반 고속 동물 목록 조회 (Count 쿼리 0%)
+  // 1. No-Offset 커서 기반 고속 동물 목록 조회 (Count 쿼리 0%)
   const animalRes = http.get(\`\${BASE_URL}/animals/cursor?size=10\`);
   check(animalRes, {
     '동물 커서 조회 HTTP 200 OK': (r) => r.status === 200,
     '동물 조회 지연시간 < 500ms': (r) => r.timings.duration < 500,
   });
 
-  // ⚡ 2. No-Offset 커서 기반 고속 게시글 목록 조회 (Count 쿼리 0%)
+  // 2. No-Offset 커서 기반 고속 게시글 목록 조회 (Count 쿼리 0%)
   const postRes = http.get(\`\${BASE_URL}/post/cursor?size=10\`);
   check(postRes, {
     '게시글 커서 조회 HTTP 200 OK': (r) => r.status === 200,
@@ -293,8 +293,8 @@ export default function () {
                     onChange={(e) => setEndpoint(e.target.value)}
                     disabled={isRunning}
                   >
-                    <option value="/animals/cursor?size=10">⚡ /animals/cursor (보호 동물 No-Offset 커서 - 고성능 🚀)</option>
-                    <option value="/post/cursor?size=10">⚡ /post/cursor (게시글 No-Offset 커서 - 고성능 🚀)</option>
+                    <option value="/animals/cursor?size=10">/animals/cursor (보호 동물 No-Offset 커서 - 고성능)</option>
+                    <option value="/post/cursor?size=10">/post/cursor (게시글 No-Offset 커서 - 고성능)</option>
                     <option value="/animals/list?page=0&size=10">/animals/list (동물 목록 조회 - 오프셋 페이징)</option>
                     <option value="/post/list?page=0&size=10">/post/list (입양 후기 목록 조회 - 오프셋 페이징)</option>
                     <option value="/animals/1">/animals/1 (동물 상세 조회)</option>
@@ -315,8 +315,8 @@ export default function () {
                 </label>
                 <p className={styles.controlHint}>
                   {bypassCache
-                    ? '⚠️ 매 요청마다 고유 파라미터를 붙여 브라우저/서버 캐시를 무효화합니다 (DB 직격 부하).'
-                    : '✅ 표준 REST 요청으로 실제 운영 환경과 동일하게 측정합니다.'}
+                    ? '매 요청마다 고유 파라미터를 붙여 브라우저/서버 캐시를 무효화합니다 (DB 직격 부하).'
+                    : '표준 REST 요청으로 실제 운영 환경과 동일하게 측정합니다.'}
                 </p>
               </div>
 
@@ -587,7 +587,7 @@ export default function () {
             <div className={styles.renderStatsItem}>
               <span>동시성 상태:</span>
               <strong className={isPending ? styles.statusPending : styles.statusStable}>
-                {isPending ? '⏳ 백그라운드 렌더링 중 (입력 끊김 없음)' : '✅ 안정 상태'}
+                {isPending ? '백그라운드 렌더링 중 (입력 끊김 없음)' : '안정 상태'}
               </strong>
             </div>
           </div>
