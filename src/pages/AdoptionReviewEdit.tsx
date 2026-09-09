@@ -237,7 +237,7 @@ const AdoptionReviewEdit: React.FC = () => {
               ) : (
                 <div className={styles.uploadPlaceholder}>
                   <span className={styles.uploadIcon}>
-                    <Camera size={36} color="var(--primary-color)" />
+                    <Camera size={36} />
                   </span>
                   <p><strong>클릭</strong>하여 사진을 선택하거나<br />여기로 <strong>드래그 앤 드롭</strong> 하세요</p>
                 </div>

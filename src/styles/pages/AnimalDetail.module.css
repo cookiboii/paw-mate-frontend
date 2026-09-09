@@ -53,6 +53,10 @@
   color: var(--primary-color);
 }
 
+.copiedIcon {
+  color: var(--primary-color);
+}
+
 .card {
   background: var(--surface-color);
   border-radius: var(--radius-xl);
@@ -128,6 +132,11 @@
 .favActive {
   background: #ffffff;
   color: var(--danger-color);
+}
+
+.favActive svg {
+  fill: #ff4d4f;
+  color: #ff4d4f;
 }
 
 .favBtn.favLocked {
@@ -317,6 +326,10 @@
   gap: 8px;
 }
 
+.mobileAdoptCta {
+  display: none;
+}
+
 .adminButtons {
   display: flex;
   gap: 12px;
@@ -395,7 +408,7 @@
 
 @media (max-width: 768px) {
   .detailContainer {
-    margin: 20px auto 80px;
+    margin: 20px auto 164px;
     padding: 0 16px;
   }
 
@@ -436,6 +449,21 @@
     padding: 14px;
     font-size: 1rem;
   }
+
+  .mobileAdoptCta {
+    position: fixed;
+    right: 16px;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    left: 16px;
+    z-index: 880;
+    display: block;
+  }
+
+  .mobileAdoptCta button {
+    width: 100%;
+    min-height: 52px;
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 @media (max-width: 480px) {
@@ -468,4 +496,3 @@
     justify-content: center;
   }
 }
-

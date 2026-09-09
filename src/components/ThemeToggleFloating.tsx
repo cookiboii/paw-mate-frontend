@@ -17,9 +17,9 @@ const ThemeToggleFloating: React.FC = () => {
     >
       <span className={styles.iconWrapper}>
         {isDark ? (
-          <Sun size={19} color="#f59e0b" />
+          <Sun size={19} className={styles.sunIcon} />
         ) : (
-          <Moon size={18} color="var(--primary-color)" />
+          <Moon size={18} className={styles.moonIcon} />
         )}
       </span>
       <span className={styles.tooltip}>

@@ -104,6 +104,11 @@
   color: var(--text-primary);
 }
 
+.cardTitle svg {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
 /* 벤치마크 컨트롤 영역 */
 .controlGrid {
   display: grid;
@@ -233,6 +238,7 @@
 
 .progressBar {
   height: 100%;
+  width: var(--progress-width, 0%);
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   transition: width 0.15s ease-out;
 }
@@ -323,6 +329,7 @@
 
 .barFill {
   width: 100%;
+  height: var(--bar-height, 0%);
   border-radius: 3px 3px 0 0;
   transition: height 0.2s ease;
 }
@@ -478,6 +485,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.renderStatsItem:nth-child(1) svg {
+  color: var(--primary-color);
+}
+
+.renderStatsItem:nth-child(2) svg {
+  color: var(--secondary-color);
 }
 
 .renderGrid {

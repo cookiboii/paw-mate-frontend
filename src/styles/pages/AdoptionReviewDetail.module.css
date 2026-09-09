@@ -262,6 +262,10 @@
   font-size: 0.95rem;
 }
 
+.reportBanner strong svg {
+  color: var(--danger-color);
+}
+
 .reportBanner p {
   color: var(--text-muted);
   margin: 0;
@@ -286,9 +290,17 @@
   font-size: 0.95rem;
 }
 
+.freeAdoptionBanner strong svg {
+  color: var(--info-color);
+}
+
 .freeAdoptionBanner p {
   color: var(--text-muted);
   margin: 0;
+}
+
+.shareCopiedIcon {
+  color: var(--primary-color);
 }
 
 .bodyText {

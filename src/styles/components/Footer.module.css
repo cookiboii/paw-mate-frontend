@@ -29,6 +29,10 @@
   gap: 10px;
 }
 
+.brandColumn h3 svg {
+  color: var(--primary-color);
+}
+
 .brandColumn p {
   font-size: 1rem;
   line-height: 1.6;

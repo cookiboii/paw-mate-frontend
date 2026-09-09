@@ -20,6 +20,11 @@
   gap: 8px;
 }
 
+.commentSection h3 svg {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
 .commentForm,
 .replyForm {
   display: flex;

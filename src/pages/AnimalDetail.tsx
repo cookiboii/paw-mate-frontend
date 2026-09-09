@@ -129,6 +129,10 @@ const AnimalDetail: React.FC = () => {
     if (animal) toggleFavorite(animal);
   };
 
+  const goToLoginForAdoption = () => {
+    navigate('/login', { state: { from: `/adopt/${id}` } });
+  };
+
   const handleShare = async () => {
     const shareUrl = window.location.href;
     const shareTitle = `[파우메이트] ${animal?.breed || '유기동물'} 평생 가족을 찾고 있어요!`;
@@ -246,7 +250,7 @@ const AnimalDetail: React.FC = () => {
           >
             {isCopied ? (
               <>
-                <Check size={16} color="var(--primary-color)" />
+                <Check size={16} className={styles.copiedIcon} />
                 <span className={styles.copiedText}>링크 복사됨</span>
               </>
             ) : (
@@ -292,7 +296,7 @@ const AnimalDetail: React.FC = () => {
                 {!isAuthenticated ? (
                   <><Lock size={15} /> <span>찜하기</span></>
                 ) : favorite ? (
-                  <><Heart size={16} fill="#ff4d4f" color="#ff4d4f" /> <span>찜됨</span></>
+                  <><Heart size={16} /> <span>찜됨</span></>
                 ) : (
                   <><Heart size={16} /> <span>찜하기</span></>
                 )}
@@ -387,7 +391,7 @@ const AnimalDetail: React.FC = () => {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => showToast('입양 신청은 로그인 후 이용할 수 있습니다.', 'info')}
+                      onClick={goToLoginForAdoption}
                       className={`btn-secondary ${styles.adoptActionBtn}`}
                     >
                       <Lock size={18} />
@@ -425,6 +429,18 @@ const AnimalDetail: React.FC = () => {
           <p className={styles.message}>동물 정보를 찾을 수 없습니다.</p>
         )}
       </section>
+      {!isAdmin && canAdopt && !hasApplied && (
+        <div className={styles.mobileAdoptCta}>
+          <button
+            type="button"
+            onClick={isAuthenticated ? () => navigate(`/adopt/${id}`) : goToLoginForAdoption}
+            className="btn-primary"
+          >
+            <FileText size={20} />
+            <span>{isAuthenticated ? '입양 신청서 작성하기' : '로그인하고 입양 신청하기'}</span>
+          </button>
+        </div>
+      )}
 
       {/* 고화질 사진 확대 라이트박스 모달 */}
       <ImageLightboxModal

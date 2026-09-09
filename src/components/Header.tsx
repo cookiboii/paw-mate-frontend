@@ -58,7 +58,7 @@ const Header: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.logo}>
           <Link to="/">
-            <PawPrint size={22} color="var(--primary-color, #ff6b6b)" />
+            <PawPrint size={22} />
             <span>AdoptMate</span>
           </Link>
         </div>
@@ -75,7 +75,7 @@ const Header: React.FC = () => {
                   to="/admin/users"
                   className={({ isActive }) => `${styles.navLink} ${styles.adminCenterLink} ${isActive ? styles.activeNavLink : ''}`}
                 >
-                  <ShieldCheck size={16} color="var(--primary-color)" />
+                  <ShieldCheck size={16} />
                   <span>관리자 센터</span>
                 </NavLink>
               </li>
@@ -132,7 +132,7 @@ const Header: React.FC = () => {
       <div className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}>
         <div className={styles.drawerHeader}>
           <span className={styles.drawerLogo}>
-            <PawPrint size={20} color="var(--primary-color, #ff6b6b)" />
+            <PawPrint size={20} />
             <span>AdoptMate</span>
           </span>
           <button className={styles.drawerCloseBtn} onClick={() => setIsMobileMenuOpen(false)} aria-label="닫기">
@@ -150,7 +150,7 @@ const Header: React.FC = () => {
               <div className={styles.userCardInfo}>
                 <span className={styles.userCardName}>{user?.name || '회원'} 님</span>
                 <span className={styles.userCardRole}>
-                  {isAdmin ? <><Crown size={14} color="#f59e0b" /> 관리자</> : '일반 회원'}
+                  {isAdmin ? <><Crown size={14} /> 관리자</> : '일반 회원'}
                 </span>
               </div>
             </div>
@@ -194,7 +194,7 @@ const Header: React.FC = () => {
             {isAdmin && (
               <li>
                 <NavLink to="/admin/users" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
-                  <ShieldCheck size={18} color="var(--primary-color)" /> 관리자 센터
+                  <ShieldCheck size={18} /> 관리자 센터
                 </NavLink>
               </li>
             )}

@@ -31,6 +31,19 @@
   margin-bottom: 16px;
 }
 
+.promptIconLock {
+  color: var(--text-muted);
+}
+
+.promptIconSuccess {
+  color: var(--primary-color);
+}
+
+.headerIcon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
 .promptCard h3 {
   font-size: 1.5rem;
   color: var(--text-primary);

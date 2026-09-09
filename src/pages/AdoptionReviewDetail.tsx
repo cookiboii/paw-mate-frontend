@@ -231,7 +231,7 @@ const AdoptionReviewDetail: React.FC = () => {
             >
               {isCopied ? (
                 <>
-                  <Check size={15} color="var(--primary-color)" />
+                  <Check size={15} className={styles.shareCopiedIcon} />
                   <span className={styles.shareCopiedText}>링크 복사됨</span>
                 </>
               ) : (
@@ -266,7 +266,7 @@ const AdoptionReviewDetail: React.FC = () => {
           {isReport && (
             <div className={styles.reportBanner}>
               <strong>
-                <AlertTriangle size={18} color="#e63946" />
+                <AlertTriangle size={18} />
                 <span>이 글은 유기동물 제보 게시글입니다</span>
               </strong>
               <p>도움이 필요하신 분은 <strong>동물보호 상담전화 1577-0954</strong>로 연락해 주세요.</p>
@@ -277,7 +277,7 @@ const AdoptionReviewDetail: React.FC = () => {
           {isFreeAdoption && (
             <div className={styles.freeAdoptionBanner}>
               <strong>
-                <Gift size={18} color="#4361ee" />
+                <Gift size={18} />
                 <span>무료 분양 안내</span>
               </strong>
               <p>반려동물 입양은 소중한 생명을 평생 책임지는 약속입니다. 안전한 입양을 위해 직접 만나 아이의 상태를 확인하고 교감해 보세요.</p>

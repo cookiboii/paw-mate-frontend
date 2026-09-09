@@ -24,6 +24,7 @@
   height: 80px;
   border-radius: 50%;
   background: rgba(224, 122, 95, 0.12);
+  color: var(--danger-color);
   display: flex;
   align-items: center;
   justify-content: center;

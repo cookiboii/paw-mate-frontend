@@ -129,7 +129,7 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
           ) : !isAuthenticated ? (
             <Lock size={15} />
           ) : (
-            <Heart size={18} fill={favorite ? '#ff4d4f' : 'none'} color={favorite ? '#ff4d4f' : 'currentColor'} />
+            <Heart size={18} />
           )}
         </button>
       </div>

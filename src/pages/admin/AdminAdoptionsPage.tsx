@@ -104,7 +104,7 @@ const AdminAdoptionsPage: React.FC = () => {
       <div className={styles.header}>
         <div>
           <h2 className={styles.title}>
-            <ClipboardList size={22} color="var(--primary-color)" />
+            <ClipboardList size={22} />
             <span>입양 신청 관리</span>
           </h2>
           <p className={styles.subtitle}>접수된 입양 신청서를 검토하고 승인 또는 반려 처리합니다.</p>
@@ -126,7 +126,7 @@ const AdminAdoptionsPage: React.FC = () => {
 
       {filteredAdoptions.length === 0 ? (
         <div className={styles.emptyCard}>
-          <span><PawPrint size={40} color="var(--text-muted)" /></span>
+          <span><PawPrint size={40} /></span>
           <p>해당 조건의 입양 신청 내역이 없습니다.</p>
         </div>
       ) : (
@@ -226,7 +226,7 @@ const AdminAdoptionsPage: React.FC = () => {
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>
-                <FileText size={20} color="var(--primary-color)" />
+                <FileText size={20} />
                 <span>입양 신청서 상세 보기</span>
               </h3>
               <button className={styles.closeBtn} onClick={() => setSelectedAdoption(null)} aria-label="닫기">

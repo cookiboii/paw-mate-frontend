@@ -45,7 +45,7 @@ const AdoptionGuide: React.FC = () => {
 
       <div className={styles.noticeSection}>
         <h3>
-          <Lightbulb size={20} color="var(--primary-color)" />
+          <Lightbulb size={20} className={styles.noticeIcon} />
           <span>입양 전 반드시 읽어주세요!</span>
         </h3>
         <ul>

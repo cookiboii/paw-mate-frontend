@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
         <div className={styles.topSection}>
           <div className={styles.brandColumn}>
             <h3>
-              <PawPrint size={22} color="var(--primary-color, #ff6b6b)" />
+              <PawPrint size={22} />
               AdoptMate
             </h3>
             <p>유기동물 입양은 생명을 살리는 일입니다.<br />따뜻한 가족이 되어주세요.</p>

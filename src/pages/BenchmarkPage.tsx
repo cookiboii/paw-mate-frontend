@@ -258,7 +258,7 @@ export default function () {
           <div className={styles.card}>
             <div className={styles.cardHeaderRow}>
               <h2 className={`${styles.cardTitle} ${styles.cardTitleNoMargin}`}>
-                <Activity size={20} color="var(--primary-color)" /> 실제 백엔드 API 동시성 & 부하 테스트
+                <Activity size={20} /> 실제 백엔드 API 동시성 & 부하 테스트
               </h2>
               <div className={styles.serverBadge}>
                 🌐 연결 서버: Cloudtype Live Backend
@@ -375,8 +375,8 @@ export default function () {
                 <div
                   className={styles.progressBar}
                   style={{
-                    width: `${Math.round((progress.completed / progress.total) * 100)}%`,
-                  }}
+                    '--progress-width': `${Math.round((progress.completed / progress.total) * 100)}%`,
+                  } as React.CSSProperties}
                 />
               </div>
             )}
@@ -402,7 +402,7 @@ export default function () {
           {(testResult || liveMetrics.length > 0) && (
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>
-                <BarChart3 size={20} color="var(--primary-color)" /> 동시성 벤치마크 결과 지표
+                <BarChart3 size={20} /> 동시성 벤치마크 결과 지표
               </h2>
 
               <div className={styles.metricsGrid}>
@@ -511,7 +511,7 @@ export default function () {
                           className={`${styles.barFill} ${
                             metric.success ? styles.barSuccess : styles.barFailed
                           }`}
-                          style={{ height: `${heightPercent}%` }}
+                          style={{ '--bar-height': `${heightPercent}%` } as React.CSSProperties}
                         />
                       </div>
                     );
@@ -527,7 +527,7 @@ export default function () {
       {activeTab === 'rendering' && (
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>
-            <Zap size={20} color="var(--primary-color)" /> React 19 동시성 렌더링(Concurrent Mode) 스트레스
+            <Zap size={20} /> React 19 동시성 렌더링(Concurrent Mode) 스트레스
           </h2>
           <p className={styles.cardSubDesc}>
             수천 개의 복잡한 DOM 요소를 실시간으로 필터링할 때, React 19의 <code>useTransition</code>을 켰을 때와
@@ -573,13 +573,13 @@ export default function () {
 
           <div className={styles.renderStatsBar}>
             <div className={styles.renderStatsItem}>
-              <Clock size={16} color="var(--primary-color)" />
+              <Clock size={16} />
               <span>연산 & 렌더링 소요 시간:</span>
               <strong>{renderDuration} ms</strong>
             </div>
 
             <div className={styles.renderStatsItem}>
-              <Activity size={16} color="var(--secondary-color)" />
+              <Activity size={16} />
               <span>필터링된 아이템:</span>
               <strong>{filteredPets.length.toLocaleString()} / {mockPets.length.toLocaleString()}개</strong>
             </div>
@@ -617,7 +617,7 @@ export default function () {
         <div>
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>
-              <Gauge size={20} color="var(--primary-color)" /> 실시간 Core Web Vitals & FPS HUD
+              <Gauge size={20} /> 실시간 Core Web Vitals & FPS HUD
             </h2>
             <p className={styles.cardSubDesc}>
               Google Lighthouse 및 브라우저 성능 표준 지표(LCP, INP, CLS, TTFB, FCP)를 실시간 측정합니다.
@@ -730,7 +730,7 @@ export default function () {
       {activeTab === 'k6' && (
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>
-            <Terminal size={20} color="var(--primary-color)" /> k6 백엔드 동시성 & 부하 테스트 가이드
+            <Terminal size={20} /> k6 백엔드 동시성 & 부하 테스트 가이드
           </h2>
           <p className={styles.k6IntroText}>
             k6는 터미널에서 백엔드 서버로 수백~수천 개의 가상 사용자(VU) 동시 요청을 발생시켜

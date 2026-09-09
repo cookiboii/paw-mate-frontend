@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart, Dog, Cat, Sparkles, PawPrint } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart, Dog, Cat, Sparkles, PawPrint, Pause, Play } from "lucide-react";
 import styles from "../styles/pages/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 import Login from "./Login";
@@ -28,7 +28,9 @@ const HomePage: React.FC = () => {
   const [recentAnimals, setRecentAnimals] = useState<Animal[]>([]);
   const [selectedSpecies, setSelectedSpecies] = useState<'ALL' | 'DOG' | 'CAT'>('ALL');
   const [isLoadingAnimals, setIsLoadingAnimals] = useState<boolean>(true);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [isAutoplayPaused, setIsAutoplayPaused] = useState<boolean>(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
 
   // Scroll Reveal Refs
   const newArrivalsRef = useScrollReveal<HTMLDivElement>();
@@ -41,12 +43,20 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!isPaused) {
+      if (!isHovered && !isAutoplayPaused && !prefersReducedMotion) {
         setCurrent((prev) => (prev + 1) % images.length);
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isHovered, isAutoplayPaused, prefersReducedMotion]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+    updatePreference();
+    mediaQuery.addEventListener('change', updatePreference);
+    return () => mediaQuery.removeEventListener('change', updatePreference);
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -70,6 +80,16 @@ const HomePage: React.FC = () => {
   const goToSlide = (index: number) => setCurrent(index);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
   const nextSlide = () => setCurrent((prev) => (prev + 1) % images.length);
+  const handleSliderKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      prevSlide();
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      nextSlide();
+    }
+  };
 
   return (
     <div className={styles.homeContainer}>
@@ -98,8 +118,14 @@ const HomePage: React.FC = () => {
         <div className={styles.heroVisual}>
           <div
             className={styles.slider}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onFocus={() => setIsHovered(true)}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setIsHovered(false);
+            }}
+            onKeyDown={handleSliderKeyDown}
+            tabIndex={0}
             role="region"
             aria-label="입양 동물 슬라이더"
           >
@@ -130,17 +156,25 @@ const HomePage: React.FC = () => {
             </button>
             <div className={styles.dots} role="tablist" aria-label="슬라이드 네비게이션">
               {images.map((_, idx) => (
-                <span
+                <button
+                  type="button"
                   key={idx}
                   role="tab"
                   aria-selected={idx === current}
                   aria-label={`슬라이드 ${idx + 1}번으로 이동`}
                   className={`${styles.dot} ${idx === current ? styles.activeDot : ""}`}
                   onClick={() => goToSlide(idx)}
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && goToSlide(idx)}
                 />
               ))}
+              <button
+                type="button"
+                className={styles.autoplayToggle}
+                onClick={() => setIsAutoplayPaused((paused) => !paused)}
+                aria-label={isAutoplayPaused || prefersReducedMotion ? '슬라이드 자동 재생' : '슬라이드 자동 재생 일시정지'}
+                aria-pressed={isAutoplayPaused || prefersReducedMotion}
+              >
+                {isAutoplayPaused || prefersReducedMotion ? <Play size={13} /> : <Pause size={13} />}
+              </button>
             </div>
           </div>
         </div>
@@ -233,22 +267,22 @@ const HomePage: React.FC = () => {
         </div>
         <div className={styles.principlesGrid}>
           <div className={styles.principleCard}>
-            <div className={styles.principleIcon}><CheckCircle2 size={24} color="var(--primary-color)" /></div>
+            <div className={styles.principleIcon}><CheckCircle2 size={24} /></div>
             <h4>철저한 사전 건강 검진</h4>
             <p>기본 접종, 중성화 여부, 기저 질환을 투명하게 확인하고 진료 기록을 보호자에게 온전히 공유합니다.</p>
           </div>
           <div className={styles.principleCard}>
-            <div className={styles.principleIcon}><FileText size={24} color="var(--primary-color)" /></div>
+            <div className={styles.principleIcon}><FileText size={24} /></div>
             <h4>책임감 있는 매칭 심사</h4>
             <p>주거 환경, 가족 구성원의 동의, 경제적 부양 능력을 종합적으로 고려하여 신중하게 심사합니다.</p>
           </div>
           <div className={styles.principleCard}>
-            <div className={styles.principleIcon}><Home size={24} color="var(--primary-color)" /></div>
+            <div className={styles.principleIcon}><Home size={24} /></div>
             <h4>직접 방문 및 교감</h4>
             <p>온라인 신청 후 보호소에서 아이와 직접 대면하여 서로의 기질과 환경이 맞는지 교감 시간을 갖습니다.</p>
           </div>
           <div className={styles.principleCard}>
-            <div className={styles.principleIcon}><Heart size={24} color="var(--primary-color)" /></div>
+            <div className={styles.principleIcon}><Heart size={24} /></div>
             <h4>평생 지속되는 사후 케어</h4>
             <p>입양 후에도 커뮤니티와 상담 창구를 통해 훈련, 건강, 돌봄에 필요한 정보를 함께 나눕니다.</p>
           </div>

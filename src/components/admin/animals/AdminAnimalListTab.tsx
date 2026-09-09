@@ -120,7 +120,7 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
         ) : filteredAnimals.length === 0 ? (
           <div className={styles.tableEmpty}>
             <EmptyState
-              icon={<PawPrint size={48} color="var(--text-muted)" />}
+              icon={<PawPrint size={48} />}
               title="조건에 맞는 보호 동물이 없습니다."
               description="검색어나 필터 조건을 변경해 보세요."
               actionLabel="신규 동물 등록하기"

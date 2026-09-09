@@ -213,7 +213,7 @@ const MyPage: React.FC = () => {
             <section className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3 className={styles.cardHeaderTitle}>
-                  <Heart size={20} color="#ff4d4f" fill="#ff4d4f" />
+                  <Heart size={20} className={styles.favHeaderIcon} />
                   <span>관심 동물 목록 ({favorites.length})</span>
                 </h3>
                 <p>찜해둔 아이들을 확인하고 입양 신청서를 작성해 보세요.</p>
@@ -221,7 +221,7 @@ const MyPage: React.FC = () => {
               <div className={styles.cardBody}>
                 {favorites.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <span className={styles.centerIcon}><PawPrint size={40} color="var(--text-muted)" /></span>
+                    <span className={styles.centerIcon}><PawPrint size={40} /></span>
                     <p>아직 관심 동물로 등록한 아이가 없습니다.</p>
                     <Link to="/animals" className={`btn-primary ${styles.emptyStateLink}`}>
                       동물 둘러보기
@@ -258,7 +258,7 @@ const MyPage: React.FC = () => {
               <div className={styles.cardBody}>
                 {adoptionList.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <span className={styles.centerIcon}><PawPrint size={40} color="var(--text-muted)" /></span>
+                    <span className={styles.centerIcon}><PawPrint size={40} /></span>
                     <p>아직 입양 신청 내역이 없습니다.</p>
                   </div>
                 ) : (

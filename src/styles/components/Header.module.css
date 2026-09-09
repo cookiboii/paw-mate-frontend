@@ -80,6 +80,14 @@
   gap: 6px;
 }
 
+.adminCenterLink {
+  color: var(--primary-color) !important;
+}
+
+.adminCenterLink svg {
+  color: var(--primary-color);
+}
+
 .navLink::after {
   content: '';
   position: absolute;
@@ -312,6 +320,10 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+.userCardRole svg {
+  color: #f59e0b;
 }
 
 .guestCardContent p {

@@ -183,7 +183,7 @@ const AdoptionReviewWrite: React.FC = () => {
           {selectedCategory === 'REPORT' && (
             <div className={styles.reportGuide}>
               <strong className={styles.guideHeader}>
-                <AlertTriangle size={18} color="#e63946" />
+                <AlertTriangle size={18} />
                 <span>제보 시 포함해주세요</span>
               </strong>
               <ul>
@@ -200,7 +200,7 @@ const AdoptionReviewWrite: React.FC = () => {
           {selectedCategory === 'FREE_ADOPTION' && (
             <div className={styles.freeAdoptionGuide}>
               <strong className={styles.guideHeader}>
-                <Gift size={18} color="#4361ee" />
+                <Gift size={18} />
                 <span>무료 분양 등록 안내</span>
               </strong>
               <ul>
@@ -241,8 +241,8 @@ const AdoptionReviewWrite: React.FC = () => {
                 </div>
               ) : (
                 <div className={styles.uploadPlaceholder}>
-                  <span className={styles.uploadIcon}>
-                    {selectedCategory === 'REPORT' ? <AlertTriangle size={36} color="#e63946" /> : selectedCategory === 'FREE_ADOPTION' ? <Gift size={36} color="#4361ee" /> : <Camera size={36} color="var(--primary-color)" />}
+                  <span className={`${styles.uploadIcon} ${selectedCategory === 'REPORT' ? styles.iconReport : selectedCategory === 'FREE_ADOPTION' ? styles.iconFreeAdoption : ''}`}>
+                    {selectedCategory === 'REPORT' ? <AlertTriangle size={36} /> : selectedCategory === 'FREE_ADOPTION' ? <Gift size={36} /> : <Camera size={36} />}
                   </span>
                   <p><strong>클릭</strong>하여 사진을 선택하거나<br />여기로 <strong>드래그 앤 드롭</strong> 하세요</p>
                   {selectedCategory === 'REPORT' && (

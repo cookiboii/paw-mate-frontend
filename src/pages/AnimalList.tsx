@@ -22,7 +22,11 @@ const AnimalList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // URL Query Parameters 초기값 파싱
-  const initialMode = searchParams.get('mode') === 'pagination' ? 'pagination' : 'infinite';
+  const initialMode = searchParams.get('mode') === 'pagination'
+    ? 'pagination'
+    : localStorage.getItem('animal-list-view-mode') === 'pagination'
+      ? 'pagination'
+      : 'infinite';
   const initialSpecies = searchParams.get('species') || 'ALL';
   const initialGender = (['MALE', 'FEMALE'].includes(searchParams.get('gender') || '') 
     ? searchParams.get('gender') 
@@ -52,6 +56,10 @@ const AnimalList: React.FC = () => {
 
     setSearchParams(params, { replace: true });
   }, [viewMode, speciesFilter, genderFilter, page, setSearchParams]);
+
+  useEffect(() => {
+    localStorage.setItem('animal-list-view-mode', viewMode);
+  }, [viewMode]);
 
   // 3. 무한 스크롤 커서 페칭 콜백
   const cursorFetcher = useCallback(
@@ -164,9 +172,15 @@ const AnimalList: React.FC = () => {
           setPage(0);
         }}
         genderFilter={genderFilter}
-        onGenderChange={setGenderFilter}
+        onGenderChange={(gender) => {
+          setGenderFilter(gender);
+          setPage(0);
+        }}
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        onViewModeChange={(mode) => {
+          setViewMode(mode);
+          setPage(0);
+        }}
         totalCount={filteredAnimals.length}
         onReset={handleResetFilters}
         hasActiveFilter={hasActiveFilter}
@@ -188,7 +202,7 @@ const AnimalList: React.FC = () => {
           </ul>
         ) : filteredAnimals.length === 0 ? (
           <EmptyState
-            icon={<Dog size={48} color="var(--text-muted)" />}
+            icon={<Dog size={48} />}
             title="조건에 맞는 아이가 없습니다."
             description="현재 조건에 부합하는 유기동물이 없습니다. 검색어나 필터를 초기화해 보세요."
             actionLabel="검색 & 필터 초기화"
@@ -224,7 +238,7 @@ const AnimalList: React.FC = () => {
             {!hasNext && !isLoading && filteredAnimals.length > 0 && (
               <div className={styles.endOfList}>
                 <div className={styles.endOfListTitle}>
-                  <Sparkles size={18} color="var(--primary-color)" />
+                  <Sparkles size={18} />
                   <span>모든 아이들을 다 불러왔습니다 🐾</span>
                 </div>
                 <p className={styles.endOfListDesc}>

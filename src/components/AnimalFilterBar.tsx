@@ -183,7 +183,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
       {/* 결과 헤더 (카운트 뱃지, 리셋 버튼, 뷰 모드 토글) */}
       <div className={styles.resultsHeader}>
         <div className={styles.resultCountBadge}>
-          <Sparkles size={18} color="var(--primary-color)" />
+          <Sparkles size={18} />
           <span>
             총 <strong className={styles.countHighlight}>{totalCount}</strong>마리의 아이들이 기다리고 있어요
           </span>

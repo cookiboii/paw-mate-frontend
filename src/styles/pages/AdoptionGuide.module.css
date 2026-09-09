@@ -111,6 +111,11 @@
   gap: 8px;
 }
 
+.noticeIcon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
 .noticeSection ul {
   list-style: none;
   padding: 0;

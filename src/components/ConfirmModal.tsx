@@ -52,7 +52,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     <div className={styles.overlay} onClick={onCancel} role="dialog" aria-modal="true" aria-labelledby="confirm-title">
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`}>
-          {variant === 'danger' ? <AlertTriangle size={24} color="var(--danger-color, #e63946)" /> : <Info size={24} color="var(--primary-color, #4361ee)" />}
+          {variant === 'danger' ? <AlertTriangle size={24} /> : <Info size={24} />}
         </div>
         <h3 id="confirm-title" className={styles.title}>{title}</h3>
         {message && <p className={styles.message}>{message}</p>}

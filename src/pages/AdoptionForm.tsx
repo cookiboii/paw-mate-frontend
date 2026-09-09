@@ -60,7 +60,7 @@ const AdoptionForm: React.FC = () => {
       <div className={styles.loginPrompt}>
         <div className={styles.promptCard}>
           <span>
-            <Lock size={44} color="var(--text-muted)" />
+            <Lock size={44} className={styles.promptIconLock} />
           </span>
           <h3>로그인이 필요한 서비스입니다</h3>
           <p>입양 신청서를 작성하시려면 먼저 로그인해 주세요.</p>
@@ -82,7 +82,7 @@ const AdoptionForm: React.FC = () => {
       <div className={styles.loginPrompt}>
         <div className={styles.promptCard}>
           <span>
-            <CheckCircle2 size={52} color="var(--primary-color)" />
+            <CheckCircle2 size={52} className={styles.promptIconSuccess} />
           </span>
           <h3>이미 입양 신청이 접수된 아이입니다</h3>
           <p className={styles.promptDesc}>
@@ -162,7 +162,7 @@ const AdoptionForm: React.FC = () => {
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h2>
-            <FileText size={24} color="var(--primary-color)" />
+            <FileText size={24} className={styles.headerIcon} />
             <span>입양 신청서 작성</span>
           </h2>
           <p>한 생명을 평생 가족으로 맞이하기 위한 소중한 첫걸음입니다.</p>

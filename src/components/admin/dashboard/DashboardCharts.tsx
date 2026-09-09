@@ -15,7 +15,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
       <div className={styles.sectionCard}>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitle}>
-            <Zap size={18} color="var(--primary-color)" />
+            <Zap size={18} />
             <span>빠른 관리 바로가기</span>
           </div>
         </div>
@@ -79,7 +79,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
       <div className={styles.sectionCard}>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitle}>
-            <PawPrint size={18} color="var(--primary-color)" />
+            <PawPrint size={18} />
             <span>보호 동물 축종별 분포</span>
           </div>
         </div>
@@ -219,7 +219,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
       <div className={styles.sectionCard}>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitle}>
-            <ClipboardList size={18} color="var(--primary-color)" />
+            <ClipboardList size={18} />
             <span>입양 신청 처리 비율</span>
           </div>
         </div>
@@ -236,8 +236,8 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                   <div
                     className={`${styles.stackedSegment} ${styles.segmentApproved}`}
                     style={{
-                      width: `${(stats.approvedAdoptions / stats.totalAdoptions) * 100}%`,
-                    }}
+                      '--segment-width': `${(stats.approvedAdoptions / stats.totalAdoptions) * 100}%`,
+                    } as React.CSSProperties}
                     title={`승인: ${stats.approvedAdoptions}건`}
                   />
                 )}
@@ -245,8 +245,8 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                   <div
                     className={`${styles.stackedSegment} ${styles.segmentWaiting}`}
                     style={{
-                      width: `${(stats.pendingCount / stats.totalAdoptions) * 100}%`,
-                    }}
+                      '--segment-width': `${(stats.pendingCount / stats.totalAdoptions) * 100}%`,
+                    } as React.CSSProperties}
                     title={`대기: ${stats.pendingCount}건`}
                   />
                 )}
@@ -254,8 +254,8 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                   <div
                     className={`${styles.stackedSegment} ${styles.segmentRejected}`}
                     style={{
-                      width: `${(stats.rejectedAdoptions / stats.totalAdoptions) * 100}%`,
-                    }}
+                      '--segment-width': `${(stats.rejectedAdoptions / stats.totalAdoptions) * 100}%`,
+                    } as React.CSSProperties}
                     title={`반려: ${stats.rejectedAdoptions}건`}
                   />
                 )}

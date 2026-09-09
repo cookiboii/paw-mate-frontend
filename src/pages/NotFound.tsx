@@ -9,7 +9,7 @@ const NotFound: React.FC = () => {
   return (
     <div className={styles.notFoundContainer}>
       <EmptyState
-        icon={<Dog size={52} color="var(--text-muted)" />}
+        icon={<Dog size={52} />}
         title="404 - 페이지를 찾을 수 없습니다"
         description="앗! 페이지를 찾을 수 없습니다. 입력하신 주소를 다시 확인해 주세요."
         actionLabel="홈으로 돌아가기"

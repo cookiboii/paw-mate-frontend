@@ -199,7 +199,41 @@
 
 .deleteButton:hover {
   background-color: var(--danger-color);
-  color: white;
+  color: #ffffff;
+}
+
+.cardHeaderTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.favHeaderIcon {
+  color: #ff4d4f;
+  fill: #ff4d4f;
+  flex-shrink: 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.centerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+}
+
+.emptyStateLink {
+  margin-top: 16px;
 }
 
 /* Favorites Grid */
@@ -578,4 +612,3 @@
     font-size: 0.7rem;
   }
 }
-

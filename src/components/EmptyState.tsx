@@ -36,7 +36,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   return (
     <div className={styles.emptyStateContainer}>
       <div className={styles.iconWrapper}>
-        <span className={styles.icon}>{icon || <PawPrint size={44} color="var(--text-muted)" />}</span>
+        <span className={styles.icon}>{icon || <PawPrint size={44} />}</span>
       </div>
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.description}>{description}</p>

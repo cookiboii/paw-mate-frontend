@@ -112,7 +112,7 @@ const AdminUsersPage: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          <Users size={26} color="var(--primary-color)" />
+          <Users size={26} />
           <span>회원 관리</span>
         </h1>
         <p className={styles.subtitle}>파우메이트에 가입된 모든 유저를 관리합니다.</p>
@@ -121,8 +121,8 @@ const AdminUsersPage: React.FC = () => {
       {/* 통계 대시보드 */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>
-            <BarChart3 size={24} color="var(--primary-color)" />
+          <span className={`${styles.statIcon} ${styles.statIconTotal}`}>
+            <BarChart3 size={24} />
           </span>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>전체 회원</span>
@@ -130,8 +130,8 @@ const AdminUsersPage: React.FC = () => {
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>
-            <Crown size={24} color="#f59e0b" />
+          <span className={`${styles.statIcon} ${styles.statIconAdmin}`}>
+            <Crown size={24} />
           </span>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>관리자</span>
@@ -139,8 +139,8 @@ const AdminUsersPage: React.FC = () => {
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statIcon}>
-            <UserIcon size={24} color="#3b82f6" />
+          <span className={`${styles.statIcon} ${styles.statIconUser}`}>
+            <UserIcon size={24} />
           </span>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>일반 회원</span>

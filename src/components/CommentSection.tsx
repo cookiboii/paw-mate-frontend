@@ -209,7 +209,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   return (
     <div className={styles.commentSection}>
       <h3>
-        <MessageSquare size={20} color="var(--primary-color)" />
+        <MessageSquare size={20} />
         <span>따뜻한 응원 댓글 ({comments.length})</span>
       </h3>
 

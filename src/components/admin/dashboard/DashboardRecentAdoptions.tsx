@@ -20,7 +20,7 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
     <div className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
         <div className={styles.sectionTitle}>
-          <ClipboardList size={18} color="var(--primary-color)" />
+          <ClipboardList size={18} />
           <span>처리 대기 중인 입양 신청 ({pendingCount}건)</span>
         </div>
         <Link to="/admin/adoptions" className={styles.viewAllLink}>
@@ -32,7 +32,7 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
       <div className={`${styles.sectionBody} ${styles.noPadding}`}>
         {pendingList.length === 0 ? (
           <div className={styles.emptyAdoptions}>
-            <CheckCircle2 size={40} color="#10b981" className={styles.emptyCheckIcon} />
+            <CheckCircle2 size={40} className={styles.emptyCheckIcon} />
             <p className={styles.emptyTitle}>
               현재 처리 대기 중인 입양 신청이 없습니다!
             </p>

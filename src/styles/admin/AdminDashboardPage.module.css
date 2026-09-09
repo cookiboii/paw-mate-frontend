@@ -157,6 +157,11 @@
   gap: 8px;
 }
 
+.sectionTitle svg {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
 .viewAllLink {
   font-size: 0.88rem;
   color: var(--primary-color);
@@ -417,6 +422,7 @@
 
 .stackedSegment {
   height: 100%;
+  width: var(--segment-width, 0%);
   transition: width 0.5s ease;
 }
 
@@ -559,6 +565,7 @@
 }
 
 .emptyCheckIcon {
+  color: #10b981;
   margin-bottom: 12px;
 }
 
