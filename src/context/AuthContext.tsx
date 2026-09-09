@@ -11,7 +11,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!localStorage.getItem('token');
+    return !!(localStorage.getItem('token') || localStorage.getItem('accessToken'));
   });
 
   const [user, setUser] = useState<User | null>(() => {
@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // OAuth 제공자/백엔드에 따라 Bearer 접두사가 포함될 수 있으므로 한 번만 저장한다.
     const normalizedToken = token.replace(/^Bearer\s+/i, '').trim();
     localStorage.setItem('token', normalizedToken);
+    localStorage.removeItem('accessToken');
     // 이전 세션의 refresh token이 새 로그인에 섞이지 않도록 교체한다.
     localStorage.removeItem('refreshToken');
     if (refreshToken) {
@@ -65,7 +66,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
 
     localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('paw_user_info');
     localStorage.removeItem('role');
     localStorage.removeItem('email');

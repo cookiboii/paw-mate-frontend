@@ -15,7 +15,7 @@ const axiosInstance = axios.create({
 // 📌 Request 인터셉터: 헤더에 JWT 토큰 자동 첨부
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
     if (token && token !== 'null' && token !== 'undefined') {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -44,7 +44,9 @@ const processQueue = (error: unknown, token: string | null = null) => {
 
 const clearAuthData = () => {
   localStorage.removeItem('token');
+  localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
+  localStorage.removeItem('refresh_token');
   localStorage.removeItem('role');
   localStorage.removeItem('email');
   localStorage.removeItem('name');
@@ -57,7 +59,7 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as CustomInternalAxiosRequestConfig | undefined;
 
     if (error.response && error.response.status === 401 && originalRequest && !originalRequest._retry) {
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = localStorage.getItem('refreshToken') || localStorage.getItem('refresh_token');
 
       // 로그인/회원가입 요청 실패 시에는 리프레시를 시도하지 않음
       const url = originalRequest.url || '';
@@ -90,7 +92,8 @@ axiosInstance.interceptors.response.use(
       try {
         // 토큰 재발급 API 호출: POST /adoptmate/refresh-token
         const res = await axios.post(`${BASE_URL}/adoptmate/refresh-token`, { refreshToken });
-        const newToken = unwrapResult<{ token?: string }>(res.data)?.token;
+        const refreshed = unwrapResult<{ token?: string; accessToken?: string }>(res.data);
+        const newToken = refreshed?.token || refreshed?.accessToken;
 
         if (newToken) {
           localStorage.setItem('token', newToken);

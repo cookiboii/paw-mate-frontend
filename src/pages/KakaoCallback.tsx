@@ -35,7 +35,7 @@ const KakaoCallback: React.FC = () => {
         return;
       }
 
-      const refreshTokenParam = searchParams.get('refreshToken') || undefined;
+      const refreshTokenParam = searchParams.get('refreshToken') || searchParams.get('refresh_token') || undefined;
 
       // Case 1: Backend redirected to callback with token already
       if (token) {
@@ -81,8 +81,11 @@ const KakaoCallback: React.FC = () => {
 
           const jwtRefreshToken =
             resData?.refreshToken ||
+            resData?.refresh_token ||
             resData?.result?.refreshToken ||
+            resData?.result?.refresh_token ||
             resData?.data?.refreshToken ||
+            resData?.data?.refresh_token ||
             refreshTokenParam;
 
           const userRole =

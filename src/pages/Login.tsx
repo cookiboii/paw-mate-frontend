@@ -44,7 +44,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const res = await loginUser(form);
       const resData = res.data?.result || res.data?.data || res.data || {};
       const token = resData.token || resData.accessToken;
-      const refreshToken = resData.refreshToken;
+      const refreshToken = resData.refreshToken || resData.refresh_token;
       const role = resData.role || "USER";
       const email = resData.email || form.email;
       const name = resData.name;
@@ -92,7 +92,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             try { resData = JSON.parse(resData); } catch { return; }
           }
           const token = resData?.token || resData?.accessToken || resData?.result?.token || resData?.result?.accessToken || resData?.data?.token || resData?.data?.accessToken;
-          const refreshToken = resData?.refreshToken || resData?.result?.refreshToken || resData?.data?.refreshToken;
+          const refreshToken = resData?.refreshToken || resData?.refresh_token || resData?.result?.refreshToken || resData?.result?.refresh_token || resData?.data?.refreshToken || resData?.data?.refresh_token;
           const role = resData?.role || resData?.result?.role || resData?.data?.role || "USER";
           const email = resData?.email || resData?.result?.email || resData?.data?.email || resData?.id;
           const name = resData?.name || resData?.result?.name;
