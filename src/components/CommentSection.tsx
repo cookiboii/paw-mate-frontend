@@ -1,10 +1,9 @@
 import React, { useEffect, useState, FormEvent } from 'react';
 import { getComments, createComment, updateComment, deleteComment } from '../api/review';
-import { getMyInfo } from '../api/user';
+import { useAuth } from '../context/AuthContext';
 import styles from '../styles/components/CommentSection.module.css';
 import Spinner from '../components/Spinner';
 import { CommentItem } from '../types/review';
-import { User } from '../types/auth';
 import { useToast } from '../context/ToastContext';
 import { MessageSquare, Send, CornerDownRight } from 'lucide-react';
 import { getErrorMessage } from '../utils/error';
@@ -17,7 +16,8 @@ interface CommentSectionProps {
 
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const { showToast } = useToast();
-  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const { isAuthenticated, user } = useAuth();
+  const userInfo = isAuthenticated ? user : null;
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [contentMap, setContentMap] = useState<Record<string, string>>({});
   const [editModeMap, setEditModeMap] = useState<Record<string | number, boolean>>({});
@@ -33,27 +33,37 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   };
 
   useEffect(() => {
+    let cancelled = false;
     const fetchInitialData = async () => {
       try {
-        const [userData, commentsData] = await Promise.all([
-          getMyInfo().catch(() => null),
-          getComments(postId).catch(() => null),
-        ]);
-
-        if (userData) {
-          setUserInfo({
-            email: (userData.email || '').trim().toLowerCase(),
-            role: (userData.role || '').toUpperCase(),
-          });
-        }
-        setComments(commentsData || []);
+        const commentsData = await getComments(postId);
+        if (!cancelled) setComments(commentsData || []);
       } catch (err) {
         console.error('초기 데이터 로딩 실패:', err);
       }
     };
 
     fetchInitialData();
+    return () => { cancelled = true; };
   }, [postId]);
+
+  const requireLogin = () => {
+    if (isAuthenticated) return true;
+    showToast('로그인 후 댓글을 작성하거나 변경할 수 있습니다.', 'info');
+    return false;
+  };
+
+  const isCommentAuthor = (comment: CommentItem) => {
+    if (!userInfo) return false;
+    if (userInfo.id != null && comment.authorId != null) {
+      return String(userInfo.id) === String(comment.authorId);
+    }
+    const email = userInfo.email?.trim().toLowerCase();
+    return Boolean(email) && email === comment.authorEmail?.trim().toLowerCase();
+  };
+
+  const isCommentAdmin = Boolean(userInfo && ['ADMIN', 'ROLE_ADMIN'].includes(userInfo.role?.toUpperCase() || ''));
+  const canDeleteComment = (comment: CommentItem) => isCommentAuthor(comment) || isCommentAdmin;
 
   const handleChange = (id: string | number, value: string) => {
     setContentMap((prev) => ({ ...prev, [id]: value }));
@@ -61,6 +71,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
   const handleSubmit = async (e: FormEvent, parentId: string | number | null = null) => {
     e.preventDefault();
+    if (!requireLogin()) return;
     const key = parentId ? String(parentId) : 'root';
     const content = contentMap[key];
     if (!content?.trim()) return;
@@ -80,8 +91,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     }
   };
 
-  const handleDelete = async (commentId: string | number) => {
+  const handleDelete = async (comment: CommentItem) => {
+    if (!requireLogin()) return;
+    if (!canDeleteComment(comment)) {
+      showToast('댓글 작성자 또는 관리자만 삭제할 수 있습니다.', 'error');
+      return;
+    }
     if (!window.confirm('댓글을 삭제하시겠습니까?')) return;
+    const commentId = comment.id;
     setLoadingMap((prev) => ({ ...prev, [commentId]: true }));
 
     try {
@@ -102,6 +119,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   };
 
   const handleUpdate = async (commentId: string | number) => {
+    if (!requireLogin()) return;
     const updatedContent = contentMap[commentId];
     if (!updatedContent?.trim()) return;
 
@@ -122,8 +140,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
   const renderComments = (commentList: CommentItem[]) =>
     commentList.map((comment) => {
-      const isAuthor = userInfo?.email === comment.authorEmail;
-      const isAdmin = userInfo?.role === 'ADMIN';
+      const isAuthor = isCommentAuthor(comment);
 
       return (
         <div key={comment.id} className={styles.commentBox}>
@@ -137,7 +154,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                   </span>
                 )}
               </div>
-              {(isAuthor || isAdmin) && !editModeMap[comment.id] && (
+              {canDeleteComment(comment) && !editModeMap[comment.id] && (
                 <div className={styles.actions}>
                   {isAuthor && (
                     <button
@@ -149,7 +166,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                   )}
                   <button
                     className={styles.deleteActionBtn}
-                    onClick={() => handleDelete(comment.id)}
+                    onClick={() => handleDelete(comment)}
                   >
                     삭제
                   </button>
@@ -159,7 +176,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
             {loadingMap[comment.id] ? (
               <Spinner />
-            ) : editModeMap[comment.id] ? (
+            ) : isAuthor && editModeMap[comment.id] ? (
               <div>
                 <input
                   type="text"

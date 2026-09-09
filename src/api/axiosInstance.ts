@@ -32,6 +32,8 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
     if (token && token !== 'null' && token !== 'undefined') {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      config.headers.delete('Authorization');
     }
     return config;
   },
@@ -112,7 +114,6 @@ axiosInstance.interceptors.response.use(
 
         if (newToken) {
           localStorage.setItem('token', newToken);
-          axiosInstance.defaults.headers.common.Authorization = `Bearer ${newToken}`;
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           processQueue(null, newToken);
           return axiosInstance(originalRequest);
