@@ -4,6 +4,8 @@ import { apiCache } from '../utils/apiCache';
 import { unwrapResult } from './apiHelper';
 
 const API_BASE_URL = '/api/v1/animals';
+const COMPAT_ANIMAL_API_BASE_URL = '/animals';
+const cursorPageByLastId = new Map<string, number>();
 
 /**
  * 🐾 백엔드 응답 데이터를 프론트엔드 표준 모델로 정규화 (animalId/id, image/imageUrl 호환)
@@ -62,7 +64,8 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axios.get(API_BASE_URL, {
+      // 현재 운영 백엔드는 v1 목록에서 C003을 반환하고 호환 목록은 정상 동작한다.
+      const response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
         params: { page, size },
       });
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
@@ -85,19 +88,36 @@ export const fetchAnimalCursorList = async (
   lastAnimalId?: number | string,
   size = 10
 ): Promise<SliceResponse<Animal>> => {
-  const params = new URLSearchParams();
-  if (lastAnimalId !== undefined && lastAnimalId !== null && lastAnimalId !== '') {
-    params.append('lastAnimalId', String(lastAnimalId));
-  }
-  params.append('size', String(size));
-  const response = await axios.get(`${API_BASE_URL}/cursor?${params.toString()}`);
-  const unwrapped = unwrapResult<SliceResponse<Animal>>(response.data);
+  // 운영 서버의 cursor 엔드포인트가 C003을 반환하므로 정상 동작하는 offset 호환
+  // 엔드포인트를 Slice 형태로 변환한다. 마지막 ID와 다음 page를 연결해 기존 훅의
+  // 호출 계약(lastAnimalId, size)은 유지한다.
+  const cursorKey = `${size}:${String(lastAnimalId ?? '')}`;
+  const page = lastAnimalId === undefined || lastAnimalId === null || lastAnimalId === ''
+    ? 0
+    : cursorPageByLastId.get(cursorKey) ?? 0;
+  const response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
+    params: { page, size },
+  });
+  const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
   const content = Array.isArray(unwrapped.content)
     ? unwrapped.content.map(normalizeAnimal)
     : [];
+  const lastItem = content.length > 0 ? content[content.length - 1] : undefined;
+  if (lastItem) {
+    cursorPageByLastId.set(`${size}:${String(lastItem.id)}`, page + 1);
+  }
+  const hasNext = unwrapped.last !== undefined
+    ? !unwrapped.last
+    : page + 1 < (unwrapped.totalPages || 1);
   return {
-    ...unwrapped,
     content,
+    hasNext,
+    isLast: !hasNext,
+    number: page,
+    size,
+    first: page === 0,
+    last: !hasNext,
+    empty: content.length === 0,
   };
 };
 
@@ -113,7 +133,7 @@ export const fetchAnimalListBySpecies = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axios.get(`${API_BASE_URL}/species`, {
+      const response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/species`, {
         params: { species, page, size },
       });
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
@@ -127,6 +147,37 @@ export const fetchAnimalListBySpecies = async (
     },
     { ttl: 60 * 1000 }
   );
+};
+
+/** 종별 offset 응답을 무한 스크롤용 Slice로 변환한다. */
+export const fetchAnimalCursorListBySpecies = async (
+  species: string,
+  lastAnimalId?: number | string,
+  size = 10
+): Promise<SliceResponse<Animal>> => {
+  const cursorKey = `species:${species}:${size}:${String(lastAnimalId ?? '')}`;
+  const page = lastAnimalId === undefined || lastAnimalId === null || lastAnimalId === ''
+    ? 0
+    : cursorPageByLastId.get(cursorKey) ?? 0;
+  const pageData = await fetchAnimalListBySpecies(species, page, size);
+  const content = pageData.content || [];
+  const lastItem = content.length > 0 ? content[content.length - 1] : undefined;
+  if (lastItem) {
+    cursorPageByLastId.set(`species:${species}:${size}:${String(lastItem.id)}`, page + 1);
+  }
+  const hasNext = pageData.last !== undefined
+    ? !pageData.last
+    : page + 1 < (pageData.totalPages || 1);
+  return {
+    content,
+    hasNext,
+    isLast: !hasNext,
+    number: page,
+    size,
+    first: page === 0,
+    last: !hasNext,
+    empty: content.length === 0,
+  };
 };
 
 /**

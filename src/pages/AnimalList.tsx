@@ -11,7 +11,7 @@ import AnimalFilterBar from '../components/AnimalFilterBar';
 import usePageTitle from '../hooks/usePageTitle';
 import useDebounce from '../hooks/useDebounce';
 import { useCursorScroll } from '../hooks/useCursorScroll';
-import { fetchAllAnimals, fetchAnimalList, fetchAnimalListBySpecies, fetchAnimalCursorList } from '../api/animal';
+import { fetchAllAnimals, fetchAnimalList, fetchAnimalListBySpecies, fetchAnimalCursorList, fetchAnimalCursorListBySpecies } from '../api/animal';
 import { Animal } from '../types/animal';
 
 type ViewMode = 'infinite' | 'pagination';
@@ -67,7 +67,7 @@ const AnimalList: React.FC = () => {
   const cursorFetcher = useCallback(
     async (lastId: string | number | undefined, pageSize: number) => {
       if (speciesFilter !== 'ALL') {
-        return fetchAnimalListBySpecies(speciesFilter, 0, pageSize * 2);
+        return fetchAnimalCursorListBySpecies(speciesFilter, lastId, pageSize);
       }
       return fetchAnimalCursorList(lastId, pageSize);
     },

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import axios from 'axios';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
 import { getReviewsCursor, getReviews, prefetchReviewById } from '../api/review';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -83,6 +84,9 @@ const AdoptionReviewListPage: React.FC = () => {
       try {
         return await getReviewsCursor(lastId, pageSize);
       } catch (err) {
+        // 서버 내부 오류는 다른 목록 경로에서도 동일하게 발생하므로 중복 요청하지 않는다.
+        const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+        if (status !== 404 && status !== 405) throw err;
         console.warn('커서 페이징 에러, 오프셋 페이징 폴백 실행:', err);
         const pageData = await getReviews(0, pageSize, 'id,desc');
         return {
