@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef, ChangeEvent, FormEvent, DragEvent, MouseEvent } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import axios from '../api/axiosInstance';
+import { unwrapResult } from '../api/apiHelper';
+import { User } from '../types/auth';
+import { PostResponseDto } from '../types/review';
 import { updateReview } from '../api/review';
 import styles from '../styles/pages/AdoptionReview.module.css';
 import { useAuth } from '../context/AuthContext';
@@ -20,7 +23,7 @@ const CATEGORY_OPTIONS = [
 const AdoptionReviewEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated, user: sessionUser } = useAuth();
+  const { isAuthenticated, isUserLoading, user: sessionUser } = useAuth();
   const [authorEmail, setAuthorEmail] = useState('');
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -51,8 +54,8 @@ const AdoptionReviewEdit: React.FC = () => {
           axios.get('/adoptmate/myInfo'),
           axios.get(`/api/v1/posts/${id}`),
         ]);
-        const user = userRes.data.result || userRes.data;
-        const review = reviewRes.data.result || reviewRes.data;
+        const user = unwrapResult<User>(userRes.data);
+        const review = unwrapResult<PostResponseDto>(reviewRes.data);
 
         const userEmail = (user?.email || '').trim().toLowerCase();
         const authorEmail = (review?.email || '').trim().toLowerCase();
@@ -167,7 +170,7 @@ const AdoptionReviewEdit: React.FC = () => {
   };
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!isLoaded) return <div className={styles.pageWrapper}><Spinner /></div>;
+  if (!isLoaded || isUserLoading) return <div className={styles.pageWrapper}><Spinner /></div>;
   if (!authorEmail || sessionUser?.email?.trim().toLowerCase() !== authorEmail) return <Navigate to={`/reviews/${id}`} replace />;
 
   const activeCat = CATEGORY_OPTIONS.find((c) => c.key === selectedCategory) || CATEGORY_OPTIONS[0];

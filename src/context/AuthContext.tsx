@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import axiosInstance from '../api/axiosInstance';
+import { getMyInfo } from '../api/user';
 import { useToast } from './ToastContext';
 import { User, AuthContextType } from '../types/auth';
 
@@ -10,6 +11,8 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [sessionVersion, setSessionVersion] = useState(0);
+  const [isUserLoading, setIsUserLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return !!(localStorage.getItem('token') || localStorage.getItem('accessToken'));
   });
@@ -32,6 +35,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const { showToast } = useToast();
 
+  useEffect(() => {
+    let cancelled = false;
+    if (!isAuthenticated) {
+      setIsUserLoading(false);
+      return;
+    }
+    setIsUserLoading(true);
+    getMyInfo()
+      .then((profile) => {
+        if (cancelled || !profile) return;
+        setUser(profile);
+        localStorage.setItem('paw_user_info', JSON.stringify(profile));
+      })
+      .catch(() => {
+        // Authentication failures are handled by the response interceptor.
+      })
+      .finally(() => {
+        if (!cancelled) setIsUserLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, sessionVersion]);
+
   const login = (token: string, userInfo: User = {}, refreshToken: string | null = null) => {
     // OAuth 제공자/백엔드에 따라 Bearer 접두사가 포함될 수 있으므로 한 번만 저장한다.
     const normalizedToken = token.replace(/^Bearer\s+/i, '').trim();
@@ -49,6 +74,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (userInfo.provider) localStorage.setItem('provider', userInfo.provider);
 
     setIsAuthenticated(Boolean(normalizedToken));
+    setIsUserLoading(true);
+    setSessionVersion((version) => version + 1);
     setUser(userInfo);
   };
 
@@ -95,8 +122,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
 
   const value = useMemo(
-    () => ({ isAuthenticated, user, isAdmin, login, logout }),
-    [isAuthenticated, user, isAdmin]
+    () => ({ isAuthenticated, isUserLoading, user, isAdmin, login, logout }),
+    [isAuthenticated, isUserLoading, user, isAdmin]
   );
 
   return (

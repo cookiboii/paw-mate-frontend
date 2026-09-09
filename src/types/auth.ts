@@ -49,6 +49,7 @@ export type RegisterPayload = MemberRegisterRequestDto;
 
 export interface AuthContextType {
   isAuthenticated: boolean;
+  isUserLoading: boolean;
   user: User | null;
   isAdmin: boolean;
   login: (token: string, userInfo?: User, refreshToken?: string | null) => void;
