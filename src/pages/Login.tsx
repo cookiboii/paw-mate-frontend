@@ -199,9 +199,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       </form>
 
       <div className={styles.extraActions}>
-        <span onClick={() => navigate("/forgot-password")} className={styles.link}>
+        <button type="button" onClick={() => navigate("/forgot-password")} className={styles.link}>
           비밀번호를 잊으셨나요?
-        </span>
+        </button>
       </div>
 
       <div className={styles.divider}>또는</div>
@@ -218,9 +218,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
       <p className={styles.signupPrompt}>
         아직 계정이 없으신가요?{" "}
-        <span className={styles.signupLink} onClick={() => navigate("/register")}>
+        <button type="button" className={styles.signupLink} onClick={() => navigate("/register")}>
           회원가입
-        </span>
+        </button>
       </p>
     </div>
   );

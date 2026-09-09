@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { PawPrint, BookOpen, MessageSquare, User, Heart, ShieldCheck, Crown, X, LogOut } from 'lucide-react';
 import styles from '../styles/components/Header.module.css';
@@ -13,6 +13,8 @@ const Header: React.FC = () => {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,6 +48,40 @@ const Header: React.FC = () => {
       document.body.style.overflow = 'unset';
     }
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const firstFocusable = drawerRef.current?.querySelector<HTMLElement>('button, [href]');
+    firstFocusable?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+        requestAnimationFrame(() => menuButtonRef.current?.focus());
+        return;
+      }
+      if (event.key !== 'Tab' || !drawerRef.current) return;
+      const focusable = Array.from(
+        drawerRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])')
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+    requestAnimationFrame(() => menuButtonRef.current?.focus());
+  };
 
   const handleLogout = () => {
     logout();
@@ -113,9 +149,12 @@ const Header: React.FC = () => {
         {/* 모바일 햄버거 버튼 */}
         <div className={styles.mobileControls}>
           <button 
+            ref={menuButtonRef}
             className={`${styles.hamburgerBtn} ${isMobileMenuOpen ? styles.hamburgerOpen : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="메뉴 열기/닫기"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation-drawer"
           >
             <span></span>
             <span></span>
@@ -126,16 +165,16 @@ const Header: React.FC = () => {
 
       {/* 모바일 사이드 드로어 메뉴 & 배경 오버레이 */}
       {isMobileMenuOpen && (
-        <div className={styles.mobileBackdrop} onClick={() => setIsMobileMenuOpen(false)} />
+        <div className={styles.mobileBackdrop} onClick={closeMobileMenu} />
       )}
       
-      <div className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}>
+      <div ref={drawerRef} id="mobile-navigation-drawer" className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}>
         <div className={styles.drawerHeader}>
           <span className={styles.drawerLogo}>
             <PawPrint size={20} />
             <span>AdoptMate</span>
           </span>
-          <button className={styles.drawerCloseBtn} onClick={() => setIsMobileMenuOpen(false)} aria-label="닫기">
+          <button className={styles.drawerCloseBtn} onClick={closeMobileMenu} aria-label="닫기">
             <X size={20} />
           </button>
         </div>

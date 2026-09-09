@@ -315,3 +315,10 @@
   font-size: 0.82rem;
   color: var(--danger-color, #e63946);
 }
+
+.fieldError {
+  margin-top: 6px;
+  color: var(--danger-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+}

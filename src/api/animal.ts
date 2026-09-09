@@ -128,6 +128,28 @@ export const fetchAnimalListBySpecies = async (
 };
 
 /**
+ * The API currently has no server-side text-search endpoint.  For workflows
+ * that require an exact client-side match, retrieve every page before filtering
+ * instead of treating the currently visible page as the complete result set.
+ */
+export const fetchAllAnimals = async (species?: string): Promise<Animal[]> => {
+  const pageSize = 100;
+  const fetchPage = (page: number) =>
+    species && species !== 'ALL'
+      ? fetchAnimalListBySpecies(species, page, pageSize)
+      : fetchAnimalList(page, pageSize);
+
+  const firstPage = await fetchPage(0);
+  const totalPages = Math.max(1, firstPage.totalPages || 1);
+  if (totalPages === 1) return firstPage.content || [];
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, index) => fetchPage(index + 1))
+  );
+  return [firstPage, ...remainingPages].flatMap((page) => page.content || []);
+};
+
+/**
  * 🔎 ID로 단일 동물 조회 (캐시 지원)
  */
 export const fetchAnimalById = async (id: string | number): Promise<Animal> => {

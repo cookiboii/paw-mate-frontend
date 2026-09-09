@@ -29,6 +29,60 @@
   font-size: 1.05rem;
 }
 
+.dashboardToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -16px 0 24px;
+}
+
+.refreshButton {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 13px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.refreshButton:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.refreshButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.refreshingIcon {
+  animation: dashboardSpin 0.9s linear infinite;
+}
+
+.loadError {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--danger-color);
+  border-radius: var(--radius-md);
+  background: var(--danger-light);
+  color: var(--danger-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@keyframes dashboardSpin {
+  to { transform: rotate(360deg); }
+}
+
 /* Stats Cards Grid */
 .statsGrid {
   display: grid;
@@ -354,7 +408,7 @@
   padding: 10px 0;
 }
 
-.donutWrapper {
+.donutContainer {
   position: relative;
   width: 170px;
   height: 170px;
@@ -476,6 +530,16 @@
 
   .subtitle {
     font-size: 0.95rem;
+  }
+
+  .dashboardToolbar {
+    align-items: stretch;
+    flex-direction: column-reverse;
+    margin-bottom: 20px;
+  }
+
+  .refreshButton {
+    justify-content: center;
   }
 
   .statsGrid {
@@ -688,5 +752,4 @@
 .segmentRejected {
   background-color: #ef4444;
 }
-
 

@@ -27,6 +27,7 @@ const AdoptionForm: React.FC = () => {
   const [agreed, setAgreed] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasAlreadyApplied, setHasAlreadyApplied] = useState<boolean>(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!animalId) return;
@@ -113,6 +114,17 @@ const AdoptionForm: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    const errors: Record<string, string> = {};
+    if (!isValidPhoneNumber(phone.trim())) errors.phone = '010-1234-5678 형식으로 입력해 주세요.';
+    if (interview.trim().length < 10) errors.interview = '입양 동기와 돌봄 계획을 10자 이상 작성해 주세요.';
+    if (!agreed) errors.agreed = '입양 필수 동의 항목을 확인해 주세요.';
+    setValidationErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      showToast('입력 내용을 확인해 주세요.', 'error');
+      return;
+    }
+
     if (!isValidPhoneNumber(phone.trim())) {
       showToast('올바른 연락처 형식(예: 010-1234-5678)을 입력해 주세요.', 'error');
       return;
@@ -190,8 +202,9 @@ const AdoptionForm: React.FC = () => {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGrid}>
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>신청자 이름</label>
+              <label className={styles.label} htmlFor="applicant-name">신청자 이름</label>
               <input
+                id="applicant-name"
                 type="text"
                 value={user?.name || ''}
                 disabled
@@ -200,20 +213,25 @@ const AdoptionForm: React.FC = () => {
             </div>
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>연락 가능한 전화번호 *</label>
+              <label className={styles.label} htmlFor="adoption-phone">연락 가능한 전화번호 *</label>
               <input
+                id="adoption-phone"
                 type="tel"
                 placeholder="010-0000-0000"
                 value={phone}
                 onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                 required
                 className={styles.input}
+                aria-invalid={Boolean(validationErrors.phone)}
+                aria-describedby={validationErrors.phone ? 'adoption-phone-error' : undefined}
               />
+              {validationErrors.phone && <p id="adoption-phone-error" className={styles.fieldError}>{validationErrors.phone}</p>}
             </div>
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>거주 형태</label>
+              <label className={styles.label} htmlFor="housing-type">거주 형태</label>
               <select
+                id="housing-type"
                 value={housingType}
                 onChange={(e) => setHousingType(e.target.value)}
                 className={styles.select}
@@ -227,8 +245,9 @@ const AdoptionForm: React.FC = () => {
             </div>
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>현재 반려동물 유무</label>
+              <label className={styles.label} htmlFor="has-pet">현재 반려동물 유무</label>
               <select
+                id="has-pet"
                 value={hasPet}
                 onChange={(e) => setHasPet(e.target.value)}
                 className={styles.select}
@@ -243,12 +262,13 @@ const AdoptionForm: React.FC = () => {
 
           <div className={styles.fieldGroupFull}>
             <div className={styles.fieldHeader}>
-              <label className={`${styles.label} ${styles.fieldHeaderLabel}`}>입양 동기 및 돌봄 계획 *</label>
+              <label htmlFor="adoption-interview" className={`${styles.label} ${styles.fieldHeaderLabel}`}>입양 동기 및 돌봄 계획 *</label>
               <span className={interview.trim().length < 10 ? styles.charCountError : styles.charCount}>
                 {interview.length}자 {interview.trim().length < 10 && '(최소 10자 이상)'}
               </span>
             </div>
             <textarea
+              id="adoption-interview"
               value={interview}
               onChange={(e) => setInterview(e.target.value)}
               required
@@ -256,7 +276,10 @@ const AdoptionForm: React.FC = () => {
               placeholder="1. 왜 이 아이를 입양하고 싶으신가요?&#13;&#10;2. 하루에 함께 보낼 수 있는 시간은 어느 정도인가요?&#13;&#10;3. 가족 구성원 모두 입양에 동의하셨나요?"
               className={styles.textarea}
               disabled={isSubmitting}
+              aria-invalid={Boolean(validationErrors.interview)}
+              aria-describedby={validationErrors.interview ? 'adoption-interview-error' : undefined}
             />
+            {validationErrors.interview && <p id="adoption-interview-error" className={styles.fieldError}>{validationErrors.interview}</p>}
           </div>
 
           <div className={styles.agreementBox}>
@@ -266,11 +289,14 @@ const AdoptionForm: React.FC = () => {
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 className={styles.checkbox}
+                aria-invalid={Boolean(validationErrors.agreed)}
+                aria-describedby={validationErrors.agreed ? 'adoption-agreement-error' : undefined}
               />
               <span>
                 (필수) 본인은 입양 후 반려동물이 자연사할 때까지 평생 책임지고 사랑으로 양육할 것을 서약합니다.
               </span>
             </label>
+            {validationErrors.agreed && <p id="adoption-agreement-error" className={styles.fieldError}>{validationErrors.agreed}</p>}
           </div>
 
           <div className={styles.btnRow}>

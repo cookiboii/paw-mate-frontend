@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { RefreshCw } from 'lucide-react';
 import styles from '../../styles/admin/AdminDashboardPage.module.css';
-import { fetchAnimalList } from '../../api/animal';
+import { fetchAllAnimals } from '../../api/animal';
 import { getAllUsers } from '../../api/user';
 import { getAllAdoptions, updateAdoptionStatus } from '../../api/adoption';
 import { useToast } from '../../context/ToastContext';
@@ -20,6 +21,8 @@ const AdminDashboardPage: React.FC = () => {
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [adoptions, setAdoptions] = useState<AdoptionResponseDto[]>([]);
@@ -37,23 +40,42 @@ const AdminDashboardPage: React.FC = () => {
     applicantName: '',
   });
 
-  const loadDashboardData = async () => {
-    setLoading(true);
+  const loadDashboardData = async (refresh = false) => {
+    if (refresh) {
+      setIsRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    setLoadError(null);
     try {
-      const [animalRes, userRes, adoptionRes] = await Promise.all([
-        fetchAnimalList(0, 100).catch(() => ({ content: [] as Animal[] })),
-        getAllUsers().catch(() => []),
-        getAllAdoptions().catch(() => []),
+      const [animalResult, userResult, adoptionResult] = await Promise.allSettled([
+        fetchAllAnimals(),
+        getAllUsers(),
+        getAllAdoptions(),
       ]);
 
-      setAnimals(animalRes.content || []);
-      setUsers(userRes || []);
-      setAdoptions(adoptionRes || []);
+      const failures = [animalResult, userResult, adoptionResult].filter(
+        (result) => result.status === 'rejected'
+      ).length;
+
+      if (animalResult.status === 'fulfilled') setAnimals(animalResult.value || []);
+      if (userResult.status === 'fulfilled') setUsers(userResult.value || []);
+      if (adoptionResult.status === 'fulfilled') setAdoptions(adoptionResult.value || []);
+
+      if (failures > 0) {
+        const message = `${failures}개의 대시보드 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`;
+        setLoadError(message);
+        showToast(message, 'error');
+      }
     } catch (err) {
       console.error('대시보드 데이터 로딩 실패:', err);
       showToast('대시보드 데이터를 불러오지 못했습니다.', 'error');
     } finally {
-      setLoading(false);
+      if (refresh) {
+        setIsRefreshing(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -148,6 +170,19 @@ const AdminDashboardPage: React.FC = () => {
       </div>
 
       {/* 4가지 핵심 지표 카드 */}
+      <div className={styles.dashboardToolbar}>
+        {loadError && <p className={styles.loadError} role="status">{loadError}</p>}
+        <button
+          type="button"
+          className={styles.refreshButton}
+          onClick={() => loadDashboardData(true)}
+          disabled={isRefreshing}
+        >
+          <RefreshCw size={16} className={isRefreshing ? styles.refreshingIcon : undefined} />
+          <span>{isRefreshing ? '새로고침 중' : '새로고침'}</span>
+        </button>
+      </div>
+
       <DashboardMetrics stats={stats} />
 
       {/* 대시보드 상세 섹션 그리드 */}

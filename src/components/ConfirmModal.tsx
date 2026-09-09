@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from '../styles/components/ConfirmModal.module.css';
 import { AlertTriangle, Info } from 'lucide-react';
 
@@ -28,6 +28,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onCancel,
   children,
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
   // ESC 키로 닫기
   useEffect(() => {
     if (!isOpen) return;
@@ -37,6 +39,31 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [isOpen, onCancel]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const focusTarget = variant === 'danger' ? cancelButtonRef.current : modalRef.current?.querySelector<HTMLElement>('button');
+    focusTarget?.focus();
+
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab' || !modalRef.current) return;
+      const focusable = Array.from(
+        modalRef.current.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+      ).filter((element) => !element.hasAttribute('disabled'));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener('keydown', trapFocus);
+    return () => window.removeEventListener('keydown', trapFocus);
+  }, [isOpen, variant]);
 
   // 열려있을 때 배경 스크롤 방지
   useEffect(() => {
@@ -50,7 +77,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   return (
     <div className={styles.overlay} onClick={onCancel} role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div ref={modalRef} className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`}>
           {variant === 'danger' ? <AlertTriangle size={24} /> : <Info size={24} />}
         </div>
@@ -58,13 +85,12 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         {message && <p className={styles.message}>{message}</p>}
         {children}
         <div className={styles.actions}>
-          <button className={styles.cancelBtn} onClick={onCancel}>
+          <button ref={cancelButtonRef} className={styles.cancelBtn} onClick={onCancel}>
             {cancelText}
           </button>
           <button
             className={`${styles.confirmBtn} ${variant === 'danger' ? styles.confirmDanger : styles.confirmDefault}`}
             onClick={onConfirm}
-            autoFocus
           >
             {confirmText}
           </button>

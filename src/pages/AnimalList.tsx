@@ -11,7 +11,7 @@ import AnimalFilterBar from '../components/AnimalFilterBar';
 import usePageTitle from '../hooks/usePageTitle';
 import useDebounce from '../hooks/useDebounce';
 import { useCursorScroll } from '../hooks/useCursorScroll';
-import { fetchAnimalList, fetchAnimalListBySpecies, fetchAnimalCursorList } from '../api/animal';
+import { fetchAllAnimals, fetchAnimalList, fetchAnimalListBySpecies, fetchAnimalCursorList } from '../api/animal';
 import { Animal } from '../types/animal';
 
 type ViewMode = 'infinite' | 'pagination';
@@ -39,6 +39,8 @@ const AnimalList: React.FC = () => {
   const [genderFilter, setGenderFilter] = useState<'ALL' | 'MALE' | 'FEMALE'>(initialGender);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const [allFilterCandidates, setAllFilterCandidates] = useState<Animal[]>([]);
+  const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
 
   // 2. 페이지네이션 모드 상태
   const [page, setPage] = useState<number>(initialPage);
@@ -119,8 +121,38 @@ const AnimalList: React.FC = () => {
     };
   }, [viewMode, page, speciesFilter]);
 
+  const needsCompleteFilterSet = genderFilter !== 'ALL' || debouncedSearchQuery.trim() !== '';
+
+  useEffect(() => {
+    if (!needsCompleteFilterSet) {
+      setAllFilterCandidates([]);
+      return;
+    }
+
+    let isMounted = true;
+    setIsFilterLoading(true);
+    fetchAllAnimals(speciesFilter)
+      .then((animals) => {
+        if (isMounted) setAllFilterCandidates(animals);
+      })
+      .catch((error) => {
+        console.error('Failed to load complete animal list for filtering:', error);
+      })
+      .finally(() => {
+        if (isMounted) setIsFilterLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [needsCompleteFilterSet, speciesFilter]);
+
   // 6. 클라이언트 레벨 검색어 & 성별 필터링
-  const rawList = viewMode === 'infinite' ? infiniteAnimals : paginationAnimals;
+  const rawList = needsCompleteFilterSet
+    ? allFilterCandidates
+    : viewMode === 'infinite'
+      ? infiniteAnimals
+      : paginationAnimals;
   const filteredAnimals = useMemo(() => {
     let list = rawList;
 
@@ -141,7 +173,15 @@ const AnimalList: React.FC = () => {
     return list;
   }, [rawList, genderFilter, debouncedSearchQuery]);
 
-  const isLoading = viewMode === 'infinite' ? isInfiniteLoading : isPaginationLoading;
+  const displayedAnimals =
+    viewMode === 'pagination' && needsCompleteFilterSet
+      ? filteredAnimals.slice(page * 6, (page + 1) * 6)
+      : filteredAnimals;
+  const displayedTotalPages = needsCompleteFilterSet
+    ? Math.max(1, Math.ceil(filteredAnimals.length / 6))
+    : totalPages;
+
+  const isLoading = isFilterLoading || (viewMode === 'infinite' ? isInfiniteLoading : isPaginationLoading);
   const hasActiveFilter = speciesFilter !== 'ALL' || genderFilter !== 'ALL' || searchQuery !== '';
 
   const handleResetFilters = useCallback(() => {
@@ -200,7 +240,7 @@ const AnimalList: React.FC = () => {
               </li>
             ))}
           </ul>
-        ) : filteredAnimals.length === 0 ? (
+        ) : displayedAnimals.length === 0 ? (
           <EmptyState
             icon={<Dog size={48} />}
             title="조건에 맞는 아이가 없습니다."
@@ -210,7 +250,7 @@ const AnimalList: React.FC = () => {
           />
         ) : (
           <ul className={styles.list}>
-            {filteredAnimals.map((animal, idx) => (
+            {displayedAnimals.map((animal, idx) => (
               <li key={animal.id ?? animal.animalId ?? idx}>
                 <AnimalCard animal={animal} showStatus priority={idx < 3} />
               </li>
@@ -219,8 +259,8 @@ const AnimalList: React.FC = () => {
         )}
 
         {/* 1. 페이지네이션 뷰 하단 번호 이동 */}
-        {viewMode === 'pagination' && !isLoading && filteredAnimals.length > 0 && (
-          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        {viewMode === 'pagination' && !isLoading && displayedAnimals.length > 0 && (
+          <Pagination currentPage={page} totalPages={displayedTotalPages} onPageChange={setPage} />
         )}
 
         {/* 2. 무한 스크롤 뷰 하단 센서 & 상태 UI */}
@@ -235,7 +275,7 @@ const AnimalList: React.FC = () => {
               </div>
             )}
 
-            {!hasNext && !isLoading && filteredAnimals.length > 0 && (
+            {!hasNext && !isLoading && displayedAnimals.length > 0 && (
               <div className={styles.endOfList}>
                 <div className={styles.endOfListTitle}>
                   <Sparkles size={18} />
