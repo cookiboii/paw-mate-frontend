@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import styles from '../styles/pages/MyPage.module.css';
 import { getMyInfo, deleteMyAccount, updatePassword } from '../api/user';
 import { getMyAdoptions } from '../api/adoption';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
@@ -16,10 +16,19 @@ import { AdoptionHistoryItem } from '../types/adoption';
 import { User, Heart, ClipboardList, ShieldCheck, PawPrint, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { getErrorMessage } from '../utils/error';
 
+type TabType = 'profile' | 'favorites' | 'password' | 'adoptions';
+const VALID_TABS: TabType[] = ['profile', 'favorites', 'password', 'adoptions'];
+
 const MyPage: React.FC = () => {
   usePageTitle('마이페이지');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState<UserType | null>(null);
-  const [activeTab, setActiveTab] = useState<'profile' | 'favorites' | 'password' | 'adoptions'>('profile');
+
+  const tabParam = searchParams.get('tab') as TabType | null;
+  const [activeTab, setActiveTab] = useState<TabType>(
+    tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'profile'
+  );
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [form, setForm] = useState({
     passwd: '',
@@ -34,8 +43,27 @@ const MyPage: React.FC = () => {
   const { showToast } = useToast();
   const { favorites, toggleFavorite } = useFavorites();
 
+  // URL query parameter 변경 감지 및 동기화
   useEffect(() => {
-    if (!token) return;
+    const tab = searchParams.get('tab') as TabType | null;
+    if (tab && VALID_TABS.includes(tab)) {
+      setActiveTab(tab);
+    } else if (!tab) {
+      setActiveTab('profile');
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    setSearchParams(tab === 'profile' ? {} : { tab });
+  };
+
+  useEffect(() => {
+    if (!token) {
+      showToast('로그인이 필요한 서비스입니다.', 'warning');
+      navigate('/login', { replace: true });
+      return;
+    }
 
     getMyInfo()
       .then((data) => {
@@ -53,7 +81,7 @@ const MyPage: React.FC = () => {
       .catch(() => {
         console.warn('입양 내역을 불러오지 못했습니다.');
       });
-  }, [token, showToast]);
+  }, [token, showToast, navigate]);
 
   const handleDeleteAccount = () => {
     setIsDeleteModalOpen(true);
@@ -123,21 +151,21 @@ const MyPage: React.FC = () => {
           <nav className={styles.navMenu}>
             <button
               className={`${styles.navItem} ${activeTab === 'profile' ? styles.active : ''}`}
-              onClick={() => setActiveTab('profile')}
+              onClick={() => handleTabChange('profile')}
             >
               <User size={16} />
               <span>내 프로필</span>
             </button>
             <button
               className={`${styles.navItem} ${activeTab === 'favorites' ? styles.active : ''}`}
-              onClick={() => setActiveTab('favorites')}
+              onClick={() => handleTabChange('favorites')}
             >
               <Heart size={16} />
               <span>관심 동물 ({favorites.length})</span>
             </button>
             <button
               className={`${styles.navItem} ${activeTab === 'adoptions' ? styles.active : ''}`}
-              onClick={() => setActiveTab('adoptions')}
+              onClick={() => handleTabChange('adoptions')}
             >
               <ClipboardList size={16} />
               <span>입양 신청 내역</span>
@@ -145,7 +173,7 @@ const MyPage: React.FC = () => {
             {provider !== 'KAKAO' && (
               <button
                 className={`${styles.navItem} ${activeTab === 'password' ? styles.active : ''}`}
-                onClick={() => setActiveTab('password')}
+                onClick={() => handleTabChange('password')}
               >
                 <ShieldCheck size={16} />
                 <span>보안 설정</span>
