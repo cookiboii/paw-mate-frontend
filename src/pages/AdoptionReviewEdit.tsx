@@ -20,7 +20,8 @@ const CATEGORY_OPTIONS = [
 const AdoptionReviewEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user: sessionUser } = useAuth();
+  const [authorEmail, setAuthorEmail] = useState('');
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -55,10 +56,8 @@ const AdoptionReviewEdit: React.FC = () => {
 
         const userEmail = (user?.email || '').trim().toLowerCase();
         const authorEmail = (review?.email || '').trim().toLowerCase();
-        const userRole = (user?.role || '').trim().toUpperCase();
-
-        if (userEmail !== authorEmail && userRole !== 'ADMIN') {
-          showToast('작성자 또는 관리자만 수정할 수 있습니다.', 'error');
+        if (!userEmail || userEmail !== authorEmail) {
+          showToast('작성자만 수정할 수 있습니다.', 'error');
           navigate(`/reviews/${id}`);
           return;
         }
@@ -75,6 +74,7 @@ const AdoptionReviewEdit: React.FC = () => {
         });
 
         setPreview(review.img || null);
+        setAuthorEmail(authorEmail);
         setIsLoaded(true);
       } catch (err) {
         console.error('데이터 불러오기 실패:', err);
@@ -132,6 +132,10 @@ const AdoptionReviewEdit: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated || !authorEmail || sessionUser?.email?.trim().toLowerCase() !== authorEmail) {
+      showToast('작성자만 수정할 수 있습니다.', 'error');
+      return;
+    }
 
     if (!form.title.trim() || !form.content.trim()) {
       return showToast('제목과 내용을 모두 입력해주세요.', 'error');
@@ -164,6 +168,7 @@ const AdoptionReviewEdit: React.FC = () => {
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (!isLoaded) return <div className={styles.pageWrapper}><Spinner /></div>;
+  if (!authorEmail || sessionUser?.email?.trim().toLowerCase() !== authorEmail) return <Navigate to={`/reviews/${id}`} replace />;
 
   const activeCat = CATEGORY_OPTIONS.find((c) => c.key === selectedCategory) || CATEGORY_OPTIONS[0];
 

@@ -118,8 +118,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     setContentMap((prev) => ({ ...prev, [commentId]: content }));
   };
 
-  const handleUpdate = async (commentId: string | number) => {
+  const handleUpdate = async (comment: CommentItem) => {
     if (!requireLogin()) return;
+    if (!isCommentAuthor(comment)) {
+      showToast('작성자만 수정할 수 있습니다.', 'error');
+      return;
+    }
+    const commentId = comment.id;
     const updatedContent = contentMap[commentId];
     if (!updatedContent?.trim()) return;
 
@@ -185,7 +190,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                   onChange={(e) => handleChange(comment.id, e.target.value)}
                 />
                 <div className={styles.editActions}>
-                  <button className={styles.submitBtn} onClick={() => handleUpdate(comment.id)}>
+                  <button className={styles.submitBtn} onClick={() => handleUpdate(comment)}>
                     저장
                   </button>
                   <button className={styles.actionBtn} onClick={() => handleEditToggle(comment.id, '')}>

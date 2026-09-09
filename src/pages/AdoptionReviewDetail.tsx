@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReviewById, deleteReview } from '../api/review';
-import { getMyInfo } from '../api/user';
+import { useAuth } from '../context/AuthContext';
 import styles from '../styles/pages/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
@@ -47,7 +47,9 @@ const AdoptionReviewDetail: React.FC = () => {
       }
     : null;
 
-  const [currentUser, setCurrentUser] = useState<{ email: string; role: string }>({ email: '', role: '' });
+  const { isAuthenticated, user, isAdmin: hasAdminRole } = useAuth();
+  const isAuthor = isAuthenticated && Boolean(user?.email?.trim()) && user?.email?.trim().toLowerCase() === review?.email;
+  const isAdmin = isAuthenticated && hasAdminRole;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -56,22 +58,13 @@ const AdoptionReviewDetail: React.FC = () => {
   const cleanTitle = review ? getCleanTitle(review.title) : '';
   usePageTitle(cleanTitle || '후기 상세');
 
-  useEffect(() => {
-    getMyInfo()
-      .then((userData) => {
-        if (userData) {
-          setCurrentUser({
-            email: (userData.email || '').trim().toLowerCase(),
-            role: (userData.role || '').trim().toUpperCase(),
-          });
-        }
-      })
-      .catch(() => {});
-  }, []);
-
   const isLoaded = !isReviewLoading && !!review;
 
   const handleDelete = async () => {
+    if (!isAuthor && !isAdmin) {
+      showToast('작성자 또는 관리자만 삭제할 수 있습니다.', 'error');
+      return;
+    }
     if (!id) return;
     setIsDeleting(true);
     try {
@@ -130,8 +123,6 @@ const AdoptionReviewDetail: React.FC = () => {
     );
   }
 
-  const isAuthor = currentUser.email === review.email;
-  const isAdmin = currentUser.role === 'ADMIN';
 
   const cat = getCategoryFromTitle(review.title);
   const catInfo = CATEGORIES.find((c) => c.key === cat) || CATEGORIES[1];
