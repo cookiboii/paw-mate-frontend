@@ -12,6 +12,20 @@ const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
 
+const logUnauthorized = (error: AxiosError, source: string) => {
+  if (error.response?.status !== 401) return;
+
+  const config = error.config as CustomInternalAxiosRequestConfig | undefined;
+  console.log('[API 401]', {
+    source,
+    method: config?.method?.toUpperCase(),
+    url: config?.url?.split(/[?#]/)[0],
+    status: error.response.status,
+    isRetry: Boolean(config?._retry),
+    hasAuthorization: Boolean(config?.headers?.Authorization),
+  });
+};
+
 // 📌 Request 인터셉터: 헤더에 JWT 토큰 자동 첨부
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -57,6 +71,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomInternalAxiosRequestConfig | undefined;
+    logUnauthorized(error, 'response interceptor');
 
     if (error.response && error.response.status === 401 && originalRequest && !originalRequest._retry) {
       const refreshToken = localStorage.getItem('refreshToken') || localStorage.getItem('refresh_token');
@@ -105,6 +120,9 @@ axiosInstance.interceptors.response.use(
 
         throw new Error('토큰 재발급 응답에 Access Token이 없습니다.');
       } catch (refreshError) {
+        if (axios.isAxiosError(refreshError)) {
+          logUnauthorized(refreshError, 'token refresh');
+        }
         processQueue(refreshError, null);
         clearAuthData();
         // 📢 전역 AuthContext에 세션 만료 이벤트 전파
