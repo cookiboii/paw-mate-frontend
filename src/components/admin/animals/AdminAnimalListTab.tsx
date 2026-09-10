@@ -33,11 +33,11 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
       if (statusFilter !== 'ALL' && (animal.status || '').toUpperCase() !== statusFilter) {
         return false;
       }
-      // 2. 종 필터
+      // 2. 동물 종류 필터
       if (speciesFilter !== 'ALL' && (animal.species || '').toUpperCase() !== speciesFilter) {
         return false;
       }
-      // 3. 검색어 필터 (품종, 종, 색상)
+      // 3. 검색어 필터 (품종, 동물 종류, 색상)
       if (searchKeyword.trim()) {
         const q = searchKeyword.toLowerCase().trim();
         const breed = (animal.breed || '').toLowerCase();
@@ -87,13 +87,13 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
             <option value="ADOPTED">입양완료</option>
           </select>
 
-          {/* 종 필터 */}
+          {/* 동물 종류 필터 */}
           <select
             className={styles.filterSelect}
             value={speciesFilter}
             onChange={(e) => setSpeciesFilter(e.target.value)}
           >
-            <option value="ALL">전체 종</option>
+            <option value="ALL">전체 동물 종류</option>
             <option value="DOG">강아지</option>
             <option value="CAT">고양이</option>
             <option value="ETC">기타</option>
@@ -133,7 +133,7 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
               <thead>
                 <tr>
                   <th>동물 정보</th>
-                  <th>종 / 성별 / 나이</th>
+                  <th>동물 종류 / 성별 / 나이</th>
                   <th>색상</th>
                   <th>보호 상태 (원클릭 변경)</th>
                   <th className={styles.textRight}>관리</th>

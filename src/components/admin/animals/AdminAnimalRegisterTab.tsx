@@ -90,7 +90,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
     e.preventDefault();
 
     if (!animalForm.species) {
-      showToast('축종을 선택해주세요.', 'error');
+      showToast('동물 종류를 선택해주세요.', 'error');
       return;
     }
 
@@ -140,10 +140,10 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
           <div className={styles.formLayout}>
             {/* 텍스트 입력 영역 */}
             <div className={styles.inputSection}>
-              {/* 축종 & 성별 선택창 */}
+              {/* 동물 종류 & 성별 선택창 */}
               <div className={styles.gridRow}>
                 <div className={styles.selectGroup}>
-                  <label className={styles.selectLabel}>축종</label>
+                  <label className={styles.selectLabel}>동물 종류</label>
                   <select
                     name="species"
                     value={animalForm.species}
@@ -151,7 +151,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                     className={styles.select}
                     required
                   >
-                    <option value="" disabled>축종 선택</option>
+                    <option value="" disabled>동물 종류 선택</option>
                     {SPECIES_OPTIONS.map((option) => (
                       <option key={option.key} value={option.key}>
                         {option.label}

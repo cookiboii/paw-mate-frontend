@@ -80,7 +80,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitle}>
             <PawPrint size={18} />
-            <span>보호 동물 축종별 분포</span>
+            <span>보호 동물 종류별 분포</span>
           </div>
         </div>
         <div className={styles.sectionBody}>
