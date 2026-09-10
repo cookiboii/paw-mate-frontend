@@ -108,7 +108,7 @@ const AdminAnimalsPage: React.FC = () => {
           onClick={() => setActiveTab('list')}
         >
           <PawPrint size={16} />
-          <span>보호 동물 관리 목록 ({animals.length})</span>
+          <span>동물 목록</span>
         </button>
         <button
           type="button"
@@ -116,7 +116,7 @@ const AdminAnimalsPage: React.FC = () => {
           onClick={() => setActiveTab('register')}
         >
           <PlusCircle size={16} />
-          <span>신규 보호 동물 등록</span>
+          <span>동물 등록</span>
         </button>
       </div>
 

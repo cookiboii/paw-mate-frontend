@@ -25,6 +25,7 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [speciesFilter, setSpeciesFilter] = useState<string>('ALL');
+  const [updatingAnimalId, setUpdatingAnimalId] = useState<number | string | null>(null);
 
   // 목록 필터링
   const filteredAnimals = useMemo(() => {
@@ -57,6 +58,44 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
     setSpeciesFilter('ALL');
   };
 
+  const handleStatusChange = async (animalId: number | string, newStatus: string) => {
+    setUpdatingAnimalId(animalId);
+    try {
+      await onQuickStatusChange(animalId, newStatus);
+    } finally {
+      setUpdatingAnimalId(null);
+    }
+  };
+
+  const renderStatusSelect = (animal: Animal) => {
+    const animalId = animal.id ?? animal.animalId;
+    const statusKey = (animal.status || 'PROTECTED').toUpperCase();
+    const statusClass =
+      statusKey === 'PROTECTED'
+        ? styles.statusProtected
+        : statusKey === 'WAITING'
+        ? styles.statusWaiting
+        : styles.statusAdopted;
+    const isUpdating = updatingAnimalId === animalId;
+
+    return (
+      <div className={styles.statusControl} aria-busy={isUpdating}>
+      <select
+        className={`${styles.statusSelect} ${statusClass}`}
+        value={statusKey}
+        onChange={(e) => animalId && handleStatusChange(animalId, e.target.value)}
+        disabled={isUpdating}
+        aria-label={`${animal.name || animal.breed || '보호 동물'} 보호 상태 변경`}
+      >
+        <option value="PROTECTED">보호 중</option>
+        <option value="WAITING">입양 대기</option>
+        <option value="ADOPTED">입양 완료</option>
+      </select>
+        {isUpdating && <span className={styles.statusUpdating}>변경 중...</span>}
+      </div>
+    );
+  };
+
   return (
     <>
       {/* 검색 및 필터 컨트롤 바 */}
@@ -68,7 +107,8 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="품종, 색상 등으로 검색..."
+            placeholder="품종, 동물 종류, 색상 검색"
+            aria-label="보호 동물 검색"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           />
@@ -101,14 +141,21 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
 
           {(searchKeyword || statusFilter !== 'ALL' || speciesFilter !== 'ALL') && (
             <button
+              type="button"
               className={styles.iconBtn}
               onClick={handleResetFilters}
               title="필터 초기화"
+              aria-label="필터 초기화"
             >
               <RotateCcw size={15} />
+              <span className={styles.resetLabel}>초기화</span>
             </button>
           )}
         </div>
+      </div>
+
+      <div className={styles.resultSummary} role="status" aria-live="polite">
+        전체 <strong>{animals.length}</strong>마리 · 검색 결과 <strong>{filteredAnimals.length}</strong>마리
       </div>
 
       {/* 동물 목록 테이블 */}
@@ -142,13 +189,6 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
               <tbody>
                 {filteredAnimals.map((animal) => {
                   const animalId = animal.id ?? animal.animalId;
-                  const statusKey = (animal.status || 'PROTECTED').toUpperCase();
-                  const statusClass =
-                    statusKey === 'PROTECTED'
-                      ? styles.statusProtected
-                      : statusKey === 'WAITING'
-                      ? styles.statusWaiting
-                      : styles.statusAdopted;
 
                   return (
                     <tr key={animalId}>
@@ -160,7 +200,10 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                             className={styles.thumbnail}
                           />
                           <div>
-                            <span className={styles.animalBreed}>{animal.breed || animal.species || '이름 없음'}</span>
+                            <span className={styles.animalBreed}>{animal.name || animal.breed || '이름 없음'}</span>
+                            {animal.name && animal.breed && animal.name !== animal.breed && (
+                              <span className={styles.animalMeta}>{animal.breed}</span>
+                            )}
                             <span className={styles.animalMeta}>ID: #{animalId}</span>
                           </div>
                         </div>
@@ -173,15 +216,7 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                       </td>
                       <td>{animal.color || '-'}</td>
                       <td>
-                        <select
-                          className={`${styles.statusSelect} ${statusClass}`}
-                          value={statusKey}
-                          onChange={(e) => animalId && onQuickStatusChange(animalId, e.target.value)}
-                        >
-                          <option value="PROTECTED">🟢 보호중</option>
-                          <option value="WAITING">🟡 대기중</option>
-                          <option value="ADOPTED">🟣 입양완료</option>
-                        </select>
+                        {renderStatusSelect(animal)}
                       </td>
                       <td className={styles.textRight}>
                         <div className={`${styles.actionCell} ${styles.actionCellEnd}`}>
@@ -189,6 +224,7 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                             to={`/animals/${animalId}`}
                             className={styles.iconBtn}
                             title="일반 상세 페이지 보기"
+                            aria-label={`${animal.name || animal.breed || '보호 동물'} 상세 페이지 보기`}
                           >
                             <ExternalLink size={16} />
                           </Link>
@@ -197,6 +233,7 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                             className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
                             onClick={() => onDeleteTarget(animal)}
                             title="동물 삭제"
+                            aria-label={`${animal.name || animal.breed || '보호 동물'} 삭제`}
                           >
                             <Trash2 size={16} />
                           </button>
@@ -207,6 +244,53 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {!isLoadingList && filteredAnimals.length > 0 && (
+          <div className={styles.mobileCardList}>
+            {filteredAnimals.map((animal) => {
+              const animalId = animal.id ?? animal.animalId;
+              return (
+                <article className={styles.mobileAnimalCard} key={`mobile-${animalId}`}>
+                  <div className={styles.mobileCardHeader}>
+                    <img
+                      src={animal.image || animal.profileImageUrl || animal.imageUrl || '/default-pet.png'}
+                      alt=""
+                      className={styles.thumbnail}
+                    />
+                    <div className={styles.mobileCardIdentity}>
+                      <strong>{animal.name || animal.breed || '이름 없음'}</strong>
+                      <span>{animal.breed || getSpeciesLabel(animal.species)} · ID #{animalId}</span>
+                    </div>
+                    <Link
+                      to={`/animals/${animalId}`}
+                      className={styles.iconBtn}
+                      aria-label={`${animal.name || animal.breed || '보호 동물'} 상세 페이지 보기`}
+                    >
+                      <ExternalLink size={16} />
+                    </Link>
+                  </div>
+                  <dl className={styles.mobileDetails}>
+                    <div><dt>동물 종류</dt><dd>{getSpeciesLabel(animal.species)}</dd></div>
+                    <div><dt>성별·나이</dt><dd>{getGenderLabel(animal.gender)} · {animal.age}살</dd></div>
+                    <div><dt>색상</dt><dd>{animal.color || '-'}</dd></div>
+                  </dl>
+                  <div className={styles.mobileCardActions}>
+                    {renderStatusSelect(animal)}
+                    <button
+                      type="button"
+                      className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+                      onClick={() => onDeleteTarget(animal)}
+                      aria-label={`${animal.name || animal.breed || '보호 동물'} 삭제`}
+                    >
+                      <Trash2 size={16} />
+                      <span>삭제</span>
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
       </div>

@@ -143,7 +143,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
               {/* 동물 종류 & 성별 선택창 */}
               <div className={styles.gridRow}>
                 <div className={styles.selectGroup}>
-                  <label className={styles.selectLabel}>동물 종류</label>
+                  <label className={styles.selectLabel}>동물 종류 <span aria-hidden="true">*</span></label>
                   <select
                     name="species"
                     value={animalForm.species}
@@ -161,7 +161,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                 </div>
 
                 <div className={styles.selectGroup}>
-                  <label className={styles.selectLabel}>성별</label>
+                  <label className={styles.selectLabel}>성별 <span aria-hidden="true">*</span></label>
                   <select
                     name="gender"
                     value={animalForm.gender}
@@ -180,7 +180,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
               </div>
 
               <FloatingInput
-                label="품종 (예: 골든 리트리버, 코리안 숏헤어)"
+                label="품종 * (예: 골든 리트리버)"
                 type="text"
                 name="breed"
                 value={animalForm.breed}
@@ -190,7 +190,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
 
               <div className={styles.gridRow}>
                 <FloatingInput
-                  label="색상 (예: 크림색, 검정)"
+                  label="색상 * (예: 크림색)"
                   type="text"
                   name="color"
                   value={animalForm.color}
@@ -199,17 +199,19 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                 />
 
                 <FloatingInput
-                  label="나이 (살)"
+                  label="나이 (살) *"
                   type="number"
                   name="age"
                   value={animalForm.age}
                   onChange={handleFormChange}
                   required
+                  min="0"
+                  inputMode="numeric"
                 />
               </div>
 
               <div className={styles.selectGroup}>
-                <label className={styles.selectLabel}>보호 상태</label>
+                <label className={styles.selectLabel}>보호 상태 <span aria-hidden="true">*</span></label>
                 <select
                   name="status"
                   value={animalForm.status}
@@ -230,6 +232,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
             {/* 이미지 업로드 영역 */}
             <div className={styles.uploadSection}>
               <label className={styles.uploadLabel}>동물 대표 사진</label>
+              <p className={styles.fieldHint}>선택 사항 · JPG, PNG 등 이미지 파일</p>
               <div
                 className={`${styles.uploadBox} ${preview ? styles.hasPreview : ''} ${
                   isDragging ? styles.dragging : ''
@@ -270,6 +273,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
           </div>
 
           <div className={styles.formFooter}>
+            <p className={styles.requiredNotice}><span aria-hidden="true">*</span> 필수 입력 항목</p>
             <button
               type="submit"
               className="btn-primary"
