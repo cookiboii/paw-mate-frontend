@@ -6,9 +6,10 @@ import { useAuth } from '../context/AuthContext';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
-import { CATEGORY_PREFIX } from './AdoptionReviewListPage';
+import { REVIEW_CATEGORY_PREFIX as CATEGORY_PREFIX } from '../utils/reviewCategory';
 import usePageTitle from '../hooks/usePageTitle';
 import { uploadImageToBlob } from '../utils/imageUpload';
+import useImagePreview from '../hooks/useImagePreview';
 import { HeartHandshake, Gift, AlertTriangle, Camera, X, MapPin, Calendar, PawPrint, Phone, AlertCircle, Heart } from 'lucide-react';
 import { getErrorMessage } from '../utils/error';
 
@@ -36,7 +37,7 @@ const AdoptionReviewWrite: React.FC = () => {
     title: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const { preview, setPreviewFromFile, clearPreview } = useImagePreview();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -47,7 +48,7 @@ const AdoptionReviewWrite: React.FC = () => {
   const handleFile = (file?: File) => {
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file);
-      setPreview(URL.createObjectURL(file));
+      setPreviewFromFile(file);
     } else {
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
     }
@@ -84,7 +85,7 @@ const AdoptionReviewWrite: React.FC = () => {
     e.stopPropagation();
     setSelectedFile(null);
     setForm((prev) => ({ ...prev, img: '' }));
-    setPreview(null);
+    clearPreview();
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -124,7 +125,7 @@ const AdoptionReviewWrite: React.FC = () => {
       );
       setForm({ title: '', content: '', img: '' });
       setSelectedFile(null);
-      setPreview(null);
+      clearPreview();
       navigate(selectedCategory !== 'ALL' ? `/reviews?category=${selectedCategory}` : '/reviews');
     } catch (error: unknown) {
       console.error('글 등록 실패:', error);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Navigate } from 'react-router-dom';
 import { PawPrint, PlusCircle } from 'lucide-react';
-import { fetchAnimalList, updateAnimalStatus, deleteAnimal } from '../../api/animal';
+import { fetchAllAnimals, updateAnimalStatus, deleteAnimal } from '../../api/animal';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../styles/admin/AdminAnimalsPage.module.css';
 import { useToast } from '../../context/ToastContext';
@@ -41,8 +41,7 @@ const AdminAnimalsPage: React.FC = () => {
   const loadAnimals = async () => {
     setIsLoadingList(true);
     try {
-      const data = await fetchAnimalList(0, 100);
-      setAnimals(data.content || []);
+      setAnimals(await fetchAllAnimals());
     } catch (err) {
       console.error('동물 목록 로드 실패:', err);
       showToast('동물 목록을 불러오지 못했습니다.', 'error');

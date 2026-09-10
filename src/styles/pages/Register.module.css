@@ -152,13 +152,13 @@
 }
 
 .verifyActiveButton {
-  background: linear-gradient(135deg, var(--secondary-color), var(--secondary-hover));
+  background: var(--action-primary);
   color: white;
   border: none;
 }
 
 .verifyActiveButton:hover:not(:disabled) {
-  filter: brightness(1.05);
+  background: var(--action-primary-hover);
 }
 
 .timerBadge {
@@ -264,6 +264,10 @@
 }
 
 .loginLink {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
   color: var(--primary-color);
   font-weight: 700;
   cursor: pointer;
@@ -306,4 +310,3 @@
     gap: 18px;
   }
 }
-

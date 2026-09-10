@@ -262,7 +262,8 @@ const Register: React.FC = () => {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className={styles.passwordToggle}
-              tabIndex={-1}
+              aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+              aria-pressed={showPassword}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -293,7 +294,8 @@ const Register: React.FC = () => {
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className={styles.passwordToggle}
-              tabIndex={-1}
+              aria-label={showConfirmPassword ? '비밀번호 확인 숨기기' : '비밀번호 확인 보기'}
+              aria-pressed={showConfirmPassword}
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -353,9 +355,9 @@ const Register: React.FC = () => {
 
       <p className={styles.loginPrompt}>
         이미 계정이 있으신가요?
-        <span className={styles.loginLink} onClick={() => navigate("/login")}>
+        <button type="button" className={styles.loginLink} onClick={() => navigate("/login")}>
           로그인
-        </span>
+        </button>
       </p>
     </div>
   );

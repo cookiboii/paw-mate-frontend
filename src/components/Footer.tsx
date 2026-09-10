@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
             <h4>서비스</h4>
             <ul>
               <li><Link to="/guide">입양 안내</Link></li>
-              <li><Link to="/animals">동물 목록</Link></li>
+              <li><Link to="/animals">보호 동물</Link></li>
               <li><Link to="/reviews">커뮤니티</Link></li>
               {isAdmin && (
                 <li>
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
             <h4>긴급 제보 & 상담</h4>
             <ul>
               <li className={styles.contactPhone}>
-                <Phone size={18} /> 1577-0954
+                <Phone size={18} /> <a href="tel:1577-0954">1577-0954</a>
               </li>
               <li className={styles.contactNote}>동물보호 상담센터 (평일 09:00~18:00)</li>
               <li className={styles.contactNote}>응급 구조 신고: 국번없이 120 / 112</li>
@@ -65,7 +65,7 @@ const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} AdoptMate Platform. All rights reserved.
           </div>
           <div className={styles.legalLinks}>
-            <Link to="/terms">개인정보처리방침</Link>
+            <Link to="/terms#privacy">개인정보처리방침</Link>
             <span className={styles.separator}>|</span>
             <Link to="/terms">이용약관</Link>
           </div>

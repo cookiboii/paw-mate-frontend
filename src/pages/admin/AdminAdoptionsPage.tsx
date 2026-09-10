@@ -8,6 +8,7 @@ import usePageTitle from '../../hooks/usePageTitle';
 import { AdoptionResponseDto as AdminAdoptionItem } from '../../types/adoption';
 import { ClipboardList, PawPrint, FileText, X } from 'lucide-react';
 import { getErrorMessage } from '../../utils/error';
+import useBodyScrollLock from '../../hooks/useBodyScrollLock';
 
 const AdminAdoptionsPage: React.FC = () => {
   usePageTitle('입양 신청 관리 (Admin)');
@@ -21,10 +22,22 @@ const AdminAdoptionsPage: React.FC = () => {
     status: string | null;
   }>({ isOpen: false, adoptionId: null, status: null });
   const { showToast } = useToast();
+  useBodyScrollLock(Boolean(selectedAdoption));
 
   useEffect(() => {
     fetchAdoptions();
   }, []);
+
+  useEffect(() => {
+    if (!selectedAdoption) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedAdoption(null);
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [selectedAdoption]);
 
   const fetchAdoptions = async () => {
     try {
@@ -222,10 +235,10 @@ const AdminAdoptionsPage: React.FC = () => {
 
       {/* 📌 입양 신청서 상세 모달 */}
       {selectedAdoption && (
-        <div className={styles.modalOverlay} onClick={() => setSelectedAdoption(null)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalOverlay} onClick={() => setSelectedAdoption(null)} role="presentation">
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="adoption-detail-title">
             <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>
+              <h3 className={styles.modalTitle} id="adoption-detail-title">
                 <FileText size={20} />
                 <span>입양 신청서 상세 보기</span>
               </h3>

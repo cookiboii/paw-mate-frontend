@@ -125,20 +125,6 @@ const AdoptionForm: React.FC = () => {
       return;
     }
 
-    if (!isValidPhoneNumber(phone.trim())) {
-      showToast('올바른 연락처 형식(예: 010-1234-5678)을 입력해 주세요.', 'error');
-      return;
-    }
-
-    if (interview.trim().length < 10) {
-      showToast('입양 동기 및 계획을 10자 이상 작성해 주세요.', 'error');
-      return;
-    }
-
-    if (!agreed) {
-      showToast('입양 필수 동의 사항에 체크해 주세요.', 'error');
-      return;
-    }
     if (!animalId) {
       showToast('동물 정보를 찾을 수 없습니다.', 'error');
       return;

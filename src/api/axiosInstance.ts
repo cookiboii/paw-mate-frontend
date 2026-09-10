@@ -1,6 +1,7 @@
 // src/api/axiosInstance.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { unwrapResult } from './apiHelper';
+import { clearAuthStorage, getAccessToken, getRefreshToken } from '../utils/authStorage';
 
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -29,7 +30,7 @@ const logUnauthorized = (error: AxiosError, source: string) => {
 // 📌 Request 인터셉터: 헤더에 JWT 토큰 자동 첨부
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
+    const token = getAccessToken();
     if (token && token !== 'null' && token !== 'undefined') {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
@@ -58,17 +59,6 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-const clearAuthData = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('role');
-  localStorage.removeItem('email');
-  localStorage.removeItem('name');
-  localStorage.removeItem('provider');
-};
-
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -76,7 +66,7 @@ axiosInstance.interceptors.response.use(
     logUnauthorized(error, 'response interceptor');
 
     if (error.response && error.response.status === 401 && originalRequest && !originalRequest._retry) {
-      const refreshToken = localStorage.getItem('refreshToken') || localStorage.getItem('refresh_token');
+      const refreshToken = getRefreshToken();
 
       // 로그인/회원가입 요청 실패 시에는 리프레시를 시도하지 않음
       const url = originalRequest.url || '';
@@ -85,7 +75,7 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
       if (!refreshToken) {
-        clearAuthData();
+        clearAuthStorage();
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         return Promise.reject(error);
       }
@@ -125,7 +115,7 @@ axiosInstance.interceptors.response.use(
           logUnauthorized(refreshError, 'token refresh');
         }
         processQueue(refreshError, null);
-        clearAuthData();
+        clearAuthStorage();
         // 📢 전역 AuthContext에 세션 만료 이벤트 전파
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('auth:unauthorized'));

@@ -3,7 +3,7 @@ import styles from '../styles/pages/StaticPage.module.css';
 import usePageTitle from '../hooks/usePageTitle';
 
 const TermsOfService: React.FC = () => {
-  usePageTitle('이용약관 & 개인정보처리방침');
+  usePageTitle('이용약관 및 개인정보처리방침');
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -31,7 +31,7 @@ const TermsOfService: React.FC = () => {
             <p>② 입양된 동물의 관리 책임은 전적으로 입양자에게 있으며, 파양 시 관련 법령에 따른 책임이 부과될 수 있습니다.</p>
           </section>
 
-          <section className={styles.section}>
+          <section className={styles.section} id="privacy">
             <h2>제 4장 개인정보 보호</h2>
             <h3>제4조 (개인정보의 수집 및 이용)</h3>
             <p>회사는 입양 심사 및 서비스 제공을 위해 최소한의 개인정보를 수집하며, 회원의 동의 없이 제3자에게 제공하지 않습니다. 상세한 내용은 별도의 '개인정보처리방침'에 따릅니다.</p>

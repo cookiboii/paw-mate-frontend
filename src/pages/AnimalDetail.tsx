@@ -42,7 +42,7 @@ const AnimalDetail: React.FC = () => {
   const navigate = useNavigate();
 
   const cacheKey = id ? `animal:detail:${id}` : null;
-  const { data: initialAnimal, isLoading: loading, error } = useCachedApi<Animal>(
+  const { data: initialAnimal, isLoading: loading, error, refetch } = useCachedApi<Animal>(
     cacheKey,
     () => fetchAnimalById(id!),
     {
@@ -228,7 +228,14 @@ const AnimalDetail: React.FC = () => {
     );
   }
 
-  if (error && !animal) return <p className={styles.error}>오류 발생: {error.message}</p>;
+  if (error && !animal) {
+    return (
+      <div className={styles.error} role="alert">
+        <p>동물 정보를 불러오지 못했습니다.</p>
+        <button type="button" className="btn-primary" onClick={() => refetch(true)}>다시 시도</button>
+      </div>
+    );
+  }
 
   const canAdopt = animal?.status === AnimalStatus.PROTECTED;
   const favorite = animal ? isFavorite(animal.id) : false;

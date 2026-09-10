@@ -3,6 +3,7 @@ import axiosInstance from '../api/axiosInstance';
 import { getMyInfo } from '../api/user';
 import { useToast } from './ToastContext';
 import { User, AuthContextType } from '../types/auth';
+import { clearAuthStorage, getAccessToken, saveAuthSession } from '../utils/authStorage';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [sessionVersion, setSessionVersion] = useState(0);
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!(localStorage.getItem('token') || localStorage.getItem('accessToken'));
+    return !!getAccessToken();
   });
 
   const [user, setUser] = useState<User | null>(() => {
@@ -58,20 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [isAuthenticated, sessionVersion]);
 
   const login = (token: string, userInfo: User = {}, refreshToken: string | null = null) => {
-    // OAuth 제공자/백엔드에 따라 Bearer 접두사가 포함될 수 있으므로 한 번만 저장한다.
-    const normalizedToken = token.replace(/^Bearer\s+/i, '').trim();
-    localStorage.setItem('token', normalizedToken);
-    localStorage.removeItem('accessToken');
-    // 이전 세션의 refresh token이 새 로그인에 섞이지 않도록 교체한다.
-    localStorage.removeItem('refreshToken');
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
-    }
-    localStorage.setItem('paw_user_info', JSON.stringify(userInfo));
-    if (userInfo.role) localStorage.setItem('role', userInfo.role);
-    if (userInfo.email) localStorage.setItem('email', userInfo.email);
-    if (userInfo.name) localStorage.setItem('name', userInfo.name);
-    if (userInfo.provider) localStorage.setItem('provider', userInfo.provider);
+    const normalizedToken = saveAuthSession(token, userInfo, refreshToken);
 
     setIsAuthenticated(Boolean(normalizedToken));
     setIsUserLoading(true);
@@ -82,7 +70,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = async (callApi = true) => {
     if (callApi) {
       try {
-        const token = localStorage.getItem('token');
+        const token = getAccessToken();
         if (token) {
           // 백엔드 로그아웃 API 호출 (Redis 토큰 삭제 및 블랙리스트 등록)
           await axiosInstance.post('/adoptmate/logout');
@@ -92,15 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     }
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('paw_user_info');
-    localStorage.removeItem('role');
-    localStorage.removeItem('email');
-    localStorage.removeItem('name');
-    localStorage.removeItem('provider');
+    clearAuthStorage();
     setIsAuthenticated(false);
     setUser(null);
   };

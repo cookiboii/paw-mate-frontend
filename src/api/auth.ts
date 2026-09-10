@@ -1,6 +1,5 @@
 import axiosInstance from './axiosInstance';
-import { unwrapResult } from './apiHelper';
-import { LoginCredentials, RegisterPayload, User } from '../types/auth';
+import { LoginCredentials, RegisterPayload } from '../types/auth';
 
 /**
  * 📝 회원가입 API
@@ -25,48 +24,10 @@ export const loginUser = async ({ email, password }: LoginCredentials) => {
 };
 
 /**
- * 👤 내 정보 조회 API
- */
-export const fetchMyInfo = async (): Promise<User> => {
-  const response = await axiosInstance.get('/adoptmate/myInfo');
-  return unwrapResult<User>(response.data);
-};
-
-/**
- * 🔒 비밀번호 변경 API
- */
-export const changePassword = async ({
-  currentPassword,
-  newPassword,
-}: {
-  currentPassword?: string;
-  newPassword?: string;
-}) => {
-  return await axiosInstance.post('/adoptmate/password', {
-    currentPassword,
-    newPassword,
-  });
-};
-
-/**
- * 🚪 로그아웃 API (Redis 토큰 삭제 및 블랙리스트 등록)
- */
-export const logoutUser = async () => {
-  return await axiosInstance.post('/adoptmate/logout');
-};
-
-/**
  * 🔄 Access Token 재발급 API
  */
 export const refreshAccessToken = async (refreshToken: string) => {
   return await axiosInstance.post('/adoptmate/refresh-token', { refreshToken });
-};
-
-/**
- * 🗑️ 회원 탈퇴 API
- */
-export const deleteAccount = async () => {
-  return await axiosInstance.delete('/adoptmate/delete');
 };
 
 /**

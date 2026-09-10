@@ -236,21 +236,21 @@
 }
 
 .acceptBtn {
-  background-color: var(--success-color);
+  background-color: var(--action-primary);
   color: white;
 }
 
 .acceptBtn:hover {
-  filter: brightness(1.08);
+  background-color: var(--action-primary-hover);
 }
 
 .rejectBtn {
-  background-color: var(--danger-color);
+  background-color: var(--action-danger);
   color: white;
 }
 
 .rejectBtn:hover {
-  filter: brightness(1.08);
+  background-color: var(--action-danger-hover);
 }
 
 /* Modal */

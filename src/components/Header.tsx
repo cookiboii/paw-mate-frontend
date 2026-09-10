@@ -4,6 +4,7 @@ import { PawPrint, BookOpen, MessageSquare, User, Heart, ShieldCheck, Crown, X, 
 import styles from '../styles/components/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, isAdmin, logout } = useAuth();
@@ -40,14 +41,7 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 모바일 메뉴 열렸을 때 배경 스크롤 방지
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isMobileMenuOpen]);
+  useBodyScrollLock(isMobileMenuOpen);
 
   useEffect(() => {
     if (!isMobileMenuOpen) return;
@@ -103,12 +97,12 @@ const Header: React.FC = () => {
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li><NavLink to="/guide" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>입양 안내</NavLink></li>
-            <li><NavLink to="/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>동물 목록</NavLink></li>
+            <li><NavLink to="/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>보호 동물</NavLink></li>
             <li><NavLink to="/reviews" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>커뮤니티</NavLink></li>
             {isAdmin && (
               <li>
                 <NavLink
-                  to="/admin/users"
+                  to="/admin/dashboard"
                   className={({ isActive }) => `${styles.navLink} ${styles.adminCenterLink} ${isActive ? styles.activeNavLink : ''}`}
                 >
                   <ShieldCheck size={16} />
@@ -213,7 +207,7 @@ const Header: React.FC = () => {
             </li>
             <li>
               <NavLink to="/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
-                <PawPrint size={18} /> 동물 목록
+                <PawPrint size={18} /> 보호 동물
               </NavLink>
             </li>
             <li>
@@ -232,7 +226,7 @@ const Header: React.FC = () => {
 
             {isAdmin && (
               <li>
-                <NavLink to="/admin/users" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
+                <NavLink to="/admin/dashboard" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
                   <ShieldCheck size={18} /> 관리자 센터
                 </NavLink>
               </li>

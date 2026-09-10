@@ -10,6 +10,7 @@ interface EmptyStateProps {
   actionLabel?: string;
   actionPath?: string;
   onAction?: () => void;
+  actionHint?: string;
 }
 
 /**
@@ -22,6 +23,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   actionLabel,
   actionPath,
   onAction,
+  actionHint = '다른 조건으로 다시 찾아볼까요?',
 }) => {
   const navigate = useNavigate();
 
@@ -48,7 +50,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
       {actionLabel && (actionPath || onAction) && (
         <div className={styles.actionArea}>
-          <p className={styles.actionHint}>다른 조건으로 다시 찾아볼까요?</p>
+          <p className={styles.actionHint}>{actionHint}</p>
           <button
             className={`btn-primary ${styles.actionBtn}`}
             onClick={handleAction}

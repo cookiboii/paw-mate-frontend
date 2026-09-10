@@ -28,7 +28,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               <div>
                 <div>보호 동물 관리 및 상태 변경</div>
                 <div className={styles.quickActionDesc}>
-                  보호중/대기/입양완료 원클릭 관리
+                  보호 중/입양 대기/입양 완료 원클릭 관리
                 </div>
               </div>
             </Link>
@@ -75,7 +75,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
         </div>
       </div>
 
-      {/* 2. 보호 동물 종별 분포 도넛 차트 (SVG) */}
+      {/* 2. 보호 동물 종류별 분포 도넛 차트 (SVG) */}
       <div className={styles.sectionCard}>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitle}>

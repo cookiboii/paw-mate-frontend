@@ -51,15 +51,8 @@ export const getReviewsCursor = async (
  * 🔎 단일 게시글 상세 조회 (캐시 지원)
  */
 export const getReviewById = async (id: number | string): Promise<PostResponseDto> => {
-  const cacheKey = `review:detail:${id}`;
-  return apiCache.fetchWithCache(
-    cacheKey,
-    async () => {
-      const response = await axiosInstance.get(`/api/v1/posts/${id}`);
-      return unwrapResult<PostResponseDto>(response.data);
-    },
-    { ttl: 3 * 60 * 1000 }
-  );
+  const response = await axiosInstance.get(`/api/v1/posts/${id}`);
+  return unwrapResult<PostResponseDto>(response.data);
 };
 
 /**

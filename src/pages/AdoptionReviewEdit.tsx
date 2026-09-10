@@ -10,8 +10,9 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
 import Spinner from '../components/Spinner';
-import { CATEGORY_PREFIX, getCategoryFromTitle, getCleanTitle } from './AdoptionReviewListPage';
+import { REVIEW_CATEGORY_PREFIX as CATEGORY_PREFIX, getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
 import { uploadImageToBlob } from '../utils/imageUpload';
+import useImagePreview from '../hooks/useImagePreview';
 import { HeartHandshake, Gift, AlertTriangle, Camera, X } from 'lucide-react';
 
 const CATEGORY_OPTIONS = [
@@ -35,7 +36,7 @@ const AdoptionReviewEdit: React.FC = () => {
     img: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const { preview, setPreviewFromFile, setPreviewUrl, clearPreview } = useImagePreview();
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
@@ -76,7 +77,7 @@ const AdoptionReviewEdit: React.FC = () => {
           img: review.img || '',
         });
 
-        setPreview(review.img || null);
+        setPreviewUrl(review.img || null);
         setAuthorEmail(authorEmail);
         setIsLoaded(true);
       } catch (err) {
@@ -92,7 +93,7 @@ const AdoptionReviewEdit: React.FC = () => {
   const handleFile = (file?: File) => {
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file);
-      setPreview(URL.createObjectURL(file));
+      setPreviewFromFile(file);
     } else {
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
     }
@@ -129,7 +130,7 @@ const AdoptionReviewEdit: React.FC = () => {
     e.stopPropagation();
     setSelectedFile(null);
     setForm((prev) => ({ ...prev, img: '' }));
-    setPreview(null);
+    clearPreview();
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 

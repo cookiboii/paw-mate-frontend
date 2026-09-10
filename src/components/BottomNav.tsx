@@ -32,7 +32,7 @@ const BottomNav: React.FC = () => {
         className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
       >
         <PawPrint size={20} />
-        <span>입양 동물</span>
+        <span>보호 동물</span>
       </NavLink>
 
       <NavLink

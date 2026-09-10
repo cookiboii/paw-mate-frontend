@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import styles from '../styles/components/ImageLightboxModal.module.css';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 
 interface ImageLightboxModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
   caption,
   onClose,
 }) => {
+  useBodyScrollLock(isOpen && Boolean(imageUrl));
   // ESC 키 이벤트 및 배경 스크롤 제어
   useEffect(() => {
     if (!isOpen) return;
@@ -26,12 +28,9 @@ const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
       if (e.key === 'Escape') onClose();
     };
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = originalOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);

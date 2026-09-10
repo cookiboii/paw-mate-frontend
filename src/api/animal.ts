@@ -206,16 +206,8 @@ export const fetchAllAnimals = async (species?: string): Promise<Animal[]> => {
  * 🔎 ID로 단일 동물 조회 (캐시 지원)
  */
 export const fetchAnimalById = async (id: string | number): Promise<Animal> => {
-  const cacheKey = `animal:detail:${id}`;
-  return apiCache.fetchWithCache(
-    cacheKey,
-    async () => {
-      const response = await axios.get(`${API_BASE_URL}/${id}`);
-      const unwrapped = unwrapResult<Animal>(response.data);
-      return normalizeAnimal(unwrapped);
-    },
-    { ttl: 3 * 60 * 1000 } // 3분 캐시
-  );
+  const response = await axios.get(`${API_BASE_URL}/${id}`);
+  return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
 
 /**

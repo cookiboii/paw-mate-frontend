@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styles from '../styles/components/ConfirmModal.module.css';
 import { AlertTriangle, Info } from 'lucide-react';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  useBodyScrollLock(isOpen);
   // ESC 키로 닫기
   useEffect(() => {
     if (!isOpen) return;
@@ -64,14 +66,6 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     window.addEventListener('keydown', trapFocus);
     return () => window.removeEventListener('keydown', trapFocus);
   }, [isOpen, variant]);
-
-  // 열려있을 때 배경 스크롤 방지
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
 
   if (!isOpen) return null;
 

@@ -8,6 +8,7 @@ import { uploadImageToBlob } from '../../../utils/imageUpload';
 import { registerAnimal } from '../../../api/animal';
 import { useToast } from '../../../context/ToastContext';
 import { getErrorMessage } from '../../../utils/error';
+import useImagePreview from '../../../hooks/useImagePreview';
 
 interface AdminAnimalRegisterTabProps {
   onSuccess: () => void;
@@ -27,7 +28,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
     image: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const { preview, setPreviewFromFile, clearPreview } = useImagePreview();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -50,7 +51,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
   const handleFile = (file: File | undefined) => {
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file);
-      setPreview(URL.createObjectURL(file));
+      setPreviewFromFile(file);
     } else {
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
     }
@@ -82,7 +83,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
     e.stopPropagation();
     setSelectedFile(null);
     setAnimalForm((prev) => ({ ...prev, image: '' }));
-    setPreview(null);
+    clearPreview();
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -123,7 +124,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
         image: '',
       });
       setSelectedFile(null);
-      setPreview(null);
+      clearPreview();
       onSuccess();
     } catch (err) {
       console.error('동물 등록 실패:', err);

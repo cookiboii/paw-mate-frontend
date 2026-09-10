@@ -11,6 +11,7 @@ import useScrollReveal from "../hooks/useScrollReveal";
 import usePageTitle from "../hooks/usePageTitle";
 import { Animal } from "../types/animal";
 import { PageResponse } from "../types/common";
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 
 import dog1 from "../assets/dog1.jpg";
 import dog2 from "../assets/dog2.jpg";
@@ -28,9 +29,12 @@ const HomePage: React.FC = () => {
   const [recentAnimals, setRecentAnimals] = useState<Animal[]>([]);
   const [selectedSpecies, setSelectedSpecies] = useState<'ALL' | 'DOG' | 'CAT'>('ALL');
   const [isLoadingAnimals, setIsLoadingAnimals] = useState<boolean>(true);
+  const [animalLoadError, setAnimalLoadError] = useState<boolean>(false);
+  const [animalRetryKey, setAnimalRetryKey] = useState<number>(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState<boolean>(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
+  useBodyScrollLock(isLoginOpen);
 
   // Scroll Reveal Refs
   const newArrivalsRef = useScrollReveal<HTMLDivElement>();
@@ -61,6 +65,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoadingAnimals(true);
+      setAnimalLoadError(false);
       try {
         const pageData =
           selectedSpecies === 'ALL'
@@ -70,12 +75,24 @@ const HomePage: React.FC = () => {
         setRecentAnimals(pageData.content || []);
       } catch (error) {
         console.error("Failed to load recent animals:", error);
+        setAnimalLoadError(true);
       } finally {
         setIsLoadingAnimals(false);
       }
     };
     loadData();
-  }, [selectedSpecies]);
+  }, [selectedSpecies, animalRetryKey]);
+
+  useEffect(() => {
+    if (!isLoginOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeLoginModal();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [isLoginOpen]);
 
   const goToSlide = (index: number) => setCurrent(index);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
@@ -230,6 +247,16 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
             ))
+          ) : animalLoadError ? (
+            <div className={styles.gridFullWidth}>
+              <EmptyState
+                title="동물 정보를 불러오지 못했습니다."
+                description="잠시 후 다시 시도해 주세요."
+                actionLabel="다시 시도"
+                actionHint="연결 상태를 확인해 주세요."
+                onAction={() => setAnimalRetryKey((key) => key + 1)}
+              />
+            </div>
           ) : recentAnimals.length === 0 ? (
             <div className={styles.gridFullWidth}>
               <EmptyState
@@ -328,8 +355,8 @@ const HomePage: React.FC = () => {
       </section>
 
       {isLoginOpen && (
-        <div className={styles.modalOverlay} onClick={closeLoginModal}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalOverlay} onClick={closeLoginModal} role="presentation">
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="로그인">
             <button className={styles.closeBtn} onClick={closeLoginModal} aria-label="닫기">
               <X size={20} />
             </button>

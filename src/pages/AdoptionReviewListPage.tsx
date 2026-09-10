@@ -5,29 +5,14 @@ import { getReviewsCursor, getReviews, prefetchReviewById } from '../api/review'
 import { Link, useSearchParams } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
 import ImageWithFallback from '../components/ImageWithFallback';
-import ReviewCategoryTabs, { CATEGORIES, CATEGORY_PREFIX, CategoryOption } from '../components/ReviewCategoryTabs';
-export { CATEGORIES, CATEGORY_PREFIX };
-export type { CategoryOption };
+import ReviewCategoryTabs, { CATEGORIES } from '../components/ReviewCategoryTabs';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { useCursorScroll } from '../hooks/useCursorScroll';
 import { ReviewItem } from '../types/review';
 import { HeartHandshake, Gift, AlertTriangle, User, PawPrint } from 'lucide-react';
-
-export function getCategoryFromTitle(title = ''): string {
-  const t = (title || '').trim();
-  if (/^\[(유기동물제보|유기동물\s*제보|제보)\]/i.test(t)) return 'REPORT';
-  if (/^\[(무료분양|무료\s*분양|분양)\]/i.test(t)) return 'FREE_ADOPTION';
-  if (/^\[(입양후기|입양\s*후기|후기)\]/i.test(t)) return 'REVIEW';
-  return 'REVIEW';
-}
-
-export function getCleanTitle(title = ''): string {
-  return (title || '')
-    .replace(/^\[(입양후기|입양\s*후기|후기|무료분양|무료\s*분양|분양|유기동물제보|유기동물\s*제보|제보)\]\s*/i, '')
-    .trim();
-}
+import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
 
 const renderCategoryIcon = (cat: string, size = 16) => {
   switch (cat) {

@@ -2,6 +2,7 @@ import React from 'react';
 import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
+import { REVIEW_CATEGORY_PREFIX } from '../utils/reviewCategory';
 
 export interface CategoryOption {
   key: string;
@@ -16,11 +17,7 @@ export const CATEGORIES: CategoryOption[] = [
   { key: 'REPORT', label: '유기동물 제보', icon: <AlertTriangle size={16} /> },
 ];
 
-export const CATEGORY_PREFIX: Record<string, string> = {
-  REVIEW: '[입양후기]',
-  FREE_ADOPTION: '[무료분양]',
-  REPORT: '[유기동물제보]',
-};
+export const CATEGORY_PREFIX = REVIEW_CATEGORY_PREFIX;
 
 export interface ReviewCategoryTabsProps {
   activeCategory: string;

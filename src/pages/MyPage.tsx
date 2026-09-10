@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import Spinner from '../components/Spinner';
+import EmptyState from '../components/EmptyState';
 import ConfirmModal from '../components/ConfirmModal';
 import AnimalCard from '../components/AnimalCard';
 import { formatDate } from '../utils/date';
@@ -23,6 +24,8 @@ const MyPage: React.FC = () => {
   usePageTitle('마이페이지');
   const [searchParams, setSearchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState<UserType | null>(null);
+  const [profileLoadError, setProfileLoadError] = useState<boolean>(false);
+  const [profileRetryKey, setProfileRetryKey] = useState<number>(0);
 
   const tabParam = searchParams.get('tab') as TabType | null;
   const [activeTab, setActiveTab] = useState<TabType>(
@@ -65,12 +68,14 @@ const MyPage: React.FC = () => {
       return;
     }
 
+    setProfileLoadError(false);
     getMyInfo()
       .then((data) => {
         const { name, email, role } = data;
         setUserInfo({ name, email, role });
       })
       .catch(() => {
+        setProfileLoadError(true);
         showToast('사용자 정보를 불러오지 못했습니다.', 'error');
       });
 
@@ -81,7 +86,7 @@ const MyPage: React.FC = () => {
       .catch(() => {
         console.warn('입양 내역을 불러오지 못했습니다.');
       });
-  }, [token, showToast, navigate]);
+  }, [token, showToast, navigate, profileRetryKey]);
 
   const handleDeleteAccount = () => {
     setIsDeleteModalOpen(true);
@@ -132,6 +137,17 @@ const MyPage: React.FC = () => {
   };
 
   if (!userInfo) {
+    if (profileLoadError) {
+      return (
+        <EmptyState
+          title="회원 정보를 불러오지 못했습니다."
+          description="네트워크 상태를 확인한 후 다시 시도해 주세요."
+          actionLabel="다시 시도"
+          actionHint="일시적인 오류일 수 있습니다."
+          onAction={() => setProfileRetryKey((key) => key + 1)}
+        />
+      );
+    }
     return (
       <div className={styles.loadingContainer}>
         <Spinner />
