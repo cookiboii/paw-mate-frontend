@@ -169,7 +169,7 @@ export function useCursorScroll<T>({
 
       observerRef.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && hasNextRef.current && !isFetchingRef.current) {
+          if (entries[0]?.isIntersecting && hasNextRef.current && !isFetchingRef.current) {
             fetchNext();
           }
         },
@@ -180,6 +180,13 @@ export function useCursorScroll<T>({
     },
     [enabled, fetchNext]
   );
+
+  useEffect(() => {
+    return () => {
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+    };
+  }, []);
 
   return {
     items,
