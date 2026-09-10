@@ -18,7 +18,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [animalForm, setAnimalForm] = useState<AnimalRegisterForm>({
-    species: 'DOG',
+    species: '',
     breed: '',
     color: '',
     status: 'PROTECTED',
@@ -89,6 +89,11 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
   const handleRegisterSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (!animalForm.species) {
+      showToast('축종을 선택해주세요.', 'error');
+      return;
+    }
+
     const ageNum = typeof animalForm.age === 'number' ? animalForm.age : parseInt(String(animalForm.age), 10);
     if (isNaN(ageNum) || ageNum < 0) {
       showToast('나이는 0 이상의 숫자로 입력해주세요.', 'error');
@@ -109,7 +114,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
 
       // 폼 초기화
       setAnimalForm({
-        species: 'DOG',
+        species: '',
         breed: '',
         color: '',
         status: 'PROTECTED',
@@ -135,21 +140,43 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
           <div className={styles.formLayout}>
             {/* 텍스트 입력 영역 */}
             <div className={styles.inputSection}>
-              <div className={styles.selectGroup}>
-                <label className={styles.selectLabel}>축종</label>
-                <select
-                  name="species"
-                  value={animalForm.species}
-                  onChange={handleFormChange}
-                  className={styles.select}
-                  required
-                >
-                  {SPECIES_OPTIONS.map((option) => (
-                    <option key={option.key} value={option.key}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+              {/* 축종 & 성별 선택창 */}
+              <div className={styles.gridRow}>
+                <div className={styles.selectGroup}>
+                  <label className={styles.selectLabel}>축종</label>
+                  <select
+                    name="species"
+                    value={animalForm.species}
+                    onChange={handleFormChange}
+                    className={styles.select}
+                    required
+                  >
+                    <option value="" disabled>축종 선택</option>
+                    {SPECIES_OPTIONS.map((option) => (
+                      <option key={option.key} value={option.key}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className={styles.selectGroup}>
+                  <label className={styles.selectLabel}>성별</label>
+                  <select
+                    name="gender"
+                    value={animalForm.gender}
+                    onChange={handleFormChange}
+                    className={styles.select}
+                    required
+                  >
+                    <option value="" disabled>성별 선택</option>
+                    {GENDER_OPTIONS.map((option) => (
+                      <option key={option.key} value={option.key}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <FloatingInput
@@ -181,42 +208,22 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                 />
               </div>
 
-              <div className={styles.gridRow}>
-                <div className={styles.selectGroup}>
-                  <label className={styles.selectLabel}>성별</label>
-                  <select
-                    name="gender"
-                    value={animalForm.gender}
-                    onChange={handleFormChange}
-                    className={styles.select}
-                    required
-                  >
-                    <option value="" disabled>성별 선택</option>
-                    {GENDER_OPTIONS.map((option) => (
-                      <option key={option.key} value={option.key}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className={styles.selectGroup}>
-                  <label className={styles.selectLabel}>보호 상태</label>
-                  <select
-                    name="status"
-                    value={animalForm.status}
-                    onChange={handleFormChange}
-                    className={styles.select}
-                    required
-                  >
-                    <option value="" disabled>상태 선택</option>
-                    {STATUS_OPTIONS.map((option) => (
-                      <option key={option.key} value={option.key}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className={styles.selectGroup}>
+                <label className={styles.selectLabel}>보호 상태</label>
+                <select
+                  name="status"
+                  value={animalForm.status}
+                  onChange={handleFormChange}
+                  className={styles.select}
+                  required
+                >
+                  <option value="" disabled>상태 선택</option>
+                  {STATUS_OPTIONS.map((option) => (
+                    <option key={option.key} value={option.key}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
