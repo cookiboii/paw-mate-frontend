@@ -40,7 +40,7 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData): Pro
   if (!(animalData instanceof FormData) && typeof animalData === 'object' && animalData !== null) {
     const d = animalData as AnimalFormData;
     payload = {
-      species: d.species,
+      species: (d.species || 'DOG').toUpperCase(),
       breed: d.breed || '',
       color: d.color || '',
       image: d.image || '',

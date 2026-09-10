@@ -13,9 +13,9 @@ export const AnimalStatus = {
 export type AnimalStatusKey = (typeof AnimalStatus)[keyof typeof AnimalStatus];
 
 export const SPECIES_OPTIONS: AnimalOptionItem[] = [
-  { key: 'DOG', label: '강아지 (Dog)' },
-  { key: 'CAT', label: '고양이 (Cat)' },
-  { key: 'ETC', label: '기타 (ETC)' },
+  { key: 'DOG', label: '강아지' },
+  { key: 'CAT', label: '고양이' },
+  { key: 'ETC', label: '기타' },
 ];
 
 export const STATUS_OPTIONS: AnimalOptionItem[] = [

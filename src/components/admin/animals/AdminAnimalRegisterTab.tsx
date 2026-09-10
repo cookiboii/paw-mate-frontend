@@ -18,7 +18,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [animalForm, setAnimalForm] = useState<AnimalRegisterForm>({
-    species: '',
+    species: 'DOG',
     breed: '',
     color: '',
     status: 'PROTECTED',
@@ -109,7 +109,7 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
 
       // 폼 초기화
       setAnimalForm({
-        species: '',
+        species: 'DOG',
         breed: '',
         color: '',
         status: 'PROTECTED',
@@ -135,14 +135,22 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
           <div className={styles.formLayout}>
             {/* 텍스트 입력 영역 */}
             <div className={styles.inputSection}>
-              <FloatingInput
-                label="축종 (예: 강아지, 고양이, 기타)"
-                type="text"
-                name="species"
-                value={animalForm.species}
-                onChange={handleFormChange}
-                required
-              />
+              <div className={styles.selectGroup}>
+                <label className={styles.selectLabel}>축종</label>
+                <select
+                  name="species"
+                  value={animalForm.species}
+                  onChange={handleFormChange}
+                  className={styles.select}
+                  required
+                >
+                  {SPECIES_OPTIONS.map((option) => (
+                    <option key={option.key} value={option.key}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <FloatingInput
                 label="품종 (예: 골든 리트리버, 코리안 숏헤어)"
