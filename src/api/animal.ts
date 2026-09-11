@@ -7,6 +7,11 @@ const API_BASE_URL = '/api/v1/animals';
 const COMPAT_ANIMAL_API_BASE_URL = '/animals';
 const cursorPageByLastId = new Map<string, number>();
 
+const isMissingEndpoint = (error: unknown): boolean => {
+  const status = (error as { response?: { status?: number } })?.response?.status;
+  return status === 404 || status === 405;
+};
+
 /**
  * 🐾 백엔드 응답 데이터를 프론트엔드 표준 모델로 정규화 (animalId/id, image/imageUrl 호환)
  */
@@ -74,7 +79,8 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
         response = await axios.get(API_BASE_URL, {
           params: { page, size },
         });
-      } catch {
+      } catch (error) {
+        if (!isMissingEndpoint(error)) throw error;
         response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
           params: { page, size },
         });
@@ -144,10 +150,12 @@ export const fetchAnimalCursorList = async (
   let response;
   try {
     response = await axios.get(`${API_BASE_URL}/cursor`, { params });
-  } catch {
+  } catch (error) {
+    if (!isMissingEndpoint(error)) throw error;
     try {
       response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/cursor`, { params });
-    } catch {
+    } catch (compatError) {
+      if (!isMissingEndpoint(compatError)) throw compatError;
       return fetchAnimalCursorListSimulated(lastAnimalId, size);
     }
   }
@@ -182,7 +190,8 @@ export const fetchAnimalListBySpecies = async (
         response = await axios.get(`${API_BASE_URL}/species`, {
           params: { species, page, size },
         });
-      } catch {
+      } catch (error) {
+        if (!isMissingEndpoint(error)) throw error;
         response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/species`, {
           params: { species, page, size },
         });
@@ -247,9 +256,10 @@ export const fetchAllAnimals = async (species?: string): Promise<Animal[]> => {
   const totalPages = Math.max(1, firstPage.totalPages || 1);
   if (totalPages === 1) return firstPage.content || [];
 
-  const remainingPages = await Promise.all(
-    Array.from({ length: totalPages - 1 }, (_, index) => fetchPage(index + 1))
-  );
+  const remainingPages: PageResponse<Animal>[] = [];
+  for (let page = 1; page < totalPages; page += 1) {
+    remainingPages.push(await fetchPage(page));
+  }
   return [firstPage, ...remainingPages].flatMap((page) => page.content || []);
 };
 

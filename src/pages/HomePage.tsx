@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, lazy } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart, Dog, Cat, Sparkles, PawPrint, Pause, Play } from "lucide-react";
 import styles from "../styles/pages/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
-import Login from "./Login";
+const Login = lazy(() => import("./Login"));
 import { fetchAnimalList, fetchAnimalListBySpecies } from "../api/animal";
 import EmptyState from '../components/EmptyState';
 import AnimalCard from '../components/AnimalCard';
@@ -11,7 +11,6 @@ import useScrollReveal from "../hooks/useScrollReveal";
 import usePageTitle from "../hooks/usePageTitle";
 import { Animal } from "../types/animal";
 import { PageResponse } from "../types/common";
-import useBodyScrollLock from '../hooks/useBodyScrollLock';
 
 import dog1 from "../assets/dog1.jpg";
 import dog2 from "../assets/dog2.jpg";
@@ -23,7 +22,6 @@ const images = [dog1, dog2, dog3, dog4, cat];
 
 const HomePage: React.FC = () => {
   usePageTitle('사지 말고 입양하세요 | AdoptMate');
-  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState<number>(0);
   const [recentAnimals, setRecentAnimals] = useState<Animal[]>([]);
@@ -34,7 +32,6 @@ const HomePage: React.FC = () => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState<boolean>(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
-  useBodyScrollLock(isLoginOpen);
 
   // Scroll Reveal Refs
   const newArrivalsRef = useScrollReveal<HTMLDivElement>();
@@ -42,8 +39,12 @@ const HomePage: React.FC = () => {
   const howItWorksRef = useScrollReveal<HTMLDivElement>();
   const ctaRef = useScrollReveal<HTMLDivElement>();
 
-  const closeLoginModal = () => setIsLoginOpen(false);
-  const handleLoginSuccess = () => closeLoginModal();
+  const visibleSlideIndexes = useMemo(
+    () => new Set([current, (current + 1) % images.length]),
+    [current]
+  );
+  const closeLoginModal = () => undefined;
+  const handleLoginSuccess = () => undefined;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,6 +64,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     const loadData = async () => {
       setIsLoadingAnimals(true);
       setAnimalLoadError(false);
@@ -72,27 +74,17 @@ const HomePage: React.FC = () => {
             ? await fetchAnimalList(0, 6)
             : await fetchAnimalListBySpecies(selectedSpecies, 0, 6);
 
-        setRecentAnimals(pageData.content || []);
+        if (!cancelled) setRecentAnimals(pageData.content || []);
       } catch (error) {
         console.error("Failed to load recent animals:", error);
-        setAnimalLoadError(true);
+        if (!cancelled) setAnimalLoadError(true);
       } finally {
-        setIsLoadingAnimals(false);
+        if (!cancelled) setIsLoadingAnimals(false);
       }
     };
     loadData();
+    return () => { cancelled = true; };
   }, [selectedSpecies, animalRetryKey]);
-
-  useEffect(() => {
-    if (!isLoginOpen) return;
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeLoginModal();
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => {
-      window.removeEventListener('keydown', handleEscape);
-    };
-  }, [isLoginOpen]);
 
   const goToSlide = (index: number) => setCurrent(index);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
@@ -146,13 +138,14 @@ const HomePage: React.FC = () => {
             role="region"
             aria-label="입양 동물 슬라이더"
           >
-            {images.map((img, idx) => (
+            {images.map((img, idx) => visibleSlideIndexes.has(idx) && (
               <img
                 key={idx}
                 src={img}
                 alt={`입양 동물 슬라이드 ${idx + 1} / ${images.length}`}
                 className={`${styles.slide} ${idx === current ? styles.active : ""}`}
-                loading={idx === 0 ? "eager" : "lazy"}
+                loading={idx === current ? "eager" : "lazy"}
+                fetchPriority={idx === current ? "high" : "low"}
                 decoding="async"
               />
             ))}
@@ -354,8 +347,8 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {isLoginOpen && (
-        <div className={styles.modalOverlay} onClick={closeLoginModal} role="presentation">
+      {false && (
+        <div className={styles.modalOverlay} role="presentation">
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="로그인">
             <button className={styles.closeBtn} onClick={closeLoginModal} aria-label="닫기">
               <X size={20} />

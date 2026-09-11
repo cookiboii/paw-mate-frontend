@@ -64,6 +64,7 @@ export function useCursorScroll<T>({
   const hasNextRef = useRef(true);
   const lastIdRef = useRef<string | number | undefined>(undefined);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const requestVersionRef = useRef(0);
 
   hasNextRef.current = hasNext;
   lastIdRef.current = lastId;
@@ -71,6 +72,10 @@ export function useCursorScroll<T>({
   // 1. 초기 데이터 로드 함수
   const loadInitial = useCallback(async () => {
     if (!enabled) return;
+
+    const requestVersion = ++requestVersionRef.current;
+    isFetchingRef.current = false;
+    setIsFetchingMore(false);
 
     setIsLoading(true);
     setError(null);
@@ -81,6 +86,7 @@ export function useCursorScroll<T>({
 
     try {
       const sliceData = await fetcher(undefined, pageSize);
+      if (requestVersion !== requestVersionRef.current) return;
       const content = sliceData.content || [];
       setItems(content);
 
@@ -95,11 +101,12 @@ export function useCursorScroll<T>({
         lastIdRef.current = newLastId;
       }
     } catch (err) {
+      if (requestVersion !== requestVersionRef.current) return;
       const msg = getErrorMessage(err);
       setError(msg);
       console.error('[useCursorScroll] 초기 데이터 페칭 실패:', msg);
     } finally {
-      setIsLoading(false);
+      if (requestVersion === requestVersionRef.current) setIsLoading(false);
     }
   }, [enabled, fetcher, getId, pageSize]);
 
@@ -115,10 +122,12 @@ export function useCursorScroll<T>({
     }
 
     isFetchingRef.current = true;
+    const requestVersion = requestVersionRef.current;
     setIsFetchingMore(true);
 
     try {
       const sliceData = await fetcher(lastIdRef.current, pageSize);
+      if (requestVersion !== requestVersionRef.current) return;
       const newItems = sliceData.content || [];
 
       if (newItems.length > 0) {
@@ -141,14 +150,17 @@ export function useCursorScroll<T>({
         hasNextRef.current = false;
       }
     } catch (err) {
+      if (requestVersion !== requestVersionRef.current) return;
       const msg = getErrorMessage(err);
       setError(msg);
       console.error('[useCursorScroll] 다음 페이지 페칭 실패:', msg);
       setHasNext(false);
       hasNextRef.current = false;
     } finally {
-      isFetchingRef.current = false;
-      setIsFetchingMore(false);
+      if (requestVersion === requestVersionRef.current) {
+        isFetchingRef.current = false;
+        setIsFetchingMore(false);
+      }
     }
   }, [enabled, fetcher, getId, pageSize]);
 

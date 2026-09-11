@@ -47,6 +47,8 @@ const AnimalList: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [paginationAnimals, setPaginationAnimals] = useState<Animal[]>([]);
   const [isPaginationLoading, setIsPaginationLoading] = useState<boolean>(false);
+  const [loadError, setLoadError] = useState<Error | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   // URL 쿼리 파라미터 동기화 (필터 및 뷰 모드 변경 시)
   useEffect(() => {
@@ -96,6 +98,7 @@ const AnimalList: React.FC = () => {
 
     let isMounted = true;
     setIsPaginationLoading(true);
+    setLoadError(null);
 
     const loadPaged = async () => {
       try {
@@ -109,6 +112,7 @@ const AnimalList: React.FC = () => {
           setTotalPages(pageData.totalPages || 1);
         }
       } catch (err) {
+        if (isMounted) setLoadError(err instanceof Error ? err : new Error(String(err)));
         console.error('페이지네이션 데이터 로드 실패:', err);
       } finally {
         if (isMounted) setIsPaginationLoading(false);
@@ -119,7 +123,7 @@ const AnimalList: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [viewMode, page, speciesFilter]);
+  }, [viewMode, page, speciesFilter, retryKey]);
 
   const needsCompleteFilterSet = genderFilter !== 'ALL' || debouncedSearchQuery.trim() !== '';
 
@@ -131,11 +135,13 @@ const AnimalList: React.FC = () => {
 
     let isMounted = true;
     setIsFilterLoading(true);
+    setLoadError(null);
     fetchAllAnimals(speciesFilter)
       .then((animals) => {
         if (isMounted) setAllFilterCandidates(animals);
       })
       .catch((error) => {
+        if (isMounted) setLoadError(error instanceof Error ? error : new Error(String(error)));
         console.error('Failed to load complete animal list for filtering:', error);
       })
       .finally(() => {
@@ -145,7 +151,7 @@ const AnimalList: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [needsCompleteFilterSet, speciesFilter]);
+  }, [needsCompleteFilterSet, speciesFilter, retryKey]);
 
   // 6. 클라이언트 레벨 검색어 & 성별 필터링
   const rawList = needsCompleteFilterSet
@@ -205,7 +211,10 @@ const AnimalList: React.FC = () => {
       {/* 필터 & 검색 바 */}
       <AnimalFilterBar
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={(query) => {
+          setSearchQuery(query);
+          setPage(0);
+        }}
         speciesFilter={speciesFilter}
         onSpeciesChange={(sp) => {
           setSpeciesFilter(sp);
@@ -228,7 +237,19 @@ const AnimalList: React.FC = () => {
 
       {/* 동물 카드 리스트 영역 */}
       <div className={styles.container}>
-        {isLoading ? (
+        {loadError && !isLoading ? (
+          <EmptyState
+            icon={<Dog size={48} />}
+            title="Unable to load animals"
+            description="Please check your connection and try again."
+            actionLabel="Try again"
+            onAction={() => {
+              setLoadError(null);
+              if (viewMode === 'infinite') refreshInfinite();
+              else setRetryKey((currentKey) => currentKey + 1);
+            }}
+          />
+        ) : isLoading ? (
           <ul className={styles.list}>
             {Array.from({ length: viewMode === 'infinite' ? 9 : 6 }).map((_, idx) => (
               <li key={`skeleton-${idx}`} className={styles.card}>

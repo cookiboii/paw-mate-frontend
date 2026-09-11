@@ -37,6 +37,8 @@ export function useCachedApi<T>(
 
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
+  const activeKeyRef = useRef(key);
+  activeKeyRef.current = key;
 
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
@@ -47,41 +49,46 @@ export function useCachedApi<T>(
   const executeFetch = useCallback(
     async (force = false): Promise<T | null> => {
       if (!key || !enabled) return null;
+      const requestKey = key;
 
       const cached = apiCache.get<T>(key);
       if (cached && !force) {
-        setData(cached);
-        setIsLoading(false);
+        if (activeKeyRef.current === requestKey) {
+          setData(cached);
+          setIsLoading(false);
+        }
         return cached;
       }
 
       if (cached) {
-        setIsRevalidating(true);
+        if (activeKeyRef.current === requestKey) setIsRevalidating(true);
       } else {
-        setIsLoading(true);
+        if (activeKeyRef.current === requestKey) setIsLoading(true);
       }
-      setError(null);
+      if (activeKeyRef.current === requestKey) setError(null);
 
       try {
         const result = await apiCache.fetchWithCache(key, () => fetcherRef.current(), {
           ttl,
           force,
         });
-        setData(result);
-        if (onSuccessRef.current) {
+        if (activeKeyRef.current === requestKey) setData(result);
+        if (activeKeyRef.current === requestKey && onSuccessRef.current) {
           onSuccessRef.current(result);
         }
         return result;
       } catch (err: unknown) {
         const errObj = err instanceof Error ? err : new Error(String(err));
-        setError(errObj);
-        if (onErrorRef.current) {
+        if (activeKeyRef.current === requestKey) setError(errObj);
+        if (activeKeyRef.current === requestKey && onErrorRef.current) {
           onErrorRef.current(errObj);
         }
         return null;
       } finally {
-        setIsLoading(false);
-        setIsRevalidating(false);
+        if (activeKeyRef.current === requestKey) {
+          setIsLoading(false);
+          setIsRevalidating(false);
+        }
       }
     },
     [key, enabled, ttl]
@@ -94,6 +101,8 @@ export function useCachedApi<T>(
         setData(cached);
         setIsLoading(false);
       } else {
+        setData(initialData ?? null);
+        setError(null);
         executeFetch(false);
       }
     }

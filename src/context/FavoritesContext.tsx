@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from 'react';
 import { useToast } from './ToastContext';
 import { useAuth } from './AuthContext';
 import { Animal } from '../types/animal';
@@ -27,6 +27,12 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
 
   const [favorites, setFavorites] = useState<Partial<Animal>[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+  const pendingIdsRef = useRef<Set<string>>(new Set());
+  const favoriteIds = useMemo(
+    () => new Set(favorites.map((item) => String(item.id ?? item.animalId)).filter(Boolean)),
+    [favorites]
+  );
 
   // 1. 서버로부터 내 찜 목록 로드 (로그인 시)
   const refreshFavorites = useCallback(async () => {
@@ -39,11 +45,10 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     try {
       // 페이지당 최대 100건씩 전체 찜 목록 조회
       const res = await fetchMyFavoriteAnimals(0, 100);
-      const remainingPages = await Promise.all(
-        Array.from({ length: Math.max(0, (res.totalPages || 1) - 1) }, (_, index) =>
-          fetchMyFavoriteAnimals(index + 1, 100)
-        )
-      );
+      const remainingPages = [];
+      for (let page = 1; page < (res.totalPages || 1); page += 1) {
+        remainingPages.push(await fetchMyFavoriteAnimals(page, 100));
+      }
       const serverList = [res, ...remainingPages].flatMap((page) => page.content || []);
       setFavorites(serverList);
 
@@ -81,9 +86,9 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
 
   const isFavorite = useCallback(
     (id: string | number) => {
-      return favorites.some((item) => String(item.id ?? (item as { animalId?: string | number }).animalId) === String(id));
+      return favoriteIds.has(String(id));
     },
-    [favorites]
+    [favoriteIds]
   );
 
   // 2. 찜 등록/취소 요청과 낙관적 UI 업데이트
@@ -98,8 +103,13 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     const animalId = animal.id ?? (animal as { animalId?: string | number }).animalId;
     if (!animalId) return;
 
+    const normalizedId = String(animalId);
+    if (pendingIdsRef.current.has(normalizedId)) return;
+
     const exists = isFavorite(animalId);
     const previousFavorites = [...favorites];
+    pendingIdsRef.current.add(normalizedId);
+    setPendingIds((previous) => new Set(previous).add(normalizedId));
 
     // 낙관적 UI 선반영
     if (exists) {
@@ -138,11 +148,23 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
       // 실패 시 롤백
       setFavorites(previousFavorites);
       showToast('관심 동물 상태 변경에 실패했습니다. 다시 시도해 주세요.', 'error');
+    } finally {
+      pendingIdsRef.current.delete(normalizedId);
+      setPendingIds((previous) => {
+        const next = new Set(previous);
+        next.delete(normalizedId);
+        return next;
+      });
     }
   };
 
+  const value = useMemo(
+    () => ({ favorites, isLoading, isFavorite, toggleFavorite, refreshFavorites }),
+    [favorites, isLoading, isFavorite, toggleFavorite, refreshFavorites]
+  );
+
   return (
-    <FavoritesContext.Provider value={{ favorites, isLoading, isFavorite, toggleFavorite, refreshFavorites }}>
+    <FavoritesContext.Provider value={value}>
       {children}
     </FavoritesContext.Provider>
   );
