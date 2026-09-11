@@ -35,9 +35,12 @@ export const getAllAdoptions = async (): Promise<AdoptionResponseDto[]> => {
  */
 export const getAdoptionsPaged = async (
   page = 0,
-  size = 10
+  size = 10,
+  sort = 'id,desc'
 ): Promise<PageResponse<AdoptionResponseDto>> => {
-  const response = await axiosInstance.get(`/adoptions/list?page=${page}&size=${size}`);
+  const response = await axiosInstance.get('/adoptions/list', {
+    params: { page, size, sort },
+  });
   return unwrapResult<PageResponse<AdoptionResponseDto>>(response.data);
 };
 

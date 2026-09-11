@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { getMyInfo } from '../api/user';
+import { logoutUser } from '../api/auth';
 import { useToast } from './ToastContext';
 import { User, AuthContextType } from '../types/auth';
 import { clearAuthStorage, getAccessToken, saveAuthSession } from '../utils/authStorage';
@@ -72,8 +73,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         const token = getAccessToken();
         if (token) {
-          // 백엔드 로그아웃 API 호출 (Redis 토큰 삭제 및 블랙리스트 등록)
-          await axiosInstance.post('/adoptmate/logout');
+          // 백엔드 로그아웃 API 호출 (POST /adoptmate/logout)
+          await logoutUser();
         }
       } catch (err) {
         console.warn('백엔드 로그아웃 처리 중 알림:', err);

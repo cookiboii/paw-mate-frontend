@@ -18,18 +18,22 @@ const ForgotPassword: React.FC = () => {
   const [showPasswordConfirm, setShowPasswordConfirm] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1); // 1: 이메일 전송, 2: 인증 코드 확인, 3: 비밀번호 변경
   const [loading, setLoading] = useState<boolean>(false);
-  const [timeLeft, setTimeLeft] = useState<number>(180); // 3분 타이머
+  const [timeLeft, setTimeLeft] = useState<number>(300); // 5분 타이머 (api.md 기준)
   const [timerActive, setTimerActive] = useState<boolean>(false);
+  const [resendCooldown, setResendCooldown] = useState<number>(0); // 재전송 1분 제한 (api.md 기준)
 
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  // 타이머 카운트다운
+  // 타이머 및 재전송 쿨다운 카운트다운
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | null = null;
-    if (timerActive && timeLeft > 0) {
+    if ((timerActive && timeLeft > 0) || resendCooldown > 0) {
       timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        if (timerActive && timeLeft > 0) {
+          setTimeLeft((prev) => prev - 1);
+        }
+        setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
     } else if (timeLeft === 0 && timerActive) {
       setTimerActive(false);
@@ -38,7 +42,7 @@ const ForgotPassword: React.FC = () => {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [timerActive, timeLeft, showToast]);
+  }, [timerActive, timeLeft, resendCooldown, showToast]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -53,14 +57,19 @@ const ForgotPassword: React.FC = () => {
       showToast('이메일을 입력해 주세요.', 'error');
       return;
     }
+    if (resendCooldown > 0) {
+      showToast(`인증 코드 재전송은 ${resendCooldown}초 후에 가능합니다.`, 'warning');
+      return;
+    }
 
     setLoading(true);
     try {
       await sendResetCode(email);
       showToast('입력하신 이메일로 6자리 인증 코드가 전송되었습니다.', 'success');
       setStep(2);
-      setTimeLeft(180);
+      setTimeLeft(300); // 5분 유효시간
       setTimerActive(true);
+      setResendCooldown(60); // 1분 재전송 제한
     } catch (err: unknown) {
       const msg = getErrorMessage(err, '인증 코드 전송에 실패했습니다. 이메일을 확인해 주세요.');
       showToast(msg, 'error');
@@ -185,9 +194,9 @@ const ForgotPassword: React.FC = () => {
                 type="button"
                 className={styles.backBtn}
                 onClick={handleSendCode}
-                disabled={loading}
+                disabled={loading || resendCooldown > 0}
               >
-                인증코드 재발송
+                인증코드 재발송 {resendCooldown > 0 ? `(${resendCooldown}초)` : ''}
               </button>
             </div>
             <button

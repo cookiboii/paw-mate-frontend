@@ -3,6 +3,9 @@ import { Animal } from './animal';
 // 입양 신청 상태: PENDING(심사대기), APPROVED(승인), REJECTED(반려)
 export type AdoptionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
+// 주거 형태: APARTMENT, DETACHED_HOUSE, VILLA, ONE_ROOM, ETC (api.md 기준)
+export type HousingType = 'APARTMENT' | 'DETACHED_HOUSE' | 'VILLA' | 'ONE_ROOM' | 'ETC' | (string & {});
+
 export interface AdoptionApplication {
   adoptionId: number | string;
   id?: number | string;
@@ -17,7 +20,7 @@ export interface AdoptionApplication {
   interviewer?: string;
   phone?: string;
   status: AdoptionStatus | string;
-  housingType?: string;
+  housingType?: HousingType | string;
   hasPet?: boolean | string;
   reason?: string;
   interview?: string;
@@ -28,7 +31,7 @@ export interface AdoptionApplication {
 
 export interface AdoptionCreateRequest {
   phone: string;
-  housingType: string;
+  housingType: HousingType | string;
   hasPet: string;
   reason: string;
 }

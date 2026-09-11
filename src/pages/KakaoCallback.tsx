@@ -43,7 +43,7 @@ const KakaoCallback: React.FC = () => {
 
         if (window.opener) {
           window.opener.postMessage(
-            { type: 'OAUTH_SUCCESS', token, refreshToken: refreshTokenParam, role, email, name, provider: 'KAKAO' },
+            { type: 'OAUTH_SUCCESS', token, refreshToken: refreshTokenParam, id: email, role, email, name, provider: 'KAKAO' },
             '*'
           );
           window.close();
@@ -110,7 +110,7 @@ const KakaoCallback: React.FC = () => {
 
             if (window.opener) {
               window.opener.postMessage(
-                { type: 'OAUTH_SUCCESS', token: jwtToken, refreshToken: jwtRefreshToken, role: userRole, email: userEmail, name: userName, provider: 'KAKAO' },
+                { type: 'OAUTH_SUCCESS', token: jwtToken, refreshToken: jwtRefreshToken, id: userEmail, role: userRole, email: userEmail, name: userName, provider: 'KAKAO' },
                 '*'
               );
               window.close();

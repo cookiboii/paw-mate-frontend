@@ -81,18 +81,27 @@ export function getErrorMessage(error: unknown, defaultMessage = '작업 처리 
       }
     }
 
-    // HTTP 상태 코드별 의미 있는 기본 안내
-    if (status === 409) {
-      return '요청이 집중되었거나 동시 수정 충돌이 발생했습니다. 최신 정보를 확인 후 다시 시도해 주세요.';
+    // HTTP 상태 코드별 의미 있는 기본 안내 (api.md 상태 코드 가이드 준수)
+    if (status === 400) {
+      return '유효하지 않은 입력값입니다. 입력 항목 및 형식을 다시 확인해 주세요.';
     }
-    if (status === 429) {
-      return '요청 횟수를 초과했습니다. 잠시 후 다시 시도해 주세요.';
+    if (status === 401) {
+      return '인증이 만료되었거나 권한이 없습니다. 다시 로그인해 주세요.';
     }
     if (status === 403) {
       return '해당 작업에 대한 권한이 없습니다.';
     }
-    if (status === 401) {
-      return '인증이 만료되었거나 권한이 없습니다. 다시 로그인해 주세요.';
+    if (status === 404) {
+      return '요청하신 리소스가 존재하지 않거나 이미 삭제되었습니다.';
+    }
+    if (status === 409) {
+      return '다른 요청에 의해 데이터가 이미 변경되었거나 동시 수정 충돌이 발생했습니다. 최신 정보를 확인 후 다시 시도해 주세요.';
+    }
+    if (status === 429) {
+      return '요청 횟수를 초과했습니다. 제한 시간이 지난 후 다시 시도해 주세요.';
+    }
+    if (status === 500) {
+      return '서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
     }
 
     if (error.message) return error.message;

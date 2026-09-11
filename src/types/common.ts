@@ -34,14 +34,16 @@ export interface SliceResponse<T> {
 }
 
 /**
- * 📦 api.md 기준 백엔드 불변 표준 공통 응답 DTO 규격 (CommonResDto<T>)
+ * 📦 api.md 기준 백엔드 불변 표준 공통 응답 규격 (CommonResponse<T>)
  */
-export interface CommonResDto<T = unknown> {
+export interface CommonResponse<T = unknown> {
   statusCode: number;
   code: string;
   statusMessage: string;
   result: T;
 }
+
+export type CommonResDto<T = unknown> = CommonResponse<T>;
 
 export interface ApiResponse<T = unknown> {
   statusCode?: number;

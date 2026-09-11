@@ -22,9 +22,16 @@ export const getReviews = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axiosInstance.get('/api/v1/posts', {
-        params: { page, size, sort },
-      });
+      let response;
+      try {
+        response = await axiosInstance.get('/api/v1/posts', {
+          params: { page, size, sort },
+        });
+      } catch {
+        response = await axiosInstance.get('/post/list', {
+          params: { page, size, sort },
+        });
+      }
       return unwrapResult<PageResponse<PostResponseDto>>(response.data);
     },
     { ttl: 60 * 1000 }
@@ -43,7 +50,13 @@ export const getReviewsCursor = async (
     params.append('lastPostId', String(lastPostId));
   }
   params.append('size', String(size));
-  const response = await axiosInstance.get(`/api/v1/posts/cursor?${params.toString()}`);
+
+  let response;
+  try {
+    response = await axiosInstance.get(`/api/v1/posts/cursor?${params.toString()}`);
+  } catch {
+    response = await axiosInstance.get(`/post/cursor?${params.toString()}`);
+  }
   return unwrapResult<SliceResponse<PostResponseDto>>(response.data);
 };
 
@@ -76,7 +89,12 @@ export const createReview = async (payload: PostCreateRequestDto): Promise<PostR
     content: payload.content,
     img: payload.img || payload.image || '',
   };
-  const response = await axiosInstance.post('/api/v1/posts', body);
+  let response;
+  try {
+    response = await axiosInstance.post('/api/v1/posts', body);
+  } catch {
+    response = await axiosInstance.post('/post/create', body);
+  }
   apiCache.invalidateByPrefix('review');
   return unwrapResult<PostResponseDto>(response.data);
 };
@@ -139,10 +157,16 @@ export const updateComment = async (
   commentId: number | string,
   content: string
 ): Promise<CommentResponseDto> => {
-  const response = await axiosInstance.put(`/comment/${commentId}`, {
+  const body = {
     commentId: Number(commentId),
     content,
-  });
+  };
+  let response;
+  try {
+    response = await axiosInstance.put(`/comment/${commentId}`, body);
+  } catch {
+    response = await axiosInstance.put(`/comment/update/${commentId}`, body);
+  }
   return unwrapResult<CommentResponseDto>(response.data);
 };
 

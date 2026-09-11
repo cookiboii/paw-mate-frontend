@@ -2,25 +2,35 @@ import axiosInstance from './axiosInstance';
 import { LoginCredentials, RegisterPayload } from '../types/auth';
 
 /**
- * 📝 회원가입 API
+ * 📝 회원가입 API (POST /adoptmate/register)
+ * Body: { name, email, password, role }
  */
-export const registerUser = async ({ name, email, password }: RegisterPayload) => {
+export const registerUser = async ({ name, email, password, role = 'USER' }: RegisterPayload) => {
   return await axiosInstance.post('/adoptmate/register', {
     name,
     email,
     password,
-    role: 'USER',
+    role,
   });
 };
 
 /**
- * 🔑 로그인 API
+ * 🔑 로그인 API (POST /adoptmate/login)
+ * Body: { email, password }
  */
 export const loginUser = async ({ email, password }: LoginCredentials) => {
   return await axiosInstance.post('/adoptmate/login', {
     email,
     password,
   });
+};
+
+/**
+ * 🚪 로그아웃 API (POST /adoptmate/logout)
+ * Bearer 토큰을 Redis 블랙리스트에 등록
+ */
+export const logoutUser = async (): Promise<void> => {
+  await axiosInstance.post('/adoptmate/logout');
 };
 
 /**

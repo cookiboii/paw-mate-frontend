@@ -49,6 +49,10 @@ export const updatePassword = async (payload: {
  * DELETE /adoptmate/admin/{memberId}
  */
 export const deleteUserByAdmin = async (memberId: string | number): Promise<void> => {
-  await axiosInstance.delete(`/adoptmate/admin/${memberId}`);
+  try {
+    await axiosInstance.delete(`/adoptmate/admin/${memberId}`);
+  } catch {
+    await axiosInstance.delete(`/adoptmate/admin/member/${memberId}`);
+  }
 };
 

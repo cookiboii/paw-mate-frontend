@@ -38,7 +38,7 @@ export interface AnimalCreateRequest {
   species: string;
   breed: string;
   color: string;
-  image: string;
+  image?: string | null;
   age: number;
   gender: string;
   status: string;

@@ -50,24 +50,35 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData): Pro
     };
   }
 
-  const response = await axios.post(API_BASE_URL, payload);
+  let response;
+  try {
+    response = await axios.post(API_BASE_URL, payload);
+  } catch {
+    response = await axios.post(`${COMPAT_ANIMAL_API_BASE_URL}/register`, payload);
+  }
   apiCache.invalidateByPrefix('animal');
   return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
 
 
 /**
- * 🔍 전체 동물 목록 조회 (오프셋 페이징)
+ * 🔍 전체 동물 목록 조회 (오프셋 페이징: GET /api/v1/animals)
  */
 export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse<Animal>> => {
   const cacheKey = `animal:list:page=${page}:size=${size}`;
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      // 현재 운영 백엔드는 v1 목록에서 C003을 반환하고 호환 목록은 정상 동작한다.
-      const response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
-        params: { page, size },
-      });
+      let response;
+      try {
+        response = await axios.get(API_BASE_URL, {
+          params: { page, size },
+        });
+      } catch {
+        response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
+          params: { page, size },
+        });
+      }
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
       const content = Array.isArray(unwrapped.content)
         ? unwrapped.content.map(normalizeAnimal)
@@ -82,15 +93,12 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
 };
 
 /**
- * ⚡ No-Offset 커서 기반 고속 동물 목록 조회 (무한 스크롤 / Count 쿼리 0%)
+ * 오프셋 기반 무한 스크롤 시뮬레이션 폴백
  */
-export const fetchAnimalCursorList = async (
+const fetchAnimalCursorListSimulated = async (
   lastAnimalId?: number | string,
   size = 10
 ): Promise<SliceResponse<Animal>> => {
-  // 운영 서버의 cursor 엔드포인트가 C003을 반환하므로 정상 동작하는 offset 호환
-  // 엔드포인트를 Slice 형태로 변환한다. 마지막 ID와 다음 page를 연결해 기존 훅의
-  // 호출 계약(lastAnimalId, size)은 유지한다.
   const cursorKey = `${size}:${String(lastAnimalId ?? '')}`;
   const page = lastAnimalId === undefined || lastAnimalId === null || lastAnimalId === ''
     ? 0
@@ -122,6 +130,42 @@ export const fetchAnimalCursorList = async (
 };
 
 /**
+ * ⚡ No-Offset 커서 기반 고속 동물 목록 조회 (GET /api/v1/animals/cursor)
+ */
+export const fetchAnimalCursorList = async (
+  lastAnimalId?: number | string,
+  size = 10
+): Promise<SliceResponse<Animal>> => {
+  const params: Record<string, unknown> = { size };
+  if (lastAnimalId !== undefined && lastAnimalId !== null && lastAnimalId !== '') {
+    params.lastAnimalId = lastAnimalId;
+  }
+
+  let response;
+  try {
+    response = await axios.get(`${API_BASE_URL}/cursor`, { params });
+  } catch {
+    try {
+      response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/cursor`, { params });
+    } catch {
+      return fetchAnimalCursorListSimulated(lastAnimalId, size);
+    }
+  }
+
+  const unwrapped = unwrapResult<SliceResponse<Animal>>(response.data);
+  const content = Array.isArray(unwrapped.content)
+    ? unwrapped.content.map(normalizeAnimal)
+    : [];
+
+  return {
+    ...unwrapped,
+    content,
+    hasNext: unwrapped.hasNext ?? (content.length >= size),
+    isLast: unwrapped.isLast ?? (unwrapped.hasNext !== undefined ? !unwrapped.hasNext : content.length < size),
+  };
+};
+
+/**
  * 🐕 종별 동물 목록 조회 (GET /api/v1/animals/species)
  */
 export const fetchAnimalListBySpecies = async (
@@ -133,9 +177,16 @@ export const fetchAnimalListBySpecies = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      const response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/species`, {
-        params: { species, page, size },
-      });
+      let response;
+      try {
+        response = await axios.get(`${API_BASE_URL}/species`, {
+          params: { species, page, size },
+        });
+      } catch {
+        response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/species`, {
+          params: { species, page, size },
+        });
+      }
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
       const content = Array.isArray(unwrapped.content)
         ? unwrapped.content.map(normalizeAnimal)
@@ -238,7 +289,11 @@ export const updateAnimalStatus = async (id: string | number, status: string): P
  * 🗑️ 보호 동물 삭제 (관리자 전용)
  */
 export const deleteAnimal = async (id: string | number): Promise<void> => {
-  await axios.delete(`${API_BASE_URL}/${id}`);
+  try {
+    await axios.delete(`${API_BASE_URL}/${id}`);
+  } catch {
+    await axios.delete(`${COMPAT_ANIMAL_API_BASE_URL}/delete/${id}`);
+  }
   apiCache.invalidateByPrefix('animal');
 };
 
