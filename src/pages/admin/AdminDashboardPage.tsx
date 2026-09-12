@@ -17,7 +17,7 @@ import DashboardRecentAdoptions from '../../components/admin/dashboard/Dashboard
 import DashboardCharts from '../../components/admin/dashboard/DashboardCharts';
 
 const AdminDashboardPage: React.FC = () => {
-  usePageTitle('관리자 종합 대시보드 | AdoptMate');
+  usePageTitle('관리자 종합 대시보드');
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState<boolean>(true);

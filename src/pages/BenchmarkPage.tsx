@@ -36,7 +36,7 @@ interface MockPet {
 }
 
 const BenchmarkPage: React.FC = () => {
-  usePageTitle('성능 & 동시성 벤치마크 랩 | PawMate');
+  usePageTitle('성능 & 동시성 벤치마크');
   const [activeTab, setActiveTab] = useState<TabType>('concurrency');
 
   // ================= 1. API Concurrency Test State =================

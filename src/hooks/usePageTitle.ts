@@ -12,7 +12,7 @@ export const usePageTitle = (title?: string, withSuffix = true): void => {
       ? withSuffix
         ? `${title} | AdoptMate`
         : title
-      : 'AdoptMate | 사지 말고 입양하세요 🐾';
+      : 'AdoptMate | 새로운 가족을 만나는 곳';
 
     document.title = fullTitle;
 

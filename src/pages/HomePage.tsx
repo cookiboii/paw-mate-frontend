@@ -21,7 +21,7 @@ import cat from "../assets/cat.jpg";
 const images = [dog1, dog2, dog3, dog4, cat];
 
 const HomePage: React.FC = () => {
-  usePageTitle('사지 말고 입양하세요 | AdoptMate');
+  usePageTitle('AdoptMate | 새로운 가족을 만나는 곳', false);
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState<number>(0);
   const [recentAnimals, setRecentAnimals] = useState<Animal[]>([]);
