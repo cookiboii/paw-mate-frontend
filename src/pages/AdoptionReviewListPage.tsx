@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
 import { getReviewsCursor, getReviews, prefetchReviewById } from '../api/review';
@@ -119,7 +119,27 @@ const AdoptionReviewListPage: React.FC = () => {
   });
 
   // 4. 클라이언트 카테고리 및 검색어 필터링
-  const displayedReviews = reviews;
+  // 백엔드 검색 API 배포 전에도 카테고리/검색이 동작하도록 한 번 더 필터링한다.
+  // 백엔드가 같은 조건을 처리하는 경우에도 결과에는 영향이 없다.
+  const displayedReviews = useMemo(() => {
+    let list = reviews;
+
+    if (activeCategory !== 'ALL') {
+      list = list.filter((review) => getCategoryFromTitle(review.title) === activeCategory);
+    }
+
+    if (debouncedKeyword) {
+      const keyword = debouncedKeyword.toLowerCase();
+      list = list.filter((review) => {
+        const title = getCleanTitle(review.title).toLowerCase();
+        const content = (review.content || '').toLowerCase();
+        const author = (review.name || '').toLowerCase();
+        return title.includes(keyword) || content.includes(keyword) || author.includes(keyword);
+      });
+    }
+
+    return list;
+  }, [reviews, activeCategory, debouncedKeyword]);
 
   // 카테고리 선택 시 화면 아이템 수가 적으면 백그라운드에서 다음 데이터 자동 로드
   useEffect(() => {
