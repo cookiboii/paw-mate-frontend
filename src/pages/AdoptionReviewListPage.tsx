@@ -78,18 +78,15 @@ const AdoptionReviewListPage: React.FC = () => {
   const cursorFetcher = useCallback(
     async (lastId: string | number | undefined, pageSize: number) => {
       try {
-        return await getReviewsCursor(lastId, pageSize, {
-          category: activeCategory,
-          keyword: debouncedKeyword,
-          sort,
-        });
+        // 백엔드의 category/search 규격이 배포되기 전까지는 전체 목록을 받아
+        // 아래 displayedReviews에서 호환성 있게 분류한다.
+        return await getReviewsCursor(lastId, pageSize);
       } catch (err) {
         // 서버 내부 오류는 다른 목록 경로에서도 동일하게 발생하므로 중복 요청하지 않는다.
         const status = axios.isAxiosError(err) ? err.response?.status : undefined;
         if (status !== 404 && status !== 405) throw err;
         console.warn('커서 페이징 에러, 오프셋 페이징 폴백 실행:', err);
-        const fallbackSort = sort === 'popular' ? 'likeCount,desc' : sort === 'comments' ? 'commentCount,desc' : 'id,desc';
-        const pageData = await getReviews(0, pageSize, fallbackSort);
+        const pageData = await getReviews(0, pageSize, 'id,desc');
         return {
           content: pageData.content || [],
           hasNext: false,
@@ -99,7 +96,7 @@ const AdoptionReviewListPage: React.FC = () => {
         };
       }
     },
-    [activeCategory, debouncedKeyword, sort]
+    []
   );
 
   // 3. No-Offset 커서 기반 고속 무한 스크롤 훅 적용
@@ -115,7 +112,7 @@ const AdoptionReviewListPage: React.FC = () => {
     fetcher: cursorFetcher,
     getId: (item) => Number(item.id),
     pageSize: 12,
-    dependencies: [activeCategory, debouncedKeyword, sort],
+    dependencies: [],
   });
 
   // 4. 클라이언트 카테고리 및 검색어 필터링
@@ -138,8 +135,12 @@ const AdoptionReviewListPage: React.FC = () => {
       });
     }
 
-    return list;
-  }, [reviews, activeCategory, debouncedKeyword]);
+    return [...list].sort((a, b) => {
+      if (sort === 'popular') return (b.likeCount ?? 0) - (a.likeCount ?? 0);
+      if (sort === 'comments') return (b.commentCount ?? 0) - (a.commentCount ?? 0);
+      return Number(b.id) - Number(a.id);
+    });
+  }, [reviews, activeCategory, debouncedKeyword, sort]);
 
   // 카테고리 선택 시 화면 아이템 수가 적으면 백그라운드에서 다음 데이터 자동 로드
   useEffect(() => {
