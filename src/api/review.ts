@@ -5,6 +5,7 @@ import {
   PostUpdateRequestDto,
   CommentResponseDto,
   CommentDto,
+  ReviewListOptions,
 } from '../types/review';
 import { SliceResponse, PageResponse } from '../types/common';
 import { apiCache } from '../utils/apiCache';
@@ -43,13 +44,17 @@ export const getReviews = async (
  */
 export const getReviewsCursor = async (
   lastPostId?: number | string,
-  size = 10
+  size = 10,
+  options: ReviewListOptions = {}
 ): Promise<SliceResponse<PostResponseDto>> => {
   const params = new URLSearchParams();
   if (lastPostId !== undefined && lastPostId !== null && lastPostId !== '') {
     params.append('lastPostId', String(lastPostId));
   }
   params.append('size', String(size));
+  if (options.category && options.category !== 'ALL') params.append('category', options.category);
+  if (options.keyword?.trim()) params.append('keyword', options.keyword.trim());
+  if (options.sort) params.append('sort', options.sort);
 
   let response;
   try {
@@ -58,6 +63,37 @@ export const getReviewsCursor = async (
     response = await axiosInstance.get(`/post/cursor?${params.toString()}`);
   }
   return unwrapResult<SliceResponse<PostResponseDto>>(response.data);
+};
+
+/** 게시글 좋아요 상태를 변경합니다. 로그인한 사용자만 호출할 수 있습니다. */
+export const setReviewLike = async (
+  id: number | string,
+  shouldLike: boolean
+): Promise<{ liked: boolean; likeCount: number }> => {
+  const response = shouldLike
+    ? await axiosInstance.post(`/api/v1/posts/${id}/likes`)
+    : await axiosInstance.delete(`/api/v1/posts/${id}/likes`);
+  apiCache.invalidateByPrefix(`review:detail:${id}`);
+  return unwrapResult<{ liked: boolean; likeCount: number }>(response.data);
+};
+
+/** 게시글 북마크 상태를 변경합니다. 로그인한 사용자만 호출할 수 있습니다. */
+export const setReviewBookmark = async (
+  id: number | string,
+  shouldBookmark: boolean
+): Promise<{ bookmarked: boolean }> => {
+  const response = shouldBookmark
+    ? await axiosInstance.post(`/api/v1/posts/${id}/bookmarks`)
+    : await axiosInstance.delete(`/api/v1/posts/${id}/bookmarks`);
+  apiCache.invalidateByPrefix(`review:detail:${id}`);
+  return unwrapResult<{ bookmarked: boolean }>(response.data);
+};
+
+/** 로그인 사용자가 북마크한 게시글 목록입니다. */
+export const getMyBookmarkedReviews = async (): Promise<PostResponseDto[]> => {
+  const response = await axiosInstance.get('/api/v1/posts/bookmarks/me');
+  const data = unwrapResult<PostResponseDto[] | PageResponse<PostResponseDto>>(response.data);
+  return Array.isArray(data) ? data : data?.content || [];
 };
 
 /**

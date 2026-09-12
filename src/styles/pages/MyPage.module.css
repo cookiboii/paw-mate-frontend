@@ -511,6 +511,36 @@
   margin-bottom: 16px;
 }
 
+.bookmarkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.bookmarkList li {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.bookmarkItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 4px;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.bookmarkItem:hover strong {
+  color: var(--primary-color);
+}
+
+.bookmarkItem span {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
 @media (max-width: 768px) {
   .dashboardContainer {
     flex-direction: column;

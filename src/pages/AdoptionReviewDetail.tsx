@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getReviewById, deleteReview } from '../api/review';
+import { getReviewById, deleteReview, setReviewBookmark, setReviewLike } from '../api/review';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/pages/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
@@ -14,7 +14,7 @@ import { getErrorMessage } from '../utils/error';
 import { CATEGORIES } from '../components/ReviewCategoryTabs';
 import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
 import { ReviewDetailData, PostResponseDto } from '../types/review';
-import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2, Share2, Check, Maximize2 } from 'lucide-react';
+import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2, Share2, Check, Maximize2, Heart, Bookmark } from 'lucide-react';
 import ImageLightboxModal from '../components/ImageLightboxModal';
 
 const renderCategoryIcon = (cat: string, size = 16) => {
@@ -55,6 +55,16 @@ const AdoptionReviewDetail: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [likeCount, setLikeCount] = useState<number>(0);
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+  const [isReactionLoading, setIsReactionLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsLiked(Boolean(review?.likedByMe));
+    setLikeCount(review?.likeCount ?? 0);
+    setIsBookmarked(Boolean(review?.bookmarkedByMe));
+  }, [review?.id, review?.likedByMe, review?.likeCount, review?.bookmarkedByMe]);
 
   const cleanTitle = review ? getCleanTitle(review.title) : '';
   usePageTitle(cleanTitle || '후기 상세');
@@ -104,6 +114,41 @@ const AdoptionReviewDetail: React.FC = () => {
       setTimeout(() => setIsCopied(false), 2500);
     } catch {
       showToast('링크 복사에 실패했습니다.', 'error');
+    }
+  };
+
+  const requireLoginForReaction = () => {
+    if (isAuthenticated) return true;
+    showToast('좋아요와 북마크는 로그인 후 이용할 수 있습니다.', 'info');
+    navigate('/login');
+    return false;
+  };
+
+  const handleLike = async () => {
+    if (!id || !requireLoginForReaction() || isReactionLoading) return;
+    setIsReactionLoading(true);
+    try {
+      const result = await setReviewLike(id, !isLiked);
+      setIsLiked(result.liked);
+      setLikeCount(result.likeCount);
+    } catch (err) {
+      showToast(getErrorMessage(err, '좋아요를 변경하지 못했습니다.'), 'error');
+    } finally {
+      setIsReactionLoading(false);
+    }
+  };
+
+  const handleBookmark = async () => {
+    if (!id || !requireLoginForReaction() || isReactionLoading) return;
+    setIsReactionLoading(true);
+    try {
+      const result = await setReviewBookmark(id, !isBookmarked);
+      setIsBookmarked(result.bookmarked);
+      showToast(result.bookmarked ? '북마크에 저장했습니다.' : '북마크를 해제했습니다.', 'success');
+    } catch (err) {
+      showToast(getErrorMessage(err, '북마크를 변경하지 못했습니다.'), 'error');
+    } finally {
+      setIsReactionLoading(false);
     }
   };
 
@@ -216,6 +261,28 @@ const AdoptionReviewDetail: React.FC = () => {
         {/* Content Section */}
         <div className={styles.contentSection}>
           <div className={styles.toolbar}>
+            <div className={styles.reactionActions}>
+              <button
+                type="button"
+                onClick={handleLike}
+                className={`${styles.reactionBtn} ${isLiked ? styles.reactionActive : ''}`}
+                aria-pressed={isLiked}
+                disabled={isReactionLoading}
+              >
+                <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
+                <span>좋아요 {likeCount}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleBookmark}
+                className={`${styles.reactionBtn} ${isBookmarked ? styles.reactionActive : ''}`}
+                aria-pressed={isBookmarked}
+                disabled={isReactionLoading}
+              >
+                <Bookmark size={16} fill={isBookmarked ? 'currentColor' : 'none'} />
+                <span>{isBookmarked ? '저장됨' : '북마크'}</span>
+              </button>
+            </div>
             <button
               onClick={handleShare}
               className={styles.shareBtn}

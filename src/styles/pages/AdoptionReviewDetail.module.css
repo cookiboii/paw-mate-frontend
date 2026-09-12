@@ -429,6 +429,38 @@
   gap: 12px;
 }
 
+.reactionActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reactionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  background: var(--surface-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  transition: all var(--transition-fast);
+}
+
+.reactionBtn:hover:not(:disabled), .reactionActive {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.reactionBtn:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .shareBtn {
   display: inline-flex;
   align-items: center;

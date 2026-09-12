@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
 import { getReviewsCursor, getReviews, prefetchReviewById } from '../api/review';
@@ -10,9 +10,10 @@ import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { useCursorScroll } from '../hooks/useCursorScroll';
-import { ReviewItem } from '../types/review';
-import { HeartHandshake, Gift, AlertTriangle, User, PawPrint } from 'lucide-react';
+import { ReviewItem, ReviewSort } from '../types/review';
+import { HeartHandshake, Gift, AlertTriangle, User, PawPrint, Heart, MessageCircle } from 'lucide-react';
 import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
+import useDebounce from '../hooks/useDebounce';
 
 const renderCategoryIcon = (cat: string, size = 16) => {
   switch (cat) {
@@ -39,6 +40,9 @@ const AdoptionReviewListPage: React.FC = () => {
 
   const [activeCategory, setActiveCategory] = useState<string>(validCategory);
   const [searchKeyword, setSearchKeyword] = useState<string>('');
+  const debouncedKeyword = useDebounce(searchKeyword.trim(), 300);
+  const rawSort = searchParams.get('sort');
+  const sort: ReviewSort = rawSort === 'popular' || rawSort === 'comments' ? rawSort : 'latest';
 
   useEffect(() => {
     const cat = searchParams.get('category');
@@ -63,17 +67,29 @@ const AdoptionReviewListPage: React.FC = () => {
     [searchParams, setSearchParams]
   );
 
+  const handleSortChange = useCallback((nextSort: ReviewSort) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (nextSort === 'latest') newParams.delete('sort');
+    else newParams.set('sort', nextSort);
+    setSearchParams(newParams, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   // 2. 커서 기반 게시글 페칭 콜백 (오프셋 폴백 내장)
   const cursorFetcher = useCallback(
     async (lastId: string | number | undefined, pageSize: number) => {
       try {
-        return await getReviewsCursor(lastId, pageSize);
+        return await getReviewsCursor(lastId, pageSize, {
+          category: activeCategory,
+          keyword: debouncedKeyword,
+          sort,
+        });
       } catch (err) {
         // 서버 내부 오류는 다른 목록 경로에서도 동일하게 발생하므로 중복 요청하지 않는다.
         const status = axios.isAxiosError(err) ? err.response?.status : undefined;
         if (status !== 404 && status !== 405) throw err;
         console.warn('커서 페이징 에러, 오프셋 페이징 폴백 실행:', err);
-        const pageData = await getReviews(0, pageSize, 'id,desc');
+        const fallbackSort = sort === 'popular' ? 'likeCount,desc' : sort === 'comments' ? 'commentCount,desc' : 'id,desc';
+        const pageData = await getReviews(0, pageSize, fallbackSort);
         return {
           content: pageData.content || [],
           hasNext: false,
@@ -83,7 +99,7 @@ const AdoptionReviewListPage: React.FC = () => {
         };
       }
     },
-    []
+    [activeCategory, debouncedKeyword, sort]
   );
 
   // 3. No-Offset 커서 기반 고속 무한 스크롤 훅 적용
@@ -99,28 +115,11 @@ const AdoptionReviewListPage: React.FC = () => {
     fetcher: cursorFetcher,
     getId: (item) => Number(item.id),
     pageSize: 12,
+    dependencies: [activeCategory, debouncedKeyword, sort],
   });
 
   // 4. 클라이언트 카테고리 및 검색어 필터링
-  const displayedReviews = useMemo(() => {
-    let list = reviews;
-
-    if (activeCategory !== 'ALL') {
-      list = list.filter((r) => getCategoryFromTitle(r.title) === activeCategory);
-    }
-
-    if (searchKeyword.trim()) {
-      const kw = searchKeyword.toLowerCase().trim();
-      list = list.filter((r) => {
-        const title = getCleanTitle(r.title).toLowerCase();
-        const content = (r.content || '').toLowerCase();
-        const author = (r.name || '').toLowerCase();
-        return title.includes(kw) || content.includes(kw) || author.includes(kw);
-      });
-    }
-
-    return list;
-  }, [reviews, activeCategory, searchKeyword]);
+  const displayedReviews = reviews;
 
   // 카테고리 선택 시 화면 아이템 수가 적으면 백그라운드에서 다음 데이터 자동 로드
   useEffect(() => {
@@ -154,6 +153,8 @@ const AdoptionReviewListPage: React.FC = () => {
         onCategoryChange={handleCategoryChange}
         searchKeyword={searchKeyword}
         onSearchChange={setSearchKeyword}
+        sort={sort}
+        onSortChange={handleSortChange}
         isAuthenticated={isAuthenticated}
       />
 
@@ -222,6 +223,10 @@ const AdoptionReviewListPage: React.FC = () => {
                     {(review.createdAt || review.createAt) && (
                       <span className={styles.cardDate}>작성일 {formatDate(review.createdAt || review.createAt)}</span>
                     )}
+                  </div>
+                  <div className={styles.cardStats} aria-label="게시글 반응">
+                    <span><Heart size={14} /> {review.likeCount ?? 0}</span>
+                    <span><MessageCircle size={14} /> {review.commentCount ?? 0}</span>
                   </div>
                 </div>
               </Link>

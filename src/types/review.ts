@@ -46,6 +46,10 @@ export interface PostResponseDto {
   createdAt?: string;
   img?: string;
   image?: string;
+  likeCount?: number;
+  commentCount?: number;
+  likedByMe?: boolean;
+  bookmarkedByMe?: boolean;
 }
 
 export type AdoptionReview = PostResponseDto;
@@ -57,4 +61,12 @@ export interface ReviewFormData {
   content: string;
   img?: string;
   image?: string;
+}
+
+export type ReviewSort = 'latest' | 'popular' | 'comments';
+
+export interface ReviewListOptions {
+  category?: string;
+  keyword?: string;
+  sort?: ReviewSort;
 }

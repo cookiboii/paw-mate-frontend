@@ -391,6 +391,60 @@
   width: 100%;
 }
 
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sortControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  background: var(--surface-color);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.sortControl select {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.cardStats {
+  display: flex;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.cardStats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .searchIcon {
   position: absolute;
   left: 14px;

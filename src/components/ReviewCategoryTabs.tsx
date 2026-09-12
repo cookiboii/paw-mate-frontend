@@ -1,8 +1,9 @@
 import React from 'react';
-import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, Search, X } from 'lucide-react';
+import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, Search, X, ArrowDownUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
 import { REVIEW_CATEGORY_PREFIX } from '../utils/reviewCategory';
+import { ReviewSort } from '../types/review';
 
 export interface CategoryOption {
   key: string;
@@ -24,6 +25,8 @@ export interface ReviewCategoryTabsProps {
   onCategoryChange: (category: string) => void;
   searchKeyword: string;
   onSearchChange: (keyword: string) => void;
+  sort: ReviewSort;
+  onSortChange: (sort: ReviewSort) => void;
   isAuthenticated: boolean;
 }
 
@@ -35,11 +38,14 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
   onCategoryChange,
   searchKeyword,
   onSearchChange,
+  sort,
+  onSortChange,
   isAuthenticated,
 }) => {
   return (
     <div className={styles.controlsWrapper}>
       {/* 검색 바 */}
+      <div className={styles.searchRow}>
       <div className={styles.searchBox}>
         <span
           className={styles.searchIcon}
@@ -65,6 +71,16 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
             <X size={16} />
           </button>
         )}
+      </div>
+        <label className={styles.sortControl}>
+          <ArrowDownUp size={16} aria-hidden="true" />
+          <span className={styles.srOnly}>정렬</span>
+          <select value={sort} onChange={(e) => onSortChange(e.target.value as ReviewSort)}>
+            <option value="latest">최신순</option>
+            <option value="popular">인기순</option>
+            <option value="comments">댓글순</option>
+          </select>
+        </label>
       </div>
 
       {/* 카테고리 탭 & 글쓰기 버튼 */}
