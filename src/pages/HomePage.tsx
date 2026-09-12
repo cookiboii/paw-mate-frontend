@@ -116,7 +116,7 @@ const HomePage: React.FC = () => {
           </span>
           <h1>한 생명의 평생을 함께할<br />가족을 기다립니다</h1>
           <p>
-            파우메이트는 안락사 위기의 유기동물들이 안전하고 따뜻한 가정에서 새로운 삶을 시작할 수 있도록,
+            AdoptMate는 안락사 위기의 유기동물들이 안전하고 따뜻한 가정에서 새로운 삶을 시작할 수 있도록,
             철저한 건강 검진과 투명한 심사를 거쳐 평생 가족을 연결합니다.
           </p>
           <div className={styles.heroActions}>
@@ -287,7 +287,7 @@ const HomePage: React.FC = () => {
       <section className={styles.principlesSection} ref={principlesRef}>
         <div className={styles.sectionHeader}>
           <span className={styles.sectionSubTitle}>OUR PRINCIPLES</span>
-          <h2>파우메이트의 4대 안심 원칙</h2>
+          <h2>AdoptMate의 4대 안심 원칙</h2>
           <p>생명을 대하는 진중한 태도로, 아이와 가족 모두가 행복할 수 있는 환경을 만듭니다.</p>
         </div>
         <div className={styles.principlesGrid}>

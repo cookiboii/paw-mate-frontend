@@ -8,13 +8,13 @@ const TermsOfService: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>이용약관 및 개인정보처리방침</h1>
-        <p className={styles.subtitle}>파우메이트 서비스 이용을 위한 약관입니다.</p>
+        <p className={styles.subtitle}>AdoptMate 서비스 이용을 위한 약관입니다.</p>
 
         <div className={styles.content}>
           <section className={styles.section}>
             <h2>제 1장 총칙</h2>
             <h3>제1조 (목적)</h3>
-            <p>본 약관은 파우메이트(이하 "회사")가 제공하는 유기동물 입양 매칭 서비스(이하 "서비스")의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
+            <p>본 약관은 AdoptMate(이하 "회사")가 제공하는 유기동물 입양 매칭 서비스(이하 "서비스")의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
           </section>
 
           <section className={styles.section}>

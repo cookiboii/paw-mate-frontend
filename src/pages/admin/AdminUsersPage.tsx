@@ -115,7 +115,7 @@ const AdminUsersPage: React.FC = () => {
           <Users size={26} />
           <span>회원 관리</span>
         </h1>
-        <p className={styles.subtitle}>파우메이트에 가입된 모든 유저를 관리합니다.</p>
+        <p className={styles.subtitle}>AdoptMate에 가입된 모든 회원을 관리합니다.</p>
       </div>
 
       {/* 통계 대시보드 */}

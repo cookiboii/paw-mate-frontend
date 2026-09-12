@@ -26,7 +26,7 @@ const FAQ: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>자주 묻는 질문</h1>
-        <p className={styles.subtitle}>파우메이트 이용 시 궁금하신 점을 확인해 보세요.</p>
+        <p className={styles.subtitle}>AdoptMate 이용 시 궁금하신 점을 확인해 보세요.</p>
 
         <div className={styles.faqList}>
           {faqs.map((faq, idx) => {

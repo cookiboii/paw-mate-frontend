@@ -319,7 +319,7 @@ const MyPage: React.FC = () => {
             <section className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3>입양 신청 내역</h3>
-                <p>파우메이트를 통해 신청한 입양 상태를 확인합니다.</p>
+                <p>AdoptMate를 통해 신청한 입양 상태를 확인합니다.</p>
               </div>
               <div className={styles.cardBody}>
                 {adoptionList.length === 0 ? (

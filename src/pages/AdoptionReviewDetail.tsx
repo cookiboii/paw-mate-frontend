@@ -92,7 +92,7 @@ const AdoptionReviewDetail: React.FC = () => {
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
-    const shareTitle = `[파우메이트] ${cleanTitle}`;
+    const shareTitle = `[AdoptMate] ${cleanTitle}`;
 
     if (navigator.share) {
       try {

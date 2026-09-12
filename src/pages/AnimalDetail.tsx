@@ -135,7 +135,7 @@ const AnimalDetail: React.FC = () => {
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
-    const shareTitle = `[파우메이트] ${animal?.breed || '유기동물'} 평생 가족을 찾고 있어요!`;
+    const shareTitle = `[AdoptMate] ${animal?.breed || '유기동물'} 평생 가족을 찾고 있어요!`;
 
     if (navigator.share) {
       try {
