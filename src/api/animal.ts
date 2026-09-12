@@ -69,7 +69,11 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData): Pro
 /**
  * 🔍 전체 동물 목록 조회 (오프셋 페이징: GET /api/v1/animals)
  */
-export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse<Animal>> => {
+export const fetchAnimalList = async (
+  page = 0,
+  size = 10,
+  options: { signal?: AbortSignal } = {}
+): Promise<PageResponse<Animal>> => {
   const cacheKey = `animal:list:page=${page}:size=${size}`;
   return apiCache.fetchWithCache(
     cacheKey,
@@ -77,12 +81,12 @@ export const fetchAnimalList = async (page = 0, size = 10): Promise<PageResponse
       let response;
       try {
         response = await axios.get(API_BASE_URL, {
-          params: { page, size },
+          params: { page, size }, signal: options.signal,
         });
       } catch (error) {
         if (!isMissingEndpoint(error)) throw error;
         response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
-          params: { page, size },
+          params: { page, size }, signal: options.signal,
         });
       }
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
@@ -179,7 +183,8 @@ export const fetchAnimalCursorList = async (
 export const fetchAnimalListBySpecies = async (
   species: string,
   page = 0,
-  size = 10
+  size = 10,
+  options: { signal?: AbortSignal } = {}
 ): Promise<PageResponse<Animal>> => {
   const cacheKey = `animal:species:${species}:page=${page}:size=${size}`;
   return apiCache.fetchWithCache(
@@ -188,12 +193,12 @@ export const fetchAnimalListBySpecies = async (
       let response;
       try {
         response = await axios.get(`${API_BASE_URL}/species`, {
-          params: { species, page, size },
+          params: { species, page, size }, signal: options.signal,
         });
       } catch (error) {
         if (!isMissingEndpoint(error)) throw error;
         response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/species`, {
-          params: { species, page, size },
+          params: { species, page, size }, signal: options.signal,
         });
       }
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);

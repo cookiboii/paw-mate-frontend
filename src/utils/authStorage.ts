@@ -32,6 +32,15 @@ export const saveAuthSession = (token: string, user: User = {}, refreshToken?: s
   return normalizedToken;
 };
 
+export const updateAuthTokens = (token: string, refreshToken?: string | null) => {
+  const normalizedToken = token.replace(/^Bearer\s+/i, '').trim();
+  localStorage.setItem('token', normalizedToken);
+  if (refreshToken) {
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+  return normalizedToken;
+};
+
 export const clearAuthStorage = () => {
   AUTH_KEYS.forEach((key) => localStorage.removeItem(key));
 };

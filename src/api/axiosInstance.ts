@@ -1,7 +1,7 @@
 // src/api/axiosInstance.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { unwrapResult } from './apiHelper';
-import { clearAuthStorage, getAccessToken, getRefreshToken } from '../utils/authStorage';
+import { clearAuthStorage, getAccessToken, getRefreshToken, updateAuthTokens } from '../utils/authStorage';
 
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -99,11 +99,12 @@ axiosInstance.interceptors.response.use(
       try {
         // 토큰 재발급 API 호출: POST /adoptmate/refresh-token
         const res = await axios.post(`${BASE_URL}/adoptmate/refresh-token`, { refreshToken });
-        const refreshed = unwrapResult<{ token?: string; accessToken?: string }>(res.data);
+        const refreshed = unwrapResult<{ token?: string; accessToken?: string; refreshToken?: string }>(res.data);
         const newToken = refreshed?.token || refreshed?.accessToken;
+        const newRefreshToken = refreshed?.refreshToken;
 
         if (newToken) {
-          localStorage.setItem('token', newToken);
+          updateAuthTokens(newToken, newRefreshToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           processQueue(null, newToken);
           return axiosInstance(originalRequest);

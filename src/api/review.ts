@@ -126,11 +126,41 @@ export const deleteReview = async (id: number | string): Promise<void> => {
 };
 
 /**
- * 💬 댓글 목록 조회
+ * 💬 댓글 목록 조회 (최상위 댓글 페이지네이션: GET /comment/{postId}?page=0&size=20)
+ * 최상위 댓글 목록과 각 댓글의 대댓글(children)을 포함한 PageResponse 반환
  */
-export const getComments = async (postId: number | string): Promise<CommentResponseDto[]> => {
-  const response = await axiosInstance.get(`/comment/${postId}`);
-  return unwrapResult<CommentResponseDto[]>(response.data) || [];
+export const getComments = async (
+  postId: number | string,
+  page = 0,
+  size = 20
+): Promise<PageResponse<CommentResponseDto>> => {
+  const response = await axiosInstance.get(`/comment/${postId}`, {
+    params: { page, size },
+  });
+  const data = unwrapResult<PageResponse<CommentResponseDto> | CommentResponseDto[]>(response.data);
+
+  // 하위 호환성 (배열로 반환되는 경우 PageResponse 규격으로 변환)
+  if (Array.isArray(data)) {
+    return {
+      content: data,
+      totalPages: 1,
+      totalElements: data.length,
+      number: page,
+      size,
+      last: true,
+      first: page === 0,
+      empty: data.length === 0,
+    };
+  }
+
+  return (
+    data || {
+      content: [],
+      totalPages: 0,
+      totalElements: 0,
+      last: true,
+    }
+  );
 };
 
 /**

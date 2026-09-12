@@ -19,25 +19,61 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const { isAuthenticated, user } = useAuth();
   const userInfo = isAuthenticated ? user : null;
   const [comments, setComments] = useState<CommentItem[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [page, setPage] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [contentMap, setContentMap] = useState<Record<string, string>>({});
   const [editModeMap, setEditModeMap] = useState<Record<string | number, boolean>>({});
   const [loadingMap, setLoadingMap] = useState<Record<string | number, boolean>>({});
 
-  const refreshComments = async () => {
+  const fetchCommentsPage = async (pageToFetch: number, isInitial = false) => {
     try {
-      const data = await getComments(postId);
-      setComments(data || []);
+      if (!isInitial) setIsLoadingMore(true);
+      const res = await getComments(postId, pageToFetch, 20);
+      const content = res.content || [];
+      const total = res.totalElements ?? content.length;
+      setTotalCount(total);
+
+      const isLast = res.last ?? (content.length < 20);
+      setHasMore(!isLast);
+
+      if (isInitial) {
+        setComments(content);
+        setPage(0);
+      } else {
+        setComments((prev) => [...prev, ...content]);
+        setPage(pageToFetch);
+      }
     } catch (err) {
-      console.error('댓글 새로고침 실패:', err);
+      console.error('댓글 로딩 실패:', err);
+    } finally {
+      if (!isInitial) setIsLoadingMore(false);
     }
+  };
+
+  const refreshComments = async () => {
+    await fetchCommentsPage(0, true);
+  };
+
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore) return;
+    await fetchCommentsPage(page + 1, false);
   };
 
   useEffect(() => {
     let cancelled = false;
     const fetchInitialData = async () => {
       try {
-        const commentsData = await getComments(postId);
-        if (!cancelled) setComments(commentsData || []);
+        const res = await getComments(postId, 0, 20);
+        if (!cancelled) {
+          const content = res.content || [];
+          setComments(content);
+          setTotalCount(res.totalElements ?? content.length);
+          const isLast = res.last ?? (content.length < 20);
+          setHasMore(!isLast);
+          setPage(0);
+        }
       } catch (err) {
         console.error('초기 데이터 로딩 실패:', err);
       }
@@ -232,7 +268,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     <div className={styles.commentSection}>
       <h3>
         <MessageSquare size={20} />
-        <span>따뜻한 응원 댓글 ({comments.length})</span>
+        <span>따뜻한 응원 댓글 ({totalCount > 0 ? totalCount : comments.length})</span>
       </h3>
 
       {userInfo ? (
@@ -266,6 +302,19 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
           </p>
         )}
       </div>
+
+      {hasMore && (
+        <div className={styles.loadMoreWrapper}>
+          <button
+            type="button"
+            className={styles.loadMoreBtn}
+            onClick={handleLoadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? <Spinner /> : '댓글 더보기'}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

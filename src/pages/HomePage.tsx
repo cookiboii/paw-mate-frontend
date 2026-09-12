@@ -65,17 +65,19 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     const loadData = async () => {
       setIsLoadingAnimals(true);
       setAnimalLoadError(false);
       try {
         const pageData =
           selectedSpecies === 'ALL'
-            ? await fetchAnimalList(0, 6)
-            : await fetchAnimalListBySpecies(selectedSpecies, 0, 6);
+            ? await fetchAnimalList(0, 6, { signal: controller.signal })
+            : await fetchAnimalListBySpecies(selectedSpecies, 0, 6, { signal: controller.signal });
 
         if (!cancelled) setRecentAnimals(pageData.content || []);
       } catch (error) {
+        if ((error as { code?: string }).code === 'ERR_CANCELED') return;
         console.error("Failed to load recent animals:", error);
         if (!cancelled) setAnimalLoadError(true);
       } finally {
@@ -83,7 +85,10 @@ const HomePage: React.FC = () => {
       }
     };
     loadData();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [selectedSpecies, animalRetryKey]);
 
   const goToSlide = (index: number) => setCurrent(index);

@@ -34,10 +34,11 @@ export const logoutUser = async (): Promise<void> => {
 };
 
 /**
- * 🔄 Access Token 재발급 API
+ * 🔄 Access Token 재발급 API (POST /adoptmate/refresh-token)
+ * Response: { token: string, refreshToken: string } (Refresh Token Rotation 적용)
  */
 export const refreshAccessToken = async (refreshToken: string) => {
-  return await axiosInstance.post('/adoptmate/refresh-token', { refreshToken });
+  return await axiosInstance.post<{ token: string; refreshToken: string }>('/adoptmate/refresh-token', { refreshToken });
 };
 
 /**
