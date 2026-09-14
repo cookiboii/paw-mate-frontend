@@ -172,6 +172,8 @@ button:focus-visible, a:focus-visible {
 button:disabled,
 [aria-disabled="true"] {
   cursor: not-allowed;
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 /* Shared icon rhythm: navigational and action icons always align and use one stroke weight. */
@@ -204,6 +206,22 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a9a49b;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #596159;
+  border-color: var(--bg-color);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #737d73;
+}
+
+@media (hover: none) {
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 /* -------------------------------------
