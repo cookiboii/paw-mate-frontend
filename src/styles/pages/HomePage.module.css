@@ -116,14 +116,25 @@
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: transparent;
   border: 0;
   padding: 0;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: width var(--transition-fast), background-color var(--transition-fast);
 }
 
 .dot:focus-visible,
@@ -133,17 +144,20 @@
 }
 
 .activeDot {
-  background-color: #ffffff;
+  background-color: transparent;
+}
+
+.activeDot::after {
   width: 18px;
-  border-radius: var(--radius-full);
+  background-color: #ffffff;
 }
 
 .autoplayToggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
   margin-left: 2px;
   padding: 0;
   border: 0;
@@ -600,7 +614,7 @@
   }
 
   .stepsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -632,6 +646,32 @@
     width: 100%;
     justify-content: center;
     text-align: center;
+  }
+
+  .sliderArrow {
+    width: 44px;
+    height: 44px;
+    opacity: 0.96;
+  }
+
+  .sliderArrowLeft {
+    left: 10px;
+  }
+
+  .sliderArrowRight {
+    right: 10px;
+  }
+
+  .dots {
+    bottom: 10px;
+    gap: 2px;
+    padding: 3px 7px;
+  }
+
+  .dot,
+  .autoplayToggle {
+    width: 32px;
+    height: 32px;
   }
 
   .newArrivalsSection {
