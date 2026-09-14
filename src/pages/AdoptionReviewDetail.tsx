@@ -358,7 +358,7 @@ const AdoptionReviewDetail: React.FC = () => {
       </article>
 
       <div className={styles.commentWrapper}>
-        <CommentSection postId={id || ''} />
+        <CommentSection postId={id || ''} postAuthorEmail={review.email} />
       </div>
 
       {/* 커스텀 삭제 확인 모달 */}

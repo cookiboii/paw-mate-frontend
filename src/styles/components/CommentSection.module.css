@@ -122,6 +122,46 @@
   word-break: break-word;
 }
 
+.secretBadge,
+.secretCommentNotice,
+.secretToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.secretBadge {
+  margin-right: 8px;
+  padding: 3px 7px;
+  border-radius: var(--radius-full);
+  background: var(--secondary-light);
+  color: var(--secondary-hover);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.secretCommentNotice {
+  margin: 6px 0 10px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.secretToggle {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.secretToggle input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--primary-color);
+}
+
 .editInput {
   width: 100%;
   padding: 10px 14px;
