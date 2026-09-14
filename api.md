@@ -21,15 +21,15 @@
 - 카카오 OAuth2 로그인
 - 보호 동물 등록, 조회, 종별 조회, 상태 변경, 찜하기
 - 입양 신청과 승인·반려 상태 전이
-- 게시글·댓글 CRUD 및 커서 기반 목록 조회
+- 게시글·댓글 CRUD, 통합 검색, 좋아요·북마크 및 커서 기반 목록 조회
 - Redis 캐시, Redisson 분산 락, JPA 낙관적 락
 
 ## 인증·보안 구조
 
-- Spring Security는 세션을 만들지 않는 Stateless 방식으로 동작합니다.
-- `JwtAuthFilter`는 Bearer 토큰을 검증하고, Redis 블랙리스트에 등록된 로그아웃 토큰을 차단합니다.
-- 토큰의 이메일로 `CustomUserDetailsService`를 다시 조회하므로, 탈퇴·권한 변경 등 회원 상태를 인증 과정에 반영합니다.
-- Refresh Token은 Redis에 저장하며, Access Token 재발급·로그아웃·회원 탈퇴에 사용합니다. 재발급 시 Access Token과 Refresh Token을 모두 새로 발급하고 Redis 값을 교체하는 rotation 방식을 사용하므로, 기존 Refresh Token은 다시 사용할 수 없습니다.
+- 일반 API는 JWT 기반으로 동작하며, OAuth2 인가 코드 흐름에 필요한 경우에만 세션을 생성합니다(`IF_REQUIRED`).
+- `JwtAuthFilter`는 Bearer 토큰을 검증하고, Redis 블랙리스트와 사용자별 `tokenVersion`을 확인해 로그아웃·비밀번호 변경 전의 토큰을 차단합니다.
+- JWT에 담긴 회원 ID·역할 claim으로 인증 객체를 구성해 인증 요청마다 회원 DB를 다시 조회하지 않습니다. 탈퇴·비밀번호 변경으로 인한 토큰 무효화는 Redis `tokenVersion`으로 반영합니다.
+- Refresh Token은 Redis에 저장하며, Access Token 재발급·로그아웃·회원 탈퇴에 사용합니다. 재발급 시 Access Token과 Refresh Token을 모두 새로 발급하고 Redis 값을 교체하는 rotation 방식을 사용하므로, 기존 Refresh Token은 다시 사용할 수 없습니다. 비밀번호 변경 또는 재설정 시에는 Refresh Token을 삭제하고 `tokenVersion`을 증가시켜 이전 Access Token도 무효화합니다.
 - Access Token과 Refresh Token에는 각각 고유한 JWT ID(`jti`)가 포함됩니다.
 - 비밀번호는 BCrypt로 해시 처리합니다.
 - 카카오 OAuth2 로그인과 일반 이메일 로그인을 모두 지원하며, 회원의 인증 제공자는 `AuthProvider`로 구분합니다.
@@ -45,7 +45,7 @@
 | 비밀번호 재설정 | 5분 | 5회 | 재전송 1분 제한, 실패 시 30분 차단, 성공 상태 10분 유지 |
 
 - 비밀번호 재설정 메일 요청은 존재하지 않는 이메일에도 정상 응답해 계정 존재 여부 노출을 줄입니다.
-- 인증 성공 후에만 회원가입 또는 비밀번호 변경을 진행할 수 있습니다.
+- 운영·기본 프로필에서는 인증 성공 후에만 회원가입 또는 비밀번호 재설정을 진행할 수 있습니다. 로컬·테스트 프로필은 개발 편의를 위해 가입 이메일 인증을 기본적으로 요구하지 않습니다.
 
 ## 캐시·정적 리소스·CORS
 
@@ -66,7 +66,17 @@
 | Offset 페이지 | `/animals/list`, `/post/list` | 전체 건수와 페이지 메타데이터가 필요한 화면에 적합 |
 | Cursor (`Slice`) | `/animals/cursor`, `/post/cursor` | `lastAnimalId`, `lastPostId` 기반. Count 쿼리 없이 무한 스크롤에 적합 |
 
-커서 조회는 ID 내림차순 Keyset 조건을 사용합니다. 요청 크기는 최대 100개로 제한됩니다.
+게시글 커서는 정렬 기준과 ID를 함께 사용합니다. `latest`는 `createdAt DESC, id DESC`, `popular`는 `likeCount DESC, id DESC`, `comments`는 `commentCount DESC, id DESC`입니다. 요청 크기는 1~100개로 제한됩니다.
+
+#### 게시글 커서 쿼리 구현
+
+커서 기준 게시글의 값을 JPQL 서브쿼리에서 반복 조회하지 않습니다. 서비스 계층이 커서의 `createdAt`, 좋아요 수(`likeCount`), 댓글 수(`commentCount`)를 한 번 조회한 뒤 리포지토리 쿼리의 파라미터로 전달합니다.
+
+- `latest`: 커서의 `createdAt`과 ID로 다음 페이지를 판별합니다.
+- `popular`: 커서의 좋아요 수와 ID로 다음 페이지를 판별합니다.
+- `comments`: 커서의 댓글 수와 ID로 다음 페이지를 판별합니다.
+
+이 방식은 복잡하게 중첩된 JPQL 서브쿼리를 Hibernate가 초기화 시 파싱하면서 발생할 수 있는 `java.lang.OutOfMemoryError: Java heap space`를 방지하고, 정렬 동률에서는 ID를 보조 키로 사용해 페이지 간 중복·누락을 막습니다.
 
 ### 댓글 페이지네이션 정책
 
@@ -99,6 +109,113 @@ src/main/java/com/kindtail/adoptmate
 ```
 
 각 도메인은 `controller`, `domain`, `dto`, `repository`, `service`로 구성합니다. API 문서는 `*ControllerDocs` 인터페이스로 분리되어 있습니다.
+
+### 패키지별 책임
+
+| 패키지 | 책임 | 주요 구성 요소 |
+| --- | --- | --- |
+| `auth` | 인증, JWT, OAuth2, 세션 무효화 | `AuthenticationService`, `JwtAuthFilter`, `TokenSessionService`, `CurrentUserProvider` |
+| `member` | 회원가입, 회원 정보·비밀번호·탈퇴 관리 | `MemberService`, `MemberFacade`, `MemberSessionInvalidationEvent` |
+| `animal` | 보호 동물과 관심 동물 관리 | `AnimalService`, `AnimalFavoriteService` |
+| `adoption` | 입양 신청과 상태 전이 | `AdoptionFacade`, `AdoptionService`, `DistributedLockTemplate` |
+| `post` | 게시글 명령과 조회 | `PostService`(명령), `PostQueryService`(조회) |
+| `comment` | 댓글·대댓글 관리 | `CommentService` |
+| `common` | 공통 응답·예외, 메일, Redis 기반 인증 코드 | `CommonResponse`, `GlobalExceptionHandler`, `EmailVerificationService`, `PasswordResetService` |
+| `config` | Security, CORS, Redis, JPA, Swagger 설정 | `SecurityConfig`, `CorsConfig`, `SecurityExceptionHandlers` |
+
+### 계층 의존 규칙
+
+```text
+Controller → Facade/Service → Repository → Database/Redis
+                 │
+                 └─ Domain Entity (상태 변경과 권한 검증)
+```
+
+- Controller는 HTTP 요청·응답과 Bean Validation만 처리합니다.
+- Service는 유스케이스와 트랜잭션 경계를 담당하며, 조회와 변경이 복잡한 게시글은 `PostQueryService`와 `PostService`로 나뉩니다.
+- Facade는 입양 신청처럼 여러 서비스·락을 조합해야 하는 흐름에만 사용합니다.
+- Repository는 데이터 조회/저장만 담당하며, 인증된 사용자 정보는 `CurrentUserProvider`를 통해 가져옵니다.
+
+## API 빠른 명세
+
+모든 성공 응답은 `CommonResponse` 형식입니다. 인증이 필요한 요청은 `Authorization: Bearer {accessToken}` 헤더를 포함해야 합니다. `공개`는 비로그인 요청이 가능한 API이고, `인증`은 로그인 사용자, `관리자`는 `ADMIN` 역할을 뜻합니다.
+
+### 인증·회원·이메일
+
+| Method | Path | 권한 | 요청 요약 | 결과 |
+| --- | --- | --- | --- | --- |
+| POST | `/adoptmate/register` | 공개 | `name`, `email`, `password` | 회원 정보 |
+| POST | `/adoptmate/login` | 공개 | `email`, `password` | Access/Refresh Token, 이메일, 역할 |
+| POST | `/adoptmate/refresh-token` | 공개 | `refreshToken` | 새 Access/Refresh Token |
+| POST | `/adoptmate/logout` | 인증 | Bearer Token | `null` |
+| GET | `/adoptmate/myInfo` | 인증 | - | 내 회원 정보 |
+| POST | `/adoptmate/password` | 인증 | `currentPassword`, `newPassword` | `null` |
+| DELETE | `/adoptmate/delete` | 인증 | - | `null` |
+| GET | `/adoptmate` | 관리자 | `page`, `size`, `sort` | 회원 `Page` |
+| GET | `/adoptmate/all` | 관리자 | - | 회원 목록 |
+| DELETE | `/adoptmate/admin/{memberId}` | 관리자 | - | `null` |
+| POST | `/adoptmate/verify-email` | 공개 | `email` | `null` |
+| POST | `/adoptmate/verify-code` | 공개 | `email`, `code` | 검증한 이메일·코드 |
+| POST | `/adoptmate/send-reset-code` | 공개 | query: `email` | `null` |
+| POST | `/adoptmate/verify-reset-code` | 공개 | query: `email`, `code` | `null` |
+| PATCH | `/adoptmate/password` | 공개 | `email`, `password` | `null` |
+
+`POST /adoptmate/password`는 로그인한 사용자의 비밀번호 변경이고, `PATCH /adoptmate/password`는 이메일 재설정 인증을 마친 뒤 수행하는 비밀번호 재설정입니다.
+
+### 보호 동물·입양
+
+| Method | Path | 권한 | 요청/쿼리 요약 | 결과 |
+| --- | --- | --- | --- | --- |
+| POST | `/api/v1/animals` | 관리자 | 동물 등록 정보 | 동물 1건 |
+| GET | `/api/v1/animals` | 공개 | `page`(0 이상), `size`(1~100) | 동물 `Page` |
+| GET | `/api/v1/animals/cursor` | 공개 | `lastAnimalId`, `size`(1~100) | 동물 `Slice` |
+| GET | `/api/v1/animals/species` | 공개 | `species`, `page`, `size` | 동물 `Page` |
+| GET | `/api/v1/animals/{id}` | 공개 | - | 동물 1건 |
+| PUT | `/api/v1/animals/{id}/status` | 관리자 | 상태 변경 정보 | 동물 1건 |
+| DELETE | `/api/v1/animals/{id}` | 관리자 | - | `null` |
+| POST | `/api/v1/animals/{id}/favorite` | 인증 | - | 관심 상태 |
+| DELETE | `/api/v1/animals/{id}/favorite` | 인증 | - | 관심 상태 |
+| GET | `/api/v1/animals/favorites/my` | 인증 | `page`, `size` | 관심 동물 `Page` |
+| POST | `/adoptions/animals/{animalId}` | 인증 | 입양 신청 정보 | 입양 신청 1건 |
+| GET | `/adoptions/myAdoption` | 인증 | - | 내 입양 신청 목록 |
+| GET | `/adoptions/list` | 관리자 | `page`, `size`, `sort` | 입양 신청 `Page` |
+| PUT | `/adoptions/{adoptionId}/status` | 관리자 | `adoptionStatus` | 변경된 입양 신청 |
+
+### 커뮤니티
+
+| Method | Path | 권한 | 요청/쿼리 요약 | 결과 |
+| --- | --- | --- | --- | --- |
+| POST | `/api/v1/posts` | 인증 | `title`, `content`, `img`, `category` | 게시글 1건 |
+| GET | `/api/v1/posts` | 공개 | `page`, `size`, `sort` | 게시글 `Page` |
+| GET | `/api/v1/posts/cursor` | 공개 | `lastPostId`, `size`(1~100), `category`, `keyword`, `sort` | 게시글 `Slice` |
+| GET | `/api/v1/posts/{postId}` | 공개 | - | 게시글 1건 |
+| PUT | `/api/v1/posts/{postId}` | 인증 | `title`, `content`, `img` | 변경된 게시글 |
+| DELETE | `/api/v1/posts/{postId}` | 인증 | - | `null` |
+| POST/DELETE | `/api/v1/posts/{postId}/likes` | 인증 | - | 좋아요 상태·개수 |
+| POST/DELETE | `/api/v1/posts/{postId}/bookmarks` | 인증 | - | 북마크 상태 |
+| GET | `/api/v1/posts/bookmarks/me` | 인증 | `size`(1~100) | 북마크 게시글 `Slice` |
+| POST | `/comment/{postId}` | 인증 | `content`, 선택 `parentId` | 댓글 1건 |
+| GET | `/comment/{postId}` | 공개 | `page`, `size`, `sort` | 최상위 댓글 `Page` |
+| PUT | `/comment/{commentId}` | 인증 | `content` | 변경된 댓글 |
+| DELETE | `/comment/{commentId}` | 인증 | - | `null` |
+
+호환 경로(`/animals`, `/post`, `/animals/register`, `/post/create` 등)는 기존 클라이언트 지원을 위해 함께 제공됩니다. 신규 클라이언트는 표의 `/api/v1/**` 경로를 사용하세요.
+
+## 최근 구조 개선
+
+- `AuthenticationService`가 로그인, Refresh Token 회전, 로그아웃을 전담합니다. 토큰의 Redis 저장·블랙리스트·`tokenVersion` 검증은 `TokenSessionService`에 모아 두었습니다.
+- `JwtAuthFilter`는 서명 검증된 JWT의 회원 ID·역할 claim으로 인증 객체를 만들기 때문에, 매 인증 요청마다 회원 DB를 조회하지 않습니다. 회원 탈퇴와 비밀번호 변경 시에는 `tokenVersion`을 증가시켜 기존 Access Token과 Refresh Token을 무효화합니다.
+- 이메일 기능은 역할에 따라 분리했습니다. `EmailVerificationService`는 회원가입 인증 코드 발송·검증을, `PasswordResetService`는 비밀번호 재설정 코드 발송·검증과 비밀번호 변경을 담당합니다.
+- 게시글은 명령과 조회를 분리했습니다. `PostService`는 작성·수정·삭제·좋아요·북마크 변경을, `PostQueryService`는 목록·검색·상세·내 북마크 조회를 담당합니다. 목록 조회 시 좋아요 수·댓글 수·사용자별 상태를 배치 조회해 N+1 조회를 피합니다.
+- 현재 사용처가 없는 `MemberEmailResponse`, `PasswordResetSendRequest`, `PasswordResetVerifyRequest`와 이전 이메일 전송 메서드는 제거했습니다.
+
+### 테스트 검증
+
+```bash
+./gradlew test
+```
+
+전체 테스트는 H2와 Mockito를 사용하며, 최근 리팩터링 후 테스트 결과는 실패 0건입니다.
 
 ## 실행하기
 
@@ -133,9 +250,10 @@ Copy-Item .env.example .env
 | Kakao | `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `KAKAO_REDIRECT_URI` |
 | Mail | `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` |
 | Client | `CLIENT_URL` |
-| JPA schema | `JPA_DDL_AUTO` (`update` for local migration, `validate` for production) |
+| JPA schema | `JPA_DDL_AUTO` (`update` for local development, `validate` by default/production) |
+| Email verification | `EMAIL_VERIFICATION_REQUIRED` (기본/운영 `true`, local/test `false`) |
 
-이미 운영 중인 데이터베이스에서는 `JPA_DDL_AUTO=create`를 사용하지 않습니다. `create`는 기존 스키마와 데이터를 삭제할 수 있습니다. 운영 환경은 `validate`로 두고, 필요한 스키마 변경은 SQL 마이그레이션으로 적용하세요.
+기본값과 운영 프로필은 `JPA_DDL_AUTO=validate`입니다. 기존 스키마와 데이터를 삭제할 수 있는 `create`는 운영에서 사용하지 마세요. 필요한 스키마 변경은 SQL 마이그레이션으로 적용해야 하며, 새 운영 DB도 애플리케이션 실행 전에 스키마를 준비해야 합니다.
 
 `animal.image`와 `post.image`는 이미지 URL 또는 Base64/data URL이 2,048자를 넘을 수 있으므로 MySQL `LONGTEXT`로 저장합니다. 기존 데이터베이스에서 다음 변경을 한 번 적용한 뒤 애플리케이션을 재배포하세요.
 
@@ -415,6 +533,8 @@ erDiagram
 | `adoption` | 회원의 입양 신청서 | 회원·동물 참조, `(member_id, animal_id)` 유니크, `version` 낙관적 락 |
 | `animal_favorite` | 회원의 관심 동물 | `(member_id, animal_id)` 유니크로 중복 찜 방지 |
 | `post` | 커뮤니티 게시글 | 작성 회원 참조, `version` 낙관적 락 |
+| `post_like` | 게시글 좋아요 | `(post_id, member_id)` 유니크로 중복 좋아요 방지 |
+| `post_bookmark` | 게시글 북마크 | `(post_id, member_id)` 유니크로 중복 북마크 방지 |
 | `comment` | 댓글 및 대댓글 | 게시글·작성 회원 참조, `parent_id` 자기 참조 |
 
 ### 공통 컬럼과 삭제 정책
@@ -489,7 +609,7 @@ erDiagram
 | 항목 | 규칙 |
 | --- | --- |
 | 권한 표기 | `공개`: 토큰 불필요 · `인증`: 로그인 필요 · `ADMIN`: 관리자 역할 필요 |
-| 페이지 조회 | `page`는 0부터 시작하며 기본값은 0, `size` 기본값은 10, 최대값은 100입니다. `result`는 `Page` 형식입니다. |
+| 페이지 조회 | `page`는 0부터 시작하며 기본값은 0, `size` 기본값은 10, 최대값은 100입니다. 동물·게시글 커서와 북마크 조회도 `size`는 1~100으로 제한됩니다. `result`는 `Page` 형식입니다. |
 | 커서 조회 | 최초 요청은 커서를 생략하고, 다음 요청에는 직전 `content` 마지막 항목의 ID를 전달합니다. `hasNext=false`이면 종료합니다. |
 | 시간 | `LocalDateTime`은 ISO-8601 문자열로 반환됩니다. |
 
@@ -547,16 +667,21 @@ erDiagram
 
 ### 게시글 · 댓글
 
-게시글 작성·수정은 `title`, `content`가 필수이고 `img`는 선택입니다. 게시글 응답은 `id`, `title`, `content`, `email`, `name`, `createAt`, `img`입니다. 댓글 작성은 `content`와 `parentId`(대댓글일 때만)를 사용하며, 댓글 응답의 `children`에는 하위 댓글 배열이 포함됩니다. 댓글 목록은 최상위 댓글을 기준으로 페이지네이션하며, 각 최상위 댓글에는 해당 대댓글이 함께 포함됩니다.
+게시글 작성·수정은 `title`, `content`가 필수이고 `img`, `category`는 선택입니다. `category`는 `REVIEW`, `FREE_ADOPTION`, `REPORT` 중 하나이며 생략 시 `REVIEW`입니다. 게시글 응답에는 `id`, `title`, `content`, `email`, `name`, `createdAt`, `img`, `likeCount`, `commentCount`, `likedByMe`, `bookmarkedByMe`가 포함됩니다. 비로그인 조회의 `likedByMe`, `bookmarkedByMe`는 항상 `false`입니다. 댓글 작성은 `content`와 `parentId`(대댓글일 때만)를 사용하며, 댓글 응답의 `children`에는 하위 댓글 배열이 포함됩니다.
 
 | 메서드 | 경로 | 권한 | 요청 | `result` |
 | --- | --- | --- | --- | --- |
-| POST | `/api/v1/posts` | 인증 | `title`, `content`, `img`(선택) | 게시글 1건 |
+| POST | `/api/v1/posts` | 인증 | `title`, `content`, `img`(선택), `category`(선택) | 게시글 1건 |
 | GET | `/api/v1/posts` | 공개 | 쿼리: `page`, `size`, `sort` | 게시글 `Page` |
-| GET | `/api/v1/posts/cursor` | 공개 | 쿼리: `lastPostId`(선택), `size` | 게시글 `Slice` |
+| GET | `/api/v1/posts/cursor` | 공개 | 쿼리: `lastPostId`(선택), `size`, `category`(선택), `keyword`(선택), `sort`(선택: `latest`/`popular`/`comments`) | 게시글 `Slice` |
 | GET | `/api/v1/posts/{postId}` | 공개 | 경로: `postId` | 게시글 1건 |
 | PUT | `/api/v1/posts/{postId}` | 인증 | `title`, `content`, `img`(선택) | 변경된 게시글 1건 |
 | DELETE | `/api/v1/posts/{postId}` | 인증 | 경로: `postId` | `null` |
+| POST | `/api/v1/posts/{postId}/likes` | 인증 | 경로: `postId` | `liked`, `likeCount` |
+| DELETE | `/api/v1/posts/{postId}/likes` | 인증 | 경로: `postId` | `liked`, `likeCount` |
+| POST | `/api/v1/posts/{postId}/bookmarks` | 인증 | 경로: `postId` | `bookmarked` |
+| DELETE | `/api/v1/posts/{postId}/bookmarks` | 인증 | 경로: `postId` | `bookmarked` |
+| GET | `/api/v1/posts/bookmarks/me` | 인증 | 쿼리: `size`(기본 20) | 최근 저장순 게시글 `Slice` |
 | POST | `/comment/{postId}` | 인증 | `content`, `parentId`(선택) | 댓글 1건 |
 | GET | `/comment/{postId}` | 공개 | 경로: `postId`, 쿼리: `page`(기본 0), `size`(기본 20) | 최상위 댓글 `Page` (`content`의 각 댓글에 `children` 포함) |
 | PUT | `/comment/{commentId}` | 인증 | `commentId`, `content` | 변경된 댓글 1건 |
@@ -701,8 +826,49 @@ POST /api/v1/posts
 Authorization: Bearer <accessToken>
 Content-Type: application/json
 
-{"title":"입양 후기","content":"우리 아이를 만난 이야기입니다.","img":"/uploads/review.jpg"}
+{"title":"입양 후기","content":"우리 아이를 만난 이야기입니다.","img":"/uploads/review.jpg","category":"REVIEW"}
 ```
+
+```http
+GET /api/v1/posts/cursor?size=10&category=REVIEW&keyword=몽이&sort=popular
+Authorization: Bearer <accessToken>
+```
+
+`lastPostId`는 첫 요청에서 생략하고, 다음 요청부터 직전 응답 `result.content`의 마지막 게시글 ID를 전달합니다. 응답의 `result.hasNext`가 `false`이면 다음 페이지가 없습니다. `keyword`는 제목·본문·작성자명을 통합 검색합니다.
+
+```json
+{
+  "statusCode": 200,
+  "result": {
+    "content": [{
+      "id": 42,
+      "title": "[REVIEW] 새 가족이 된 몽이",
+      "content": "...",
+      "name": "pawuser",
+      "img": "https://example.com/mongi.jpg",
+      "createdAt": "2026-09-12T10:20:00",
+      "likeCount": 12,
+      "commentCount": 3,
+      "likedByMe": false,
+      "bookmarkedByMe": true
+    }],
+    "hasNext": true
+  }
+}
+```
+
+좋아요와 북마크는 멱등 처리합니다. 같은 사용자가 이미 좋아요/북마크한 게시글에 다시 `POST` 요청해도 상태는 유지됩니다. 게시글 삭제 시 연결된 좋아요·북마크 레코드도 함께 제거됩니다.
+
+```http
+POST /api/v1/posts/42/likes
+DELETE /api/v1/posts/42/likes
+POST /api/v1/posts/42/bookmarks
+DELETE /api/v1/posts/42/bookmarks
+GET /api/v1/posts/bookmarks/me?size=20
+Authorization: Bearer <accessToken>
+```
+
+좋아요 응답 `result`는 `{ "liked": true, "likeCount": 13 }`, 북마크 응답 `result`는 `{ "bookmarked": true }` 형식입니다.
 
 ```http
 POST /comment/1
