@@ -31,13 +31,14 @@ const AnimalList: React.FC = () => {
   const initialGender = (['MALE', 'FEMALE'].includes(searchParams.get('gender') || '') 
     ? searchParams.get('gender') 
     : 'ALL') as 'ALL' | 'MALE' | 'FEMALE';
+  const initialSearchQuery = searchParams.get('q') || '';
   const initialPage = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
 
   // 1. 뷰 모드 및 필터 상태
   const [viewMode, setViewMode] = useState<ViewMode>(initialMode);
   const [speciesFilter, setSpeciesFilter] = useState<string>(initialSpecies);
   const [genderFilter, setGenderFilter] = useState<'ALL' | 'MALE' | 'FEMALE'>(initialGender);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [allFilterCandidates, setAllFilterCandidates] = useState<Animal[]>([]);
   const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
@@ -56,10 +57,11 @@ const AnimalList: React.FC = () => {
     if (viewMode !== 'infinite') params.set('mode', viewMode);
     if (speciesFilter !== 'ALL') params.set('species', speciesFilter);
     if (genderFilter !== 'ALL') params.set('gender', genderFilter);
+    if (searchQuery.trim()) params.set('q', searchQuery.trim());
     if (viewMode === 'pagination' && page > 0) params.set('page', String(page));
 
     setSearchParams(params, { replace: true });
-  }, [viewMode, speciesFilter, genderFilter, page, setSearchParams]);
+  }, [viewMode, speciesFilter, genderFilter, searchQuery, page, setSearchParams]);
 
   useEffect(() => {
     localStorage.setItem('animal-list-view-mode', viewMode);

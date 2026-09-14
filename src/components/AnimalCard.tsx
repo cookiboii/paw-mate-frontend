@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, Lock, X } from 'lucide-react';
 import styles from '../styles/components/AnimalCard.module.css';
 import ImageWithFallback from './ImageWithFallback';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { Animal } from '../types/animal';
 import { getGenderLabel, getSpeciesLabel, getStatusLabel } from '../constants/animal';
 import { prefetchAnimalById } from '../api/animal';
@@ -26,6 +27,9 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
 }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isBouncing, setIsBouncing] = useState(false);
 
   const animalId = animal.id ?? animal.animalId;
@@ -43,6 +47,14 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
 
     if (onRemove) {
       onRemove();
+      return;
+    }
+
+    if (!isAuthenticated) {
+      showToast('로그인 후 관심 동물로 저장할 수 있어요.', 'info');
+      navigate('/login', {
+        state: { from: `${location.pathname}${location.search}` },
+      });
       return;
     }
 

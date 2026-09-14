@@ -181,7 +181,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
       </section>
 
       {/* 결과 헤더 (카운트 뱃지, 리셋 버튼, 뷰 모드 토글) */}
-      <div className={styles.resultsHeader}>
+      <div className={styles.resultsHeader} aria-live="polite">
         <div className={styles.resultCountBadge}>
           <Sparkles size={18} />
           <span>
