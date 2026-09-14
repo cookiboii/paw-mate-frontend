@@ -15,8 +15,6 @@ interface CommentSectionProps {
   postAuthorEmail?: string;
 }
 
-const SECRET_COMMENT_PREFIX = '[PAWMATE_SECRET]';
-
 const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail }) => {
   const { showToast } = useToast();
   const { isAuthenticated, user } = useAuth();
@@ -31,13 +29,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail
   const [loadingMap, setLoadingMap] = useState<Record<string | number, boolean>>({});
   const [secretMap, setSecretMap] = useState<Record<string, boolean>>({});
 
-  const isSecretComment = (comment: CommentItem) =>
-    Boolean(comment.isSecret) || comment.content.startsWith(SECRET_COMMENT_PREFIX);
-
-  const getCommentBody = (comment: CommentItem) =>
-    isSecretComment(comment)
-      ? comment.content.replace(SECRET_COMMENT_PREFIX, '').trimStart()
-      : comment.content;
+  const isSecretComment = (comment: CommentItem) => Boolean(comment.secret);
 
   const fetchCommentsPage = async (pageToFetch: number, isInitial = false) => {
     try {
@@ -117,7 +109,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail
     postAuthorEmail &&
     userInfo.email.trim().toLowerCase() === postAuthorEmail.trim().toLowerCase()
   );
-  const canViewSecretComment = (comment: CommentItem) => isCommentAuthor(comment) || isPostAuthor;
+  const canViewSecretComment = (comment: CommentItem) =>
+    isCommentAuthor(comment) || isPostAuthor || isCommentAdmin;
 
   const handleChange = (id: string | number, value: string) => {
     setContentMap((prev) => ({ ...prev, [id]: value }));
@@ -133,10 +126,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail
     setLoadingMap((prev) => ({ ...prev, [key]: true }));
 
     try {
-      const isSecret = Boolean(secretMap[key]);
-      // Temporary frontend-only persistence until the API supports isSecret.
-      const storedContent = isSecret ? `${SECRET_COMMENT_PREFIX} ${content.trim()}` : content.trim();
-      await createComment(postId, { content: storedContent, parentId, isSecret });
+      const secret = Boolean(secretMap[key]);
+      await createComment(postId, { content: content.trim(), parentId, secret });
       setContentMap((prev) => ({ ...prev, [key]: '' }));
       setSecretMap((prev) => ({ ...prev, [key]: false }));
       showToast('댓글이 등록되었습니다.', 'success');
@@ -174,8 +165,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail
   const handleEditToggle = (comment: CommentItem) => {
     const commentId = comment.id;
     setEditModeMap((prev) => ({ ...prev, [commentId]: true }));
-    setContentMap((prev) => ({ ...prev, [commentId]: getCommentBody(comment) }));
-    setSecretMap((prev) => ({ ...prev, [String(commentId)]: isSecretComment(comment) }));
+    setContentMap((prev) => ({ ...prev, [commentId]: comment.content }));
   };
 
   const handleEditCancel = (commentId: string | number) => {
@@ -195,10 +185,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail
     setLoadingMap((prev) => ({ ...prev, [commentId]: true }));
 
     try {
-      const storedContent = secretMap[String(commentId)]
-        ? `${SECRET_COMMENT_PREFIX} ${updatedContent.trim()}`
-        : updatedContent.trim();
-      await updateComment(commentId, storedContent);
+      await updateComment(commentId, updatedContent.trim());
       setEditModeMap((prev) => ({ ...prev, [commentId]: false }));
       showToast('댓글이 수정되었습니다.', 'success');
       await refreshComments();
@@ -215,7 +202,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail
       const isAuthor = isCommentAuthor(comment);
       const isSecret = isSecretComment(comment);
       const canViewSecret = canViewSecretComment(comment);
-      const commentBody = getCommentBody(comment);
+      const commentBody = comment.content;
 
       return (
         <div key={comment.id} className={styles.commentBox}>
@@ -259,17 +246,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postAuthorEmail
                   value={contentMap[comment.id] || ''}
                   onChange={(e) => handleChange(comment.id, e.target.value)}
                 />
-                <label className={styles.secretToggle}>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(secretMap[String(comment.id)])}
-                    onChange={(event) =>
-                      setSecretMap((prev) => ({ ...prev, [String(comment.id)]: event.target.checked }))
-                    }
-                  />
-                  <LockKeyhole size={13} />
-                  <span>비밀</span>
-                </label>
                 <div className={styles.editActions}>
                   <button className={styles.submitBtn} onClick={() => handleUpdate(comment)}>
                     저장

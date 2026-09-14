@@ -194,12 +194,33 @@ Controller → Facade/Service → Repository → Database/Redis
 | POST/DELETE | `/api/v1/posts/{postId}/likes` | 인증 | - | 좋아요 상태·개수 |
 | POST/DELETE | `/api/v1/posts/{postId}/bookmarks` | 인증 | - | 북마크 상태 |
 | GET | `/api/v1/posts/bookmarks/me` | 인증 | `size`(1~100) | 북마크 게시글 `Slice` |
-| POST | `/comment/{postId}` | 인증 | `content`, 선택 `parentId` | 댓글 1건 |
+| POST | `/comment/{postId}` | 인증 | `content`, 선택 `parentId`, 선택 `secret` | 댓글 1건 |
 | GET | `/comment/{postId}` | 공개 | `page`, `size`, `sort` | 최상위 댓글 `Page` |
 | PUT | `/comment/{commentId}` | 인증 | `content` | 변경된 댓글 |
 | DELETE | `/comment/{commentId}` | 인증 | - | `null` |
 
 호환 경로(`/animals`, `/post`, `/animals/register`, `/post/create` 등)는 기존 클라이언트 지원을 위해 함께 제공됩니다. 신규 클라이언트는 표의 `/api/v1/**` 경로를 사용하세요.
+
+### 비밀 댓글
+
+댓글 생성 요청에 `secret: true`를 포함하면 비밀 댓글이 됩니다. 생략하거나 `false`이면 공개 댓글입니다.
+
+```json
+{
+  "parentId": null,
+  "content": "입양 관련 문의입니다.",
+  "secret": true
+}
+```
+
+- 비밀 댓글 내용은 댓글 작성자, 해당 게시글 작성자, `ADMIN` 역할만 확인할 수 있습니다.
+- 그 외 로그인 사용자와 비로그인 사용자는 댓글의 `secret` 값은 확인할 수 있지만, `content`에는 `비밀 댓글입니다.`가 반환됩니다.
+- 대댓글도 동일한 API에서 `parentId`와 `secret: true`를 함께 보내면 비밀 대댓글로 생성됩니다. 조회 권한과 내용 마스킹 규칙도 일반 비밀 댓글과 동일합니다.
+- 운영/기존 데이터베이스에는 아래 마이그레이션을 먼저 적용해야 합니다. `JPA_DDL_AUTO=validate` 환경에서는 이 컬럼이 없으면 애플리케이션이 시작되지 않습니다.
+
+```sql
+ALTER TABLE comment ADD COLUMN is_secret BOOLEAN NOT NULL DEFAULT FALSE;
+```
 
 ## 최근 구조 개선
 
@@ -520,6 +541,7 @@ erDiagram
         bigint member_id FK
         bigint post_id FK
         bigint parent_id FK
+        boolean is_secret
         boolean is_deleted
     }
 ```
@@ -535,7 +557,7 @@ erDiagram
 | `post` | 커뮤니티 게시글 | 작성 회원 참조, `version` 낙관적 락 |
 | `post_like` | 게시글 좋아요 | `(post_id, member_id)` 유니크로 중복 좋아요 방지 |
 | `post_bookmark` | 게시글 북마크 | `(post_id, member_id)` 유니크로 중복 북마크 방지 |
-| `comment` | 댓글 및 대댓글 | 게시글·작성 회원 참조, `parent_id` 자기 참조 |
+| `comment` | 댓글 및 대댓글 | 게시글·작성 회원 참조, `parent_id` 자기 참조, `is_secret` 비밀 댓글 여부 |
 
 ### 공통 컬럼과 삭제 정책
 
@@ -682,7 +704,7 @@ erDiagram
 | POST | `/api/v1/posts/{postId}/bookmarks` | 인증 | 경로: `postId` | `bookmarked` |
 | DELETE | `/api/v1/posts/{postId}/bookmarks` | 인증 | 경로: `postId` | `bookmarked` |
 | GET | `/api/v1/posts/bookmarks/me` | 인증 | 쿼리: `size`(기본 20) | 최근 저장순 게시글 `Slice` |
-| POST | `/comment/{postId}` | 인증 | `content`, `parentId`(선택) | 댓글 1건 |
+| POST | `/comment/{postId}` | 인증 | `content`, `parentId`(선택), `secret`(선택, 기본 `false`) | 댓글 1건 |
 | GET | `/comment/{postId}` | 공개 | 경로: `postId`, 쿼리: `page`(기본 0), `size`(기본 20) | 최상위 댓글 `Page` (`content`의 각 댓글에 `children` 포함) |
 | PUT | `/comment/{commentId}` | 인증 | `commentId`, `content` | 변경된 댓글 1건 |
 | DELETE | `/comment/{commentId}` | 인증 | 경로: `commentId` | `null` |
@@ -875,10 +897,12 @@ POST /comment/1
 Authorization: Bearer <accessToken>
 Content-Type: application/json
 
-{"parentId":null,"content":"따뜻한 후기 감사합니다."}
+{"parentId":null,"content":"입양 관련 문의입니다.","secret":true}
 ```
 
 대댓글은 같은 요청에서 `parentId`에 부모 댓글 ID를 지정합니다. 댓글 목록은 `GET /comment/{postId}?page=0&size=20`으로 조회하며, `result.content`에는 최상위 댓글만 페이지 단위로 담깁니다. 각 항목은 `id`, `authorName`, `authorId`, `authorEmail`, `content`, `createdAt`, `children`을 포함하고, `children`에는 해당 최상위 댓글의 대댓글이 포함됩니다. 따라서 하나의 댓글 스레드는 서로 다른 페이지로 나뉘지 않습니다.
+
+비밀 댓글의 응답에는 `secret: true`가 포함됩니다. 댓글 작성자·게시글 작성자·관리자 외의 조회에서는 작성자 정보와 댓글 구조는 유지되지만 `content`는 `비밀 댓글입니다.`로 마스킹됩니다.
 
 </details>
 

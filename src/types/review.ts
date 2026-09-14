@@ -1,7 +1,7 @@
 export interface CommentDto {
   parentId?: number | string | null;
   content: string;
-  isSecret?: boolean;
+  secret?: boolean;
 }
 
 export interface CommentUpdateDto {
@@ -15,7 +15,7 @@ export interface CommentResponseDto {
   authorId?: number | string;
   authorEmail?: string;
   content: string;
-  isSecret?: boolean;
+  secret?: boolean;
   createdAt?: string;
   children?: CommentResponseDto[];
 }

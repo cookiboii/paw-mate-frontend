@@ -201,7 +201,7 @@ export const getComments = async (
 
 /**
  * 💬 댓글 작성
- * Body: CommentDto { parentId: Long | null, content: String }
+ * Body: CommentDto { parentId: Long | null, content: String, secret?: boolean }
  */
 export const createComment = async (
   postId: number | string,
@@ -210,6 +210,7 @@ export const createComment = async (
   const body = {
     parentId: payload.parentId ? Number(payload.parentId) : null,
     content: payload.content,
+    secret: Boolean(payload.secret),
   };
   const response = await axiosInstance.post(`/comment/${postId}`, body);
   return unwrapResult<CommentResponseDto>(response.data);
