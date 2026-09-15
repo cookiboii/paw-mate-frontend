@@ -18,6 +18,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   usePageTitle('로그인');
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -40,6 +41,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const res = await loginUser(form);
       const resData = res.data?.result || res.data?.data || res.data || {};
@@ -57,12 +60,15 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const userInfo = { email, role, name, provider: "LOCAL" };
       login(token, userInfo, refreshToken);
       if (onLoginSuccess) onLoginSuccess();
+      if (redirectPath !== '/') showToast('로그인되었습니다. 이전 화면으로 돌아갑니다.', 'success');
       navigate(redirectPath);
     } catch (err: unknown) {
       console.error(err);
       const errMsg = getErrorMessage(err, "로그인에 실패했습니다.");
       setError(errMsg);
       showToast(errMsg, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -181,7 +187,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           required
         />
         {error && <p className={styles.error}>{error}</p>}
-        <button type="submit" className={styles.submitButton}>로그인</button>
+        <button type="submit" className={styles.submitButton} disabled={isSubmitting} aria-busy={isSubmitting}>
+          {isSubmitting ? '로그인 중…' : '로그인'}
+        </button>
       </form>
 
       <div className={styles.extraActions}>

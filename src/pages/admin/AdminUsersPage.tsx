@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAllUsers, deleteUserByAdmin } from '../../api/user';
 import styles from '../../styles/admin/AdminUsersPage.module.css';
 import { useToast } from '../../context/ToastContext';
@@ -12,7 +13,15 @@ const ITEMS_PER_PAGE = 10;
 
 const AdminUsersPage: React.FC = () => {
   usePageTitle('회원 관리 (Admin)');
-  const [users, setUsers] = useState<User[]>([]);
+  const queryClient = useQueryClient();
+  const usersQuery = useQuery({ queryKey: ['users'], queryFn: getAllUsers });
+  const users = usersQuery.data || [];
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteUserByAdmin,
+    onSuccess: (_, memberId) => {
+      queryClient.setQueryData<User[]>(['users'], (previous = []) => previous.filter((user) => user.id !== memberId));
+    },
+  });
   const [searchKeyword, setSearchKeyword] = useState('');
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'ADMIN' | 'USER'>('ALL'); // ALL, ADMIN, USER
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,20 +30,6 @@ const AdminUsersPage: React.FC = () => {
   // 삭제 및 권한 변경 모달 상태
   const [deleteTargetUser, setDeleteTargetUser] = useState<User | null>(null);
   const [roleTargetUser, setRoleTargetUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = () => {
-    getAllUsers()
-      .then((data) => {
-        setUsers(data || []);
-      })
-      .catch(() => {
-        showToast('회원 목록을 불러오지 못했습니다.', 'error');
-      });
-  };
 
   // --- 통계 계산 ---
   const stats = useMemo(() => {
@@ -85,7 +80,7 @@ const AdminUsersPage: React.FC = () => {
     const newRole = roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN' ? 'USER' : 'ADMIN';
 
     // 낙관적 UI 업데이트
-    setUsers((prev) =>
+    queryClient.setQueryData<User[]>(['users'], (prev = []) =>
       prev.map((u) => (u.id === roleTargetUser.id ? { ...u, role: newRole } : u))
     );
     showToast(`'${roleTargetUser.name || roleTargetUser.email}'님의 권한이 '${newRole}'(으)로 변경되었습니다.`, 'success');
@@ -100,8 +95,7 @@ const AdminUsersPage: React.FC = () => {
     setDeleteTargetUser(null);
 
     try {
-      await deleteUserByAdmin(targetId);
-      setUsers((prev) => prev.filter((u) => u.id !== targetId));
+      await deleteUserMutation.mutateAsync(targetId);
       showToast(`'${target.name || target.email}' 회원이 성공적으로 삭제(탈퇴)되었습니다.`, 'success');
     } catch (err) {
       showToast('회원 삭제 실패: ' + getErrorMessage(err), 'error');

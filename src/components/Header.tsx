@@ -72,6 +72,23 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobileMenuOpen]);
 
+  useEffect(() => {
+    const background = document.getElementById('app-main');
+    const footer = document.querySelector('footer');
+    const updateBackgroundAccessibility = (element: Element | null, hidden: boolean) => {
+      if (!element) return;
+      element.toggleAttribute('inert', hidden);
+      element.setAttribute('aria-hidden', String(hidden));
+    };
+
+    updateBackgroundAccessibility(background, isMobileMenuOpen);
+    updateBackgroundAccessibility(footer, isMobileMenuOpen);
+    return () => {
+      updateBackgroundAccessibility(background, false);
+      updateBackgroundAccessibility(footer, false);
+    };
+  }, [isMobileMenuOpen]);
+
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
     requestAnimationFrame(() => menuButtonRef.current?.focus());

@@ -94,6 +94,16 @@ const mutation = useMutation({
 4. 변경 성공 뒤 영향을 받는 query key를 무효화합니다.
 5. 화면·컴포넌트에서 `axios`나 `localStorage`를 직접 호출하지 않습니다. 인증은 `useAuth()`를 사용합니다.
 
+## 이미지 성능 관리
+
+홈 슬라이더는 `src/assets/optimized`의 AVIF 파일을 사용합니다. 원본 이미지가 바뀌면 아래 명령으로 WebP와 AVIF 변형을 다시 생성합니다.
+
+```bash
+npm run images:optimize
+```
+
+원본은 보존하고, 화면에서는 최적화 파일을 import합니다. 카드 이미지는 기본적으로 lazy loading과 async decoding을 사용합니다.
+
 ## 남은 점진 개선 항목
 
 현재 상세·무한 스크롤은 Query 기반입니다. 일부 페이지의 숫자 페이지네이션과 관리자 대시보드는 기존 `useEffect + useState` 요청 방식을 유지하고 있습니다. 기능상 문제는 없지만, 다음 리팩터링 때 `useQuery`로 옮기면 loading/error/retry 규칙까지 완전히 통일됩니다.

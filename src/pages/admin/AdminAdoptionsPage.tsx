@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAllAdoptions, updateAdoptionStatus } from '../../api/adoption';
 import { useToast } from '../../context/ToastContext';
 import styles from '../../styles/admin/AdminAdoptionsPage.module.css';
@@ -12,7 +13,17 @@ import useBodyScrollLock from '../../hooks/useBodyScrollLock';
 
 const AdminAdoptionsPage: React.FC = () => {
   usePageTitle('입양 신청 관리 (Admin)');
-  const [adoptions, setAdoptions] = useState<AdminAdoptionItem[]>([]);
+  const queryClient = useQueryClient();
+  const adoptionsQuery = useQuery({ queryKey: ['adoptions'], queryFn: getAllAdoptions });
+  const adoptions = adoptionsQuery.data || [];
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ adoptionId, status }: { adoptionId: number | string; status: string }) => updateAdoptionStatus(adoptionId, status),
+    onSuccess: (_, { adoptionId, status }) => {
+      queryClient.setQueryData<AdminAdoptionItem[]>(['adoptions'], (previous = []) =>
+        previous.map((item) => item.adoptionId === adoptionId ? { ...item, status } : item)
+      );
+    },
+  });
   const [processingId, setProcessingId] = useState<number | string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [selectedAdoption, setSelectedAdoption] = useState<AdminAdoptionItem | null>(null); // 상세 모달용
@@ -25,10 +36,6 @@ const AdminAdoptionsPage: React.FC = () => {
   useBodyScrollLock(Boolean(selectedAdoption));
 
   useEffect(() => {
-    fetchAdoptions();
-  }, []);
-
-  useEffect(() => {
     if (!selectedAdoption) return;
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setSelectedAdoption(null);
@@ -38,15 +45,6 @@ const AdminAdoptionsPage: React.FC = () => {
       window.removeEventListener('keydown', handleEscape);
     };
   }, [selectedAdoption]);
-
-  const fetchAdoptions = async () => {
-    try {
-      const data = await getAllAdoptions();
-      setAdoptions(data);
-    } catch {
-      showToast('입양 신청 목록을 불러오지 못했습니다.', 'error');
-    }
-  };
 
   const requestStatusUpdate = (adoptionId: number | string, status: string) => {
     if (!adoptionId) {
@@ -67,22 +65,15 @@ const AdminAdoptionsPage: React.FC = () => {
 
     try {
       // 📌 API 명세서 Body: AdoptionUpdateRequestDto { adoptionStatus }
-      await updateAdoptionStatus(adoptionId, status);
+      await updateStatusMutation.mutateAsync({ adoptionId, status });
 
       showToast(`입양 신청이 성공적으로 ${actionText}되었습니다.`, 'success');
 
       // 낙관적 UI 업데이트
-      setAdoptions((prev) =>
-        prev.map((item) =>
-          item.adoptionId === adoptionId ? { ...item, status: status } : item
-        )
-      );
-
       if (selectedAdoption?.adoptionId === adoptionId) {
         setSelectedAdoption((prev) => (prev ? { ...prev, status } : null));
       }
 
-      fetchAdoptions();
     } catch (err: unknown) {
       console.error('상태 변경 실패:', err);
       showToast('상태 변경에 실패했습니다: ' + getErrorMessage(err), 'error');

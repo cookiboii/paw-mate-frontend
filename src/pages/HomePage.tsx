@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useMemo, lazy } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, HeartHandshake, CheckCircle2, FileText, Home, Heart, Dog, Cat, Sparkles, PawPrint, Pause, Play } from "lucide-react";
 import styles from "../styles/pages/HomePage.module.css";
 import { useAuth } from "../context/AuthContext";
 const Login = lazy(() => import("./Login"));
-import { fetchAnimalList, fetchAnimalListBySpecies } from "../api/animal";
 import EmptyState from '../components/EmptyState';
 import AnimalCard from '../components/AnimalCard';
 import useScrollReveal from "../hooks/useScrollReveal";
 import usePageTitle from "../hooks/usePageTitle";
-import { Animal } from "../types/animal";
-import { PageResponse } from "../types/common";
+import { queryKeys } from '../hooks/useServerQueries';
+import { fetchAnimalList, fetchAnimalListBySpecies } from '../api/animal';
 
-import dog1 from "../assets/dog1.jpg";
-import dog2 from "../assets/dog2.jpg";
-import dog3 from "../assets/dog3.jpg";
-import dog4 from "../assets/dog4.jpg";
-import cat from "../assets/cat.jpg";
+import dog1 from "../assets/optimized/dog1.avif";
+import dog2 from "../assets/optimized/dog2.avif";
+import dog3 from "../assets/optimized/dog3.avif";
+import dog4 from "../assets/optimized/dog4.avif";
+import cat from "../assets/optimized/cat.avif";
 
 const images = [dog1, dog2, dog3, dog4, cat];
 
@@ -24,11 +24,7 @@ const HomePage: React.FC = () => {
   usePageTitle('AdoptMate | 새로운 가족을 만나는 곳', false);
   const { isAuthenticated } = useAuth();
   const [current, setCurrent] = useState<number>(0);
-  const [recentAnimals, setRecentAnimals] = useState<Animal[]>([]);
   const [selectedSpecies, setSelectedSpecies] = useState<'ALL' | 'DOG' | 'CAT'>('ALL');
-  const [isLoadingAnimals, setIsLoadingAnimals] = useState<boolean>(true);
-  const [animalLoadError, setAnimalLoadError] = useState<boolean>(false);
-  const [animalRetryKey, setAnimalRetryKey] = useState<number>(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState<boolean>(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
@@ -63,33 +59,15 @@ const HomePage: React.FC = () => {
     return () => mediaQuery.removeEventListener('change', updatePreference);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    const controller = new AbortController();
-    const loadData = async () => {
-      setIsLoadingAnimals(true);
-      setAnimalLoadError(false);
-      try {
-        const pageData =
-          selectedSpecies === 'ALL'
-            ? await fetchAnimalList(0, 6, { signal: controller.signal })
-            : await fetchAnimalListBySpecies(selectedSpecies, 0, 6, { signal: controller.signal });
-
-        if (!cancelled) setRecentAnimals(pageData.content || []);
-      } catch (error) {
-        if ((error as { code?: string }).code === 'ERR_CANCELED') return;
-        console.error("Failed to load recent animals:", error);
-        if (!cancelled) setAnimalLoadError(true);
-      } finally {
-        if (!cancelled) setIsLoadingAnimals(false);
-      }
-    };
-    loadData();
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
-  }, [selectedSpecies, animalRetryKey]);
+  const recentAnimalsQuery = useQuery({
+    queryKey: queryKeys.animals.list(0, 6, selectedSpecies),
+    queryFn: () => selectedSpecies === 'ALL'
+      ? fetchAnimalList(0, 6)
+      : fetchAnimalListBySpecies(selectedSpecies, 0, 6),
+  });
+  const recentAnimals = recentAnimalsQuery.data?.content || [];
+  const isLoadingAnimals = recentAnimalsQuery.isLoading;
+  const animalLoadError = recentAnimalsQuery.isError;
 
   const goToSlide = (index: number) => setCurrent(index);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + images.length) % images.length);
@@ -252,7 +230,7 @@ const HomePage: React.FC = () => {
                 description="잠시 후 다시 시도해 주세요."
                 actionLabel="다시 시도"
                 actionHint="연결 상태를 확인해 주세요."
-                onAction={() => setAnimalRetryKey((key) => key + 1)}
+                onAction={() => recentAnimalsQuery.refetch()}
               />
             </div>
           ) : recentAnimals.length === 0 ? (
