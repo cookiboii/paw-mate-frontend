@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, Lock, X } from 'lucide-react';
 import styles from '../styles/components/AnimalCard.module.css';
@@ -8,7 +9,8 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Animal } from '../types/animal';
 import { getGenderLabel, getSpeciesLabel, getStatusLabel } from '../constants/animal';
-import { prefetchAnimalById } from '../api/animal';
+import { fetchAnimalById } from '../api/animal';
+import { apiQueryKey } from '../hooks/useCachedApi';
 
 interface AnimalCardProps {
   animal: Animal | Partial<Animal>;
@@ -31,15 +33,19 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const [isBouncing, setIsBouncing] = useState(false);
+  const queryClient = useQueryClient();
 
   const animalId = animal.id ?? animal.animalId;
   const favorite = animalId ? isFavorite(animalId) : false;
 
   const handleMouseEnter = useCallback(() => {
     if (animalId) {
-      prefetchAnimalById(animalId);
+      queryClient.prefetchQuery({
+        queryKey: apiQueryKey(`animal:detail:${animalId}`),
+        queryFn: () => fetchAnimalById(animalId),
+      });
     }
-  }, [animalId]);
+  }, [animalId, queryClient]);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();

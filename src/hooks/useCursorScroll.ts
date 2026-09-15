@@ -1,230 +1,87 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { SliceResponse } from '../types/common';
 import { getErrorMessage } from '../utils/error';
 
 export interface UseCursorScrollOptions<T> {
-  /** No-Offset 커서 기반 API 호출 함수 (lastId, pageSize 전달) */
   fetcher: (lastId: string | number | undefined, pageSize: number) => Promise<SliceResponse<T>>;
-  /** 각 아이템의 고유 식별자 추출 함수 (중복 렌더링 방지용) */
   getId: (item: T) => string | number;
-  /** 한 번에 가져올 페이지 크기 (기본값: 10) */
   pageSize?: number;
-  /** 활성화 여부 (특정 조건에서 페칭을 멈출 때 false) */
   enabled?: boolean;
-  /** 변경 시 커서를 초기화하고 새로 페칭할 의존성 배열 */
   dependencies?: unknown[];
 }
 
 export interface UseCursorScrollReturn<T> {
-  /** 누적된 데이터 목록 */
   items: T[];
-  /** 아이템 수동 조작용 세터 */
   setItems: React.Dispatch<React.SetStateAction<T[]>>;
-  /** 첫 페이지 로딩 중 여부 */
   isLoading: boolean;
-  /** 다음 커서 페이지 추가 로딩 중 여부 */
   isFetchingMore: boolean;
-  /** 다음 페이지 존재 여부 */
   hasNext: boolean;
-  /** 에러 메시지 (없으면 null) */
   error: string | null;
-  /** 마지막으로 페칭된 아이템의 ID */
   lastId: string | number | undefined;
-  /** 무한 스크롤 감지용 센서 엘리먼트에 바인딩할 ref 콜백 */
   targetRef: (node: HTMLElement | null) => void;
-  /** 데이터 새로고침 (처음부터 다시 조회) */
   refresh: () => Promise<void>;
-  /** 수동 다음 페이지 로드 */
   fetchNext: () => Promise<void>;
 }
 
-/**
- * ⚡ No-Offset 커서 기반 고속 무한 스크롤 커스텀 훅
- * - IntersectionObserver 자동 바인딩 및 해제
- * - Clustered Index PK 기반 lastId 자동 추적
- * - 중복 ID 데이터 원천 필터링
- * - 의존성 변경 시 커서 자동 리셋 및 재페칭
- */
-export function useCursorScroll<T>({
-  fetcher,
-  getId,
-  pageSize = 10,
-  enabled = true,
-  dependencies = [],
-}: UseCursorScrollOptions<T>): UseCursorScrollReturn<T> {
-  const [items, setItems] = useState<T[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
-  const [hasNext, setHasNext] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastId, setLastId] = useState<string | number | undefined>(undefined);
-
-  // 최신 상태 유지를 위한 Ref (클로저 트랩 방지)
-  const isFetchingRef = useRef(false);
-  const hasNextRef = useRef(true);
-  const lastIdRef = useRef<string | number | undefined>(undefined);
+/** React Query-backed cursor pagination, retaining the existing component API. */
+export function useCursorScroll<T>({ fetcher, getId, pageSize = 10, enabled = true, dependencies = [] }: UseCursorScrollOptions<T>): UseCursorScrollReturn<T> {
+  const [localItems, setLocalItems] = useState<T[] | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const requestVersionRef = useRef(0);
+  const fetcherRef = useRef(fetcher);
+  fetcherRef.current = fetcher;
 
-  hasNextRef.current = hasNext;
-  lastIdRef.current = lastId;
-
-  // 1. 초기 데이터 로드 함수
-  const loadInitial = useCallback(async () => {
-    if (!enabled) {
-      // 진행 중이던 요청 결과가 비활성 목록에 반영되지 않도록 무효화한다.
-      requestVersionRef.current += 1;
-      isFetchingRef.current = false;
-      hasNextRef.current = false;
-      lastIdRef.current = undefined;
-      setItems([]);
-      setIsLoading(false);
-      setIsFetchingMore(false);
-      setHasNext(false);
-      setLastId(undefined);
-      setError(null);
-      return;
-    }
-
-    const requestVersion = ++requestVersionRef.current;
-    isFetchingRef.current = false;
-    setIsFetchingMore(false);
-
-    setIsLoading(true);
-    // 검색어·필터가 바뀔 때 이전 조건의 목록이 잠시 노출되는 것을 막는다.
-    setItems([]);
-    setError(null);
-    setHasNext(true);
-    setLastId(undefined);
-    lastIdRef.current = undefined;
-    hasNextRef.current = true;
-
-    try {
-      const sliceData = await fetcher(undefined, pageSize);
-      if (requestVersion !== requestVersionRef.current) return;
-      const content = sliceData.content || [];
-      setItems(content);
-
-      const nextAvailable = sliceData.hasNext ?? content.length >= pageSize;
-      setHasNext(nextAvailable);
-      hasNextRef.current = nextAvailable;
-
-      if (content.length > 0) {
-        const lastItem = content[content.length - 1];
-        const newLastId = getId(lastItem);
-        setLastId(newLastId);
-        lastIdRef.current = newLastId;
-      }
-    } catch (err) {
-      if (requestVersion !== requestVersionRef.current) return;
-      const msg = getErrorMessage(err);
-      setError(msg);
-      console.error('[useCursorScroll] 초기 데이터 페칭 실패:', msg);
-    } finally {
-      if (requestVersion === requestVersionRef.current) setIsLoading(false);
-    }
-  }, [enabled, fetcher, getId, pageSize]);
-
-  // 2. 다음 페이지 로드 함수
-  const fetchNext = useCallback(async () => {
-    if (
-      !enabled ||
-      isFetchingRef.current ||
-      !hasNextRef.current ||
-      lastIdRef.current === undefined
-    ) {
-      return;
-    }
-
-    isFetchingRef.current = true;
-    const requestVersion = requestVersionRef.current;
-    setIsFetchingMore(true);
-
-    try {
-      const sliceData = await fetcher(lastIdRef.current, pageSize);
-      if (requestVersion !== requestVersionRef.current) return;
-      const newItems = sliceData.content || [];
-
-      if (newItems.length > 0) {
-        setItems((prev) => {
-          const existingIds = new Set(prev.map(getId));
-          const uniqueNew = newItems.filter((item) => !existingIds.has(getId(item)));
-          return [...prev, ...uniqueNew];
-        });
-
-        const lastItem = newItems[newItems.length - 1];
-        const newLastId = getId(lastItem);
-        setLastId(newLastId);
-        lastIdRef.current = newLastId;
-
-        const nextAvailable = sliceData.hasNext ?? newItems.length >= pageSize;
-        setHasNext(nextAvailable);
-        hasNextRef.current = nextAvailable;
-      } else {
-        setHasNext(false);
-        hasNextRef.current = false;
-      }
-    } catch (err) {
-      if (requestVersion !== requestVersionRef.current) return;
-      const msg = getErrorMessage(err);
-      setError(msg);
-      console.error('[useCursorScroll] 다음 페이지 페칭 실패:', msg);
-      setHasNext(false);
-      hasNextRef.current = false;
-    } finally {
-      if (requestVersion === requestVersionRef.current) {
-        isFetchingRef.current = false;
-        setIsFetchingMore(false);
-      }
-    }
-  }, [enabled, fetcher, getId, pageSize]);
-
-  // 3. 의존성 변경 시 초기화
-  useEffect(() => {
-    loadInitial();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, ...dependencies]);
-
-  // 4. IntersectionObserver 타겟 바인딩 콜백
-  const targetRef = useCallback(
-    (node: HTMLElement | null) => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-
-      if (!node || !enabled) return;
-
-      observerRef.current = new IntersectionObserver(
-        (entries) => {
-          if (entries[0]?.isIntersecting && hasNextRef.current && !isFetchingRef.current) {
-            fetchNext();
-          }
-        },
-        { threshold: 0.1, rootMargin: '100px' }
-      );
-
-      observerRef.current.observe(node);
+  const query = useInfiniteQuery({
+    queryKey: ['cursor-scroll', pageSize, ...dependencies],
+    queryFn: ({ pageParam }) => fetcherRef.current(pageParam ?? undefined, pageSize),
+    initialPageParam: null as string | number | null,
+    enabled,
+    getNextPageParam: (lastPage) => {
+      const content = lastPage.content || [];
+      return lastPage.hasNext && content.length ? getId(content[content.length - 1]) : undefined;
     },
-    [enabled, fetchNext]
-  );
+  });
 
-  useEffect(() => {
-    return () => {
-      observerRef.current?.disconnect();
-      observerRef.current = null;
-    };
-  }, []);
+  useEffect(() => setLocalItems(null), [query.data]);
+
+  const fetchedItems = useMemo(() => {
+    const seen = new Set<string>();
+    return (query.data?.pages.flatMap((page) => page.content || []) || []).filter((item) => {
+      const id = String(getId(item));
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }, [getId, query.data]);
+  const items = localItems ?? fetchedItems;
+  const lastId = items.length ? getId(items[items.length - 1]) : undefined;
+
+  const fetchNext = useCallback(async () => {
+    if (query.hasNextPage && !query.isFetchingNextPage) await query.fetchNextPage();
+  }, [query]);
+  const refresh = useCallback(async () => { await query.refetch(); }, [query]);
+
+  const targetRef = useCallback((node: HTMLElement | null) => {
+    observerRef.current?.disconnect();
+    if (!node || !enabled) return;
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) void fetchNext();
+    }, { threshold: 0.1, rootMargin: '100px' });
+    observerRef.current.observe(node);
+  }, [enabled, fetchNext]);
+
+  useEffect(() => () => observerRef.current?.disconnect(), []);
 
   return {
     items,
-    setItems,
-    isLoading,
-    isFetchingMore,
-    hasNext,
-    error,
+    setItems: (value) => setLocalItems((previous) => typeof value === 'function' ? (value as (items: T[]) => T[])(previous ?? fetchedItems) : value),
+    isLoading: query.isLoading,
+    isFetchingMore: query.isFetchingNextPage,
+    hasNext: Boolean(query.hasNextPage),
+    error: query.error ? getErrorMessage(query.error) : null,
     lastId,
     targetRef,
-    refresh: loadInitial,
+    refresh,
     fetchNext,
   };
 }

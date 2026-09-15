@@ -1,6 +1,5 @@
-// src/hooks/useCachedApi.ts
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { apiCache } from '../utils/apiCache';
+import { useCallback, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface UseCachedApiOptions<T> {
   ttl?: number;
@@ -19,113 +18,62 @@ interface UseCachedApiResult<T> {
   mutate: (newData: T, shouldRevalidate?: boolean) => void;
 }
 
+export const apiQueryKey = (key: string) => ['legacy-api', key] as const;
+
 /**
- * ⚡ SWR(Stale-While-Revalidate) 패턴 기반의 고성능 API 캐싱 훅
+ * Compatibility wrapper for the legacy cache hook.
+ * New and existing call sites share TanStack Query's cache without a UI rewrite.
  */
 export function useCachedApi<T>(
   key: string | null,
   fetcher: () => Promise<T>,
   options: UseCachedApiOptions<T> = {}
 ): UseCachedApiResult<T> {
-  const { ttl, enabled = true, initialData, onSuccess, onError } = options;
-
-  const initialCached = key ? apiCache.get<T>(key) : null;
-  const [data, setData] = useState<T | null>(initialCached ?? initialData ?? null);
-  const [isLoading, setIsLoading] = useState<boolean>(!initialCached && !initialData && enabled && !!key);
-  const [isRevalidating, setIsRevalidating] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
-
+  const { ttl = 3 * 60 * 1000, enabled = true, initialData, onSuccess, onError } = options;
+  const queryClient = useQueryClient();
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
-  const activeKeyRef = useRef(key);
-  activeKeyRef.current = key;
-
   const onSuccessRef = useRef(onSuccess);
-  onSuccessRef.current = onSuccess;
-
   const onErrorRef = useRef(onError);
+  onSuccessRef.current = onSuccess;
   onErrorRef.current = onError;
 
-  const executeFetch = useCallback(
-    async (force = false): Promise<T | null> => {
-      if (!key || !enabled) return null;
-      const requestKey = key;
-
-      const cached = apiCache.get<T>(key);
-      if (cached && !force) {
-        if (activeKeyRef.current === requestKey) {
-          setData(cached);
-          setIsLoading(false);
-        }
-        return cached;
-      }
-
-      if (cached) {
-        if (activeKeyRef.current === requestKey) setIsRevalidating(true);
-      } else {
-        if (activeKeyRef.current === requestKey) setIsLoading(true);
-      }
-      if (activeKeyRef.current === requestKey) setError(null);
-
-      try {
-        const result = await apiCache.fetchWithCache(key, () => fetcherRef.current(), {
-          ttl,
-          force,
-        });
-        if (activeKeyRef.current === requestKey) setData(result);
-        if (activeKeyRef.current === requestKey && onSuccessRef.current) {
-          onSuccessRef.current(result);
-        }
-        return result;
-      } catch (err: unknown) {
-        const errObj = err instanceof Error ? err : new Error(String(err));
-        if (activeKeyRef.current === requestKey) setError(errObj);
-        if (activeKeyRef.current === requestKey && onErrorRef.current) {
-          onErrorRef.current(errObj);
-        }
-        return null;
-      } finally {
-        if (activeKeyRef.current === requestKey) {
-          setIsLoading(false);
-          setIsRevalidating(false);
-        }
-      }
-    },
-    [key, enabled, ttl]
-  );
+  const queryKey = apiQueryKey(key ?? 'disabled');
+  const query = useQuery({
+    queryKey,
+    queryFn: () => fetcherRef.current(),
+    enabled: Boolean(key) && enabled,
+    staleTime: ttl,
+    initialData,
+  });
 
   useEffect(() => {
-    if (key && enabled) {
-      const cached = apiCache.get<T>(key);
-      if (cached) {
-        setData(cached);
-        setIsLoading(false);
-      } else {
-        setData(initialData ?? null);
-        setError(null);
-        executeFetch(false);
-      }
-    }
-  }, [key, enabled, executeFetch]);
+    if (query.data !== undefined) onSuccessRef.current?.(query.data);
+  }, [query.data]);
 
-  const mutate = useCallback(
-    (newData: T, shouldRevalidate = false) => {
-      if (!key) return;
-      apiCache.set(key, newData, ttl);
-      setData(newData);
-      if (shouldRevalidate) {
-        executeFetch(true);
-      }
-    },
-    [key, ttl, executeFetch]
-  );
+  useEffect(() => {
+    if (query.error) {
+      const error = query.error instanceof Error ? query.error : new Error(String(query.error));
+      onErrorRef.current?.(error);
+    }
+  }, [query.error]);
+
+  const refetch = useCallback(async (_force = false) => {
+    const result = await query.refetch();
+    return result.data ?? null;
+  }, [query]);
+
+  const mutate = useCallback((newData: T, shouldRevalidate = false) => {
+    queryClient.setQueryData(queryKey, newData);
+    if (shouldRevalidate) queryClient.invalidateQueries({ queryKey });
+  }, [queryClient, queryKey]);
 
   return {
-    data,
-    isLoading,
-    isRevalidating,
-    error,
-    refetch: executeFetch,
+    data: query.data ?? null,
+    isLoading: query.isLoading,
+    isRevalidating: query.isFetching && !query.isLoading,
+    error: query.error instanceof Error ? query.error : query.error ? new Error(String(query.error)) : null,
+    refetch,
     mutate,
   };
 }

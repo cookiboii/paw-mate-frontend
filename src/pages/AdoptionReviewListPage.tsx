@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
-import { getReviewsCursor, prefetchReviewById } from '../api/review';
+import { getReviewById, getReviewsCursor } from '../api/review';
+import { apiQueryKey } from '../hooks/useCachedApi';
 import { Link, useSearchParams } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
 import ImageWithFallback from '../components/ImageWithFallback';
@@ -29,6 +31,7 @@ const renderCategoryIcon = (cat: string, size = 16) => {
 const AdoptionReviewListPage: React.FC = () => {
   usePageTitle('따뜻한 입양 후기 & 제보');
   const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // 1. 카테고리 URL 쿼리 파라미터 동기화
@@ -182,7 +185,10 @@ const AdoptionReviewListPage: React.FC = () => {
                 key={review.id}
                 to={`/reviews/${review.id}`}
                 className={styles.card}
-                onMouseEnter={() => prefetchReviewById(review.id)}
+                onMouseEnter={() => queryClient.prefetchQuery({
+                  queryKey: apiQueryKey(`review:detail:${review.id}`),
+                  queryFn: () => getReviewById(review.id),
+                })}
               >
                 <div className={styles.imageWrapper}>
                   {review.img ? (

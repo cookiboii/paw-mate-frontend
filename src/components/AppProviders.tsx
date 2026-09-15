@@ -1,4 +1,6 @@
 import React, { ReactNode } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../lib/queryClient';
 import { ThemeProvider } from '../context/ThemeContext';
 import { ToastProvider } from '../context/ToastContext';
 import { AuthProvider } from '../context/AuthContext';
@@ -15,15 +17,17 @@ interface AppProvidersProps {
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <ToastProvider>
-          <AuthProvider>
-            <FavoritesProvider>
-              {children}
-            </FavoritesProvider>
-          </AuthProvider>
-        </ToastProvider>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <FavoritesProvider>
+                {children}
+              </FavoritesProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 };
