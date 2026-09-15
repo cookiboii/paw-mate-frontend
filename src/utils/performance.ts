@@ -32,7 +32,20 @@ export interface ConcurrencyTestResult {
 }
 
 // 📌 1. Web Vitals 옵저버 등록
+const vitalsListeners = new Set<(metric: WebVitalsData) => void>();
+const latestVitals = new Map<string, WebVitalsData>();
+let vitalsStarted = false;
+
 export const subscribeToWebVitals = (onUpdate: (metric: WebVitalsData) => void) => {
+  vitalsListeners.add(onUpdate);
+  latestVitals.forEach(onUpdate);
+  const unsubscribe = () => { vitalsListeners.delete(onUpdate); };
+  if (vitalsStarted) return unsubscribe;
+  vitalsStarted = true;
+  const publish = (metric: WebVitalsData) => {
+    latestVitals.set(metric.name, metric);
+    vitalsListeners.forEach((listener) => listener(metric));
+  };
   const formatMetric = (metric: Metric): WebVitalsData => {
     let formatted = `${Math.round(metric.value)}ms`;
     if (metric.name === 'CLS') {
@@ -49,16 +62,16 @@ export const subscribeToWebVitals = (onUpdate: (metric: WebVitalsData) => void) 
   };
 
   try {
-    onCLS((m) => onUpdate(formatMetric(m)));
-    onFCP((m) => onUpdate(formatMetric(m)));
-    onINP((m) => onUpdate(formatMetric(m)));
-    onLCP((m) => onUpdate(formatMetric(m)));
-    onTTFB((m) => onUpdate(formatMetric(m)));
+    onCLS((m) => publish(formatMetric(m)));
+    onFCP((m) => publish(formatMetric(m)));
+    onINP((m) => publish(formatMetric(m)));
+    onLCP((m) => publish(formatMetric(m)));
+    onTTFB((m) => publish(formatMetric(m)));
   } catch (e) {
     console.warn('Web Vitals observer not fully supported in this browser', e);
   }
+  return unsubscribe;
 };
-
 // 📌 2. API 동시성 부하 테스트 엔진 (Promise.all vs Chunked vs Sequential)
 export const runConcurrencyBenchmark = async ({
   endpoint,

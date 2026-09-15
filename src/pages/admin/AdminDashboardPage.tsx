@@ -1,4 +1,8 @@
+import { useAllAnimalsQuery } from '../../hooks/queries/animals';
+import { useAllUsersQuery } from '../../hooks/queries/users';
+import { useAllAdoptionsQuery, useAdoptionStatusMutation } from '../../hooks/queries/adoptions';
 import React, { useEffect, useState, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
 import styles from '../../styles/admin/AdminDashboardPage.module.css';
 import { fetchAllAnimals } from '../../api/animal';
@@ -19,13 +23,20 @@ import DashboardCharts from '../../components/admin/dashboard/DashboardCharts';
 const AdminDashboardPage: React.FC = () => {
   usePageTitle('관리자 종합 대시보드');
   const { showToast } = useToast();
-
-  const [loading, setLoading] = useState<boolean>(true);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [animals, setAnimals] = useState<Animal[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [adoptions, setAdoptions] = useState<AdoptionResponseDto[]>([]);
+  const animalsQuery = useAllAnimalsQuery();
+  const usersQuery = useAllUsersQuery();
+  const adoptionsQuery = useAllAdoptionsQuery();
+  const statusMutation = useAdoptionStatusMutation();
+  const animals = animalsQuery.data || [];
+  const users = usersQuery.data || [];
+  const adoptions = adoptionsQuery.data || [];
+  const loading = animalsQuery.isLoading || usersQuery.isLoading || adoptionsQuery.isLoading;
+  const isRefreshing = animalsQuery.isFetching || usersQuery.isFetching || adoptionsQuery.isFetching;
+  const failures = [animalsQuery, usersQuery, adoptionsQuery].filter((query) => query.isError).length;
+  const loadError = failures ? `${failures}개의 대시보드 데이터를 불러오지 못했습니다. 다시 시도해 주세요.` : null;
+  const loadDashboardData = (_refresh = false) => Promise.all([
+    animalsQuery.refetch(), usersQuery.refetch(), adoptionsQuery.refetch(),
+  ]);
 
   // 빠른 승인/반려 확인 모달
   const [confirmModal, setConfirmModal] = useState<{
@@ -39,49 +50,6 @@ const AdminDashboardPage: React.FC = () => {
     status: null,
     applicantName: '',
   });
-
-  const loadDashboardData = async (refresh = false) => {
-    if (refresh) {
-      setIsRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-    setLoadError(null);
-    try {
-      const [animalResult, userResult, adoptionResult] = await Promise.allSettled([
-        fetchAllAnimals(),
-        getAllUsers(),
-        getAllAdoptions(),
-      ]);
-
-      const failures = [animalResult, userResult, adoptionResult].filter(
-        (result) => result.status === 'rejected'
-      ).length;
-
-      if (animalResult.status === 'fulfilled') setAnimals(animalResult.value || []);
-      if (userResult.status === 'fulfilled') setUsers(userResult.value || []);
-      if (adoptionResult.status === 'fulfilled') setAdoptions(adoptionResult.value || []);
-
-      if (failures > 0) {
-        const message = `${failures}개의 대시보드 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`;
-        setLoadError(message);
-        showToast(message, 'error');
-      }
-    } catch (err) {
-      console.error('대시보드 데이터 로딩 실패:', err);
-      showToast('대시보드 데이터를 불러오지 못했습니다.', 'error');
-    } finally {
-      if (refresh) {
-        setIsRefreshing(false);
-      } else {
-        setLoading(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
 
   // 통계 계산
   const stats: DashboardStats = useMemo(() => {
@@ -141,12 +109,9 @@ const AdminDashboardPage: React.FC = () => {
     setConfirmModal((prev) => ({ ...prev, isOpen: false }));
 
     try {
-      await updateAdoptionStatus(adoptionId, status);
+      await statusMutation.mutateAsync({ adoptionId, status });
       showToast(`입양 신청이 성공적으로 ${status === 'APPROVED' ? '승인' : '반려'}되었습니다.`, 'success');
 
-      setAdoptions((prev) =>
-        prev.map((item) => (item.adoptionId === adoptionId ? { ...item, status } : item))
-      );
     } catch (err: unknown) {
       showToast('상태 변경 실패: ' + getErrorMessage(err, '상태 변경에 실패했습니다.'), 'error');
     }

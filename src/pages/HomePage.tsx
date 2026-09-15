@@ -1,3 +1,4 @@
+import { useAnimalListQuery } from '../hooks/queries/animals';
 import React, { useState, useEffect, useMemo, lazy } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { Link } from "react-router-dom";
@@ -59,12 +60,7 @@ const HomePage: React.FC = () => {
     return () => mediaQuery.removeEventListener('change', updatePreference);
   }, []);
 
-  const recentAnimalsQuery = useQuery({
-    queryKey: queryKeys.animals.list(0, 6, selectedSpecies),
-    queryFn: () => selectedSpecies === 'ALL'
-      ? fetchAnimalList(0, 6)
-      : fetchAnimalListBySpecies(selectedSpecies, 0, 6),
-  });
+  const recentAnimalsQuery = useAnimalListQuery(0, 6, selectedSpecies);
   const recentAnimals = recentAnimalsQuery.data?.content || [];
   const isLoadingAnimals = recentAnimalsQuery.isLoading;
   const animalLoadError = recentAnimalsQuery.isError;

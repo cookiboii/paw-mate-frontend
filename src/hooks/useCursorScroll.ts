@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { SliceResponse } from '../types/common';
 import { getErrorMessage } from '../utils/error';
 
 export interface UseCursorScrollOptions<T> {
+  resourceKey: string;
   fetcher: (lastId: string | number | undefined, pageSize: number) => Promise<SliceResponse<T>>;
   getId: (item: T) => string | number;
   pageSize?: number;
@@ -13,7 +14,6 @@ export interface UseCursorScrollOptions<T> {
 
 export interface UseCursorScrollReturn<T> {
   items: T[];
-  setItems: React.Dispatch<React.SetStateAction<T[]>>;
   isLoading: boolean;
   isFetchingMore: boolean;
   hasNext: boolean;
@@ -25,14 +25,13 @@ export interface UseCursorScrollReturn<T> {
 }
 
 /** React Query-backed cursor pagination, retaining the existing component API. */
-export function useCursorScroll<T>({ fetcher, getId, pageSize = 10, enabled = true, dependencies = [] }: UseCursorScrollOptions<T>): UseCursorScrollReturn<T> {
-  const [localItems, setLocalItems] = useState<T[] | null>(null);
+export function useCursorScroll<T>({ resourceKey, fetcher, getId, pageSize = 10, enabled = true, dependencies = [] }: UseCursorScrollOptions<T>): UseCursorScrollReturn<T> {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
 
   const query = useInfiniteQuery({
-    queryKey: ['cursor-scroll', pageSize, ...dependencies],
+    queryKey: [resourceKey, 'cursor', pageSize, ...dependencies],
     queryFn: ({ pageParam }) => fetcherRef.current(pageParam ?? undefined, pageSize),
     initialPageParam: null as string | number | null,
     enabled,
@@ -41,8 +40,6 @@ export function useCursorScroll<T>({ fetcher, getId, pageSize = 10, enabled = tr
       return lastPage.hasNext && content.length ? getId(content[content.length - 1]) : undefined;
     },
   });
-
-  useEffect(() => setLocalItems(null), [query.data]);
 
   const fetchedItems = useMemo(() => {
     const seen = new Set<string>();
@@ -53,7 +50,7 @@ export function useCursorScroll<T>({ fetcher, getId, pageSize = 10, enabled = tr
       return true;
     });
   }, [getId, query.data]);
-  const items = localItems ?? fetchedItems;
+  const items = fetchedItems;
   const lastId = items.length ? getId(items[items.length - 1]) : undefined;
 
   const fetchNext = useCallback(async () => {
@@ -74,7 +71,6 @@ export function useCursorScroll<T>({ fetcher, getId, pageSize = 10, enabled = tr
 
   return {
     items,
-    setItems: (value) => setLocalItems((previous) => typeof value === 'function' ? (value as (items: T[]) => T[])(previous ?? fetchedItems) : value),
     isLoading: query.isLoading,
     isFetchingMore: query.isFetchingNextPage,
     hasNext: Boolean(query.hasNextPage),

@@ -1,3 +1,5 @@
+import { queryKeys } from '../../hooks/queries/keys';
+import { useAllUsersQuery, useDeleteUserMutation } from '../../hooks/queries/users';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAllUsers, deleteUserByAdmin } from '../../api/user';
@@ -14,14 +16,9 @@ const ITEMS_PER_PAGE = 10;
 const AdminUsersPage: React.FC = () => {
   usePageTitle('회원 관리 (Admin)');
   const queryClient = useQueryClient();
-  const usersQuery = useQuery({ queryKey: ['users'], queryFn: getAllUsers });
+  const usersQuery = useAllUsersQuery();
   const users = usersQuery.data || [];
-  const deleteUserMutation = useMutation({
-    mutationFn: deleteUserByAdmin,
-    onSuccess: (_, memberId) => {
-      queryClient.setQueryData<User[]>(['users'], (previous = []) => previous.filter((user) => user.id !== memberId));
-    },
-  });
+  const deleteUserMutation = useDeleteUserMutation();
   const [searchKeyword, setSearchKeyword] = useState('');
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'ADMIN' | 'USER'>('ALL'); // ALL, ADMIN, USER
   const [currentPage, setCurrentPage] = useState(1);
@@ -80,7 +77,7 @@ const AdminUsersPage: React.FC = () => {
     const newRole = roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN' ? 'USER' : 'ADMIN';
 
     // 낙관적 UI 업데이트
-    queryClient.setQueryData<User[]>(['users'], (prev = []) =>
+    queryClient.setQueryData<User[]>(queryKeys.users.all, (prev = []) =>
       prev.map((u) => (u.id === roleTargetUser.id ? { ...u, role: newRole } : u))
     );
     showToast(`'${roleTargetUser.name || roleTargetUser.email}'님의 권한이 '${newRole}'(으)로 변경되었습니다.`, 'success');

@@ -1,3 +1,6 @@
+import ReviewDetailContent from '../components/reviews/ReviewDetailContent';
+import ReviewReactionActions from '../components/reviews/ReviewReactionActions';
+import ReviewDetailHero from '../components/reviews/ReviewDetailHero';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReviewById, deleteReview, setReviewBookmark, setReviewLike } from '../api/review';
@@ -7,39 +10,26 @@ import CommentSection from '../components/CommentSection';
 import { useToast } from '../context/ToastContext';
 import ConfirmModal from '../components/ConfirmModal';
 import Skeleton from '../components/Skeleton';
-import { formatDate } from '../utils/date';
+
 import usePageTitle from '../hooks/usePageTitle';
-import useCachedApi from '../hooks/useCachedApi';
+import { useReviewDetailQuery, useDeleteReviewMutation, useReviewLikeMutation, useReviewBookmarkMutation } from '../hooks/queries/reviews';
+import useShare from '../hooks/useShare';
 import { getErrorMessage } from '../utils/error';
 import { CATEGORIES } from '../components/ReviewCategoryTabs';
 import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
 import { ReviewDetailData, PostResponseDto } from '../types/review';
-import { AlertTriangle, Gift, HeartHandshake, ArrowLeft, Edit3, Trash2, Share2, Check, Maximize2, Heart, Bookmark } from 'lucide-react';
+import { ArrowLeft, Edit3, Trash2, Share2, Check } from 'lucide-react';
 import ImageLightboxModal from '../components/ImageLightboxModal';
-
-const renderCategoryIcon = (cat: string, size = 16) => {
-  switch (cat) {
-    case 'REPORT':
-      return <AlertTriangle size={size} />;
-    case 'FREE_ADOPTION':
-      return <Gift size={size} />;
-    case 'REVIEW':
-    default:
-      return <HeartHandshake size={size} />;
-  }
-};
 
 const AdoptionReviewDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const cacheKey = id ? `review:detail:${id}` : null;
-  const { data: rawReview, isLoading: isReviewLoading } = useCachedApi<PostResponseDto>(
-    cacheKey,
-    () => getReviewById(id!),
-    { enabled: !!id }
-  );
+  const { data: rawReview, isLoading: isReviewLoading, error: reviewError, refetch } = useReviewDetailQuery(id);
+  const deleteMutation = useDeleteReviewMutation();
+  const likeMutation = useReviewLikeMutation();
+  const bookmarkMutation = useReviewBookmarkMutation();
 
   const review: ReviewDetailData | null = rawReview
     ? {
@@ -53,7 +43,6 @@ const AdoptionReviewDetail: React.FC = () => {
   const isAdmin = isAuthenticated && hasAdminRole;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(0);
@@ -79,7 +68,7 @@ const AdoptionReviewDetail: React.FC = () => {
     if (!id) return;
     setIsDeleting(true);
     try {
-      await deleteReview(id);
+      await deleteMutation.mutateAsync(id);
       setIsDeleteModalOpen(false);
       showToast('게시글이 성공적으로 삭제되었습니다.', 'success');
       setTimeout(() => navigate('/reviews'), 800);
@@ -90,32 +79,11 @@ const AdoptionReviewDetail: React.FC = () => {
     }
   };
 
-  const handleShare = async () => {
-    const shareUrl = window.location.href;
-    const shareTitle = `[AdoptMate] ${cleanTitle}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shareTitle,
-          text: review?.content ? review.content.slice(0, 80) + '...' : cleanTitle,
-          url: shareUrl,
-        });
-        return;
-      } catch {
-        // 공유 취소
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setIsCopied(true);
-      showToast('게시글 링크가 클립보드에 복사되었습니다!', 'success');
-      setTimeout(() => setIsCopied(false), 2500);
-    } catch {
-      showToast('링크 복사에 실패했습니다.', 'error');
-    }
-  };
+  const { isCopied, handleShare } = useShare({
+    title: `[AdoptMate] ${cleanTitle}`,
+    text: review?.content ? review.content.slice(0, 80) + '...' : cleanTitle,
+    successMessage: '게시글 링크가 클립보드에 복사되었습니다!',
+  });
 
   const requireLoginForReaction = () => {
     if (isAuthenticated) return true;
@@ -128,7 +96,7 @@ const AdoptionReviewDetail: React.FC = () => {
     if (!id || !requireLoginForReaction() || isReactionLoading) return;
     setIsReactionLoading(true);
     try {
-      const result = await setReviewLike(id, !isLiked);
+      const result = await likeMutation.mutateAsync({ id, value: !isLiked });
       setIsLiked(result.liked);
       setLikeCount(result.likeCount);
     } catch (err) {
@@ -142,7 +110,7 @@ const AdoptionReviewDetail: React.FC = () => {
     if (!id || !requireLoginForReaction() || isReactionLoading) return;
     setIsReactionLoading(true);
     try {
-      const result = await setReviewBookmark(id, !isBookmarked);
+      const result = await bookmarkMutation.mutateAsync({ id, value: !isBookmarked });
       setIsBookmarked(result.bookmarked);
       showToast(result.bookmarked ? '북마크에 저장했습니다.' : '북마크를 해제했습니다.', 'success');
     } catch (err) {
@@ -152,6 +120,9 @@ const AdoptionReviewDetail: React.FC = () => {
     }
   };
 
+  if (reviewError && !review) {
+    return <div role="alert">게시글을 불러오지 못했습니다. <button onClick={() => void refetch()}>다시 시도</button></div>;
+  }
   if (!isLoaded || !review) {
     return (
       <div className={styles.pageWrapper}>
@@ -169,7 +140,6 @@ const AdoptionReviewDetail: React.FC = () => {
     );
   }
 
-
   const cat = getCategoryFromTitle(review.title);
   const catInfo = CATEGORIES.find((c) => c.key === cat) || CATEGORIES[1];
   const isReport = cat === 'REPORT';
@@ -179,110 +149,26 @@ const AdoptionReviewDetail: React.FC = () => {
     <div className={styles.pageWrapper}>
       <article className={styles.article}>
         {/* Hero Section */}
-        <div
-          className={`${styles.heroSection} ${
-            !review.img
-              ? isReport
-                ? styles.heroNoImgReport
-                : isFreeAdoption
-                ? styles.heroNoImgFreeAdoption
-                : styles.heroNoImg
-              : ''
-          }`}
-        >
-          {review.img ? (
-            <>
-              <img 
-                src={review.img} 
-                alt={cleanTitle} 
-                className={styles.heroImage} 
-                onClick={() => setIsLightboxOpen(true)} 
-                title="클릭하여 크게 보기"
-              />
-              <button
-                type="button"
-                className={styles.heroExpandBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsLightboxOpen(true);
-                }}
-                title="사진 크게 보기"
-                aria-label="사진 크게 보기"
-              >
-                <Maximize2 size={15} />
-                <span>크게 보기</span>
-              </button>
-            </>
-          ) : (
-            <div
-              className={`${styles.noImage} ${
-                isReport
-                  ? styles.noImageReport
-                  : isFreeAdoption
-                  ? styles.noImageFreeAdoption
-                  : ''
-              }`}
-            >
-              <span>{renderCategoryIcon(cat, 56)}</span>
-              <p>{catInfo.label}</p>
-            </div>
-          )}
-          <div className={styles.heroOverlay}>
-            <div className={styles.heroContent}>
-              {/* 카테고리 뱃지 */}
-              <span
-                className={`${styles.heroCategoryBadge} ${
-                  isReport
-                    ? styles.heroBadgeReport
-                    : isFreeAdoption
-                    ? styles.heroBadgeFreeAdoption
-                    : styles.heroBadgeReview
-                }`}
-              >
-                {renderCategoryIcon(cat, 14)}
-                <span>{catInfo.label}</span>
-              </span>
-              <h1 className={styles.title}>{cleanTitle}</h1>
-              <div className={styles.meta}>
-                <span className={styles.author}>
-                  <div className={styles.avatar}>{review.name?.charAt(0) || 'U'}</div>
-                  {review.name}
-                </span>
-                {(review.createAt || review.createdAt) && (
-                  <span className={styles.dateText}>
-                    {formatDate(review.createAt || review.createdAt, { year: 'numeric', month: 'long', day: 'numeric' })}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <ReviewDetailHero
+          review={review}
+          cleanTitle={cleanTitle}
+          isReport={isReport}
+          isFreeAdoption={isFreeAdoption}
+          cat={cat}
+          catInfo={catInfo}
+          setIsLightboxOpen={setIsLightboxOpen}
+        />
         {/* Content Section */}
         <div className={styles.contentSection}>
           <div className={styles.toolbar}>
-            <div className={styles.reactionActions}>
-              <button
-                type="button"
-                onClick={handleLike}
-                className={`${styles.reactionBtn} ${isLiked ? styles.reactionActive : ''}`}
-                aria-pressed={isLiked}
-                disabled={isReactionLoading}
-              >
-                <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
-                <span>좋아요 {likeCount}</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleBookmark}
-                className={`${styles.reactionBtn} ${isBookmarked ? styles.reactionActive : ''}`}
-                aria-pressed={isBookmarked}
-                disabled={isReactionLoading}
-              >
-                <Bookmark size={16} fill={isBookmarked ? 'currentColor' : 'none'} />
-                <span>{isBookmarked ? '저장됨' : '북마크'}</span>
-              </button>
-            </div>
+        <ReviewReactionActions
+          handleLike={handleLike}
+          handleBookmark={handleBookmark}
+          isLiked={isLiked}
+          likeCount={likeCount}
+          isBookmarked={isBookmarked}
+          isReactionLoading={isReactionLoading}
+        />
             <button
               onClick={handleShare}
               className={styles.shareBtn}
@@ -320,35 +206,11 @@ const AdoptionReviewDetail: React.FC = () => {
               </div>
             )}
           </div>
-
-          {/* 유기동물 제보 긴급 안내 */}
-          {isReport && (
-            <div className={styles.reportBanner}>
-              <strong>
-                <AlertTriangle size={18} />
-                <span>이 글은 유기동물 제보 게시글입니다</span>
-              </strong>
-              <p>도움이 필요하신 분은 <strong>동물보호 상담전화 1577-0954</strong>로 연락해 주세요.</p>
-            </div>
-          )}
-
-          {/* 무료 분양 안내 */}
-          {isFreeAdoption && (
-            <div className={styles.freeAdoptionBanner}>
-              <strong>
-                <Gift size={18} />
-                <span>무료 분양 안내</span>
-              </strong>
-              <p>반려동물 입양은 소중한 생명을 평생 책임지는 약속입니다. 안전한 입양을 위해 직접 만나 아이의 상태를 확인하고 교감해 보세요.</p>
-            </div>
-          )}
-
-          <div className={styles.bodyText}>
-            {review.content.split('\n').map((line, index) => (
-              <p key={index}>{line}</p>
-            ))}
-          </div>
-
+        <ReviewDetailContent
+          isReport={isReport}
+          isFreeAdoption={isFreeAdoption}
+          review={review}
+        />
           {/* 목록으로 버튼 */}
           <button className={styles.backBtn} onClick={() => navigate('/reviews')}>
             <ArrowLeft size={16} />

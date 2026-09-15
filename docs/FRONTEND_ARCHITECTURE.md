@@ -104,6 +104,19 @@ npm run images:optimize
 
 원본은 보존하고, 화면에서는 최적화 파일을 import합니다. 카드 이미지는 기본적으로 lazy loading과 async decoding을 사용합니다.
 
+## 화면 컴포넌트 분리 구조
+
+긴 페이지의 표시 영역을 아래처럼 나눴습니다. 페이지는 조회·변경 요청, 상태, 라우팅을 연결하고 하위 컴포넌트는 전달받은 데이터와 콜백으로 화면을 표시합니다.
+
+| 페이지 | 하위 컴포넌트 위치와 책임 |
+| --- | --- |
+| `MyPage.tsx` | `components/mypage/`: 프로필, 관심 동물, 저장한 글, 입양 내역, 비밀번호 탭 |
+| `AnimalList.tsx` | `components/animals/AnimalList*`: 결과·로딩·오류 표시, 페이지네이션, 무한 스크롤 하단 |
+| `AnimalDetail.tsx` | `components/animals/`: 기본 정보, 입양 동작, 관리자 동작 |
+| `AdoptionReviewDetail.tsx` | `components/reviews/`: 대표 이미지·제목, 본문, 좋아요·북마크 동작. 댓글은 기존 `CommentSection` 사용 |
+
+기존 CSS 모듈과 이벤트 처리 흐름은 유지합니다. 단순히 파일을 분리했다고 렌더링이 빨라지는 것은 아닙니다. 이번 분리는 유지보수와 개별 테스트 경계를 만드는 작업이며, 상태 위치 변경이나 메모이제이션은 실제 측정에 따라 별도로 적용해야 합니다. 모든 화면의 Query/Mutation 전환을 완료했다는 의미는 아닙니다.
+
 ## 남은 점진 개선 항목
 
 현재 상세·무한 스크롤은 Query 기반입니다. 일부 페이지의 숫자 페이지네이션과 관리자 대시보드는 기존 `useEffect + useState` 요청 방식을 유지하고 있습니다. 기능상 문제는 없지만, 다음 리팩터링 때 `useQuery`로 옮기면 loading/error/retry 규칙까지 완전히 통일됩니다.

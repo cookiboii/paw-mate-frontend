@@ -1,15 +1,16 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useAnimalListQuery, useAllAnimalsQuery } from '../hooks/queries/animals';
+import AnimalListInfiniteView from '../components/animals/AnimalListInfiniteView';
+import AnimalListPaginationView from '../components/animals/AnimalListPaginationView';
+import AnimalListResults from '../components/animals/AnimalListResults';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Dog, Sparkles } from 'lucide-react';
+
 import styles from '../styles/pages/AnimalList.module.css';
-import Skeleton from '../components/Skeleton';
-import EmptyState from '../components/EmptyState';
-import AnimalCard from '../components/AnimalCard';
-import Pagination from '../components/Pagination';
-import Spinner from '../components/Spinner';
+
 import AnimalFilterBar from '../components/AnimalFilterBar';
 import usePageTitle from '../hooks/usePageTitle';
 import useDebounce from '../hooks/useDebounce';
+import { useAnimalFilters } from '../hooks/useAnimalFilters';
 import { useCursorScroll } from '../hooks/useCursorScroll';
 import { fetchAllAnimals, fetchAnimalList, fetchAnimalListBySpecies, fetchAnimalCursorList, fetchAnimalCursorListBySpecies } from '../api/animal';
 import { Animal } from '../types/animal';
@@ -40,16 +41,9 @@ const AnimalList: React.FC = () => {
   const [genderFilter, setGenderFilter] = useState<'ALL' | 'MALE' | 'FEMALE'>(initialGender);
   const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const [allFilterCandidates, setAllFilterCandidates] = useState<Animal[]>([]);
-  const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
 
   // 2. 페이지네이션 모드 상태
   const [page, setPage] = useState<number>(initialPage);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [paginationAnimals, setPaginationAnimals] = useState<Animal[]>([]);
-  const [isPaginationLoading, setIsPaginationLoading] = useState<boolean>(false);
-  const [loadError, setLoadError] = useState<Error | null>(null);
-  const [retryKey, setRetryKey] = useState(0);
 
   // URL 쿼리 파라미터 동기화 (필터 및 뷰 모드 변경 시)
   useEffect(() => {
@@ -86,74 +80,25 @@ const AnimalList: React.FC = () => {
     hasNext,
     targetRef,
     refresh: refreshInfinite,
+    error: infiniteError,
   } = useCursorScroll<Animal>({
+    resourceKey: 'animals',
     fetcher: cursorFetcher,
     getId: (item) => item.id ?? item.animalId ?? '',
     pageSize: 9,
-    enabled: viewMode === 'infinite',
+    enabled: viewMode === 'infinite' && genderFilter === 'ALL' && !debouncedSearchQuery.trim(),
     dependencies: [speciesFilter],
   });
 
-  // 5. 페이지네이션 모드 데이터 로드
-  useEffect(() => {
-    if (viewMode !== 'pagination') return;
-
-    let isMounted = true;
-    setIsPaginationLoading(true);
-    setLoadError(null);
-
-    const loadPaged = async () => {
-      try {
-        const pageData =
-          speciesFilter === 'ALL'
-            ? await fetchAnimalList(page, 6)
-            : await fetchAnimalListBySpecies(speciesFilter, page, 6);
-
-        if (isMounted) {
-          setPaginationAnimals(pageData.content || []);
-          setTotalPages(pageData.totalPages || 1);
-        }
-      } catch (err) {
-        if (isMounted) setLoadError(err instanceof Error ? err : new Error(String(err)));
-        console.error('페이지네이션 데이터 로드 실패:', err);
-      } finally {
-        if (isMounted) setIsPaginationLoading(false);
-      }
-    };
-
-    loadPaged();
-    return () => {
-      isMounted = false;
-    };
-  }, [viewMode, page, speciesFilter, retryKey]);
-
   const needsCompleteFilterSet = genderFilter !== 'ALL' || debouncedSearchQuery.trim() !== '';
-
-  useEffect(() => {
-    if (!needsCompleteFilterSet) {
-      setAllFilterCandidates([]);
-      return;
-    }
-
-    let isMounted = true;
-    setIsFilterLoading(true);
-    setLoadError(null);
-    fetchAllAnimals(speciesFilter)
-      .then((animals) => {
-        if (isMounted) setAllFilterCandidates(animals);
-      })
-      .catch((error) => {
-        if (isMounted) setLoadError(error instanceof Error ? error : new Error(String(error)));
-        console.error('Failed to load complete animal list for filtering:', error);
-      })
-      .finally(() => {
-        if (isMounted) setIsFilterLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [needsCompleteFilterSet, speciesFilter, retryKey]);
+  const pageQuery = useAnimalListQuery(page, 6, speciesFilter, viewMode === 'pagination' && !needsCompleteFilterSet);
+  const filterQuery = useAllAnimalsQuery(needsCompleteFilterSet, speciesFilter);
+  const allFilterCandidates = filterQuery.data || [];
+  const paginationAnimals = pageQuery.data?.content || [];
+  const totalPages = pageQuery.data?.totalPages || 1;
+  const isFilterLoading = needsCompleteFilterSet && filterQuery.isLoading;
+  const isPaginationLoading = pageQuery.isLoading;
+  const loadError = needsCompleteFilterSet ? filterQuery.error : viewMode === 'pagination' ? pageQuery.error : infiniteError ? new Error(infiniteError) : null;
 
   // 6. 클라이언트 레벨 검색어 & 성별 필터링
   const rawList = needsCompleteFilterSet
@@ -161,25 +106,7 @@ const AnimalList: React.FC = () => {
     : viewMode === 'infinite'
       ? infiniteAnimals
       : paginationAnimals;
-  const filteredAnimals = useMemo(() => {
-    let list = rawList;
-
-    if (genderFilter !== 'ALL') {
-      list = list.filter((a) => a.gender === genderFilter);
-    }
-
-    if (debouncedSearchQuery.trim()) {
-      const q = debouncedSearchQuery.toLowerCase().trim();
-      list = list.filter(
-        (a) =>
-          (a.breed || '').toLowerCase().includes(q) ||
-          (a.name || '').toLowerCase().includes(q) ||
-          (a.color || '').toLowerCase().includes(q)
-      );
-    }
-
-    return list;
-  }, [rawList, genderFilter, debouncedSearchQuery]);
+  const filteredAnimals = useAnimalFilters(rawList, genderFilter, debouncedSearchQuery);
 
   const displayedAnimals =
     viewMode === 'pagination' && needsCompleteFilterSet
@@ -189,7 +116,7 @@ const AnimalList: React.FC = () => {
     ? Math.max(1, Math.ceil(filteredAnimals.length / 6))
     : totalPages;
 
-  const isLoading = isFilterLoading || (viewMode === 'infinite' ? isInfiniteLoading : isPaginationLoading);
+  const isLoading = needsCompleteFilterSet ? isFilterLoading : viewMode === 'infinite' ? isInfiniteLoading : isPaginationLoading;
   const hasActiveFilter = speciesFilter !== 'ALL' || genderFilter !== 'ALL' || searchQuery !== '';
 
   const handleResetFilters = useCallback(() => {
@@ -201,6 +128,12 @@ const AnimalList: React.FC = () => {
       refreshInfinite();
     }
   }, [viewMode, refreshInfinite]);
+
+  const onRetry = () => {
+    if (needsCompleteFilterSet) void filterQuery.refetch();
+    else if (viewMode === 'infinite') void refreshInfinite();
+    else void pageQuery.refetch();
+  };
 
   return (
     <div className={styles.pageWrapper}>
@@ -239,78 +172,32 @@ const AnimalList: React.FC = () => {
 
       {/* 동물 카드 리스트 영역 */}
       <div className={styles.container}>
-        {loadError && !isLoading ? (
-          <EmptyState
-            icon={<Dog size={48} />}
-            title="Unable to load animals"
-            description="Please check your connection and try again."
-            actionLabel="Try again"
-            onAction={() => {
-              setLoadError(null);
-              if (viewMode === 'infinite') refreshInfinite();
-              else setRetryKey((currentKey) => currentKey + 1);
-            }}
-          />
-        ) : isLoading ? (
-          <ul className={styles.list}>
-            {Array.from({ length: viewMode === 'infinite' ? 9 : 6 }).map((_, idx) => (
-              <li key={`skeleton-${idx}`} className={styles.card}>
-                <Skeleton type="card" height="240px" />
-                <div className={styles.info}>
-                  <Skeleton type="title" width="60%" height="24px" />
-                  <Skeleton type="text" width="40%" height="16px" />
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : displayedAnimals.length === 0 ? (
-          <EmptyState
-            icon={<Dog size={48} />}
-            title="조건에 맞는 아이가 없습니다."
-            description="현재 조건에 부합하는 유기동물이 없습니다. 검색어나 필터를 초기화해 보세요."
-            actionLabel="검색 & 필터 초기화"
-            onAction={handleResetFilters}
-          />
-        ) : (
-          <ul className={styles.list}>
-            {displayedAnimals.map((animal, idx) => (
-              <li key={animal.id ?? animal.animalId ?? idx}>
-                <AnimalCard animal={animal} showStatus priority={idx < 3} />
-              </li>
-            ))}
-          </ul>
-        )}
-
+        <AnimalListResults
+          loadError={loadError}
+          isLoading={isLoading}
+          viewMode={viewMode}
+          displayedAnimals={displayedAnimals}
+          handleResetFilters={handleResetFilters}
+          onRetry={onRetry}
+        />
         {/* 1. 페이지네이션 뷰 하단 번호 이동 */}
-        {viewMode === 'pagination' && !isLoading && displayedAnimals.length > 0 && (
-          <Pagination currentPage={page} totalPages={displayedTotalPages} onPageChange={setPage} />
-        )}
-
+        <AnimalListPaginationView
+          viewMode={viewMode}
+          isLoading={isLoading}
+          displayedAnimals={displayedAnimals}
+          page={page}
+          displayedTotalPages={displayedTotalPages}
+          setPage={setPage}
+        />
         {/* 2. 무한 스크롤 뷰 하단 센서 & 상태 UI */}
-        {viewMode === 'infinite' && (
-          <>
-            <div ref={targetRef} className={styles.scrollSentinel} />
-
-            {isFetchingMore && (
-              <div className={styles.infiniteLoader}>
-                <Spinner />
-                <span>아이들 정보를 빠르게 불러오는 중...</span>
-              </div>
-            )}
-
-            {!hasNext && !isLoading && displayedAnimals.length > 0 && (
-              <div className={styles.endOfList}>
-                <div className={styles.endOfListTitle}>
-                  <Sparkles size={18} />
-                  <span>모든 아이들을 다 불러왔습니다 🐾</span>
-                </div>
-                <p className={styles.endOfListDesc}>
-                  따뜻한 사랑으로 아이들의 평생 가족이 되어주세요.
-                </p>
-              </div>
-            )}
-          </>
-        )}
+        <AnimalListInfiniteView
+          viewMode={viewMode}
+          targetRef={targetRef}
+          isFetchingMore={isFetchingMore}
+          hasNext={hasNext}
+          isLoading={isLoading}
+          displayedAnimals={displayedAnimals}
+        />
       </div>
     </div>
   );

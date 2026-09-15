@@ -1,3 +1,4 @@
+import { useAllAnimalsQuery, useAnimalStatusMutation, useDeleteAnimalMutation } from '../../hooks/queries/animals';
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, Navigate } from 'react-router-dom';
@@ -18,7 +19,6 @@ const AdminAnimalsPage: React.FC = () => {
   usePageTitle('보호 동물 통합 관리 (Admin)');
   const { isAuthenticated, user } = useAuth();
   const { showToast } = useToast();
-  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const activeTab = searchParams.get('tab') === 'register' ? 'register' : 'list';
@@ -27,21 +27,11 @@ const AdminAnimalsPage: React.FC = () => {
   };
 
   // 동물 목록 관리 상태
-  const animalsQuery = useQuery({ queryKey: ['animals'], queryFn: () => fetchAllAnimals(), enabled: activeTab === 'list' });
+  const animalsQuery = useAllAnimalsQuery(activeTab === 'list');
   const animals = animalsQuery.data || [];
   const isLoadingList = animalsQuery.isLoading;
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ animalId, status }: { animalId: number | string; status: string }) => updateAnimalStatus(animalId, status),
-    onSuccess: (updatedAnimal) => queryClient.setQueryData<Animal[]>(['animals'], (previous = []) =>
-      previous.map((animal) => (animal.id ?? animal.animalId) === (updatedAnimal.id ?? updatedAnimal.animalId) ? updatedAnimal : animal)
-    ),
-  });
-  const deleteAnimalMutation = useMutation({
-    mutationFn: deleteAnimal,
-    onSuccess: (_, animalId) => queryClient.setQueryData<Animal[]>(['animals'], (previous = []) =>
-      previous.filter((animal) => (animal.id ?? animal.animalId) !== animalId)
-    ),
-  });
+  const updateStatusMutation = useAnimalStatusMutation();
+  const deleteAnimalMutation = useDeleteAnimalMutation();
 
   // 삭제 모달 상태
   const [deleteTarget, setDeleteTarget] = useState<Animal | null>(null);
@@ -55,7 +45,7 @@ const AdminAnimalsPage: React.FC = () => {
   // 상태 빠른 변경 핸들러
   const handleQuickStatusChange = async (animalId: number | string, newStatus: string) => {
     try {
-      await updateStatusMutation.mutateAsync({ animalId, status: newStatus });
+      await updateStatusMutation.mutateAsync({ id: animalId, status: newStatus });
       showToast(`동물(#${animalId})의 보호 상태가 '${getStatusLabel(newStatus)}'(으)로 변경되었습니다.`, 'success');
     } catch (err) {
       console.error('상태 변경 실패:', err);

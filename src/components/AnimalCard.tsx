@@ -10,7 +10,7 @@ import { useToast } from '../context/ToastContext';
 import { Animal } from '../types/animal';
 import { getGenderLabel, getSpeciesLabel, getStatusLabel } from '../constants/animal';
 import { fetchAnimalById } from '../api/animal';
-import { apiQueryKey } from '../hooks/useCachedApi';
+import { animalDetailOptions } from '../hooks/queries/animals';
 
 interface AnimalCardProps {
   animal: Animal | Partial<Animal>;
@@ -40,10 +40,7 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
 
   const handleMouseEnter = useCallback(() => {
     if (animalId) {
-      queryClient.prefetchQuery({
-        queryKey: apiQueryKey(`animal:detail:${animalId}`),
-        queryFn: () => fetchAnimalById(animalId),
-      });
+      void queryClient.prefetchQuery(animalDetailOptions(animalId));
     }
   }, [animalId, queryClient]);
 

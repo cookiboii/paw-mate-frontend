@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getMyInfo } from '../api/user';
+import { useMyProfileQuery } from '../hooks/queries/users';
 import { AuthContextType } from '../types/auth';
 import { useAuthStore } from '../stores/authStore';
 import { useToast } from './ToastContext';
@@ -18,12 +18,7 @@ const AuthBootstrap = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
 
-  const profileQuery = useQuery({
-    queryKey: ['auth', 'profile', sessionVersion],
-    queryFn: getMyInfo,
-    enabled: isAuthenticated,
-    retry: false,
-  });
+  const profileQuery = useMyProfileQuery(isAuthenticated);
 
   useEffect(() => {
     if (!isAuthenticated) {

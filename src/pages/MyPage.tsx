@@ -1,22 +1,29 @@
+import { useMyProfileQuery } from '../hooks/queries/users';
+import { useMyAdoptionsQuery } from '../hooks/queries/adoptions';
+import { useBookmarkedReviewsQuery } from '../hooks/queries/reviews';
+import MyPagePasswordTab from '../components/mypage/MyPagePasswordTab';
+import MyPageAdoptionsTab from '../components/mypage/MyPageAdoptionsTab';
+import MyPageBookmarksTab from '../components/mypage/MyPageBookmarksTab';
+import MyPageFavoritesTab from '../components/mypage/MyPageFavoritesTab';
+import MyPageProfileTab from '../components/mypage/MyPageProfileTab';
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import styles from '../styles/pages/MyPage.module.css';
 import { getMyInfo, deleteMyAccount, updatePassword } from '../api/user';
 import { getMyAdoptions } from '../api/adoption';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
 import Spinner from '../components/Spinner';
 import EmptyState from '../components/EmptyState';
 import ConfirmModal from '../components/ConfirmModal';
-import AnimalCard from '../components/AnimalCard';
-import { formatDate } from '../utils/date';
+
 import usePageTitle from '../hooks/usePageTitle';
 import { User as UserType } from '../types/auth';
 import { AdoptionHistoryItem } from '../types/adoption';
 import { PostResponseDto } from '../types/review';
 import { getMyBookmarkedReviews } from '../api/review';
-import { User, Heart, ClipboardList, ShieldCheck, PawPrint, CheckCircle2, XCircle, Clock, Bookmark } from 'lucide-react';
+import { User, Heart, ClipboardList, ShieldCheck, Bookmark } from 'lucide-react';
 import { getErrorMessage } from '../utils/error';
 
 type TabType = 'profile' | 'favorites' | 'bookmarks' | 'password' | 'adoptions';
@@ -25,9 +32,6 @@ const VALID_TABS: TabType[] = ['profile', 'favorites', 'bookmarks', 'password', 
 const MyPage: React.FC = () => {
   usePageTitle('마이페이지');
   const [searchParams, setSearchParams] = useSearchParams();
-  const [userInfo, setUserInfo] = useState<UserType | null>(null);
-  const [profileLoadError, setProfileLoadError] = useState<boolean>(false);
-  const [profileRetryKey, setProfileRetryKey] = useState<number>(0);
 
   const tabParam = searchParams.get('tab') as TabType | null;
   const [activeTab, setActiveTab] = useState<TabType>(
@@ -40,13 +44,17 @@ const MyPage: React.FC = () => {
     new_passwd: '',
     new_passwd_confirm: '',
   });
-  const [adoptionList, setAdoptionList] = useState<AdoptionHistoryItem[]>([]);
-  const [bookmarkedReviews, setBookmarkedReviews] = useState<PostResponseDto[]>([]);
-  const [isBookmarksLoading, setIsBookmarksLoading] = useState<boolean>(false);
-  const token = localStorage.getItem('token');
   const provider = localStorage.getItem('provider');
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
+  const profileQuery = useMyProfileQuery(isAuthenticated);
+  const userInfo = profileQuery.data;
+  const profileLoadError = profileQuery.isError;
+  const adoptionsQuery = useMyAdoptionsQuery(isAuthenticated && activeTab === 'adoptions');
+  const bookmarksQuery = useBookmarkedReviewsQuery(isAuthenticated && activeTab === 'bookmarks');
+  const adoptionList = adoptionsQuery.data || [];
+  const bookmarkedReviews = bookmarksQuery.data || [];
+  const isBookmarksLoading = bookmarksQuery.isLoading;
   const { showToast } = useToast();
   const { favorites, toggleFavorite, refreshFavorites } = useFavorites();
 
@@ -72,36 +80,11 @@ const MyPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!token) {
+    if (!isAuthenticated) {
       showToast('로그인이 필요한 서비스입니다.', 'warning');
       navigate('/login', { replace: true });
-      return;
     }
-
-    setProfileLoadError(false);
-    getMyInfo()
-      .then((data) => {
-        const { name, email, role } = data;
-        setUserInfo({ name, email, role });
-      })
-      .catch(() => {
-        setProfileLoadError(true);
-        showToast('사용자 정보를 불러오지 못했습니다.', 'error');
-      });
-
-    getMyAdoptions()
-      .then((adoptions) => {
-        setAdoptionList(adoptions || []);
-      })
-      .catch(() => {
-        console.warn('입양 내역을 불러오지 못했습니다.');
-      });
-    setIsBookmarksLoading(true);
-    getMyBookmarkedReviews()
-      .then((reviews) => setBookmarkedReviews(reviews))
-      .catch(() => setBookmarkedReviews([]))
-      .finally(() => setIsBookmarksLoading(false));
-  }, [token, showToast, navigate, profileRetryKey]);
+  }, [isAuthenticated, showToast, navigate]);
 
   const handleDeleteAccount = () => {
     setIsDeleteModalOpen(true);
@@ -159,7 +142,7 @@ const MyPage: React.FC = () => {
           description="네트워크 상태를 확인한 후 다시 시도해 주세요."
           actionLabel="다시 시도"
           actionHint="일시적인 오류일 수 있습니다."
-          onAction={() => setProfileRetryKey((key) => key + 1)}
+          onAction={() => void profileQuery.refetch()}
         />
       );
     }
@@ -223,218 +206,30 @@ const MyPage: React.FC = () => {
         <main className={styles.contentArea}>
           {/* 내 프로필 탭 */}
           {activeTab === 'profile' && (
-            <section className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3>내 프로필</h3>
-                <p>기본 회원 정보를 확인하고 관리하세요.</p>
-              </div>
-              <div className={styles.cardBody}>
-                <div className={styles.infoRow}>
-                  <span className={styles.label}>이름</span>
-                  <span className={styles.value}>{userInfo.name}</span>
-                </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.label}>이메일</span>
-                  <span className={styles.value}>{userInfo.email}</span>
-                </div>
-              </div>
-              <div className={styles.cardFooter}>
-                <button className={styles.deleteButton} onClick={handleDeleteAccount}>
-                  회원 탈퇴
-                </button>
-              </div>
-            </section>
+            <MyPageProfileTab userInfo={userInfo} handleDeleteAccount={handleDeleteAccount} />
           )}
 
           {/* 관심 동물 찜 목록 탭 */}
           {activeTab === 'favorites' && (
-            <section className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3 className={styles.cardHeaderTitle}>
-                  <Heart size={20} className={styles.favHeaderIcon} />
-                  <span>관심 동물 목록 ({favorites.length})</span>
-                </h3>
-                <p>찜해둔 아이들을 확인하고 입양 신청서를 작성해 보세요.</p>
-              </div>
-              <div className={styles.cardBody}>
-                {favorites.length === 0 ? (
-                  <div className={styles.emptyState}>
-                    <span className={styles.centerIcon}><PawPrint size={40} /></span>
-                    <p>아직 관심 동물로 등록한 아이가 없습니다.</p>
-                    <Link to="/animals" className={`btn-primary ${styles.emptyStateLink}`}>
-                      동물 둘러보기
-                    </Link>
-                  </div>
-                ) : (
-                  <div className={styles.favoritesGrid}>
-                    {favorites.map((animal) => {
-                      const favId = animal.id ?? (animal as { animalId?: string | number }).animalId;
-                      if (!favId) return null;
-                      return (
-                        <AnimalCard
-                          key={favId}
-                          animal={animal}
-                          showStatus
-                          onRemove={() => toggleFavorite({ ...animal, id: favId })}
-                        />
-                      );
-                    })}
-                  </div>
-
-                )}
-              </div>
-            </section>
+            <MyPageFavoritesTab favorites={favorites} toggleFavorite={toggleFavorite} />
           )}
 
           {/* 입양 신청 내역 탭 */}
           {activeTab === 'bookmarks' && (
-            <section className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3 className={styles.cardHeaderTitle}>
-                  <Bookmark size={20} className={styles.favHeaderIcon} />
-                  <span>저장한 게시글</span>
-                </h3>
-                <p>나중에 다시 보고 싶은 커뮤니티 글을 모아볼 수 있습니다.</p>
-              </div>
-              <div className={styles.cardBody}>
-                {isBookmarksLoading ? (
-                  <Spinner />
-                ) : bookmarkedReviews.length === 0 ? (
-                  <div className={styles.emptyState}>
-                    <span className={styles.centerIcon}><Bookmark size={40} /></span>
-                    <p>아직 저장한 게시글이 없습니다.</p>
-                    <Link to="/reviews" className={`btn-primary ${styles.emptyStateLink}`}>게시판 둘러보기</Link>
-                  </div>
-                ) : (
-                  <ul className={styles.bookmarkList}>
-                    {bookmarkedReviews.map((review) => (
-                      <li key={review.id}>
-                        <Link to={`/reviews/${review.id}`} className={styles.bookmarkItem}>
-                          <strong>{review.title}</strong>
-                          <span>{review.name || '익명'} · {formatDate(review.createdAt || review.createAt)}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </section>
+            <MyPageBookmarksTab bookmarkedReviews={bookmarkedReviews} isBookmarksLoading={isBookmarksLoading} />
           )}
 
           {activeTab === 'adoptions' && (
-            <section className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3>입양 신청 내역</h3>
-                <p>AdoptMate를 통해 신청한 입양 상태를 확인합니다.</p>
-              </div>
-              <div className={styles.cardBody}>
-                {adoptionList.length === 0 ? (
-                  <div className={styles.emptyState}>
-                    <span className={styles.centerIcon}><PawPrint size={40} /></span>
-                    <p>아직 입양 신청 내역이 없습니다.</p>
-                  </div>
-                ) : (
-                  <ul className={styles.adoptionGrid}>
-                    {adoptionList.map((adoption, index) => (
-                      <li key={adoption.adoptionId || index} className={styles.adoptionItem}>
-                        <img
-                          src={adoption.animalImage || '/default-animal.jpg'}
-                          alt={adoption.animalBreed || adoption.animalName || '입양 동물'}
-                          className={styles.adoptionImage}
-                        />
-                        <div className={styles.adoptionInfo}>
-                          <h4>{adoption.animalBreed || adoption.animalName || '입양 신청 #' + (adoption.adoptionId || (index + 1))}</h4>
-                          <span
-                            className={`${styles.statusBadge} ${
-                              adoption.status === 'APPROVED'
-                                ? styles.statusApproved
-                                : adoption.status === 'REJECTED'
-                                ? styles.statusRejected
-                                : styles.statusPending
-                            } ${styles.badgeFlex}`}
-                          >
-                            {adoption.status === 'APPROVED' ? (
-                              <><CheckCircle2 size={13} /> 입양 승인</>
-                            ) : adoption.status === 'REJECTED' ? (
-                              <><XCircle size={13} /> 반려됨</>
-                            ) : (
-                              <><Clock size={13} /> 심사 대기중</>
-                            )}
-                          </span>
-                          <p className={styles.date}>신청일: {formatDate(adoption.applyDate)}</p>
-
-                          {/* 진행 단계 타임라인 (백엔드 상태: PENDING, APPROVED, REJECTED) */}
-                          <div className={styles.timelineWrapper}>
-                            <div className={styles.stepBar}>
-                              <div className={`${styles.stepItem} ${styles.stepDone}`}>
-                                <div className={styles.stepDot}>1</div>
-                                <span className={styles.stepLabel}>신청 접수</span>
-                              </div>
-                              <div className={`${styles.stepItem} ${adoption.status === 'PENDING' ? styles.stepActive : styles.stepDone}`}>
-                                <div className={styles.stepDot}>2</div>
-                                <span className={styles.stepLabel}>신청 심사</span>
-                              </div>
-                              <div className={`${styles.stepItem} ${adoption.status === 'APPROVED' || adoption.status === 'REJECTED' ? styles.stepActive : ''}`}>
-                                <div className={styles.stepDot}>3</div>
-                                <span className={styles.stepLabel}>
-                                  {adoption.status === 'REJECTED' ? '반려' : adoption.status === 'APPROVED' ? '입양 승인' : '결과 확인'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </section>
+            <MyPageAdoptionsTab adoptionList={adoptionList} />
           )}
 
           {/* 보안 설정 탭 */}
           {activeTab === 'password' && provider !== 'KAKAO' && (
-            <section className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3>보안 설정</h3>
-                <p>주기적인 비밀번호 변경으로 계정을 안전하게 보호하세요.</p>
-              </div>
-              <form className={styles.passwordForm} onSubmit={handleChangePassword}>
-                <div className={styles.formGroup}>
-                  <label>현재 비밀번호</label>
-                  <input
-                    type="password"
-                    name="passwd"
-                    value={form.passwd}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>새 비밀번호</label>
-                  <input
-                    type="password"
-                    name="new_passwd"
-                    value={form.new_passwd}
-                    onChange={handleChange}
-                    required
-                  />
-                  <span className={styles.helpText}>6자 이상</span>
-                </div>
-                <div className={styles.formGroup}>
-                  <label>새 비밀번호 확인</label>
-                  <input
-                    type="password"
-                    name="new_passwd_confirm"
-                    value={form.new_passwd_confirm}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <button type="submit" className={`btn-primary ${styles.submitBtnMargin}`}>
-                  비밀번호 변경
-                </button>
-              </form>
-            </section>
+            <MyPagePasswordTab
+              form={form}
+              handleChange={handleChange}
+              handleChangePassword={handleChangePassword}
+            />
           )}
         </main>
       </div>

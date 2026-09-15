@@ -1,3 +1,4 @@
+import { useAllAdoptionsQuery, useAdoptionStatusMutation } from '../../hooks/queries/adoptions';
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAllAdoptions, updateAdoptionStatus } from '../../api/adoption';
@@ -13,17 +14,9 @@ import useBodyScrollLock from '../../hooks/useBodyScrollLock';
 
 const AdminAdoptionsPage: React.FC = () => {
   usePageTitle('입양 신청 관리 (Admin)');
-  const queryClient = useQueryClient();
-  const adoptionsQuery = useQuery({ queryKey: ['adoptions'], queryFn: getAllAdoptions });
+  const adoptionsQuery = useAllAdoptionsQuery();
   const adoptions = adoptionsQuery.data || [];
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ adoptionId, status }: { adoptionId: number | string; status: string }) => updateAdoptionStatus(adoptionId, status),
-    onSuccess: (_, { adoptionId, status }) => {
-      queryClient.setQueryData<AdminAdoptionItem[]>(['adoptions'], (previous = []) =>
-        previous.map((item) => item.adoptionId === adoptionId ? { ...item, status } : item)
-      );
-    },
-  });
+  const updateStatusMutation = useAdoptionStatusMutation();
   const [processingId, setProcessingId] = useState<number | string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [selectedAdoption, setSelectedAdoption] = useState<AdminAdoptionItem | null>(null); // 상세 모달용
