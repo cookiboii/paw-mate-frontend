@@ -119,15 +119,17 @@ const AppRoutes: React.FC = () => {
 // 👇 최상위 App 컴포넌트
 const App: React.FC = () => {
   return (
-    <AppProviders>
-      <ScrollToTop />
-      <Layout>
-        <ToastContainer />
-        <ThemeToggleFloating />
-        <FloatingScrollTop />
-        <AppRoutes />
-      </Layout>
-    </AppProviders>
+    <ErrorBoundary>
+      <AppProviders>
+        <ScrollToTop />
+        <Layout>
+          <ToastContainer />
+          <ThemeToggleFloating />
+          <FloatingScrollTop />
+          <AppRoutes />
+        </Layout>
+      </AppProviders>
+    </ErrorBoundary>
   );
 };
 

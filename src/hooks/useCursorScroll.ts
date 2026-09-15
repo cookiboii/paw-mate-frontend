@@ -71,13 +71,28 @@ export function useCursorScroll<T>({
 
   // 1. 초기 데이터 로드 함수
   const loadInitial = useCallback(async () => {
-    if (!enabled) return;
+    if (!enabled) {
+      // 진행 중이던 요청 결과가 비활성 목록에 반영되지 않도록 무효화한다.
+      requestVersionRef.current += 1;
+      isFetchingRef.current = false;
+      hasNextRef.current = false;
+      lastIdRef.current = undefined;
+      setItems([]);
+      setIsLoading(false);
+      setIsFetchingMore(false);
+      setHasNext(false);
+      setLastId(undefined);
+      setError(null);
+      return;
+    }
 
     const requestVersion = ++requestVersionRef.current;
     isFetchingRef.current = false;
     setIsFetchingMore(false);
 
     setIsLoading(true);
+    // 검색어·필터가 바뀔 때 이전 조건의 목록이 잠시 노출되는 것을 막는다.
+    setItems([]);
     setError(null);
     setHasNext(true);
     setLastId(undefined);
