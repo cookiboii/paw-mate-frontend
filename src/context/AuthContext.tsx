@@ -61,13 +61,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => (
 );
 
 export const useAuth = (): AuthContextType => {
-  const auth = useAuthStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isUserLoading = useAuthStore((state) => state.isUserLoading);
+  const user = useAuthStore((state) => state.user);
+  const login = useAuthStore((state) => state.login);
+  const logout = useAuthStore((state) => state.logout);
   return {
-    isAuthenticated: auth.isAuthenticated,
-    isUserLoading: auth.isUserLoading,
-    user: auth.user,
-    isAdmin: Boolean(auth.user?.role?.toUpperCase() === 'ADMIN' || auth.user?.role?.toUpperCase() === 'ROLE_ADMIN'),
-    login: auth.login,
-    logout: auth.logout,
+    isAuthenticated,
+    isUserLoading,
+    user,
+    isAdmin: Boolean(user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN'),
+    login,
+    logout,
   };
 };

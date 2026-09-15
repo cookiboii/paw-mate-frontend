@@ -48,7 +48,7 @@ const MyPage: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { showToast } = useToast();
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, toggleFavorite, refreshFavorites } = useFavorites();
 
   // URL query parameter 변경 감지 및 동기화
   useEffect(() => {
@@ -59,6 +59,12 @@ const MyPage: React.FC = () => {
       setActiveTab('profile');
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (activeTab === 'favorites') {
+      void refreshFavorites();
+    }
+  }, [activeTab, refreshFavorites]);
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);

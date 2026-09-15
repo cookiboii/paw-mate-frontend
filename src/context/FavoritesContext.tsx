@@ -77,12 +77,10 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
       // ignore
     }
 
-    if (isAuthenticated) {
-      refreshFavorites();
-    } else {
+    if (!isAuthenticated) {
       setFavorites([]);
     }
-  }, [isAuthenticated, storageKey, refreshFavorites]);
+  }, [isAuthenticated, storageKey]);
 
   const isFavorite = useCallback(
     (id: string | number) => {
