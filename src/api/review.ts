@@ -23,16 +23,9 @@ export const getReviews = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      let response;
-      try {
-        response = await axiosInstance.get('/api/v1/posts', {
-          params: { page, size, sort },
-        });
-      } catch {
-        response = await axiosInstance.get('/post/list', {
-          params: { page, size, sort },
-        });
-      }
+      const response = await axiosInstance.get('/api/v1/posts', {
+        params: { page, size, sort },
+      });
       return unwrapResult<PageResponse<PostResponseDto>>(response.data);
     },
     { ttl: 60 * 1000 }
@@ -52,16 +45,11 @@ export const getReviewsCursor = async (
     params.append('lastPostId', String(lastPostId));
   }
   params.append('size', String(size));
-  if (options.category && options.category !== 'ALL') params.append('category', options.category);
+  if (options.category) params.append('category', options.category);
   if (options.keyword?.trim()) params.append('keyword', options.keyword.trim());
   if (options.sort) params.append('sort', options.sort);
 
-  let response;
-  try {
-    response = await axiosInstance.get(`/api/v1/posts/cursor?${params.toString()}`);
-  } catch {
-    response = await axiosInstance.get(`/post/cursor?${params.toString()}`);
-  }
+  const response = await axiosInstance.get('/api/v1/posts/cursor', { params });
   return unwrapResult<SliceResponse<PostResponseDto>>(response.data);
 };
 
@@ -90,10 +78,10 @@ export const setReviewBookmark = async (
 };
 
 /** 로그인 사용자가 북마크한 게시글 목록입니다. */
-export const getMyBookmarkedReviews = async (): Promise<PostResponseDto[]> => {
-  const response = await axiosInstance.get('/api/v1/posts/bookmarks/me');
-  const data = unwrapResult<PostResponseDto[] | PageResponse<PostResponseDto>>(response.data);
-  return Array.isArray(data) ? data : data?.content || [];
+export const getMyBookmarkedReviews = async (size = 20): Promise<PostResponseDto[]> => {
+  const response = await axiosInstance.get('/api/v1/posts/bookmarks/me', { params: { size } });
+  const data = unwrapResult<SliceResponse<PostResponseDto>>(response.data);
+  return data?.content || [];
 };
 
 /**
@@ -124,13 +112,9 @@ export const createReview = async (payload: PostCreateRequestDto): Promise<PostR
     title: payload.title,
     content: payload.content,
     img: payload.img || payload.image || '',
+    ...(payload.category ? { category: payload.category } : {}),
   };
-  let response;
-  try {
-    response = await axiosInstance.post('/api/v1/posts', body);
-  } catch {
-    response = await axiosInstance.post('/post/create', body);
-  }
+  const response = await axiosInstance.post('/api/v1/posts', body);
   apiCache.invalidateByPrefix('review');
   return unwrapResult<PostResponseDto>(response.data);
 };
@@ -228,12 +212,7 @@ export const updateComment = async (
     commentId: Number(commentId),
     content,
   };
-  let response;
-  try {
-    response = await axiosInstance.put(`/comment/${commentId}`, body);
-  } catch {
-    response = await axiosInstance.put(`/comment/update/${commentId}`, body);
-  }
+  const response = await axiosInstance.put(`/comment/${commentId}`, body);
   return unwrapResult<CommentResponseDto>(response.data);
 };
 

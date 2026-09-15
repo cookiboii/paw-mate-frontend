@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import axios from 'axios';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
-import { getReviewsCursor, getReviews, prefetchReviewById } from '../api/review';
+import { getReviewsCursor, prefetchReviewById } from '../api/review';
 import { Link, useSearchParams } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
 import ImageWithFallback from '../components/ImageWithFallback';
@@ -77,26 +76,15 @@ const AdoptionReviewListPage: React.FC = () => {
   // 2. 커서 기반 게시글 페칭 콜백 (오프셋 폴백 내장)
   const cursorFetcher = useCallback(
     async (lastId: string | number | undefined, pageSize: number) => {
-      try {
-        // 백엔드의 category/search 규격이 배포되기 전까지는 전체 목록을 받아
-        // 아래 displayedReviews에서 호환성 있게 분류한다.
-        return await getReviewsCursor(lastId, pageSize);
-      } catch (err) {
-        // 서버 내부 오류는 다른 목록 경로에서도 동일하게 발생하므로 중복 요청하지 않는다.
-        const status = axios.isAxiosError(err) ? err.response?.status : undefined;
-        if (status !== 404 && status !== 405) throw err;
-        console.warn('커서 페이징 에러, 오프셋 페이징 폴백 실행:', err);
-        const pageData = await getReviews(0, pageSize, 'id,desc');
-        return {
-          content: pageData.content || [],
-          hasNext: false,
-          isLast: true,
-          size: pageSize,
-          number: 0,
-        };
-      }
+      return getReviewsCursor(lastId, pageSize, {
+        category: activeCategory === 'ALL'
+          ? undefined
+          : activeCategory as 'REVIEW' | 'FREE_ADOPTION' | 'REPORT',
+        keyword: debouncedKeyword || undefined,
+        sort,
+      });
     },
-    []
+    [activeCategory, debouncedKeyword, sort]
   );
 
   // 3. No-Offset 커서 기반 고속 무한 스크롤 훅 적용
@@ -112,7 +100,7 @@ const AdoptionReviewListPage: React.FC = () => {
     fetcher: cursorFetcher,
     getId: (item) => Number(item.id),
     pageSize: 12,
-    dependencies: [],
+    dependencies: [activeCategory, debouncedKeyword, sort],
   });
 
   // 4. 클라이언트 카테고리 및 검색어 필터링
@@ -122,7 +110,9 @@ const AdoptionReviewListPage: React.FC = () => {
     let list = reviews;
 
     if (activeCategory !== 'ALL') {
-      list = list.filter((review) => getCategoryFromTitle(review.title) === activeCategory);
+      list = list.filter(
+        (review) => (review.category || getCategoryFromTitle(review.title)) === activeCategory
+      );
     }
 
     if (debouncedKeyword) {
@@ -183,7 +173,7 @@ const AdoptionReviewListPage: React.FC = () => {
       <div className={styles.grid}>
         {displayedReviews.length > 0 ? (
           displayedReviews.map((review, index) => {
-            const cat = getCategoryFromTitle(review.title);
+            const cat = review.category || getCategoryFromTitle(review.title);
             const cleanTitle = getCleanTitle(review.title);
             const catInfo = CATEGORIES.find((c) => c.key === cat) || CATEGORIES[1];
 

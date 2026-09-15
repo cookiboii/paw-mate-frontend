@@ -4,13 +4,7 @@ import { apiCache } from '../utils/apiCache';
 import { unwrapResult } from './apiHelper';
 
 const API_BASE_URL = '/api/v1/animals';
-const COMPAT_ANIMAL_API_BASE_URL = '/animals';
 const cursorPageByLastId = new Map<string, number>();
-
-const isMissingEndpoint = (error: unknown): boolean => {
-  const status = (error as { response?: { status?: number } })?.response?.status;
-  return status === 404 || status === 405;
-};
 
 /**
  * 🐾 백엔드 응답 데이터를 프론트엔드 표준 모델로 정규화 (animalId/id, image/imageUrl 호환)
@@ -55,12 +49,7 @@ export const registerAnimal = async (animalData: AnimalFormData | FormData): Pro
     };
   }
 
-  let response;
-  try {
-    response = await axios.post(API_BASE_URL, payload);
-  } catch {
-    response = await axios.post(`${COMPAT_ANIMAL_API_BASE_URL}/register`, payload);
-  }
+  const response = await axios.post(API_BASE_URL, payload);
   apiCache.invalidateByPrefix('animal');
   return normalizeAnimal(unwrapResult<Animal>(response.data));
 };
@@ -78,17 +67,9 @@ export const fetchAnimalList = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      let response;
-      try {
-        response = await axios.get(API_BASE_URL, {
-          params: { page, size }, signal: options.signal,
-        });
-      } catch (error) {
-        if (!isMissingEndpoint(error)) throw error;
-        response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
-          params: { page, size }, signal: options.signal,
-        });
-      }
+      const response = await axios.get(API_BASE_URL, {
+        params: { page, size }, signal: options.signal,
+      });
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
       const content = Array.isArray(unwrapped.content)
         ? unwrapped.content.map(normalizeAnimal)
@@ -105,40 +86,6 @@ export const fetchAnimalList = async (
 /**
  * 오프셋 기반 무한 스크롤 시뮬레이션 폴백
  */
-const fetchAnimalCursorListSimulated = async (
-  lastAnimalId?: number | string,
-  size = 10
-): Promise<SliceResponse<Animal>> => {
-  const cursorKey = `${size}:${String(lastAnimalId ?? '')}`;
-  const page = lastAnimalId === undefined || lastAnimalId === null || lastAnimalId === ''
-    ? 0
-    : cursorPageByLastId.get(cursorKey) ?? 0;
-  const response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/list`, {
-    params: { page, size },
-  });
-  const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
-  const content = Array.isArray(unwrapped.content)
-    ? unwrapped.content.map(normalizeAnimal)
-    : [];
-  const lastItem = content.length > 0 ? content[content.length - 1] : undefined;
-  if (lastItem) {
-    cursorPageByLastId.set(`${size}:${String(lastItem.id)}`, page + 1);
-  }
-  const hasNext = unwrapped.last !== undefined
-    ? !unwrapped.last
-    : page + 1 < (unwrapped.totalPages || 1);
-  return {
-    content,
-    hasNext,
-    isLast: !hasNext,
-    number: page,
-    size,
-    first: page === 0,
-    last: !hasNext,
-    empty: content.length === 0,
-  };
-};
-
 /**
  * ⚡ No-Offset 커서 기반 고속 동물 목록 조회 (GET /api/v1/animals/cursor)
  */
@@ -151,18 +98,7 @@ export const fetchAnimalCursorList = async (
     params.lastAnimalId = lastAnimalId;
   }
 
-  let response;
-  try {
-    response = await axios.get(`${API_BASE_URL}/cursor`, { params });
-  } catch (error) {
-    if (!isMissingEndpoint(error)) throw error;
-    try {
-      response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/cursor`, { params });
-    } catch (compatError) {
-      if (!isMissingEndpoint(compatError)) throw compatError;
-      return fetchAnimalCursorListSimulated(lastAnimalId, size);
-    }
-  }
+  const response = await axios.get(`${API_BASE_URL}/cursor`, { params });
 
   const unwrapped = unwrapResult<SliceResponse<Animal>>(response.data);
   const content = Array.isArray(unwrapped.content)
@@ -190,17 +126,9 @@ export const fetchAnimalListBySpecies = async (
   return apiCache.fetchWithCache(
     cacheKey,
     async () => {
-      let response;
-      try {
-        response = await axios.get(`${API_BASE_URL}/species`, {
-          params: { species, page, size }, signal: options.signal,
-        });
-      } catch (error) {
-        if (!isMissingEndpoint(error)) throw error;
-        response = await axios.get(`${COMPAT_ANIMAL_API_BASE_URL}/species`, {
-          params: { species, page, size }, signal: options.signal,
-        });
-      }
+      const response = await axios.get(`${API_BASE_URL}/species`, {
+        params: { species, page, size }, signal: options.signal,
+      });
       const unwrapped = unwrapResult<PageResponse<Animal>>(response.data);
       const content = Array.isArray(unwrapped.content)
         ? unwrapped.content.map(normalizeAnimal)
@@ -304,11 +232,7 @@ export const updateAnimalStatus = async (id: string | number, status: string): P
  * 🗑️ 보호 동물 삭제 (관리자 전용)
  */
 export const deleteAnimal = async (id: string | number): Promise<void> => {
-  try {
-    await axios.delete(`${API_BASE_URL}/${id}`);
-  } catch {
-    await axios.delete(`${COMPAT_ANIMAL_API_BASE_URL}/delete/${id}`);
-  }
+  await axios.delete(`${API_BASE_URL}/${id}`);
   apiCache.invalidateByPrefix('animal');
 };
 

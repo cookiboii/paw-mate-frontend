@@ -27,9 +27,13 @@ export interface PostCreateRequestDto {
   content: string;
   img?: string;
   image?: string;
+  category?: PostCategory;
   name?: string;
   dateTime?: string;
 }
+
+/** API 명세의 게시글 분류 enum */
+export type PostCategory = 'REVIEW' | 'FREE_ADOPTION' | 'REPORT';
 
 export interface PostUpdateRequestDto {
   title: string;
@@ -52,6 +56,7 @@ export interface PostResponseDto {
   commentCount?: number;
   likedByMe?: boolean;
   bookmarkedByMe?: boolean;
+  category?: PostCategory;
 }
 
 export type AdoptionReview = PostResponseDto;
@@ -68,7 +73,7 @@ export interface ReviewFormData {
 export type ReviewSort = 'latest' | 'popular' | 'comments';
 
 export interface ReviewListOptions {
-  category?: string;
+  category?: PostCategory;
   keyword?: string;
   sort?: ReviewSort;
 }

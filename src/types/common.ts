@@ -24,7 +24,7 @@ export interface PageResponse<T> {
  */
 export interface SliceResponse<T> {
   content: T[];
-  hasNext?: boolean;
+  hasNext: boolean;
   isLast?: boolean;
   number?: number;
   size?: number;

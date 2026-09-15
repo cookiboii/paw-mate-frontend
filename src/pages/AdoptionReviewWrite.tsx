@@ -112,6 +112,7 @@ const AdoptionReviewWrite: React.FC = () => {
         content: form.content,
         img: uploadedImageUrl,
         image: uploadedImageUrl,
+        category: selectedCategory as 'REVIEW' | 'FREE_ADOPTION' | 'REPORT',
         name: user?.name || '익명',
         dateTime: new Date().toISOString(),
       });

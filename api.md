@@ -119,7 +119,7 @@ src/main/java/com/kindtail/adoptmate
 | `animal` | 보호 동물과 관심 동물 관리 | `AnimalService`, `AnimalFavoriteService` |
 | `adoption` | 입양 신청과 상태 전이 | `AdoptionFacade`, `AdoptionService`, `DistributedLockTemplate` |
 | `post` | 게시글 명령과 조회 | `PostService`(명령), `PostQueryService`(조회) |
-| `comment` | 댓글·대댓글 관리 | `CommentService` |
+| `comment` | 댓글·대댓글·비밀 댓글 관리 | `CommentService`, `CommentResponse` 권한 기반 마스킹 |
 | `common` | 공통 응답·예외, 메일, Redis 기반 인증 코드 | `CommonResponse`, `GlobalExceptionHandler`, `EmailVerificationService`, `PasswordResetService` |
 | `config` | Security, CORS, Redis, JPA, Swagger 설정 | `SecurityConfig`, `CorsConfig`, `SecurityExceptionHandlers` |
 
@@ -135,6 +135,33 @@ Controller → Facade/Service → Repository → Database/Redis
 - Service는 유스케이스와 트랜잭션 경계를 담당하며, 조회와 변경이 복잡한 게시글은 `PostQueryService`와 `PostService`로 나뉩니다.
 - Facade는 입양 신청처럼 여러 서비스·락을 조합해야 하는 흐름에만 사용합니다.
 - Repository는 데이터 조회/저장만 담당하며, 인증된 사용자 정보는 `CurrentUserProvider`를 통해 가져옵니다.
+
+### 주요 요청 흐름
+
+```mermaid
+flowchart LR
+    Client[Client] --> Filter[JwtAuthFilter]
+    Filter -->|JWT claim| User[CurrentUserProvider]
+    User --> Controller[Controller]
+    Controller --> Auth[AuthenticationService]
+    Controller --> Command[PostService / CommentService]
+    Controller --> Query[PostQueryService]
+    Command --> Repository[Repository]
+    Query --> Repository
+    Auth --> Session[TokenSessionService]
+    Session --> Redis[(Redis)]
+    Repository --> DB[(MySQL)]
+```
+
+비밀 댓글 조회는 `CommentService`에서 현재 사용자를 가져온 뒤 `CommentResponse`로 변환하는 시점에 권한을 적용합니다.
+
+```text
+비밀 댓글인가?
+ ├─ 아니오 → 원본 content 반환
+ └─ 예
+    ├─ 댓글 작성자 / 게시글 작성자 / ADMIN → 원본 content 반환
+    └─ 그 외 사용자 또는 비로그인 → "비밀 댓글입니다."로 마스킹
+```
 
 ## API 빠른 명세
 
@@ -228,7 +255,9 @@ ALTER TABLE comment ADD COLUMN is_secret BOOLEAN NOT NULL DEFAULT FALSE;
 - `JwtAuthFilter`는 서명 검증된 JWT의 회원 ID·역할 claim으로 인증 객체를 만들기 때문에, 매 인증 요청마다 회원 DB를 조회하지 않습니다. 회원 탈퇴와 비밀번호 변경 시에는 `tokenVersion`을 증가시켜 기존 Access Token과 Refresh Token을 무효화합니다.
 - 이메일 기능은 역할에 따라 분리했습니다. `EmailVerificationService`는 회원가입 인증 코드 발송·검증을, `PasswordResetService`는 비밀번호 재설정 코드 발송·검증과 비밀번호 변경을 담당합니다.
 - 게시글은 명령과 조회를 분리했습니다. `PostService`는 작성·수정·삭제·좋아요·북마크 변경을, `PostQueryService`는 목록·검색·상세·내 북마크 조회를 담당합니다. 목록 조회 시 좋아요 수·댓글 수·사용자별 상태를 배치 조회해 N+1 조회를 피합니다.
-- 현재 사용처가 없는 `MemberEmailResponse`, `PasswordResetSendRequest`, `PasswordResetVerifyRequest`와 이전 이메일 전송 메서드는 제거했습니다.
+- 사용처가 없는 동물·게시글 `findSliceBy` 조회, 종별 커서 조회의 미연결 Service/Repository 메서드, 이전 `MemberService` 인증·토큰 재발급 구현을 제거했습니다. 로그인·토큰 재발급은 `AuthenticationService`만 사용합니다.
+- 게시글의 이전 조회 구현은 제거하고, 모든 읽기 요청을 `PostQueryService`로 일원화했습니다. `PostService`는 변경 명령만 담당합니다.
+- 중복 생성일 getter, 사용되지 않는 soft-delete 헬퍼와 미사용 import도 정리했습니다.
 
 ### 테스트 검증
 

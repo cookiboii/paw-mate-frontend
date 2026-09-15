@@ -67,7 +67,7 @@ const AdoptionReviewEdit: React.FC = () => {
         }
 
         // 카테고리 파싱
-        const parsedCategory = getCategoryFromTitle(review.title || '');
+        const parsedCategory = review.category || getCategoryFromTitle(review.title || '');
         const cleanTitle = getCleanTitle(review.title || '');
 
         setSelectedCategory(parsedCategory);
@@ -186,7 +186,8 @@ const AdoptionReviewEdit: React.FC = () => {
               key={cat.key}
               type="button"
               className={`${styles.categoryTab} ${selectedCategory === cat.key ? styles.categoryTabActive : ''}`}
-              onClick={() => setSelectedCategory(cat.key)}
+              disabled
+              title="카테고리는 게시글 작성 후 변경할 수 없습니다."
             >
               {cat.icon}
               <span>{cat.label}</span>

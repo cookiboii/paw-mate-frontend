@@ -6,6 +6,7 @@ export interface User {
   name?: string;
   role?: string;
   profileImage?: string;
+  authProvider?: string;
   socialProvider?: string;
   socialId?: string;
   provider?: string;
