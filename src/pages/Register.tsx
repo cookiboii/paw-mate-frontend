@@ -1,157 +1,25 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import React from "react";
 import styles from "../styles/pages/Register.module.css";
-import { registerUser, verifyEmail, verifyCode } from "../api/auth";
-import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import usePageTitle from "../hooks/usePageTitle";
-import { useToast } from "../context/ToastContext";
+import useRegistrationForm from "../hooks/useRegistrationForm";
 import { User, Mail, Lock, Eye, EyeOff, Check, AlertCircle } from "lucide-react";
-import { getErrorMessage } from "../utils/error";
 
 const Register: React.FC = () => {
   usePageTitle('회원가입');
-  const { showToast } = useToast();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const [emailSent, setEmailSent] = useState<boolean>(false);
-  const [emailCode, setEmailCode] = useState<string>("");
-  const [emailVerified, setEmailVerified] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  // UI state for password toggles and timers
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  const [timer, setTimer] = useState<number>(180);
-  const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
-
-  const navigate = useNavigate();
-
-  // Timer countdown hook
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | null = null;
-    if (isTimerActive && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (timer === 0) {
-      setIsTimerActive(false);
-      setError("인증 시간이 만료되었습니다. 다시 요청해주세요.");
-      setEmailSent(false);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isTimerActive, timer]);
+  const {
+    form, emailSent, emailCode, setEmailCode, emailVerified, error, message,
+    isSubmitting, showPassword, setShowPassword, showConfirmPassword,
+    setShowConfirmPassword, timer, isTimerActive, isLengthOk, isPasswordValid,
+    isConfirmPasswordValid, namePattern: nameRegex, emailPattern: emailRegex,
+    handleChange, handleEmailSend, handleEmailVerify, handleSubmit, goToLogin,
+  } = useRegistrationForm();
 
   const formatTimer = (seconds: number) => {
-    const validSec = Math.max(0, Math.floor(seconds || 0));
-    const mins = Math.floor(validSec / 60);
-    const secs = validSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    setError("");
-    setMessage("");
-  };
-
-  // Regular expressions
-  const nameRegex = /^[가-힣a-zA-Z]{2,}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  // Real-time validations
-  const isNameValid = form.name === "" || nameRegex.test(form.name);
-  const isEmailValid = form.email === "" || emailRegex.test(form.email);
-
-  const isLengthOk = form.password.length >= 6;
-  const isPasswordValid = isLengthOk;
-
-  const isConfirmPasswordValid =
-    form.confirmPassword === "" ||
-    (form.password === form.confirmPassword && isPasswordValid);
-
-  const validateForm = () => {
-    if (!nameRegex.test(form.name)) return "이름은 한글 또는 영문 2자 이상이어야 합니다.";
-    if (!emailRegex.test(form.email)) return "유효한 이메일 형식이 아닙니다.";
-    if (!isPasswordValid) return "비밀번호는 6자 이상이어야 합니다.";
-    if (form.password !== form.confirmPassword) return "비밀번호가 일치하지 않습니다.";
-    if (!emailVerified) return "이메일 인증을 완료해주세요.";
-    return null;
-  };
-
-  const handleEmailSend = async () => {
-    if (!form.email) {
-      setError("이메일을 입력해주세요.");
-      return;
-    }
-    if (!emailRegex.test(form.email)) {
-      setError("올바른 이메일 형식을 입력해주세요.");
-      return;
-    }
-    try {
-      setError("");
-      setMessage("인증 메일을 전송 중입니다...");
-      await verifyEmail(form.email);
-      setEmailSent(true);
-      setTimer(180);
-      setIsTimerActive(true);
-      setMessage("인증 코드가 이메일로 전송되었습니다.");
-    } catch (err: unknown) {
-      const msg = getErrorMessage(err, "이메일 인증 요청 실패");
-      setError(msg);
-      setMessage("");
-      setEmailSent(false);
-      setIsTimerActive(false);
-    }
-  };
-
-  const handleEmailVerify = async () => {
-    if (!emailCode) {
-      setError("인증 코드를 입력해주세요.");
-      return;
-    }
-    try {
-      setError("");
-      await verifyCode(form.email, emailCode);
-      setEmailVerified(true);
-      setIsTimerActive(false);
-      setMessage("이메일 인증 완료!");
-      setError("");
-    } catch (err: unknown) {
-      const msg = getErrorMessage(err, "인증 코드가 올바르지 않습니다.");
-      setError(msg);
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      setError("");
-      await registerUser(form); // form: name, email, password
-      showToast("회원가입이 완료되었습니다! 로그인해 주세요.", "success");
-      navigate("/login");
-    } catch (err: unknown) {
-      const msg = getErrorMessage(err, "회원가입 실패");
-      setError(msg);
-    } finally {
-      setIsSubmitting(false);
-    }
+    const validSeconds = Math.max(0, Math.floor(seconds || 0));
+    const minutes = Math.floor(validSeconds / 60);
+    const remainingSeconds = validSeconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
   };
 
   return (
@@ -355,7 +223,7 @@ const Register: React.FC = () => {
 
       <p className={styles.loginPrompt}>
         이미 계정이 있으신가요?
-        <button type="button" className={styles.loginLink} onClick={() => navigate("/login")}>
+        <button type="button" className={styles.loginLink} onClick={goToLogin}>
           로그인
         </button>
       </p>
