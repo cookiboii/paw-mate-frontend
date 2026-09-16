@@ -1,60 +1,34 @@
-import React, { useState, useEffect, FormEvent } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
-import { submitAdoption, getMyAdoptions } from '../api/adoption';
-import { fetchAnimalById } from '../api/animal';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import styles from '../styles/pages/AdoptionForm.module.css';
 import usePageTitle from '../hooks/usePageTitle';
-import { Animal } from '../types/animal';
-import { formatPhoneNumber, isValidPhoneNumber } from '../utils/validation';
+import useAdoptionForm from '../hooks/useAdoptionForm';
+import { formatPhoneNumber } from '../utils/validation';
 import { FileText, Lock, CheckCircle2, ClipboardList, ArrowLeft } from 'lucide-react';
-import { getErrorMessage } from '../utils/error';
-
 
 const AdoptionForm: React.FC = () => {
   usePageTitle('입양 신청서 작성');
-  const { animalId } = useParams<{ animalId: string }>();
-  const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
-  const { showToast } = useToast();
-
-  const [animal, setAnimal] = useState<Animal | null>(null);
-  const [phone, setPhone] = useState<string>('');
-  const [housingType, setHousingType] = useState<string>('APARTMENT');
-  const [hasPet, setHasPet] = useState<string>('없음');
-  const [interview, setInterview] = useState<string>('');
-  const [agreed, setAgreed] = useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [hasAlreadyApplied, setHasAlreadyApplied] = useState<boolean>(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (!animalId) return;
-
-    // 동물 정보 조회
-    const fetchAnimal = async () => {
-      try {
-        const data = await fetchAnimalById(animalId);
-        setAnimal(data);
-      } catch (err) {
-        console.warn('동물 정보 로드 실패:', err);
-      }
-    };
-    fetchAnimal();
-
-    // 로그인 상태일 때 해당 동물 입양 신청 중복 여부 확인
-    if (isAuthenticated) {
-      getMyAdoptions()
-        .then((adoptions) => {
-          const found = adoptions.some((item) => String(item.animalId) === String(animalId));
-          setHasAlreadyApplied(found);
-        })
-        .catch((err) => {
-          console.warn('내 입양 신청 내역 확인 실패:', err);
-        });
-    }
-  }, [animalId, isAuthenticated]);
+  const {
+    animalId,
+    isAuthenticated,
+    user,
+    animal,
+    phone,
+    setPhone,
+    housingType,
+    setHousingType,
+    hasPet,
+    setHasPet,
+    interview,
+    setInterview,
+    agreed,
+    setAgreed,
+    isSubmitting,
+    hasAlreadyApplied,
+    validationErrors,
+    handleSubmit,
+    cancel,
+  } = useAdoptionForm();
 
   if (!isAuthenticated) {
     return (
@@ -87,21 +61,17 @@ const AdoptionForm: React.FC = () => {
           </span>
           <h3>이미 입양 신청이 접수된 아이입니다</h3>
           <p className={styles.promptDesc}>
-            회원님께서 제출하신 입양 신청서가 정상 접수되어 현재 보호소 담당자가 정성껏 심사 중입니다.<br />
+            회원님께서 제출하신 입양 신청서가 정상 접수되어 현재 보호소 담당자가 정성껏 심사
+            중입니다.
+            <br />
             동일 동물에 대한 중복 신청은 제한됩니다.
           </p>
           <div className={styles.promptButtonGroup}>
-            <Link
-              to="/mypage"
-              className={`btn-primary ${styles.promptButton}`}
-            >
+            <Link to="/mypage" className={`btn-primary ${styles.promptButton}`}>
               <ClipboardList size={18} />
               <span>내 입양 신청 내역 확인하기</span>
             </Link>
-            <Link
-              to="/animals"
-              className={`btn-secondary ${styles.promptButton}`}
-            >
+            <Link to="/animals" className={`btn-secondary ${styles.promptButton}`}>
               <ArrowLeft size={18} />
               <span>다른 아이들 보러가기</span>
             </Link>
@@ -110,50 +80,6 @@ const AdoptionForm: React.FC = () => {
       </div>
     );
   }
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    const errors: Record<string, string> = {};
-    if (!isValidPhoneNumber(phone.trim())) errors.phone = '010-1234-5678 형식으로 입력해 주세요.';
-    if (interview.trim().length < 10) errors.interview = '입양 동기와 돌봄 계획을 10자 이상 작성해 주세요.';
-    if (!agreed) errors.agreed = '입양 필수 동의 항목을 확인해 주세요.';
-    setValidationErrors(errors);
-
-    if (Object.keys(errors).length > 0) {
-      showToast('입력 내용을 확인해 주세요.', 'error');
-      return;
-    }
-
-    if (!animalId) {
-      showToast('동물 정보를 찾을 수 없습니다.', 'error');
-      return;
-    }
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-
-    // 백엔드 AdoptionCreateRequest DTO: phone, housingType, hasPet, reason
-    const payload = {
-      phone: phone.trim(),
-      housingType: housingType,
-      hasPet: hasPet,
-      reason: interview.trim(),
-    };
-
-    try {
-      await submitAdoption(animalId, payload);
-
-      showToast('입양 신청이 성공적으로 접수되었습니다! 담당자가 검토 후 연락드립니다.', 'success');
-      navigate(`/animals/${animalId}`);
-    } catch (err: unknown) {
-      console.error('입양 신청 에러:', err);
-      const errorMsg = getErrorMessage(err, '신청 중 오류가 발생했습니다. 다시 시도해 주세요.');
-      showToast(errorMsg, 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className={styles.pageWrapper}>
@@ -178,7 +104,8 @@ const AdoptionForm: React.FC = () => {
               <span className={styles.summaryBadge}>입양 대상</span>
               <h3>{animal.breed || animal.species}</h3>
               <p>
-                {animal.species} • {animal.gender === 'M' || animal.gender === 'MALE' ? '수컷' : '암컷'} •{' '}
+                {animal.species} •{' '}
+                {animal.gender === 'M' || animal.gender === 'MALE' ? '수컷' : '암컷'} •{' '}
                 {animal.age || 0}살 추정
               </p>
             </div>
@@ -188,7 +115,9 @@ const AdoptionForm: React.FC = () => {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGrid}>
             <div className={styles.fieldGroup}>
-              <label className={styles.label} htmlFor="applicant-name">신청자 이름</label>
+              <label className={styles.label} htmlFor="applicant-name">
+                신청자 이름
+              </label>
               <input
                 id="applicant-name"
                 type="text"
@@ -199,7 +128,9 @@ const AdoptionForm: React.FC = () => {
             </div>
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label} htmlFor="adoption-phone">연락 가능한 전화번호 *</label>
+              <label className={styles.label} htmlFor="adoption-phone">
+                연락 가능한 전화번호 *
+              </label>
               <input
                 id="adoption-phone"
                 type="tel"
@@ -211,11 +142,17 @@ const AdoptionForm: React.FC = () => {
                 aria-invalid={Boolean(validationErrors.phone)}
                 aria-describedby={validationErrors.phone ? 'adoption-phone-error' : undefined}
               />
-              {validationErrors.phone && <p id="adoption-phone-error" className={styles.fieldError}>{validationErrors.phone}</p>}
+              {validationErrors.phone && (
+                <p id="adoption-phone-error" className={styles.fieldError}>
+                  {validationErrors.phone}
+                </p>
+              )}
             </div>
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label} htmlFor="housing-type">거주 형태</label>
+              <label className={styles.label} htmlFor="housing-type">
+                거주 형태
+              </label>
               <select
                 id="housing-type"
                 value={housingType}
@@ -231,7 +168,9 @@ const AdoptionForm: React.FC = () => {
             </div>
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label} htmlFor="has-pet">현재 반려동물 유무</label>
+              <label className={styles.label} htmlFor="has-pet">
+                현재 반려동물 유무
+              </label>
               <select
                 id="has-pet"
                 value={hasPet}
@@ -248,8 +187,15 @@ const AdoptionForm: React.FC = () => {
 
           <div className={styles.fieldGroupFull}>
             <div className={styles.fieldHeader}>
-              <label htmlFor="adoption-interview" className={`${styles.label} ${styles.fieldHeaderLabel}`}>입양 동기 및 돌봄 계획 *</label>
-              <span className={interview.trim().length < 10 ? styles.charCountError : styles.charCount}>
+              <label
+                htmlFor="adoption-interview"
+                className={`${styles.label} ${styles.fieldHeaderLabel}`}
+              >
+                입양 동기 및 돌봄 계획 *
+              </label>
+              <span
+                className={interview.trim().length < 10 ? styles.charCountError : styles.charCount}
+              >
                 {interview.length}자 {interview.trim().length < 10 && '(최소 10자 이상)'}
               </span>
             </div>
@@ -265,7 +211,11 @@ const AdoptionForm: React.FC = () => {
               aria-invalid={Boolean(validationErrors.interview)}
               aria-describedby={validationErrors.interview ? 'adoption-interview-error' : undefined}
             />
-            {validationErrors.interview && <p id="adoption-interview-error" className={styles.fieldError}>{validationErrors.interview}</p>}
+            {validationErrors.interview && (
+              <p id="adoption-interview-error" className={styles.fieldError}>
+                {validationErrors.interview}
+              </p>
+            )}
           </div>
 
           <div className={styles.agreementBox}>
@@ -279,18 +229,19 @@ const AdoptionForm: React.FC = () => {
                 aria-describedby={validationErrors.agreed ? 'adoption-agreement-error' : undefined}
               />
               <span>
-                (필수) 본인은 입양 후 반려동물이 자연사할 때까지 평생 책임지고 사랑으로 양육할 것을 서약합니다.
+                (필수) 본인은 입양 후 반려동물이 자연사할 때까지 평생 책임지고 사랑으로 양육할 것을
+                서약합니다.
               </span>
             </label>
-            {validationErrors.agreed && <p id="adoption-agreement-error" className={styles.fieldError}>{validationErrors.agreed}</p>}
+            {validationErrors.agreed && (
+              <p id="adoption-agreement-error" className={styles.fieldError}>
+                {validationErrors.agreed}
+              </p>
+            )}
           </div>
 
           <div className={styles.btnRow}>
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className={styles.cancelBtn}
-            >
+            <button type="button" onClick={cancel} className={styles.cancelBtn}>
               취소
             </button>
             <button

@@ -4,24 +4,25 @@ import AnimalAdoptionAction from '../components/animals/AnimalAdoptionAction';
 import AnimalDetailInfo from '../components/animals/AnimalDetailInfo';
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Lock, Clock, Sparkles, ArrowLeft, FileText, Share2, Check, CheckCircle2, Maximize2 } from 'lucide-react';
+import { Heart, Lock, ArrowLeft, FileText, Share2, Check, Maximize2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useFavorites } from '../context/FavoritesContext';
-import { deleteAnimal, fetchAnimalById, updateAnimalStatus } from '../api/animal';
-import { getMyAdoptions } from '../api/adoption';
 import styles from '../styles/pages/AnimalDetail.module.css';
 import ConfirmModal from '../components/ConfirmModal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import ImageLightboxModal from '../components/ImageLightboxModal';
 import Skeleton from '../components/Skeleton';
-import { AnimalStatus, STATUS_OPTIONS, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
+import { AnimalStatus, getGenderLabel, getStatusLabel, getSpeciesLabel } from '../constants/animal';
 import usePageTitle from '../hooks/usePageTitle';
-import { useAnimalDetailQuery, useDeleteAnimalMutation, useAnimalStatusMutation } from '../hooks/queries/animals';
+import {
+  useAnimalDetailQuery,
+  useDeleteAnimalMutation,
+  useAnimalStatusMutation,
+} from '../hooks/queries/animals';
 import { useMyAdoptionsQuery } from '../hooks/queries/adoptions';
 import useShare from '../hooks/useShare';
 import AnimalStatusBanner from '../components/animals/AnimalStatusBanner';
-import { Animal } from '../types/animal';
 import { getErrorMessage } from '../utils/error';
 
 const AnimalDetail: React.FC = () => {
@@ -35,7 +36,8 @@ const AnimalDetail: React.FC = () => {
   const deleteMutation = useDeleteAnimalMutation();
   const statusMutation = useAnimalStatusMutation();
   const adoptionsQuery = useMyAdoptionsQuery(isAuthenticated && !!id);
-  const hasApplied = adoptionsQuery.data?.some((item) => String(item.animalId) === String(id)) ?? false;
+  const hasApplied =
+    adoptionsQuery.data?.some((item) => String(item.animalId) === String(id)) ?? false;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState<boolean>(false);
@@ -45,11 +47,13 @@ const AnimalDetail: React.FC = () => {
 
   useEffect(() => {
     if (animal) setSelectedStatus(animal.status || 'PROTECTED');
-  }, [animal?.id, animal?.status]);
+  }, [animal]);
 
   usePageTitle(animal ? `${animal.breed || animal.species} - 입양 상세 정보` : '동물 상세 정보');
 
-  const isAdmin = isAuthenticated && (user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN');
+  const isAdmin =
+    isAuthenticated &&
+    (user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN');
 
   const handleDelete = async () => {
     if (!id) return;
@@ -72,7 +76,10 @@ const AnimalDetail: React.FC = () => {
     try {
       await statusMutation.mutateAsync({ id, status: selectedStatus });
       setIsStatusModalOpen(false);
-      showToast(`동물 보호 상태가 '${getStatusLabel(selectedStatus)}'(으)로 변경되었습니다.`, 'success');
+      showToast(
+        `동물 보호 상태가 '${getStatusLabel(selectedStatus)}'(으)로 변경되었습니다.`,
+        'success',
+      );
     } catch (err: unknown) {
       showToast('상태 변경 실패: ' + getErrorMessage(err), 'error');
     } finally {
@@ -111,7 +118,6 @@ const AnimalDetail: React.FC = () => {
     }
   };
 
-
   if (loading) {
     return (
       <section className={styles.detailContainer}>
@@ -143,7 +149,9 @@ const AnimalDetail: React.FC = () => {
     return (
       <div className={styles.error} role="alert">
         <p>동물 정보를 불러오지 못했습니다.</p>
-        <button type="button" className="btn-primary" onClick={() => refetch()}>다시 시도</button>
+        <button type="button" className="btn-primary" onClick={() => refetch()}>
+          다시 시도
+        </button>
       </div>
     );
   }
@@ -207,16 +215,34 @@ const AnimalDetail: React.FC = () => {
                   e.stopPropagation();
                   handleFavClick();
                 }}
-                aria-label={!isAuthenticated ? '로그인 후 찜하기 가능' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
+                aria-label={
+                  !isAuthenticated
+                    ? '로그인 후 찜하기 가능'
+                    : favorite
+                      ? '관심 목록에서 제거'
+                      : '관심 동물로 등록'
+                }
                 aria-pressed={isAuthenticated ? favorite : undefined}
-                title={!isAuthenticated ? '로그인 후 찜하기 가능합니다' : favorite ? '관심 목록에서 제거' : '관심 동물로 등록'}
+                title={
+                  !isAuthenticated
+                    ? '로그인 후 찜하기 가능합니다'
+                    : favorite
+                      ? '관심 목록에서 제거'
+                      : '관심 동물로 등록'
+                }
               >
                 {!isAuthenticated ? (
-                  <><Lock size={15} /> <span>찜하기</span></>
+                  <>
+                    <Lock size={15} /> <span>찜하기</span>
+                  </>
                 ) : favorite ? (
-                  <><Heart size={16} /> <span>찜됨</span></>
+                  <>
+                    <Heart size={16} /> <span>찜됨</span>
+                  </>
                 ) : (
-                  <><Heart size={16} /> <span>찜하기</span></>
+                  <>
+                    <Heart size={16} /> <span>찜하기</span>
+                  </>
                 )}
               </button>
             </div>

@@ -8,7 +8,8 @@ import { User, Mail, Lock, Eye, EyeOff, Check, AlertCircle } from "lucide-react"
 const Register: React.FC = () => {
   usePageTitle('회원가입');
   const {
-    form, emailSent, emailCode, setEmailCode, emailVerified, error, message,
+    form, emailSent, emailCode, setEmailCode, emailVerified, isEmailSending,
+    isEmailVerifying, error, message,
     isSubmitting, showPassword, setShowPassword, showConfirmPassword,
     setShowConfirmPassword, timer, isTimerActive, isLengthOk, isPasswordValid,
     isConfirmPasswordValid, namePattern: nameRegex, emailPattern: emailRegex,
@@ -57,19 +58,19 @@ const Register: React.FC = () => {
               name="email"
               value={form.email}
               onChange={handleChange}
-              disabled={emailVerified}
+              disabled={emailVerified || emailSent || isEmailSending}
               required
               icon={<Mail size={18} />}
             />
             <button
               type="button"
               onClick={handleEmailSend}
-              disabled={emailVerified || !form.email || !emailRegex.test(form.email) || isTimerActive}
+              disabled={emailVerified || !form.email || !emailRegex.test(form.email) || isTimerActive || isEmailSending}
               className={`${styles.verifyRowButton} ${
                 form.email && emailRegex.test(form.email) && !emailVerified && !isTimerActive ? styles.verifyActiveButton : ""
               }`}
             >
-              {emailSent ? "재전송" : "인증 요청"}
+              {isEmailSending ? "전송 중..." : emailSent ? "재전송" : "인증 요청"}
             </button>
           </div>
           {form.email && !emailRegex.test(form.email) && (
@@ -105,10 +106,10 @@ const Register: React.FC = () => {
               <button
                 type="button"
                 onClick={handleEmailVerify}
-                disabled={!emailCode}
+                disabled={!emailCode || isEmailVerifying}
                 className={`${styles.verifyRowButton} ${emailCode ? styles.verifyActiveButton : ""}`}
               >
-                인증 확인
+                {isEmailVerifying ? "확인 중..." : "인증 확인"}
               </button>
             </div>
           </div>

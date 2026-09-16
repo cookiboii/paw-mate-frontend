@@ -1,79 +1,25 @@
-import { useAllAdoptionsQuery, useAdoptionStatusMutation } from '../../hooks/queries/adoptions';
-import React, { useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getAllAdoptions, updateAdoptionStatus } from '../../api/adoption';
-import { useToast } from '../../context/ToastContext';
+import React from 'react';
 import styles from '../../styles/admin/AdminAdoptionsPage.module.css';
 import ConfirmModal from '../../components/ConfirmModal';
 import { formatDateTime, formatDate } from '../../utils/date';
 import usePageTitle from '../../hooks/usePageTitle';
-import { AdoptionResponseDto as AdminAdoptionItem } from '../../types/adoption';
+import useAdminAdoptions from '../../hooks/useAdminAdoptions';
 import { ClipboardList, PawPrint, FileText, X } from 'lucide-react';
-import { getErrorMessage } from '../../utils/error';
-import useBodyScrollLock from '../../hooks/useBodyScrollLock';
 
 const AdminAdoptionsPage: React.FC = () => {
   usePageTitle('입양 신청 관리 (Admin)');
-  const adoptionsQuery = useAllAdoptionsQuery();
-  const adoptions = adoptionsQuery.data || [];
-  const updateStatusMutation = useAdoptionStatusMutation();
-  const [processingId, setProcessingId] = useState<number | string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>('ALL');
-  const [selectedAdoption, setSelectedAdoption] = useState<AdminAdoptionItem | null>(null); // 상세 모달용
-  const [confirmState, setConfirmState] = useState<{
-    isOpen: boolean;
-    adoptionId: number | string | null;
-    status: string | null;
-  }>({ isOpen: false, adoptionId: null, status: null });
-  const { showToast } = useToast();
-  useBodyScrollLock(Boolean(selectedAdoption));
-
-  useEffect(() => {
-    if (!selectedAdoption) return;
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setSelectedAdoption(null);
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => {
-      window.removeEventListener('keydown', handleEscape);
-    };
-  }, [selectedAdoption]);
-
-  const requestStatusUpdate = (adoptionId: number | string, status: string) => {
-    if (!adoptionId) {
-      showToast('올바르지 않은 신청 항목입니다.', 'error');
-      return;
-    }
-    setConfirmState({ isOpen: true, adoptionId, status });
-  };
-
-  const handleConfirmStatus = async () => {
-    const { adoptionId, status } = confirmState;
-    if (!adoptionId || !status) return;
-
-    setConfirmState({ isOpen: false, adoptionId: null, status: null });
-    const actionText = status === 'APPROVED' ? '승인' : '거절';
-
-    setProcessingId(adoptionId);
-
-    try {
-      // 📌 API 명세서 Body: AdoptionUpdateRequestDto { adoptionStatus }
-      await updateStatusMutation.mutateAsync({ adoptionId, status });
-
-      showToast(`입양 신청이 성공적으로 ${actionText}되었습니다.`, 'success');
-
-      // 낙관적 UI 업데이트
-      if (selectedAdoption?.adoptionId === adoptionId) {
-        setSelectedAdoption((prev) => (prev ? { ...prev, status } : null));
-      }
-
-    } catch (err: unknown) {
-      console.error('상태 변경 실패:', err);
-      showToast('상태 변경에 실패했습니다: ' + getErrorMessage(err), 'error');
-    } finally {
-      setProcessingId(null);
-    }
-  };
+  const {
+    processingId,
+    filterStatus,
+    setFilterStatus,
+    selectedAdoption,
+    setSelectedAdoption,
+    confirmState,
+    setConfirmState,
+    requestStatusUpdate,
+    confirmStatus: handleConfirmStatus,
+    filteredAdoptions,
+  } = useAdminAdoptions();
 
   const isPending = (status?: string) => {
     const s = (status || 'PENDING').toUpperCase();
@@ -91,11 +37,6 @@ const AdminAdoptionsPage: React.FC = () => {
     return <span className={`${styles.statusBadge} ${styles.badgePending}`}>심사 대기</span>;
   };
 
-  const filteredAdoptions = adoptions.filter((item) => {
-    if (filterStatus === 'ALL') return true;
-    return (item.status || 'PENDING').toUpperCase() === filterStatus;
-  });
-
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -104,7 +45,9 @@ const AdminAdoptionsPage: React.FC = () => {
             <ClipboardList size={22} />
             <span>입양 신청 관리</span>
           </h2>
-          <p className={styles.subtitle}>접수된 입양 신청서를 검토하고 승인 또는 반려 처리합니다.</p>
+          <p className={styles.subtitle}>
+            접수된 입양 신청서를 검토하고 승인 또는 반려 처리합니다.
+          </p>
         </div>
 
         {/* 필터 탭 */}
@@ -115,7 +58,13 @@ const AdminAdoptionsPage: React.FC = () => {
               className={`${styles.filterTab} ${filterStatus === st ? styles.activeTab : ''}`}
               onClick={() => setFilterStatus(st)}
             >
-              {st === 'ALL' ? '전체' : st === 'PENDING' ? '심사대기' : st === 'APPROVED' ? '승인' : '반려'}
+              {st === 'ALL'
+                ? '전체'
+                : st === 'PENDING'
+                  ? '심사대기'
+                  : st === 'APPROVED'
+                    ? '승인'
+                    : '반려'}
             </button>
           ))}
         </div>
@@ -123,7 +72,9 @@ const AdminAdoptionsPage: React.FC = () => {
 
       {filteredAdoptions.length === 0 ? (
         <div className={styles.emptyCard}>
-          <span><PawPrint size={40} /></span>
+          <span>
+            <PawPrint size={40} />
+          </span>
           <p>해당 조건의 입양 신청 내역이 없습니다.</p>
         </div>
       ) : (
@@ -169,13 +120,13 @@ const AdminAdoptionsPage: React.FC = () => {
                   {/* 주거 형태 & 반려동물 */}
                   <td>
                     <div>{adoption.housingType || '미기재'}</div>
-                    <span className={styles.cellSubText}>반려동물: {adoption.hasPet || '없음'}</span>
+                    <span className={styles.cellSubText}>
+                      반려동물: {adoption.hasPet || '없음'}
+                    </span>
                   </td>
 
                   {/* 신청일 */}
-                  <td>
-                    {formatDate(adoption.applyDate)}
-                  </td>
+                  <td>{formatDate(adoption.applyDate)}</td>
 
                   {/* 상태 뱃지 */}
                   <td>{renderStatusBadge(adoption.status)}</td>
@@ -219,14 +170,28 @@ const AdminAdoptionsPage: React.FC = () => {
 
       {/* 📌 입양 신청서 상세 모달 */}
       {selectedAdoption && (
-        <div className={styles.modalOverlay} onClick={() => setSelectedAdoption(null)} role="presentation">
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="adoption-detail-title">
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setSelectedAdoption(null)}
+          role="presentation"
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="adoption-detail-title"
+          >
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle} id="adoption-detail-title">
                 <FileText size={20} />
                 <span>입양 신청서 상세 보기</span>
               </h3>
-              <button className={styles.closeBtn} onClick={() => setSelectedAdoption(null)} aria-label="닫기">
+              <button
+                className={styles.closeBtn}
+                onClick={() => setSelectedAdoption(null)}
+                aria-label="닫기"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -235,17 +200,28 @@ const AdminAdoptionsPage: React.FC = () => {
               <div className={styles.modalSection}>
                 <h4>신청자 정보</h4>
                 <div className={styles.modalGrid}>
-                  <div><strong>이름:</strong> {selectedAdoption.userName || selectedAdoption.memberName}</div>
-                  <div><strong>연락처:</strong> {selectedAdoption.phone || '미기재'}</div>
-                  <div><strong>주거형태:</strong> {selectedAdoption.housingType || '미기재'}</div>
-                  <div><strong>반려동물 유무:</strong> {selectedAdoption.hasPet || '미기재'}</div>
+                  <div>
+                    <strong>이름:</strong>{' '}
+                    {selectedAdoption.userName || selectedAdoption.memberName}
+                  </div>
+                  <div>
+                    <strong>연락처:</strong> {selectedAdoption.phone || '미기재'}
+                  </div>
+                  <div>
+                    <strong>주거형태:</strong> {selectedAdoption.housingType || '미기재'}
+                  </div>
+                  <div>
+                    <strong>반려동물 유무:</strong> {selectedAdoption.hasPet || '미기재'}
+                  </div>
                 </div>
               </div>
 
               <div className={styles.modalSection}>
                 <h4>입양 동기 및 돌봄 계획</h4>
                 <div className={styles.reasonBox}>
-                  {selectedAdoption.reason || selectedAdoption.interview || '작성된 내용이 없습니다.'}
+                  {selectedAdoption.reason ||
+                    selectedAdoption.interview ||
+                    '작성된 내용이 없습니다.'}
                 </div>
               </div>
 

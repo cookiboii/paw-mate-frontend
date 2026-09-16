@@ -129,7 +129,8 @@
   color: var(--text-muted);
 }
 
-.input, .select {
+.input,
+.select {
   padding: 0.7rem 1rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
@@ -140,7 +141,8 @@
   transition: border-color var(--transition-fast);
 }
 
-.input:focus, .select:focus {
+.input:focus,
+.select:focus {
   border-color: var(--primary-color);
   box-shadow: var(--input-focus-ring);
 }
@@ -627,6 +629,13 @@
 .actionHint {
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+.benchmarkError {
+  margin: 16px 0 0;
+  color: var(--danger, #dc2626);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .metricValSmall {

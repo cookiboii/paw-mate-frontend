@@ -1,103 +1,39 @@
-import { queryKeys } from '../../hooks/queries/keys';
-import { useAllUsersQuery, useDeleteUserMutation } from '../../hooks/queries/users';
-import React, { useEffect, useState, useMemo } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getAllUsers, deleteUserByAdmin } from '../../api/user';
+import React from 'react';
 import styles from '../../styles/admin/AdminUsersPage.module.css';
-import { useToast } from '../../context/ToastContext';
 import usePageTitle from '../../hooks/usePageTitle';
+import useAdminUsers from '../../hooks/useAdminUsers';
 import ConfirmModal from '../../components/ConfirmModal';
-import { User } from '../../types/auth';
-import { Users, Crown, User as UserIcon, Search, BarChart3, ShieldCheck, Trash2, X } from 'lucide-react';
-import { getErrorMessage } from '../../utils/error';
-
-const ITEMS_PER_PAGE = 10;
+import {
+  Users,
+  Crown,
+  User as UserIcon,
+  Search,
+  BarChart3,
+  ShieldCheck,
+  Trash2,
+  X,
+} from 'lucide-react';
 
 const AdminUsersPage: React.FC = () => {
   usePageTitle('회원 관리 (Admin)');
-  const queryClient = useQueryClient();
-  const usersQuery = useAllUsersQuery();
-  const users = usersQuery.data || [];
-  const deleteUserMutation = useDeleteUserMutation();
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'ALL' | 'ADMIN' | 'USER'>('ALL'); // ALL, ADMIN, USER
-  const [currentPage, setCurrentPage] = useState(1);
-  const { showToast } = useToast();
-
-  // 삭제 및 권한 변경 모달 상태
-  const [deleteTargetUser, setDeleteTargetUser] = useState<User | null>(null);
-  const [roleTargetUser, setRoleTargetUser] = useState<User | null>(null);
-
-  // --- 통계 계산 ---
-  const stats = useMemo(() => {
-    return {
-      total: users.length,
-      admins: users.filter((u) => u.role === 'ADMIN' || u.role === 'ROLE_ADMIN').length,
-      users: users.filter((u) => u.role === 'USER' || u.role === 'ROLE_USER').length,
-    };
-  }, [users]);
-
-  // --- 검색 및 필터링 적용 ---
-  const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
-      const matchesSearch =
-        user.name?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchKeyword.toLowerCase());
-
-      const userRole = (user.role || '').toUpperCase();
-      const matchesRole =
-        roleFilter === 'ALL' ||
-        (roleFilter === 'ADMIN' && (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN')) ||
-        (roleFilter === 'USER' && (userRole === 'USER' || userRole === 'ROLE_USER'));
-
-      return matchesSearch && matchesRole;
-    });
-  }, [users, searchKeyword, roleFilter]);
-
-  // --- 페이징 처리 ---
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE) || 1;
-  const paginatedUsers = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredUsers.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredUsers, currentPage]);
-
-  // 페이지 변경 시 핸들러
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // 검색어나 필터가 바뀌면 1페이지로 리셋
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchKeyword, roleFilter]);
-
-  // 회원 권한 변경 실행
-  const handleConfirmRoleChange = () => {
-    if (!roleTargetUser) return;
-    const newRole = roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN' ? 'USER' : 'ADMIN';
-
-    // 낙관적 UI 업데이트
-    queryClient.setQueryData<User[]>(queryKeys.users.all, (prev = []) =>
-      prev.map((u) => (u.id === roleTargetUser.id ? { ...u, role: newRole } : u))
-    );
-    showToast(`'${roleTargetUser.name || roleTargetUser.email}'님의 권한이 '${newRole}'(으)로 변경되었습니다.`, 'success');
-    setRoleTargetUser(null);
-  };
-
-  // 회원 강제 탈퇴 실행 (서버 DELETE /adoptmate/admin/{memberId} 연동)
-  const handleConfirmDelete = async () => {
-    const target = deleteTargetUser;
-    if (!target || target.id === undefined || target.id === null) return;
-    const targetId = target.id!;
-    setDeleteTargetUser(null);
-
-    try {
-      await deleteUserMutation.mutateAsync(targetId);
-      showToast(`'${target.name || target.email}' 회원이 성공적으로 삭제(탈퇴)되었습니다.`, 'success');
-    } catch (err) {
-      showToast('회원 삭제 실패: ' + getErrorMessage(err), 'error');
-    }
-  };
+  const {
+    searchKeyword,
+    setSearchKeyword,
+    roleFilter,
+    setRoleFilter,
+    currentPage,
+    setCurrentPage,
+    deleteTargetUser,
+    setDeleteTargetUser,
+    roleTargetUser,
+    setRoleTargetUser,
+    stats,
+    totalPages,
+    paginatedUsers,
+    confirmRoleChange: handleConfirmRoleChange,
+    confirmDelete: handleConfirmDelete,
+  } = useAdminUsers();
+  const handlePageChange = setCurrentPage;
 
   return (
     <div className={styles.container}>
@@ -287,7 +223,9 @@ const AdminUsersPage: React.FC = () => {
         message={
           roleTargetUser
             ? `'${roleTargetUser.name || roleTargetUser.email}'님의 권한을 '${
-                roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN' ? 'USER(일반 회원)' : 'ADMIN(관리자)'
+                roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN'
+                  ? 'USER(일반 회원)'
+                  : 'ADMIN(관리자)'
               }'(으)로 변경하시겠습니까?`
             : ''
         }

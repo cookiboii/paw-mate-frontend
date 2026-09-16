@@ -31,6 +31,12 @@ export interface ConcurrencyTestResult {
   metrics: RequestMetric[];
 }
 
+export const percentileNearestRank = (sortedValues: number[], percentile: number) => {
+  if (sortedValues.length === 0) return 0;
+  const rank = Math.ceil(sortedValues.length * percentile) - 1;
+  return sortedValues[Math.min(sortedValues.length - 1, Math.max(0, rank))];
+};
+
 // 📌 1. Web Vitals 옵저버 등록
 const vitalsListeners = new Set<(metric: WebVitalsData) => void>();
 const latestVitals = new Map<string, WebVitalsData>();
@@ -39,7 +45,9 @@ let vitalsStarted = false;
 export const subscribeToWebVitals = (onUpdate: (metric: WebVitalsData) => void) => {
   vitalsListeners.add(onUpdate);
   latestVitals.forEach(onUpdate);
-  const unsubscribe = () => { vitalsListeners.delete(onUpdate); };
+  const unsubscribe = () => {
+    vitalsListeners.delete(onUpdate);
+  };
   if (vitalsStarted) return unsubscribe;
   vitalsStarted = true;
   const publish = (metric: WebVitalsData) => {
@@ -95,9 +103,7 @@ export const runConcurrencyBenchmark = async ({
   const executeSingleRequest = async (id: number): Promise<RequestMetric> => {
     const reqStart = performance.now();
     try {
-      const config = bypassCache
-        ? { params: { _t: Date.now() + id } }
-        : {};
+      const config = bypassCache ? { params: { _t: Date.now() + id } } : {};
       const res = await axiosInstance.get(endpoint, config);
       const duration = performance.now() - reqStart;
       const metric: RequestMetric = {
@@ -135,7 +141,7 @@ export const runConcurrencyBenchmark = async ({
         completedCount++;
         onProgress?.(completedCount, totalRequests, metric);
         return metric;
-      })
+      }),
     );
     await Promise.all(promises);
   } else if (mode === 'sequential') {
@@ -151,7 +157,7 @@ export const runConcurrencyBenchmark = async ({
     for (let i = 0; i < totalRequests; i += chunkSize) {
       const chunk = Array.from(
         { length: Math.min(chunkSize, totalRequests - i) },
-        (_, idx) => i + idx + 1
+        (_, idx) => i + idx + 1,
       );
       const chunkPromises = chunk.map((id) =>
         executeSingleRequest(id).then((metric) => {
@@ -159,7 +165,7 @@ export const runConcurrencyBenchmark = async ({
           completedCount++;
           onProgress?.(completedCount, totalRequests, metric);
           return metric;
-        })
+        }),
       );
       await Promise.all(chunkPromises);
     }
@@ -175,9 +181,8 @@ export const runConcurrencyBenchmark = async ({
       : 0;
   const minDuration = durations[0] || 0;
   const maxDuration = durations[durations.length - 1] || 0;
-  const p95Index = Math.floor(durations.length * 0.95);
-  const p95Duration = durations[p95Index] || maxDuration;
-  const rps = parseFloat(((totalRequests / (totalTimeMs / 1000)) || 0).toFixed(2));
+  const p95Duration = percentileNearestRank(durations, 0.95);
+  const rps = parseFloat((totalRequests / (totalTimeMs / 1000) || 0).toFixed(2));
 
   return {
     totalRequests,
