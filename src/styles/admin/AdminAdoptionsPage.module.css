@@ -162,7 +162,7 @@
 }
 
 .phoneText {
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: 0.95rem;
 }
 
@@ -225,7 +225,8 @@
   gap: 6px;
 }
 
-.acceptBtn, .rejectBtn {
+.acceptBtn,
+.rejectBtn {
   padding: 6px 12px;
   border-radius: var(--radius-md);
   font-size: 0.85rem;
