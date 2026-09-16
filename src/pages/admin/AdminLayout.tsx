@@ -75,9 +75,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </ul>
       </nav>
 
-      <main className={styles.mainContent}>
-        {children || <Outlet />}
-      </main>
+      <main className={styles.mainContent}>{children || <Outlet />}</main>
     </div>
   );
 };

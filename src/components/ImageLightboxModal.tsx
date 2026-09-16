@@ -57,21 +57,12 @@ const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
         <X size={24} />
       </button>
 
-      <div
-        className={styles.imageWrapper}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <img
-          src={imageUrl}
-          alt={alt}
-          className={styles.lightboxImage}
-        />
-        {(caption || alt) && (
-          <p className={styles.caption}>{caption || alt}</p>
-        )}
+      <div className={styles.imageWrapper} onClick={(e) => e.stopPropagation()}>
+        <img src={imageUrl} alt={alt} className={styles.lightboxImage} />
+        {(caption || alt) && <p className={styles.caption}>{caption || alt}</p>}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

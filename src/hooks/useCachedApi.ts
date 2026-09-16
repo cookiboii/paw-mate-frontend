@@ -27,7 +27,7 @@ export const apiQueryKey = (key: string) => ['legacy-api', key] as const;
 export function useCachedApi<T>(
   key: string | null,
   fetcher: () => Promise<T>,
-  options: UseCachedApiOptions<T> = {}
+  options: UseCachedApiOptions<T> = {},
 ): UseCachedApiResult<T> {
   const { ttl = 3 * 60 * 1000, enabled = true, initialData, onSuccess, onError } = options;
   const queryClient = useQueryClient();
@@ -58,21 +58,32 @@ export function useCachedApi<T>(
     }
   }, [query.error]);
 
-  const refetch = useCallback(async (_force = false) => {
-    const result = await query.refetch();
-    return result.data ?? null;
-  }, [query]);
+  const refetch = useCallback(
+    async (_force = false) => {
+      const result = await query.refetch();
+      return result.data ?? null;
+    },
+    [query],
+  );
 
-  const mutate = useCallback((newData: T, shouldRevalidate = false) => {
-    queryClient.setQueryData(queryKey, newData);
-    if (shouldRevalidate) queryClient.invalidateQueries({ queryKey });
-  }, [queryClient, queryKey]);
+  const mutate = useCallback(
+    (newData: T, shouldRevalidate = false) => {
+      queryClient.setQueryData(queryKey, newData);
+      if (shouldRevalidate) queryClient.invalidateQueries({ queryKey });
+    },
+    [queryClient, queryKey],
+  );
 
   return {
     data: query.data ?? null,
     isLoading: query.isLoading,
     isRevalidating: query.isFetching && !query.isLoading,
-    error: query.error instanceof Error ? query.error : query.error ? new Error(String(query.error)) : null,
+    error:
+      query.error instanceof Error
+        ? query.error
+        : query.error
+          ? new Error(String(query.error))
+          : null,
     refetch,
     mutate,
   };

@@ -49,7 +49,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             </div>
             <h2 className={styles.title}>일시적인 오류가 발생했습니다</h2>
             <p className={styles.description}>
-              페이지를 불러오는 중 문제가 발생했습니다.<br />
+              페이지를 불러오는 중 문제가 발생했습니다.
+              <br />
               잠시 후 다시 시도해 주시거나 홈으로 이동해 주세요.
             </p>
             <div className={styles.actions}>

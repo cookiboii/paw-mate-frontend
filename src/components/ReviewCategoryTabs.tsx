@@ -1,5 +1,14 @@
 import React from 'react';
-import { LayoutGrid, HeartHandshake, Gift, AlertTriangle, PenSquare, Search, X, ArrowDownUp } from 'lucide-react';
+import {
+  LayoutGrid,
+  HeartHandshake,
+  Gift,
+  AlertTriangle,
+  PenSquare,
+  Search,
+  X,
+  ArrowDownUp,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
 import { REVIEW_CATEGORY_PREFIX } from '../utils/reviewCategory';
@@ -46,32 +55,29 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
     <div className={styles.controlsWrapper}>
       {/* 검색 바 */}
       <div className={styles.searchRow}>
-      <div className={styles.searchBox}>
-        <span
-          className={styles.searchIcon}
-          aria-hidden="true"
-        >
-          <Search size={18} />
-        </span>
-        <input
-          type="text"
-          placeholder="제목, 내용, 작성자 검색..."
-          value={searchKeyword}
-          onChange={(e) => onSearchChange(e.target.value)}
-          aria-label="게시글 검색"
-          className={styles.searchInput}
-        />
-        {searchKeyword && (
-          <button
-            type="button"
-            onClick={() => onSearchChange('')}
-            aria-label="검색어 지우기"
-            className={styles.searchClearBtn}
-          >
-            <X size={16} />
-          </button>
-        )}
-      </div>
+        <div className={styles.searchBox}>
+          <span className={styles.searchIcon} aria-hidden="true">
+            <Search size={18} />
+          </span>
+          <input
+            type="text"
+            placeholder="제목, 내용, 작성자 검색..."
+            value={searchKeyword}
+            onChange={(e) => onSearchChange(e.target.value)}
+            aria-label="게시글 검색"
+            className={styles.searchInput}
+          />
+          {searchKeyword && (
+            <button
+              type="button"
+              onClick={() => onSearchChange('')}
+              aria-label="검색어 지우기"
+              className={styles.searchClearBtn}
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
         <label className={styles.sortControl}>
           <ArrowDownUp size={16} aria-hidden="true" />
           <span className={styles.srOnly}>정렬</span>
@@ -99,10 +105,7 @@ const ReviewCategoryTabs: React.FC<ReviewCategoryTabsProps> = ({
           </button>
         ))}
 
-        <Link
-          to={isAuthenticated ? '/reviews/write' : '/login'}
-          className={styles.writeBtn}
-        >
+        <Link to={isAuthenticated ? '/reviews/write' : '/login'} className={styles.writeBtn}>
           <PenSquare size={16} />
           <span>글쓰기</span>
         </Link>

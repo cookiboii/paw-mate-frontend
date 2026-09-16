@@ -1,5 +1,15 @@
 import React from 'react';
-import { Search, X, Dog, Cat, PawPrint, RotateCcw, Infinity as InfinityIcon, LayoutGrid, Sparkles } from 'lucide-react';
+import {
+  Search,
+  X,
+  Dog,
+  Cat,
+  PawPrint,
+  RotateCcw,
+  Infinity as InfinityIcon,
+  LayoutGrid,
+  Sparkles,
+} from 'lucide-react';
 import styles from '../styles/pages/AnimalList.module.css';
 
 export interface AnimalFilterBarProps {
@@ -129,7 +139,13 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             <span className={styles.activeTagsLabel}>적용된 필터:</span>
             {speciesFilter !== 'ALL' && (
               <span className={styles.activeTagChip}>
-                <span>{speciesFilter === 'DOG' ? '강아지' : speciesFilter === 'CAT' ? '고양이' : '기타 축종'}</span>
+                <span>
+                  {speciesFilter === 'DOG'
+                    ? '강아지'
+                    : speciesFilter === 'CAT'
+                      ? '고양이'
+                      : '기타 축종'}
+                </span>
                 <button
                   type="button"
                   onClick={() => onSpeciesChange('ALL')}
@@ -185,15 +201,11 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
         <div className={styles.resultCountBadge}>
           <Sparkles size={18} />
           <span>
-            총 <strong className={styles.countHighlight}>{totalCount}</strong>마리의 아이들이 기다리고 있어요
+            총 <strong className={styles.countHighlight}>{totalCount}</strong>마리의 아이들이
+            기다리고 있어요
           </span>
           {hasActiveFilter && (
-            <button
-              type="button"
-              className={styles.resetBtn}
-              onClick={onReset}
-              title="필터 초기화"
-            >
+            <button type="button" className={styles.resetBtn} onClick={onReset} title="필터 초기화">
               <RotateCcw size={13} className={styles.resetIcon} />
               필터 초기화
             </button>

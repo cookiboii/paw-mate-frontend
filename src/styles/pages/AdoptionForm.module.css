@@ -154,7 +154,10 @@
   margin-bottom: 8px;
 }
 
-.input, .disabledInput, .select, .textarea {
+.input,
+.disabledInput,
+.select,
+.textarea {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid var(--border-color);
@@ -166,7 +169,9 @@
   transition: all var(--transition-fast);
 }
 
-.input:focus, .select:focus, .textarea:focus {
+.input:focus,
+.select:focus,
+.textarea:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px var(--primary-light);
@@ -251,7 +256,9 @@
     gap: 16px;
   }
 
-  .cardHeader, .form, .animalSummary {
+  .cardHeader,
+  .form,
+  .animalSummary {
     padding: 20px 16px;
   }
 

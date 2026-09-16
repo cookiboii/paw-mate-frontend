@@ -9,7 +9,14 @@ interface Props {
   handleStatusChangeSubmit: () => Promise<void>;
   onClose: () => void;
 }
-export default function AnimalStatusModal({ isStatusModalOpen, isUpdatingStatus, selectedStatus, setSelectedStatus, handleStatusChangeSubmit, onClose }: Props) {
+export default function AnimalStatusModal({
+  isStatusModalOpen,
+  isUpdatingStatus,
+  selectedStatus,
+  setSelectedStatus,
+  handleStatusChangeSubmit,
+  onClose,
+}: Props) {
   return (
     <ConfirmModal
       isOpen={isStatusModalOpen}

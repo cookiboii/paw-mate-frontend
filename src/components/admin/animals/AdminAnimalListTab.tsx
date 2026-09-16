@@ -74,23 +74,23 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
       statusKey === 'PROTECTED'
         ? styles.statusProtected
         : statusKey === 'WAITING'
-        ? styles.statusWaiting
-        : styles.statusAdopted;
+          ? styles.statusWaiting
+          : styles.statusAdopted;
     const isUpdating = updatingAnimalId === animalId;
 
     return (
       <div className={styles.statusControl} aria-busy={isUpdating}>
-      <select
-        className={`${styles.statusSelect} ${statusClass}`}
-        value={statusKey}
-        onChange={(e) => animalId && handleStatusChange(animalId, e.target.value)}
-        disabled={isUpdating}
-        aria-label={`${animal.name || animal.breed || '보호 동물'} 보호 상태 변경`}
-      >
-        <option value="PROTECTED">보호 중</option>
-        <option value="WAITING">입양 대기</option>
-        <option value="ADOPTED">입양 완료</option>
-      </select>
+        <select
+          className={`${styles.statusSelect} ${statusClass}`}
+          value={statusKey}
+          onChange={(e) => animalId && handleStatusChange(animalId, e.target.value)}
+          disabled={isUpdating}
+          aria-label={`${animal.name || animal.breed || '보호 동물'} 보호 상태 변경`}
+        >
+          <option value="PROTECTED">보호 중</option>
+          <option value="WAITING">입양 대기</option>
+          <option value="ADOPTED">입양 완료</option>
+        </select>
         {isUpdating && <span className={styles.statusUpdating}>변경 중...</span>}
       </div>
     );
@@ -155,7 +155,8 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
       </div>
 
       <div className={styles.resultSummary} role="status" aria-live="polite">
-        전체 <strong>{animals.length}</strong>마리 · 검색 결과 <strong>{filteredAnimals.length}</strong>마리
+        전체 <strong>{animals.length}</strong>마리 · 검색 결과{' '}
+        <strong>{filteredAnimals.length}</strong>마리
       </div>
 
       {/* 동물 목록 테이블 */}
@@ -195,12 +196,19 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                       <td>
                         <div className={styles.animalCell}>
                           <img
-                            src={animal.image || animal.profileImageUrl || animal.imageUrl || '/default-pet.png'}
+                            src={
+                              animal.image ||
+                              animal.profileImageUrl ||
+                              animal.imageUrl ||
+                              '/default-pet.png'
+                            }
                             alt={animal.breed || '반려동물'}
                             className={styles.thumbnail}
                           />
                           <div>
-                            <span className={styles.animalBreed}>{animal.name || animal.breed || '이름 없음'}</span>
+                            <span className={styles.animalBreed}>
+                              {animal.name || animal.breed || '이름 없음'}
+                            </span>
                             {animal.name && animal.breed && animal.name !== animal.breed && (
                               <span className={styles.animalMeta}>{animal.breed}</span>
                             )}
@@ -210,14 +218,13 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                       </td>
                       <td>
                         <div>
-                          <strong>{getSpeciesLabel(animal.species)}</strong> • {getGenderLabel(animal.gender)}
+                          <strong>{getSpeciesLabel(animal.species)}</strong> •{' '}
+                          {getGenderLabel(animal.gender)}
                         </div>
                         <span className={styles.animalMeta}>{animal.age}살</span>
                       </td>
                       <td>{animal.color || '-'}</td>
-                      <td>
-                        {renderStatusSelect(animal)}
-                      </td>
+                      <td>{renderStatusSelect(animal)}</td>
                       <td className={styles.textRight}>
                         <div className={`${styles.actionCell} ${styles.actionCellEnd}`}>
                           <Link
@@ -255,13 +262,20 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                 <article className={styles.mobileAnimalCard} key={`mobile-${animalId}`}>
                   <div className={styles.mobileCardHeader}>
                     <img
-                      src={animal.image || animal.profileImageUrl || animal.imageUrl || '/default-pet.png'}
+                      src={
+                        animal.image ||
+                        animal.profileImageUrl ||
+                        animal.imageUrl ||
+                        '/default-pet.png'
+                      }
                       alt=""
                       className={styles.thumbnail}
                     />
                     <div className={styles.mobileCardIdentity}>
                       <strong>{animal.name || animal.breed || '이름 없음'}</strong>
-                      <span>{animal.breed || getSpeciesLabel(animal.species)} · ID #{animalId}</span>
+                      <span>
+                        {animal.breed || getSpeciesLabel(animal.species)} · ID #{animalId}
+                      </span>
                     </div>
                     <Link
                       to={`/animals/${animalId}`}
@@ -272,9 +286,20 @@ export const AdminAnimalListTab: React.FC<AdminAnimalListTabProps> = ({
                     </Link>
                   </div>
                   <dl className={styles.mobileDetails}>
-                    <div><dt>동물 종류</dt><dd>{getSpeciesLabel(animal.species)}</dd></div>
-                    <div><dt>성별·나이</dt><dd>{getGenderLabel(animal.gender)} · {animal.age}살</dd></div>
-                    <div><dt>색상</dt><dd>{animal.color || '-'}</dd></div>
+                    <div>
+                      <dt>동물 종류</dt>
+                      <dd>{getSpeciesLabel(animal.species)}</dd>
+                    </div>
+                    <div>
+                      <dt>성별·나이</dt>
+                      <dd>
+                        {getGenderLabel(animal.gender)} · {animal.age}살
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>색상</dt>
+                      <dd>{animal.color || '-'}</dd>
+                    </div>
                   </dl>
                   <div className={styles.mobileCardActions}>
                     {renderStatusSelect(animal)}

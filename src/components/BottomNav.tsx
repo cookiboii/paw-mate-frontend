@@ -59,7 +59,9 @@ const BottomNav: React.FC = () => {
           {isAdmin ? (
             <NavLink
               to="/admin/dashboard"
-              className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+              className={({ isActive }) =>
+                `${styles.navItem} ${isActive ? styles.navItemActive : ''}`
+              }
             >
               <ShieldCheck size={20} />
               <span>관리자</span>

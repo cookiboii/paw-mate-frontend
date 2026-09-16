@@ -1,84 +1,84 @@
 /* src/styles/AdoptionReviewEdit.module.css */
 
 .container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.input,
+.textarea {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.submitBtn {
+  background-color: var(--action-primary);
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submitBtn:hover {
+  background-color: var(--action-primary-hover);
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    margin: 20px;
+    padding: 20px;
   }
-  
+
   .title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    text-align: center;
-    color: var(--text-primary);
+    font-size: 20px;
   }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .label {
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: var(--text-primary);
-  }
-  
+
   .input,
   .textarea {
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    background: var(--bg-color);
-    color: var(--text-primary);
-    font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
+    font-size: 14px;
   }
-  
-  .textarea {
-    resize: vertical;
-    min-height: 120px;
-  }
-  
+
   .submitBtn {
-    background-color: var(--action-primary);
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 14px;
+    padding: 10px;
   }
-  
-  .submitBtn:hover {
-    background-color: var(--action-primary-hover);
-  }
-  
-  @media screen and (max-width: 768px) {
-    .container {
-      margin: 20px;
-      padding: 20px;
-    }
-  
-    .title {
-      font-size: 20px;
-    }
-  
-    .input,
-    .textarea {
-      font-size: 14px;
-    }
-  
-    .submitBtn {
-      font-size: 14px;
-      padding: 10px;
-    }
-  }
+}

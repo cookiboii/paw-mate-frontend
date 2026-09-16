@@ -4,7 +4,8 @@ import { Animal } from './animal';
 export type AdoptionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 // 주거 형태: APARTMENT, DETACHED_HOUSE, VILLA, ONE_ROOM, ETC (api.md 기준)
-export type HousingType = 'APARTMENT' | 'DETACHED_HOUSE' | 'VILLA' | 'ONE_ROOM' | 'ETC' | (string & {});
+export type HousingType =
+  'APARTMENT' | 'DETACHED_HOUSE' | 'VILLA' | 'ONE_ROOM' | 'ETC' | (string & {});
 
 export interface AdoptionApplication {
   adoptionId: number | string;

@@ -6,7 +6,8 @@ export const REVIEW_CATEGORY_PREFIX = {
 
 export type ReviewCategoryKey = keyof typeof REVIEW_CATEGORY_PREFIX;
 
-const CATEGORY_PATTERN = /^\[(입양후기|입양\s*후기|후기|무료분양|무료\s*분양|분양|유기동물제보|유기동물\s*제보|제보)\]\s*/i;
+const CATEGORY_PATTERN =
+  /^\[(입양후기|입양\s*후기|후기|무료분양|무료\s*분양|분양|유기동물제보|유기동물\s*제보|제보)\]\s*/i;
 
 export const getCategoryFromTitle = (title = ''): ReviewCategoryKey => {
   const value = title.trim();

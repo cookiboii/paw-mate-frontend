@@ -21,7 +21,10 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   font-size: 1rem;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
   background: var(--bg-color);
   color: var(--text-primary);
   outline: none;
@@ -78,7 +81,11 @@
   color: var(--text-muted);
   font-size: 1rem;
   line-height: 1;
-  transition: top 0.2s ease, transform 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+  transition:
+    top 0.2s ease,
+    transform 0.2s ease,
+    font-size 0.2s ease,
+    color 0.2s ease;
   pointer-events: none;
   z-index: 1;
   white-space: nowrap;

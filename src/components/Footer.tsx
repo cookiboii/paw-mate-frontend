@@ -16,19 +16,43 @@ const Footer: React.FC = () => {
               <PawPrint size={22} />
               AdoptMate
             </h3>
-            <p>유기동물 입양은 생명을 살리는 일입니다.<br />따뜻한 가족이 되어주세요.</p>
+            <p>
+              유기동물 입양은 생명을 살리는 일입니다.
+              <br />
+              따뜻한 가족이 되어주세요.
+            </p>
             <div className={styles.socialIcons}>
-              <a href="https://github.com/cookiboii" target="_blank" rel="noopener noreferrer" className={styles.icon}>GitHub</a>
-              <a href="https://lolesports-devboi.tistory.com/category" target="_blank" rel="noopener noreferrer" className={styles.icon}>Blog</a>
+              <a
+                href="https://github.com/cookiboii"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.icon}
+              >
+                GitHub
+              </a>
+              <a
+                href="https://lolesports-devboi.tistory.com/category"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.icon}
+              >
+                Blog
+              </a>
             </div>
           </div>
 
           <div className={styles.linksColumn}>
             <h4>서비스</h4>
             <ul>
-              <li><Link to="/guide">입양 안내</Link></li>
-              <li><Link to="/animals">보호 동물</Link></li>
-              <li><Link to="/reviews">커뮤니티</Link></li>
+              <li>
+                <Link to="/guide">입양 안내</Link>
+              </li>
+              <li>
+                <Link to="/animals">보호 동물</Link>
+              </li>
+              <li>
+                <Link to="/reviews">커뮤니티</Link>
+              </li>
               {isAdmin && (
                 <li>
                   <Link to="/benchmark" className={styles.benchmarkLink}>
@@ -43,8 +67,12 @@ const Footer: React.FC = () => {
           <div className={styles.linksColumn}>
             <h4>고객지원</h4>
             <ul>
-              <li><Link to="/faq">자주 묻는 질문</Link></li>
-              <li><Link to="/terms">이용약관</Link></li>
+              <li>
+                <Link to="/faq">자주 묻는 질문</Link>
+              </li>
+              <li>
+                <Link to="/terms">이용약관</Link>
+              </li>
             </ul>
           </div>
 

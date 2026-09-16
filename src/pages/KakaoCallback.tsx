@@ -35,7 +35,8 @@ const KakaoCallback: React.FC = () => {
         return;
       }
 
-      const refreshTokenParam = searchParams.get('refreshToken') || searchParams.get('refresh_token') || undefined;
+      const refreshTokenParam =
+        searchParams.get('refreshToken') || searchParams.get('refresh_token') || undefined;
 
       // Case 1: Backend redirected to callback with token already
       if (token) {
@@ -43,8 +44,17 @@ const KakaoCallback: React.FC = () => {
 
         if (window.opener) {
           window.opener.postMessage(
-            { type: 'OAUTH_SUCCESS', token, refreshToken: refreshTokenParam, id: email, role, email, name, provider: 'KAKAO' },
-            '*'
+            {
+              type: 'OAUTH_SUCCESS',
+              token,
+              refreshToken: refreshTokenParam,
+              id: email,
+              role,
+              email,
+              name,
+              provider: 'KAKAO',
+            },
+            '*',
           );
           window.close();
           return;
@@ -88,30 +98,34 @@ const KakaoCallback: React.FC = () => {
             resData?.data?.refresh_token ||
             refreshTokenParam;
 
-          const userRole =
-            resData?.role ||
-            resData?.result?.role ||
-            resData?.data?.role ||
-            'USER';
+          const userRole = resData?.role || resData?.result?.role || resData?.data?.role || 'USER';
 
           const userEmail =
-            resData?.email ||
-            resData?.result?.email ||
-            resData?.data?.email ||
-            resData?.id;
+            resData?.email || resData?.result?.email || resData?.data?.email || resData?.id;
 
-          const userName =
-            resData?.name ||
-            resData?.result?.name ||
-            resData?.data?.name;
+          const userName = resData?.name || resData?.result?.name || resData?.data?.name;
 
           if (jwtToken) {
-            const userInfo = { email: userEmail, role: userRole, name: userName, provider: 'KAKAO' };
+            const userInfo = {
+              email: userEmail,
+              role: userRole,
+              name: userName,
+              provider: 'KAKAO',
+            };
 
             if (window.opener) {
               window.opener.postMessage(
-                { type: 'OAUTH_SUCCESS', token: jwtToken, refreshToken: jwtRefreshToken, id: userEmail, role: userRole, email: userEmail, name: userName, provider: 'KAKAO' },
-                '*'
+                {
+                  type: 'OAUTH_SUCCESS',
+                  token: jwtToken,
+                  refreshToken: jwtRefreshToken,
+                  id: userEmail,
+                  role: userRole,
+                  email: userEmail,
+                  name: userName,
+                  provider: 'KAKAO',
+                },
+                '*',
               );
               window.close();
               return;

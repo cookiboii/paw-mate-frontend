@@ -36,7 +36,9 @@
   object-fit: cover;
   opacity: 0.8;
   cursor: zoom-in;
-  transition: transform 0.4s ease, opacity 0.3s ease;
+  transition:
+    transform 0.4s ease,
+    opacity 0.3s ease;
 }
 
 .heroImage:hover {
@@ -101,7 +103,7 @@
 .heroNoImg .heroOverlay,
 .heroNoImgReport .heroOverlay,
 .heroNoImgFreeAdoption .heroOverlay {
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
 }
 
 .heroOverlay {
@@ -110,7 +112,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.9) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.9) 100%);
   display: flex;
   align-items: flex-end;
   padding: 48px;
@@ -208,7 +210,8 @@
   gap: 12px;
 }
 
-.editBtn, .deleteBtn {
+.editBtn,
+.deleteBtn {
   background: transparent;
   border: 1px solid var(--border-color);
   padding: 8px 16px;
@@ -353,25 +356,25 @@
   .heroSection {
     height: 320px;
   }
-  
+
   .heroOverlay {
     padding: 24px 16px;
   }
-  
+
   .title {
     font-size: clamp(1.4rem, 5vw, 1.8rem);
   }
-  
+
   .contentSection {
     padding: 24px 16px;
   }
-  
+
   .actions {
     position: static;
     margin-bottom: 20px;
     justify-content: flex-end;
   }
-  
+
   .commentWrapper {
     margin: 0 16px;
     padding: 24px 16px;
@@ -450,7 +453,8 @@
   transition: all var(--transition-fast);
 }
 
-.reactionBtn:hover:not(:disabled), .reactionActive {
+.reactionBtn:hover:not(:disabled),
+.reactionActive {
   color: var(--primary-color);
   border-color: var(--primary-color);
   background: var(--primary-light);

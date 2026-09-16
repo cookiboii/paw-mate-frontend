@@ -6,9 +6,17 @@ export const useAllUsersQuery = (enabled = true) =>
   useQuery({ queryKey: queryKeys.users.all, queryFn: getAllUsers, enabled });
 export function useMyProfileQuery(enabled = true) {
   const session = useAuthStore((state) => state.sessionVersion);
-  return useQuery({ queryKey: queryKeys.users.me(session), queryFn: getMyInfo, enabled, retry: false });
+  return useQuery({
+    queryKey: queryKeys.users.me(session),
+    queryFn: getMyInfo,
+    enabled,
+    retry: false,
+  });
 }
 export function useDeleteUserMutation() {
   const client = useQueryClient();
-  return useMutation({ mutationFn: deleteUserByAdmin, onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.users.all }) });
+  return useMutation({
+    mutationFn: deleteUserByAdmin,
+    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.users.all }),
+  });
 }

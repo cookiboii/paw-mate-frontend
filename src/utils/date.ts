@@ -7,7 +7,7 @@
  */
 export const formatDate = (
   dateValue?: string | number | Date | null,
-  options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }
+  options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' },
 ): string => {
   if (!dateValue) return '-';
   try {

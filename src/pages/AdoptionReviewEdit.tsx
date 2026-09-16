@@ -17,20 +17,34 @@ export default function AdoptionReviewEdit() {
   const mutation = useUpdateReviewMutation();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (query.isLoading || isUserLoading) return <Spinner />;
-  if (query.error || !query.data) return <div role="alert">게시글 정보를 불러오지 못했습니다. <button onClick={() => void query.refetch()}>다시 시도</button></div>;
+  if (query.error || !query.data)
+    return (
+      <div role="alert">
+        게시글 정보를 불러오지 못했습니다.{' '}
+        <button onClick={() => void query.refetch()}>다시 시도</button>
+      </div>
+    );
   const review = query.data;
   const authorEmail = review.email?.trim().toLowerCase();
-  if (!authorEmail || user?.email?.trim().toLowerCase() !== authorEmail) return <Navigate to={`/reviews/${id}`} replace />;
-  return <ReviewForm
-    key={id}
-    isEditing
-    initialCategory={review.category || getCategoryFromTitle(review.title)}
-    initialValues={{ title: getCleanTitle(review.title), content: review.content || '', img: review.img || review.image || '' }}
-    onSave={async (payload) => {
-      if (!id || !authorEmail || user?.email?.trim().toLowerCase() !== authorEmail) throw new Error('작성자만 수정할 수 있습니다.');
-      await mutation.mutateAsync({ id, payload });
-      showToast('게시글이 성공적으로 수정되었습니다!', 'success');
-      navigate(`/reviews/${id}`);
-    }}
-  />;
+  if (!authorEmail || user?.email?.trim().toLowerCase() !== authorEmail)
+    return <Navigate to={`/reviews/${id}`} replace />;
+  return (
+    <ReviewForm
+      key={id}
+      isEditing
+      initialCategory={review.category || getCategoryFromTitle(review.title)}
+      initialValues={{
+        title: getCleanTitle(review.title),
+        content: review.content || '',
+        img: review.img || review.image || '',
+      }}
+      onSave={async (payload) => {
+        if (!id || !authorEmail || user?.email?.trim().toLowerCase() !== authorEmail)
+          throw new Error('작성자만 수정할 수 있습니다.');
+        await mutation.mutateAsync({ id, payload });
+        showToast('게시글이 성공적으로 수정되었습니다!', 'success');
+        navigate(`/reviews/${id}`);
+      }}
+    />
+  );
 }

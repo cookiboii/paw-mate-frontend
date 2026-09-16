@@ -26,7 +26,7 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
       className = '',
       ...props
     },
-    ref
+    ref,
   ) => {
     const [isFocused, setIsFocused] = useState(false);
 
@@ -68,7 +68,7 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
         {error && <span className={styles.errorMessage}>{error}</span>}
       </div>
     );
-  }
+  },
 );
 
 FloatingInput.displayName = 'FloatingInput';

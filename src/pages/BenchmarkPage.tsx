@@ -26,7 +26,8 @@ export default function BenchmarkPage() {
         <h1 className={styles.title}>실시간 성능 & 동시성 테스트 랩</h1>
         <p className={styles.description}>
           프론트엔드 네트워크 지연시간(Latency), 백엔드 API 동시 요청 처리율(RPS/Race Condition),
-          React 19 동시성 렌더링 최적화 효과 및 Core Web Vitals를 실시간으로 테스트하고 시각화합니다.
+          React 19 동시성 렌더링 최적화 효과 및 Core Web Vitals를 실시간으로 테스트하고
+          시각화합니다.
         </p>
       </div>
 
@@ -60,10 +61,24 @@ export default function BenchmarkPage() {
 
       {/* 탭 1: API 동시성 테스트 */}
 
-      <div hidden={activeTab !== 'concurrency'}><ConcurrencyTab /></div>
-      {visited.has('rendering') && <div hidden={activeTab !== 'rendering'}><RenderingTab /></div>}
-      {visited.has('vitals') && <div hidden={activeTab !== 'vitals'}><VitalsTab active={activeTab === 'vitals'} /></div>}
-      {visited.has('k6') && <div hidden={activeTab !== 'k6'}><K6Tab /></div>}
+      <div hidden={activeTab !== 'concurrency'}>
+        <ConcurrencyTab />
+      </div>
+      {visited.has('rendering') && (
+        <div hidden={activeTab !== 'rendering'}>
+          <RenderingTab />
+        </div>
+      )}
+      {visited.has('vitals') && (
+        <div hidden={activeTab !== 'vitals'}>
+          <VitalsTab active={activeTab === 'vitals'} />
+        </div>
+      )}
+      {visited.has('k6') && (
+        <div hidden={activeTab !== 'k6'}>
+          <K6Tab />
+        </div>
+      )}
     </div>
   );
 }

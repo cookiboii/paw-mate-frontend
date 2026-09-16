@@ -1,33 +1,55 @@
-import React from "react";
-import styles from "../styles/pages/Register.module.css";
-import FloatingInput from "../components/FloatingInput";
-import usePageTitle from "../hooks/usePageTitle";
-import useRegistrationForm from "../hooks/useRegistrationForm";
-import { User, Mail, Lock, Eye, EyeOff, Check, AlertCircle } from "lucide-react";
+import React from 'react';
+import styles from '../styles/pages/Register.module.css';
+import FloatingInput from '../components/FloatingInput';
+import usePageTitle from '../hooks/usePageTitle';
+import useRegistrationForm from '../hooks/useRegistrationForm';
+import { User, Mail, Lock, Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
 
 const Register: React.FC = () => {
   usePageTitle('회원가입');
   const {
-    form, emailSent, emailCode, setEmailCode, emailVerified, isEmailSending,
-    isEmailVerifying, error, message,
-    isSubmitting, showPassword, setShowPassword, showConfirmPassword,
-    setShowConfirmPassword, timer, isTimerActive, isLengthOk, isPasswordValid,
-    isConfirmPasswordValid, namePattern: nameRegex, emailPattern: emailRegex,
-    handleChange, handleEmailSend, handleEmailVerify, handleSubmit, goToLogin,
+    form,
+    emailSent,
+    emailCode,
+    setEmailCode,
+    emailVerified,
+    isEmailSending,
+    isEmailVerifying,
+    error,
+    message,
+    isSubmitting,
+    showPassword,
+    setShowPassword,
+    showConfirmPassword,
+    setShowConfirmPassword,
+    timer,
+    isTimerActive,
+    isLengthOk,
+    isPasswordValid,
+    isConfirmPasswordValid,
+    namePattern: nameRegex,
+    emailPattern: emailRegex,
+    handleChange,
+    handleEmailSend,
+    handleEmailVerify,
+    handleSubmit,
+    goToLogin,
   } = useRegistrationForm();
 
   const formatTimer = (seconds: number) => {
     const validSeconds = Math.max(0, Math.floor(seconds || 0));
     const minutes = Math.floor(validSeconds / 60);
     const remainingSeconds = validSeconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
   return (
     <div className={styles.registerContainer}>
       <div className={styles.header}>
         <h2 className={styles.title}>가족이 되어주세요</h2>
-        <p className={styles.subtitle}>Paw Mate의 회원이 되어 반려동물에게 따뜻한 가족을 선물하세요.</p>
+        <p className={styles.subtitle}>
+          Paw Mate의 회원이 되어 반려동물에게 따뜻한 가족을 선물하세요.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className={styles.form}>
@@ -65,12 +87,20 @@ const Register: React.FC = () => {
             <button
               type="button"
               onClick={handleEmailSend}
-              disabled={emailVerified || !form.email || !emailRegex.test(form.email) || isTimerActive || isEmailSending}
+              disabled={
+                emailVerified ||
+                !form.email ||
+                !emailRegex.test(form.email) ||
+                isTimerActive ||
+                isEmailSending
+              }
               className={`${styles.verifyRowButton} ${
-                form.email && emailRegex.test(form.email) && !emailVerified && !isTimerActive ? styles.verifyActiveButton : ""
+                form.email && emailRegex.test(form.email) && !emailVerified && !isTimerActive
+                  ? styles.verifyActiveButton
+                  : ''
               }`}
             >
-              {isEmailSending ? "전송 중..." : emailSent ? "재전송" : "인증 요청"}
+              {isEmailSending ? '전송 중...' : emailSent ? '재전송' : '인증 요청'}
             </button>
           </div>
           {form.email && !emailRegex.test(form.email) && (
@@ -99,17 +129,15 @@ const Register: React.FC = () => {
                 icon={<Lock size={18} />}
                 className={isTimerActive ? styles.inputWithTimer : undefined}
               >
-                {isTimerActive && (
-                  <span className={styles.timerBadge}>{formatTimer(timer)}</span>
-                )}
+                {isTimerActive && <span className={styles.timerBadge}>{formatTimer(timer)}</span>}
               </FloatingInput>
               <button
                 type="button"
                 onClick={handleEmailVerify}
                 disabled={!emailCode || isEmailVerifying}
-                className={`${styles.verifyRowButton} ${emailCode ? styles.verifyActiveButton : ""}`}
+                className={`${styles.verifyRowButton} ${emailCode ? styles.verifyActiveButton : ''}`}
               >
-                {isEmailVerifying ? "확인 중..." : "인증 확인"}
+                {isEmailVerifying ? '확인 중...' : '인증 확인'}
               </button>
             </div>
           </div>
@@ -119,7 +147,7 @@ const Register: React.FC = () => {
         <div className={styles.fieldGroup}>
           <FloatingInput
             label="비밀번호"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             name="password"
             value={form.password}
             onChange={handleChange}
@@ -139,8 +167,10 @@ const Register: React.FC = () => {
           </FloatingInput>
           {form.password && (
             <div className={styles.requirements}>
-              <div className={`${styles.requirementItem} ${isLengthOk ? styles.valid : ""}`}>
-                <span className={styles.requirementIcon}><Check size={12} /></span>
+              <div className={`${styles.requirementItem} ${isLengthOk ? styles.valid : ''}`}>
+                <span className={styles.requirementIcon}>
+                  <Check size={12} />
+                </span>
                 6자 이상
               </div>
             </div>
@@ -151,7 +181,7 @@ const Register: React.FC = () => {
         <div className={styles.fieldGroup}>
           <FloatingInput
             label="비밀번호 확인"
-            type={showConfirmPassword ? "text" : "password"}
+            type={showConfirmPassword ? 'text' : 'password'}
             name="confirmPassword"
             value={form.confirmPassword}
             onChange={handleChange}
@@ -170,7 +200,9 @@ const Register: React.FC = () => {
             </button>
           </FloatingInput>
           {form.confirmPassword && (
-            <div className={`${styles.helperText} ${isConfirmPasswordValid ? styles.success : styles.error}`}>
+            <div
+              className={`${styles.helperText} ${isConfirmPasswordValid ? styles.success : styles.error}`}
+            >
               {isConfirmPasswordValid ? (
                 <>
                   <Check size={14} /> 비밀번호가 일치합니다.
@@ -217,7 +249,7 @@ const Register: React.FC = () => {
               가입 중...
             </>
           ) : (
-            "가입하기"
+            '가입하기'
           )}
         </button>
       </form>

@@ -12,7 +12,15 @@ import { formatDate } from '../utils/date';
 import usePageTitle from '../hooks/usePageTitle';
 import { useCursorScroll } from '../hooks/useCursorScroll';
 import { ReviewItem, ReviewSort } from '../types/review';
-import { HeartHandshake, Gift, AlertTriangle, User, PawPrint, Heart, MessageCircle } from 'lucide-react';
+import {
+  HeartHandshake,
+  Gift,
+  AlertTriangle,
+  User,
+  PawPrint,
+  Heart,
+  MessageCircle,
+} from 'lucide-react';
 import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
 import useDebounce from '../hooks/useDebounce';
 
@@ -66,28 +74,32 @@ const AdoptionReviewListPage: React.FC = () => {
       }
       setSearchParams(newParams, { replace: true });
     },
-    [searchParams, setSearchParams]
+    [searchParams, setSearchParams],
   );
 
-  const handleSortChange = useCallback((nextSort: ReviewSort) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (nextSort === 'latest') newParams.delete('sort');
-    else newParams.set('sort', nextSort);
-    setSearchParams(newParams, { replace: true });
-  }, [searchParams, setSearchParams]);
+  const handleSortChange = useCallback(
+    (nextSort: ReviewSort) => {
+      const newParams = new URLSearchParams(searchParams);
+      if (nextSort === 'latest') newParams.delete('sort');
+      else newParams.set('sort', nextSort);
+      setSearchParams(newParams, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
 
   // 2. 커서 기반 게시글 페칭 콜백 (오프셋 폴백 내장)
   const cursorFetcher = useCallback(
     async (lastId: string | number | undefined, pageSize: number) => {
       return getReviewsCursor(lastId, pageSize, {
-        category: activeCategory === 'ALL'
-          ? undefined
-          : activeCategory as 'REVIEW' | 'FREE_ADOPTION' | 'REPORT',
+        category:
+          activeCategory === 'ALL'
+            ? undefined
+            : (activeCategory as 'REVIEW' | 'FREE_ADOPTION' | 'REPORT'),
         keyword: debouncedKeyword || undefined,
         sort,
       });
     },
-    [activeCategory, debouncedKeyword, sort]
+    [activeCategory, debouncedKeyword, sort],
   );
 
   // 3. No-Offset 커서 기반 고속 무한 스크롤 훅 적용
@@ -115,7 +127,7 @@ const AdoptionReviewListPage: React.FC = () => {
 
     if (activeCategory !== 'ALL') {
       list = list.filter(
-        (review) => (review.category || getCategoryFromTitle(review.title)) === activeCategory
+        (review) => (review.category || getCategoryFromTitle(review.title)) === activeCategory,
       );
     }
 
@@ -138,7 +150,13 @@ const AdoptionReviewListPage: React.FC = () => {
 
   // 카테고리 선택 시 화면 아이템 수가 적으면 백그라운드에서 다음 데이터 자동 로드
   useEffect(() => {
-    if (activeCategory !== 'ALL' && displayedReviews.length < 6 && hasNext && !isLoading && lastPostId !== undefined) {
+    if (
+      activeCategory !== 'ALL' &&
+      displayedReviews.length < 6 &&
+      hasNext &&
+      !isLoading &&
+      lastPostId !== undefined
+    ) {
       fetchNext();
     }
   }, [activeCategory, displayedReviews.length, hasNext, isLoading, lastPostId, fetchNext]);
@@ -204,13 +222,11 @@ const AdoptionReviewListPage: React.FC = () => {
                         cat === 'REPORT'
                           ? styles.reportPlaceholder
                           : cat === 'FREE_ADOPTION'
-                          ? styles.freeAdoptionPlaceholder
-                          : ''
+                            ? styles.freeAdoptionPlaceholder
+                            : ''
                       }`}
                     >
-                      <span>
-                        {renderCategoryIcon(cat, 32)}
-                      </span>
+                      <span>{renderCategoryIcon(cat, 32)}</span>
                       <p>{catInfo.label}</p>
                     </div>
                   )}
@@ -222,8 +238,8 @@ const AdoptionReviewListPage: React.FC = () => {
                       cat === 'REPORT'
                         ? styles.badgeReport
                         : cat === 'FREE_ADOPTION'
-                        ? styles.badgeFreeAdoption
-                        : styles.badgeReview
+                          ? styles.badgeFreeAdoption
+                          : styles.badgeReview
                     }`}
                   >
                     {renderCategoryIcon(cat, 13)}
@@ -236,12 +252,18 @@ const AdoptionReviewListPage: React.FC = () => {
                       <User size={13} /> {review.name || '익명'}
                     </span>
                     {(review.createdAt || review.createAt) && (
-                      <span className={styles.cardDate}>작성일 {formatDate(review.createdAt || review.createAt)}</span>
+                      <span className={styles.cardDate}>
+                        작성일 {formatDate(review.createdAt || review.createAt)}
+                      </span>
                     )}
                   </div>
                   <div className={styles.cardStats} aria-label="게시글 반응">
-                    <span><Heart size={14} /> {review.likeCount ?? 0}</span>
-                    <span><MessageCircle size={14} /> {review.commentCount ?? 0}</span>
+                    <span>
+                      <Heart size={14} /> {review.likeCount ?? 0}
+                    </span>
+                    <span>
+                      <MessageCircle size={14} /> {review.commentCount ?? 0}
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -249,19 +271,17 @@ const AdoptionReviewListPage: React.FC = () => {
           })
         ) : !isLoading ? (
           <div className={styles.emptyState}>
-            <span>
-              {renderCategoryIcon(activeCategory, 44)}
-            </span>
+            <span>{renderCategoryIcon(activeCategory, 44)}</span>
             <p>
               {searchKeyword
                 ? `'${searchKeyword}'에 대한 검색 결과가 없습니다.`
                 : activeCategory === 'REPORT'
-                ? '아직 유기동물 제보 글이 없습니다.'
-                : activeCategory === 'FREE_ADOPTION'
-                ? '아직 등록된 무료 분양 글이 없습니다.'
-                : activeCategory === 'REVIEW'
-                ? '아직 작성된 입양 후기가 없습니다.'
-                : '아직 작성된 글이 없습니다.'}
+                  ? '아직 유기동물 제보 글이 없습니다.'
+                  : activeCategory === 'FREE_ADOPTION'
+                    ? '아직 등록된 무료 분양 글이 없습니다.'
+                    : activeCategory === 'REVIEW'
+                      ? '아직 작성된 입양 후기가 없습니다.'
+                      : '아직 작성된 글이 없습니다.'}
             </p>
           </div>
         ) : null}

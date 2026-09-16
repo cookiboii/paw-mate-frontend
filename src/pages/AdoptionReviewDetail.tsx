@@ -12,7 +12,12 @@ import ConfirmModal from '../components/ConfirmModal';
 import Skeleton from '../components/Skeleton';
 
 import usePageTitle from '../hooks/usePageTitle';
-import { useReviewDetailQuery, useDeleteReviewMutation, useReviewLikeMutation, useReviewBookmarkMutation } from '../hooks/queries/reviews';
+import {
+  useReviewDetailQuery,
+  useDeleteReviewMutation,
+  useReviewLikeMutation,
+  useReviewBookmarkMutation,
+} from '../hooks/queries/reviews';
 import useShare from '../hooks/useShare';
 import { getErrorMessage } from '../utils/error';
 import { CATEGORIES } from '../components/ReviewCategoryTabs';
@@ -26,7 +31,12 @@ const AdoptionReviewDetail: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const { data: rawReview, isLoading: isReviewLoading, error: reviewError, refetch } = useReviewDetailQuery(id);
+  const {
+    data: rawReview,
+    isLoading: isReviewLoading,
+    error: reviewError,
+    refetch,
+  } = useReviewDetailQuery(id);
   const deleteMutation = useDeleteReviewMutation();
   const likeMutation = useReviewLikeMutation();
   const bookmarkMutation = useReviewBookmarkMutation();
@@ -39,7 +49,10 @@ const AdoptionReviewDetail: React.FC = () => {
     : null;
 
   const { isAuthenticated, user, isAdmin: hasAdminRole } = useAuth();
-  const isAuthor = isAuthenticated && Boolean(user?.email?.trim()) && user?.email?.trim().toLowerCase() === review?.email;
+  const isAuthor =
+    isAuthenticated &&
+    Boolean(user?.email?.trim()) &&
+    user?.email?.trim().toLowerCase() === review?.email;
   const isAdmin = isAuthenticated && hasAdminRole;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -121,7 +134,11 @@ const AdoptionReviewDetail: React.FC = () => {
   };
 
   if (reviewError && !review) {
-    return <div role="alert">게시글을 불러오지 못했습니다. <button onClick={() => void refetch()}>다시 시도</button></div>;
+    return (
+      <div role="alert">
+        게시글을 불러오지 못했습니다. <button onClick={() => void refetch()}>다시 시도</button>
+      </div>
+    );
   }
   if (!isLoaded || !review) {
     return (
@@ -161,19 +178,15 @@ const AdoptionReviewDetail: React.FC = () => {
         {/* Content Section */}
         <div className={styles.contentSection}>
           <div className={styles.toolbar}>
-        <ReviewReactionActions
-          handleLike={handleLike}
-          handleBookmark={handleBookmark}
-          isLiked={isLiked}
-          likeCount={likeCount}
-          isBookmarked={isBookmarked}
-          isReactionLoading={isReactionLoading}
-        />
-            <button
-              onClick={handleShare}
-              className={styles.shareBtn}
-              title="링크 복사 및 공유하기"
-            >
+            <ReviewReactionActions
+              handleLike={handleLike}
+              handleBookmark={handleBookmark}
+              isLiked={isLiked}
+              likeCount={likeCount}
+              isBookmarked={isBookmarked}
+              isReactionLoading={isReactionLoading}
+            />
+            <button onClick={handleShare} className={styles.shareBtn} title="링크 복사 및 공유하기">
               {isCopied ? (
                 <>
                   <Check size={15} className={styles.shareCopiedIcon} />
@@ -190,7 +203,10 @@ const AdoptionReviewDetail: React.FC = () => {
             {(isAuthor || isAdmin) && (
               <div className={styles.inlineActions}>
                 {isAuthor && (
-                  <button className={styles.editBtn} onClick={() => navigate(`/reviews/${id}/edit`)}>
+                  <button
+                    className={styles.editBtn}
+                    onClick={() => navigate(`/reviews/${id}/edit`)}
+                  >
                     <Edit3 size={15} />
                     <span>수정</span>
                   </button>
@@ -206,11 +222,11 @@ const AdoptionReviewDetail: React.FC = () => {
               </div>
             )}
           </div>
-        <ReviewDetailContent
-          isReport={isReport}
-          isFreeAdoption={isFreeAdoption}
-          review={review}
-        />
+          <ReviewDetailContent
+            isReport={isReport}
+            isFreeAdoption={isFreeAdoption}
+            review={review}
+          />
           {/* 목록으로 버튼 */}
           <button className={styles.backBtn} onClick={() => navigate('/reviews')}>
             <ArrowLeft size={16} />

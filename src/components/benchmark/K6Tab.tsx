@@ -23,7 +23,6 @@ import {
   type RequestMetric,
 } from '../../utils/performance';
 
-
 export default function K6Tab() {
   // ================= 5. k6 Script Snippet Copy =================
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -72,9 +71,10 @@ export default function () {
     try {
       await navigator.clipboard.writeText(k6ScriptContent);
       setIsCopied(true);
-    } catch { setIsCopied(false); }
+    } catch {
+      setIsCopied(false);
+    }
   };
-
 
   return (
     <div className={styles.card}>
@@ -82,17 +82,13 @@ export default function () {
         <Terminal size={20} /> k6 백엔드 동시성 & 부하 테스트 가이드
       </h2>
       <p className={styles.k6IntroText}>
-        k6는 터미널에서 백엔드 서버로 수백~수천 개의 가상 사용자(VU) 동시 요청을 발생시켜
-        Race Condition(동시성 이슈)과 서버 한계 부하를 측정하는 최고의 도구입니다.
+        k6는 터미널에서 백엔드 서버로 수백~수천 개의 가상 사용자(VU) 동시 요청을 발생시켜 Race
+        Condition(동시성 이슈)과 서버 한계 부하를 측정하는 최고의 도구입니다.
       </p>
 
       <div className={styles.k6StepSection}>
-        <h3 className={styles.k6StepTitle}>
-          1. k6 설치 (Windows)
-        </h3>
-        <div className={styles.commandBox}>
-          winget install k6 --source winget
-        </div>
+        <h3 className={styles.k6StepTitle}>1. k6 설치 (Windows)</h3>
+        <div className={styles.commandBox}>winget install k6 --source winget</div>
       </div>
 
       <div className={styles.k6StepSection}>
@@ -104,19 +100,18 @@ export default function () {
             {isCopied ? <Check size={14} /> : <Copy size={14} />}
             {isCopied ? '복사됨' : '코드 복사'}
           </button>
-          <pre><code>{k6ScriptContent}</code></pre>
+          <pre>
+            <code>{k6ScriptContent}</code>
+          </pre>
         </div>
       </div>
 
       <div className={styles.k6StepSection}>
-        <h3 className={styles.k6StepTitle}>
-          3. 실시간 웹 대시보드와 함께 실행하기
-        </h3>
-        <div className={styles.commandBox}>
-          K6_WEB_DASHBOARD=1 k6 run k6/concurrency-test.js
-        </div>
+        <h3 className={styles.k6StepTitle}>3. 실시간 웹 대시보드와 함께 실행하기</h3>
+        <div className={styles.commandBox}>K6_WEB_DASHBOARD=1 k6 run k6/concurrency-test.js</div>
         <p className={styles.commandHint}>
-          * 실행 후 터미널에 출력되는 웹 브라우저 링크(http://localhost:5665)를 열면 실시간 부하 차트가 표시됩니다.
+          * 실행 후 터미널에 출력되는 웹 브라우저 링크(http://localhost:5665)를 열면 실시간 부하
+          차트가 표시됩니다.
         </p>
       </div>
     </div>

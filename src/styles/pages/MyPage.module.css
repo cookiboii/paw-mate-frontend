@@ -548,7 +548,7 @@
     padding: 0 16px;
     gap: 20px;
   }
-  
+
   .sidebar {
     width: 100%;
     gap: 16px;
@@ -557,7 +557,7 @@
   .userProfile {
     padding: 20px;
   }
-  
+
   .navMenu {
     flex-direction: row;
     overflow-x: auto;
@@ -571,7 +571,7 @@
   .navMenu::-webkit-scrollbar {
     display: none;
   }
-  
+
   .navItem {
     white-space: nowrap;
     padding: 10px 16px;

@@ -12,7 +12,13 @@ import usePageTitle from '../hooks/usePageTitle';
 import useDebounce from '../hooks/useDebounce';
 import { useAnimalFilters } from '../hooks/useAnimalFilters';
 import { useCursorScroll } from '../hooks/useCursorScroll';
-import { fetchAllAnimals, fetchAnimalList, fetchAnimalListBySpecies, fetchAnimalCursorList, fetchAnimalCursorListBySpecies } from '../api/animal';
+import {
+  fetchAllAnimals,
+  fetchAnimalList,
+  fetchAnimalListBySpecies,
+  fetchAnimalCursorList,
+  fetchAnimalCursorListBySpecies,
+} from '../api/animal';
 import { Animal } from '../types/animal';
 
 type ViewMode = 'infinite' | 'pagination';
@@ -23,15 +29,18 @@ const AnimalList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // URL Query Parameters 초기값 파싱
-  const initialMode = searchParams.get('mode') === 'pagination'
-    ? 'pagination'
-    : localStorage.getItem('animal-list-view-mode') === 'pagination'
+  const initialMode =
+    searchParams.get('mode') === 'pagination'
       ? 'pagination'
-      : 'infinite';
+      : localStorage.getItem('animal-list-view-mode') === 'pagination'
+        ? 'pagination'
+        : 'infinite';
   const initialSpecies = searchParams.get('species') || 'ALL';
-  const initialGender = (['MALE', 'FEMALE'].includes(searchParams.get('gender') || '') 
-    ? searchParams.get('gender') 
-    : 'ALL') as 'ALL' | 'MALE' | 'FEMALE';
+  const initialGender = (
+    ['MALE', 'FEMALE'].includes(searchParams.get('gender') || '')
+      ? searchParams.get('gender')
+      : 'ALL'
+  ) as 'ALL' | 'MALE' | 'FEMALE';
   const initialSearchQuery = searchParams.get('q') || '';
   const initialPage = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
 
@@ -69,7 +78,7 @@ const AnimalList: React.FC = () => {
       }
       return fetchAnimalCursorList(lastId, pageSize);
     },
-    [speciesFilter]
+    [speciesFilter],
   );
 
   // 4. No-Offset 커서 기반 고속 무한 스크롤 훅 적용
@@ -91,14 +100,25 @@ const AnimalList: React.FC = () => {
   });
 
   const needsCompleteFilterSet = genderFilter !== 'ALL' || debouncedSearchQuery.trim() !== '';
-  const pageQuery = useAnimalListQuery(page, 6, speciesFilter, viewMode === 'pagination' && !needsCompleteFilterSet);
+  const pageQuery = useAnimalListQuery(
+    page,
+    6,
+    speciesFilter,
+    viewMode === 'pagination' && !needsCompleteFilterSet,
+  );
   const filterQuery = useAllAnimalsQuery(needsCompleteFilterSet, speciesFilter);
   const allFilterCandidates = filterQuery.data || [];
   const paginationAnimals = pageQuery.data?.content || [];
   const totalPages = pageQuery.data?.totalPages || 1;
   const isFilterLoading = needsCompleteFilterSet && filterQuery.isLoading;
   const isPaginationLoading = pageQuery.isLoading;
-  const loadError = needsCompleteFilterSet ? filterQuery.error : viewMode === 'pagination' ? pageQuery.error : infiniteError ? new Error(infiniteError) : null;
+  const loadError = needsCompleteFilterSet
+    ? filterQuery.error
+    : viewMode === 'pagination'
+      ? pageQuery.error
+      : infiniteError
+        ? new Error(infiniteError)
+        : null;
 
   // 6. 클라이언트 레벨 검색어 & 성별 필터링
   const rawList = needsCompleteFilterSet
@@ -116,7 +136,11 @@ const AnimalList: React.FC = () => {
     ? Math.max(1, Math.ceil(filteredAnimals.length / 6))
     : totalPages;
 
-  const isLoading = needsCompleteFilterSet ? isFilterLoading : viewMode === 'infinite' ? isInfiniteLoading : isPaginationLoading;
+  const isLoading = needsCompleteFilterSet
+    ? isFilterLoading
+    : viewMode === 'infinite'
+      ? isInfiniteLoading
+      : isPaginationLoading;
   const hasActiveFilter = speciesFilter !== 'ALL' || genderFilter !== 'ALL' || searchQuery !== '';
 
   const handleResetFilters = useCallback(() => {

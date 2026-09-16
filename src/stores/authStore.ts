@@ -23,7 +23,12 @@ const getStoredUser = (): User | null => {
   }
   const role = localStorage.getItem('role');
   if (!role) return null;
-  return { role, email: localStorage.getItem('email') || undefined, name: localStorage.getItem('name') || undefined, provider: localStorage.getItem('provider') || undefined };
+  return {
+    role,
+    email: localStorage.getItem('email') || undefined,
+    name: localStorage.getItem('name') || undefined,
+    provider: localStorage.getItem('provider') || undefined,
+  };
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -38,14 +43,28 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUserLoading: (isUserLoading) => set({ isUserLoading }),
   login: (token, userInfo = {}, refreshToken = null) => {
     const normalizedToken = saveAuthSession(token, userInfo, refreshToken);
-    set((state) => ({ isAuthenticated: Boolean(normalizedToken), isUserLoading: true, user: userInfo, sessionVersion: state.sessionVersion + 1 }));
+    set((state) => ({
+      isAuthenticated: Boolean(normalizedToken),
+      isUserLoading: true,
+      user: userInfo,
+      sessionVersion: state.sessionVersion + 1,
+    }));
   },
   logout: async (callApi = true) => {
     if (callApi && getAccessToken()) {
-      try { await logoutUser(); } catch { /* Local logout must still succeed. */ }
+      try {
+        await logoutUser();
+      } catch {
+        /* Local logout must still succeed. */
+      }
     }
     clearAuthStorage();
     if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth:logout'));
-    set((state) => ({ isAuthenticated: false, isUserLoading: false, user: null, sessionVersion: state.sessionVersion + 1 }));
+    set((state) => ({
+      isAuthenticated: false,
+      isUserLoading: false,
+      user: null,
+      sessionVersion: state.sessionVersion + 1,
+    }));
   },
 }));

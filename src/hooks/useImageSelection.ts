@@ -20,9 +20,16 @@ export default function useImageSelection(initialUrl = '') {
     setRemoved(false);
     setPreviewFromFile(file);
   };
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => handleFile(event.target.files?.[0]);
-  const handleDragOver = (event: DragEvent<HTMLDivElement>) => { event.preventDefault(); setIsDragging(true); };
-  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => { event.preventDefault(); setIsDragging(false); };
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) =>
+    handleFile(event.target.files?.[0]);
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(true);
+  };
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+  };
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
@@ -36,8 +43,15 @@ export default function useImageSelection(initialUrl = '') {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
   return {
-    fileInputRef, selectedFile, isDragging, removed,
+    fileInputRef,
+    selectedFile,
+    isDragging,
+    removed,
     preview: filePreview || (removed ? null : initialUrl),
-    handleImageChange, handleDragOver, handleDragLeave, handleDrop, removeImage,
+    handleImageChange,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    removeImage,
   };
 }

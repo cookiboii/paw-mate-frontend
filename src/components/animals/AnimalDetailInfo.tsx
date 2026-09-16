@@ -7,24 +7,32 @@ interface Props {
   animal: Animal;
 }
 
-export default function AnimalDetailInfo({
-  animal,
-}: Props) {
+export default function AnimalDetailInfo({ animal }: Props) {
   return (
     <div className={styles.infoGrid}>
       <div className={styles.infoCard}>
-        <span className={styles.cardIcon}><PawPrint size={20} /></span>
+        <span className={styles.cardIcon}>
+          <PawPrint size={20} />
+        </span>
         <div className={styles.cardMeta}>
           <span className={styles.cardLabel}>종류</span>
-          <span className={styles.cardValue}>
-            {getSpeciesLabel(animal.species)}
-          </span>
+          <span className={styles.cardValue}>{getSpeciesLabel(animal.species)}</span>
         </div>
       </div>
 
       <div className={styles.infoCard}>
         <span className={styles.cardIcon}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="12" cy="10" r="8" />
             <line x1="12" y1="18" x2="12" y2="22" />
             <line x1="10" y1="20" x2="14" y2="20" />
@@ -37,7 +45,9 @@ export default function AnimalDetailInfo({
       </div>
 
       <div className={styles.infoCard}>
-        <span className={styles.cardIcon}><Calendar size={20} /></span>
+        <span className={styles.cardIcon}>
+          <Calendar size={20} />
+        </span>
         <div className={styles.cardMeta}>
           <span className={styles.cardLabel}>나이</span>
           <span className={styles.cardValue}>{Math.max(0, Number(animal.age) || 0)}살</span>
@@ -45,7 +55,9 @@ export default function AnimalDetailInfo({
       </div>
 
       <div className={styles.infoCard}>
-        <span className={styles.cardIcon}><Palette size={20} /></span>
+        <span className={styles.cardIcon}>
+          <Palette size={20} />
+        </span>
         <div className={styles.cardMeta}>
           <span className={styles.cardLabel}>털 색상</span>
           <span className={styles.cardValue}>{animal.color}</span>

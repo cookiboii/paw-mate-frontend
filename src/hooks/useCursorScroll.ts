@@ -25,7 +25,14 @@ export interface UseCursorScrollReturn<T> {
 }
 
 /** React Query-backed cursor pagination, retaining the existing component API. */
-export function useCursorScroll<T>({ resourceKey, fetcher, getId, pageSize = 10, enabled = true, dependencies = [] }: UseCursorScrollOptions<T>): UseCursorScrollReturn<T> {
+export function useCursorScroll<T>({
+  resourceKey,
+  fetcher,
+  getId,
+  pageSize = 10,
+  enabled = true,
+  dependencies = [],
+}: UseCursorScrollOptions<T>): UseCursorScrollReturn<T> {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
@@ -56,16 +63,24 @@ export function useCursorScroll<T>({ resourceKey, fetcher, getId, pageSize = 10,
   const fetchNext = useCallback(async () => {
     if (query.hasNextPage && !query.isFetchingNextPage) await query.fetchNextPage();
   }, [query]);
-  const refresh = useCallback(async () => { await query.refetch(); }, [query]);
+  const refresh = useCallback(async () => {
+    await query.refetch();
+  }, [query]);
 
-  const targetRef = useCallback((node: HTMLElement | null) => {
-    observerRef.current?.disconnect();
-    if (!node || !enabled) return;
-    observerRef.current = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) void fetchNext();
-    }, { threshold: 0.1, rootMargin: '100px' });
-    observerRef.current.observe(node);
-  }, [enabled, fetchNext]);
+  const targetRef = useCallback(
+    (node: HTMLElement | null) => {
+      observerRef.current?.disconnect();
+      if (!node || !enabled) return;
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) void fetchNext();
+        },
+        { threshold: 0.1, rootMargin: '100px' },
+      );
+      observerRef.current.observe(node);
+    },
+    [enabled, fetchNext],
+  );
 
   useEffect(() => () => observerRef.current?.disconnect(), []);
 

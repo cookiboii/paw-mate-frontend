@@ -1,4 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  ReactNode,
+} from 'react';
 import { useToast } from './ToastContext';
 import { useAuth } from './AuthContext';
 import { Animal } from '../types/animal';
@@ -8,7 +17,9 @@ interface FavoritesContextType {
   favorites: Partial<Animal>[];
   isLoading: boolean;
   isFavorite: (id: string | number) => boolean;
-  toggleFavorite: (animal: Partial<Animal> & { id: string | number; species?: string; breed?: string }) => Promise<void>;
+  toggleFavorite: (
+    animal: Partial<Animal> & { id: string | number; species?: string; breed?: string },
+  ) => Promise<void>;
   refreshFavorites: () => Promise<void>;
 }
 
@@ -31,7 +42,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   const pendingIdsRef = useRef<Set<string>>(new Set());
   const favoriteIds = useMemo(
     () => new Set(favorites.map((item) => String(item.id ?? item.animalId)).filter(Boolean)),
-    [favorites]
+    [favorites],
   );
 
   // 1. 서버로부터 내 찜 목록 로드 (로그인 시)
@@ -47,8 +58,8 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
       const res = await fetchMyFavoriteAnimals(0, 100);
       const remainingPages = await Promise.all(
         Array.from({ length: Math.max(0, (res.totalPages || 1) - 1) }, (_, index) =>
-          fetchMyFavoriteAnimals(index + 1, 100)
-        )
+          fetchMyFavoriteAnimals(index + 1, 100),
+        ),
       );
       const serverList = [res, ...remainingPages].flatMap((page) => page.content || []);
       setFavorites(serverList);
@@ -87,12 +98,12 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     (id: string | number) => {
       return favoriteIds.has(String(id));
     },
-    [favoriteIds]
+    [favoriteIds],
   );
 
   // 2. 찜 등록/취소 요청과 낙관적 UI 업데이트
   const toggleFavorite = async (
-    animal: Partial<Animal> & { id: string | number; species?: string; breed?: string }
+    animal: Partial<Animal> & { id: string | number; species?: string; breed?: string },
   ) => {
     if (!isAuthenticated) {
       showToast('찜하기는 로그인 후 이용할 수 있습니다. 상단 버튼을 눌러 로그인해주세요.', 'info');
@@ -113,9 +124,16 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     // 낙관적 UI 선반영
     if (exists) {
       setFavorites((prev) =>
-        prev.filter((item) => String(item.id ?? (item as { animalId?: string | number }).animalId) !== String(animalId))
+        prev.filter(
+          (item) =>
+            String(item.id ?? (item as { animalId?: string | number }).animalId) !==
+            String(animalId),
+        ),
       );
-      showToast(`'${animal.breed || animal.species || '동물'}'을(를) 관심 목록에서 제거했습니다.`, 'info');
+      showToast(
+        `'${animal.breed || animal.species || '동물'}'을(를) 관심 목록에서 제거했습니다.`,
+        'info',
+      );
     } else {
       const minimalAnimal: Partial<Animal> = {
         id: animalId,
@@ -129,7 +147,10 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
         image: animal.image || animal.imageUrl || animal.profileImageUrl,
       };
       setFavorites((prev) => [minimalAnimal, ...prev]);
-      showToast(`'${animal.breed || animal.species || '동물'}'을(를) 관심 목록에 담았습니다!`, 'success');
+      showToast(
+        `'${animal.breed || animal.species || '동물'}'을(를) 관심 목록에 담았습니다!`,
+        'success',
+      );
     }
 
     // 서버 API 호출
@@ -137,7 +158,9 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
       const res = await (exists ? removeAnimalFavorite(animalId) : toggleAnimalFavorite(animalId));
       // 서버가 반환한 최종 상태를 목록과 로컬 캐시에 반영
       setFavorites((current) => {
-        const others = current.filter((item) => String(item.id ?? item.animalId) !== String(animalId));
+        const others = current.filter(
+          (item) => String(item.id ?? item.animalId) !== String(animalId),
+        );
         const next = res.isFavorite ? [{ ...animal, id: animalId }, ...others] : others;
         localStorage.setItem(storageKey, JSON.stringify(next));
         return next;
@@ -159,14 +182,10 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
 
   const value = useMemo(
     () => ({ favorites, isLoading, isFavorite, toggleFavorite, refreshFavorites }),
-    [favorites, isLoading, isFavorite, toggleFavorite, refreshFavorites]
+    [favorites, isLoading, isFavorite, toggleFavorite, refreshFavorites],
   );
 
-  return (
-    <FavoritesContext.Provider value={value}>
-      {children}
-    </FavoritesContext.Provider>
-  );
+  return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;
 };
 
 export const useFavorites = (): FavoritesContextType => {

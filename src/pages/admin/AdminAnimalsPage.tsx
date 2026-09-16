@@ -1,4 +1,8 @@
-import { useAllAnimalsQuery, useAnimalStatusMutation, useDeleteAnimalMutation } from '../../hooks/queries/animals';
+import {
+  useAllAnimalsQuery,
+  useAnimalStatusMutation,
+  useDeleteAnimalMutation,
+} from '../../hooks/queries/animals';
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, Navigate } from 'react-router-dom';
@@ -46,7 +50,10 @@ const AdminAnimalsPage: React.FC = () => {
   const handleQuickStatusChange = async (animalId: number | string, newStatus: string) => {
     try {
       await updateStatusMutation.mutateAsync({ id: animalId, status: newStatus });
-      showToast(`동물(#${animalId})의 보호 상태가 '${getStatusLabel(newStatus)}'(으)로 변경되었습니다.`, 'success');
+      showToast(
+        `동물(#${animalId})의 보호 상태가 '${getStatusLabel(newStatus)}'(으)로 변경되었습니다.`,
+        'success',
+      );
     } catch (err) {
       console.error('상태 변경 실패:', err);
       showToast(getErrorMessage(err, '상태 변경에 실패했습니다.'), 'error');
@@ -61,7 +68,10 @@ const AdminAnimalsPage: React.FC = () => {
     setIsDeleting(true);
     try {
       await deleteAnimalMutation.mutateAsync(targetId);
-      showToast(`'${deleteTarget?.breed || deleteTarget?.species}' 정보가 성공적으로 삭제되었습니다.`, 'success');
+      showToast(
+        `'${deleteTarget?.breed || deleteTarget?.species}' 정보가 성공적으로 삭제되었습니다.`,
+        'success',
+      );
       setDeleteTarget(null);
     } catch (err) {
       console.error('삭제 실패:', err);

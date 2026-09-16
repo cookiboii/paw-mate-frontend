@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { PawPrint, BookOpen, MessageSquare, User, Heart, ShieldCheck, Crown, X, LogOut } from 'lucide-react';
+import {
+  PawPrint,
+  BookOpen,
+  MessageSquare,
+  User,
+  Heart,
+  ShieldCheck,
+  Crown,
+  X,
+  LogOut,
+} from 'lucide-react';
 import styles from '../styles/components/Header.module.css';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
@@ -55,7 +65,9 @@ const Header: React.FC = () => {
       }
       if (event.key !== 'Tab' || !drawerRef.current) return;
       const focusable = Array.from(
-        drawerRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])')
+        drawerRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], [tabindex]:not([tabindex="-1"])',
+        ),
       );
       if (focusable.length === 0) return;
       const first = focusable[0];
@@ -113,14 +125,43 @@ const Header: React.FC = () => {
         {/* 데스크톱 네비게이션 */}
         <nav className={styles.nav}>
           <ul className={styles.navList}>
-            <li><NavLink to="/guide" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>입양 안내</NavLink></li>
-            <li><NavLink to="/animals" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>보호 동물</NavLink></li>
-            <li><NavLink to="/reviews" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>커뮤니티</NavLink></li>
+            <li>
+              <NavLink
+                to="/guide"
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
+                }
+              >
+                입양 안내
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/animals"
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
+                }
+              >
+                보호 동물
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/reviews"
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
+                }
+              >
+                커뮤니티
+              </NavLink>
+            </li>
             {isAdmin && (
               <li>
                 <NavLink
                   to="/admin/dashboard"
-                  className={({ isActive }) => `${styles.navLink} ${styles.adminCenterLink} ${isActive ? styles.activeNavLink : ''}`}
+                  className={({ isActive }) =>
+                    `${styles.navLink} ${styles.adminCenterLink} ${isActive ? styles.activeNavLink : ''}`
+                  }
                 >
                   <ShieldCheck size={16} />
                   <span>관리자 센터</span>
@@ -137,8 +178,16 @@ const Header: React.FC = () => {
               <>
                 {!isAdmin && (
                   <li>
-                    <NavLink to="/mypage" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>
-                      마이페이지 {favorites.length > 0 && <span className={styles.favBadge}>{favorites.length}</span>}
+                    <NavLink
+                      to="/mypage"
+                      className={({ isActive }) =>
+                        `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
+                      }
+                    >
+                      마이페이지{' '}
+                      {favorites.length > 0 && (
+                        <span className={styles.favBadge}>{favorites.length}</span>
+                      )}
                     </NavLink>
                   </li>
                 )}
@@ -150,8 +199,21 @@ const Header: React.FC = () => {
               </>
             ) : (
               <>
-                <li><NavLink to="/login" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`}>로그인</NavLink></li>
-                <li><Link to="/register" className="btn-primary">회원가입</Link></li>
+                <li>
+                  <NavLink
+                    to="/login"
+                    className={({ isActive }) =>
+                      `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
+                    }
+                  >
+                    로그인
+                  </NavLink>
+                </li>
+                <li>
+                  <Link to="/register" className="btn-primary">
+                    회원가입
+                  </Link>
+                </li>
               </>
             )}
           </ul>
@@ -159,7 +221,7 @@ const Header: React.FC = () => {
 
         {/* 모바일 햄버거 버튼 */}
         <div className={styles.mobileControls}>
-          <button 
+          <button
             ref={menuButtonRef}
             className={`${styles.hamburgerBtn} ${isMobileMenuOpen ? styles.hamburgerOpen : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -175,11 +237,13 @@ const Header: React.FC = () => {
       </div>
 
       {/* 모바일 사이드 드로어 메뉴 & 배경 오버레이 */}
-      {isMobileMenuOpen && (
-        <div className={styles.mobileBackdrop} onClick={closeMobileMenu} />
-      )}
-      
-      <div ref={drawerRef} id="mobile-navigation-drawer" className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}>
+      {isMobileMenuOpen && <div className={styles.mobileBackdrop} onClick={closeMobileMenu} />}
+
+      <div
+        ref={drawerRef}
+        id="mobile-navigation-drawer"
+        className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}
+      >
         <div className={styles.drawerHeader}>
           <span className={styles.drawerLogo}>
             <PawPrint size={20} />
@@ -194,13 +258,17 @@ const Header: React.FC = () => {
         <div className={styles.drawerProfileCard}>
           {isAuthenticated ? (
             <div className={styles.userCardContent}>
-              <div className={styles.userCardAvatar}>
-                {user?.name?.charAt(0) || 'U'}
-              </div>
+              <div className={styles.userCardAvatar}>{user?.name?.charAt(0) || 'U'}</div>
               <div className={styles.userCardInfo}>
                 <span className={styles.userCardName}>{user?.name || '회원'} 님</span>
                 <span className={styles.userCardRole}>
-                  {isAdmin ? <><Crown size={14} /> 관리자</> : '일반 회원'}
+                  {isAdmin ? (
+                    <>
+                      <Crown size={14} /> 관리자
+                    </>
+                  ) : (
+                    '일반 회원'
+                  )}
                 </span>
               </div>
             </div>
@@ -208,8 +276,12 @@ const Header: React.FC = () => {
             <div className={styles.guestCardContent}>
               <p>로그인하고 더 많은 기능을 이용해보세요!</p>
               <div className={styles.guestBtnGroup}>
-                <Link to="/login" className={styles.guestLoginBtn}>로그인</Link>
-                <Link to="/register" className={styles.guestRegisterBtn}>회원가입</Link>
+                <Link to="/login" className={styles.guestLoginBtn}>
+                  로그인
+                </Link>
+                <Link to="/register" className={styles.guestRegisterBtn}>
+                  회원가입
+                </Link>
               </div>
             </div>
           )}
@@ -218,32 +290,62 @@ const Header: React.FC = () => {
         <nav className={styles.drawerNav}>
           <ul className={styles.drawerList}>
             <li>
-              <NavLink to="/guide" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
+              <NavLink
+                to="/guide"
+                className={({ isActive }) =>
+                  `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`
+                }
+              >
                 <BookOpen size={18} /> 입양 안내
               </NavLink>
             </li>
             <li>
-              <NavLink to="/animals" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
+              <NavLink
+                to="/animals"
+                className={({ isActive }) =>
+                  `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`
+                }
+              >
                 <PawPrint size={18} /> 보호 동물
               </NavLink>
             </li>
             <li>
-              <NavLink to="/reviews" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
+              <NavLink
+                to="/reviews"
+                className={({ isActive }) =>
+                  `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`
+                }
+              >
                 <MessageSquare size={18} /> 커뮤니티
               </NavLink>
             </li>
-            
+
             {isAuthenticated && !isAdmin && (
               <li>
-                <NavLink to="/mypage" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
-                  <User size={18} /> 마이페이지 {favorites.length > 0 && <span className={styles.drawerFavBadge}><Heart size={12} fill="currentColor" /> {favorites.length}</span>}
+                <NavLink
+                  to="/mypage"
+                  className={({ isActive }) =>
+                    `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`
+                  }
+                >
+                  <User size={18} /> 마이페이지{' '}
+                  {favorites.length > 0 && (
+                    <span className={styles.drawerFavBadge}>
+                      <Heart size={12} fill="currentColor" /> {favorites.length}
+                    </span>
+                  )}
                 </NavLink>
               </li>
             )}
 
             {isAdmin && (
               <li>
-                <NavLink to="/admin/dashboard" className={({ isActive }) => `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`}>
+                <NavLink
+                  to="/admin/dashboard"
+                  className={({ isActive }) =>
+                    `${styles.drawerLink} ${isActive ? styles.activeDrawerLink : ''}`
+                  }
+                >
                   <ShieldCheck size={18} /> 관리자 센터
                 </NavLink>
               </li>

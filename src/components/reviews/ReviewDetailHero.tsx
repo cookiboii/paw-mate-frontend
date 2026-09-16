@@ -40,18 +40,18 @@ export default function ReviewDetailHero({
           ? isReport
             ? styles.heroNoImgReport
             : isFreeAdoption
-            ? styles.heroNoImgFreeAdoption
-            : styles.heroNoImg
+              ? styles.heroNoImgFreeAdoption
+              : styles.heroNoImg
           : ''
       }`}
     >
       {review.img ? (
         <>
-          <img 
-            src={review.img} 
-            alt={cleanTitle} 
-            className={styles.heroImage} 
-            onClick={() => setIsLightboxOpen(true)} 
+          <img
+            src={review.img}
+            alt={cleanTitle}
+            className={styles.heroImage}
+            onClick={() => setIsLightboxOpen(true)}
             title="클릭하여 크게 보기"
           />
           <button
@@ -71,11 +71,7 @@ export default function ReviewDetailHero({
       ) : (
         <div
           className={`${styles.noImage} ${
-            isReport
-              ? styles.noImageReport
-              : isFreeAdoption
-              ? styles.noImageFreeAdoption
-              : ''
+            isReport ? styles.noImageReport : isFreeAdoption ? styles.noImageFreeAdoption : ''
           }`}
         >
           <span>{renderCategoryIcon(cat, 56)}</span>
@@ -90,8 +86,8 @@ export default function ReviewDetailHero({
               isReport
                 ? styles.heroBadgeReport
                 : isFreeAdoption
-                ? styles.heroBadgeFreeAdoption
-                : styles.heroBadgeReview
+                  ? styles.heroBadgeFreeAdoption
+                  : styles.heroBadgeReview
             }`}
           >
             {renderCategoryIcon(cat, 14)}
@@ -105,7 +101,11 @@ export default function ReviewDetailHero({
             </span>
             {(review.createAt || review.createdAt) && (
               <span className={styles.dateText}>
-                {formatDate(review.createAt || review.createdAt, { year: 'numeric', month: 'long', day: 'numeric' })}
+                {formatDate(review.createAt || review.createdAt, {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
               </span>
             )}
           </div>

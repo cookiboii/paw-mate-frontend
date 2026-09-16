@@ -21,9 +21,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
         <ThemeProvider>
           <ToastProvider>
             <AuthProvider>
-              <FavoritesProvider>
-                {children}
-              </FavoritesProvider>
+              <FavoritesProvider>{children}</FavoritesProvider>
             </AuthProvider>
           </ToastProvider>
         </ThemeProvider>

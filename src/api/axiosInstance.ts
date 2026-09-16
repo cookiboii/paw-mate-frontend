@@ -1,13 +1,20 @@
 // src/api/axiosInstance.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { unwrapResult } from './apiHelper';
-import { clearAuthStorage, getAccessToken, getRefreshToken, updateAuthTokens } from '../utils/authStorage';
+import {
+  clearAuthStorage,
+  getAccessToken,
+  getRefreshToken,
+  updateAuthTokens,
+} from '../utils/authStorage';
 
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://port-0-paw-mate-backend-msiq1pqe2aa00cb9.sel3.cloudtype.app';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -38,7 +45,7 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error: AxiosError) => Promise.reject(error)
+  (error: AxiosError) => Promise.reject(error),
 );
 
 // 📌 Response 인터셉터: 401 발생 시 refreshToken을 이용한 토큰 자동 재발급
@@ -65,18 +72,27 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as CustomInternalAxiosRequestConfig | undefined;
     logUnauthorized(error, 'response interceptor');
 
-    if (error.response && error.response.status === 401 && originalRequest && !originalRequest._retry) {
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
       const refreshToken = getRefreshToken();
 
       // 로그인/회원가입 요청 실패 시에는 리프레시를 시도하지 않음
       const url = originalRequest.url || '';
-      const isPublicAuthRequest = /\/(login|register|verify-email|verify-code|send-reset-code|verify-reset-code|refresh-token)(?:[/?]|$)/.test(url);
+      const isPublicAuthRequest =
+        /\/(login|register|verify-email|verify-code|send-reset-code|verify-reset-code|refresh-token)(?:[/?]|$)/.test(
+          url,
+        );
       if (url.includes('/login') || url.includes('/refresh-token') || isPublicAuthRequest) {
         return Promise.reject(error);
       }
       if (!refreshToken) {
         clearAuthStorage();
-        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+        if (typeof window !== 'undefined')
+          window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         return Promise.reject(error);
       }
 
@@ -99,7 +115,11 @@ axiosInstance.interceptors.response.use(
       try {
         // 토큰 재발급 API 호출: POST /adoptmate/refresh-token
         const res = await axios.post(`${BASE_URL}/adoptmate/refresh-token`, { refreshToken });
-        const refreshed = unwrapResult<{ token?: string; accessToken?: string; refreshToken?: string }>(res.data);
+        const refreshed = unwrapResult<{
+          token?: string;
+          accessToken?: string;
+          refreshToken?: string;
+        }>(res.data);
         const newToken = refreshed?.token || refreshed?.accessToken;
         const newRefreshToken = refreshed?.refreshToken;
 
@@ -128,7 +148,7 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

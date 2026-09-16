@@ -22,9 +22,7 @@ const ThemeToggleFloating: React.FC = () => {
           <Moon size={18} className={styles.moonIcon} />
         )}
       </span>
-      <span className={styles.tooltip}>
-        {isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
-      </span>
+      <span className={styles.tooltip}>{isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}</span>
     </button>
   );
 };

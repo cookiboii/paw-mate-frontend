@@ -9,10 +9,14 @@ export async function compressImage(
   file: File,
   maxWidth = 1600,
   maxHeight = 1600,
-  quality = 0.85
+  quality = 0.85,
 ): Promise<File> {
   // GIF나 SVG 등 애니메이션/벡터 이미지는 원본 유지
-  if (!file.type.startsWith('image/') || file.type === 'image/gif' || file.type === 'image/svg+xml') {
+  if (
+    !file.type.startsWith('image/') ||
+    file.type === 'image/gif' ||
+    file.type === 'image/svg+xml'
+  ) {
     return file;
   }
 
@@ -69,7 +73,7 @@ export async function compressImage(
             resolve(compressedFile);
           },
           mimeType,
-          quality
+          quality,
         );
       };
 

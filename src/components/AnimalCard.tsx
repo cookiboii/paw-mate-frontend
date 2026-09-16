@@ -81,8 +81,8 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
     statusKey === 'PROTECTED'
       ? styles.statusProtected
       : statusKey === 'WAITING'
-      ? styles.statusWaiting
-      : styles.statusAdopted;
+        ? styles.statusWaiting
+        : styles.statusAdopted;
 
   return (
     <div className={styles.card} onMouseEnter={handleMouseEnter}>
@@ -97,7 +97,6 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
             fallbackText="사진 준비 중"
           />
         </Link>
-
 
         {/* 배지 그룹 */}
         <div className={styles.badgeGroup}>
@@ -123,35 +122,31 @@ const AnimalCard: React.FC<AnimalCardProps> = ({
             onRemove
               ? '관심 목록에서 삭제'
               : !isAuthenticated
-              ? '로그인 후 찜하기 가능'
-              : favorite
-              ? '관심 목록에서 제거'
-              : '관심 동물로 등록'
+                ? '로그인 후 찜하기 가능'
+                : favorite
+                  ? '관심 목록에서 제거'
+                  : '관심 동물로 등록'
           }
           aria-pressed={isAuthenticated ? favorite : undefined}
           title={
             onRemove
               ? '관심 목록에서 제거'
               : !isAuthenticated
-              ? '로그인 후 찜하기 가능합니다'
-              : favorite
-              ? '관심 목록에서 제거'
-              : '관심 동물로 등록'
+                ? '로그인 후 찜하기 가능합니다'
+                : favorite
+                  ? '관심 목록에서 제거'
+                  : '관심 동물로 등록'
           }
         >
-          {onRemove ? (
-            <X size={16} />
-          ) : !isAuthenticated ? (
-            <Lock size={15} />
-          ) : (
-            <Heart size={18} />
-          )}
+          {onRemove ? <X size={16} /> : !isAuthenticated ? <Lock size={15} /> : <Heart size={18} />}
         </button>
       </div>
 
       <div className={styles.info}>
         <Link to={`/animals/${animalId}`} className={styles.titleLink}>
-          <h3 className={styles.breed}>{animal.breed || animal.name || animal.species || '이름 없음'}</h3>
+          <h3 className={styles.breed}>
+            {animal.breed || animal.name || animal.species || '이름 없음'}
+          </h3>
         </Link>
         <div className={styles.meta}>
           <span>{age}살</span>

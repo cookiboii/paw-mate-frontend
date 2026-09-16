@@ -6,10 +6,27 @@ import type { CommentItem } from '../../types/review';
 import type { CommentActions } from '../../hooks/useCommentActions';
 import styles from '../../styles/components/CommentSection.module.css';
 
-export default function CommentThread({ comments, actions }: { comments: CommentItem[]; actions: CommentActions }) {
-  const { userInfo, editContentMap, setEditContentMap, editModeMap, loadingMap,
-    isCommentAuthor, canDeleteComment, canViewSecretComment,
-    handleDelete, handleEditToggle, handleEditCancel, handleUpdate } = actions;
+export default function CommentThread({
+  comments,
+  actions,
+}: {
+  comments: CommentItem[];
+  actions: CommentActions;
+}) {
+  const {
+    userInfo,
+    editContentMap,
+    setEditContentMap,
+    editModeMap,
+    loadingMap,
+    isCommentAuthor,
+    canDeleteComment,
+    canViewSecretComment,
+    handleDelete,
+    handleEditToggle,
+    handleEditCancel,
+    handleUpdate,
+  } = actions;
   const renderComments = (commentList: CommentItem[]) =>
     commentList.map((comment) => {
       const isAuthor = isCommentAuthor(comment);
@@ -24,25 +41,17 @@ export default function CommentThread({ comments, actions }: { comments: Comment
               <div className={styles.commentMeta}>
                 <strong className={styles.authorName}>{comment.authorName || '익명'}</strong>
                 {comment.createdAt && (
-                  <span className={styles.commentDate}>
-                    {formatDate(comment.createdAt)}
-                  </span>
+                  <span className={styles.commentDate}>{formatDate(comment.createdAt)}</span>
                 )}
               </div>
               {canDeleteComment(comment) && !editModeMap[comment.id] && (
                 <div className={styles.actions}>
                   {isAuthor && (
-                    <button
-                      className={styles.actionBtn}
-                      onClick={() => handleEditToggle(comment)}
-                    >
+                    <button className={styles.actionBtn} onClick={() => handleEditToggle(comment)}>
                       수정
                     </button>
                   )}
-                  <button
-                    className={styles.deleteActionBtn}
-                    onClick={() => handleDelete(comment)}
-                  >
+                  <button className={styles.deleteActionBtn} onClick={() => handleDelete(comment)}>
                     삭제
                   </button>
                 </div>
@@ -57,7 +66,9 @@ export default function CommentThread({ comments, actions }: { comments: Comment
                   type="text"
                   className={styles.editInput}
                   value={editContentMap[comment.id] || ''}
-                  onChange={(e) => setEditContentMap((prev) => ({ ...prev, [comment.id]: e.target.value }))}
+                  onChange={(e) =>
+                    setEditContentMap((prev) => ({ ...prev, [comment.id]: e.target.value }))
+                  }
                 />
                 <div className={styles.editActions}>
                   <button className={styles.submitBtn} onClick={() => handleUpdate(comment)}>

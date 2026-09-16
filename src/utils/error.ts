@@ -48,7 +48,10 @@ interface BackendErrorPayload {
 /**
  * unknown 타입의 에러 객체로부터 api.md 명세에 맞춘 사용자 친화적 에러 메시지를 안전하게 추출합니다.
  */
-export function getErrorMessage(error: unknown, defaultMessage = '작업 처리 중 오류가 발생했습니다.'): string {
+export function getErrorMessage(
+  error: unknown,
+  defaultMessage = '작업 처리 중 오류가 발생했습니다.',
+): string {
   if (!error) return defaultMessage;
 
   if (axios.isAxiosError(error)) {

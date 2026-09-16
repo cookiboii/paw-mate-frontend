@@ -32,7 +32,8 @@ export default function AnimalAdoptionAction({
                 <span>이미 입양 신청서가 접수된 아이입니다</span>
               </div>
               <p className={styles.appliedText}>
-                현재 보호소에서 신청서를 정성껏 심사 중입니다. 심사 진행 상태는 마이페이지에서 확인하실 수 있습니다.
+                현재 보호소에서 신청서를 정성껏 심사 중입니다. 심사 진행 상태는 마이페이지에서
+                확인하실 수 있습니다.
               </p>
               <button
                 type="button"

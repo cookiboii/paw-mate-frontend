@@ -17,8 +17,6 @@ export default function useCommentActions(postId: string | number, postAuthorEma
   const [loadingMap, setLoadingMap] = useState<Record<string | number, boolean>>({});
   const [secretMap, setSecretMap] = useState<Record<string, boolean>>({});
 
-
-
   const requireLogin = () => {
     if (isAuthenticated) return true;
     showToast('로그인 후 댓글을 작성하거나 변경할 수 있습니다.', 'info');
@@ -34,12 +32,14 @@ export default function useCommentActions(postId: string | number, postAuthorEma
     return Boolean(email) && email === comment.authorEmail?.trim().toLowerCase();
   };
 
-  const isCommentAdmin = Boolean(userInfo && ['ADMIN', 'ROLE_ADMIN'].includes(userInfo.role?.toUpperCase() || ''));
+  const isCommentAdmin = Boolean(
+    userInfo && ['ADMIN', 'ROLE_ADMIN'].includes(userInfo.role?.toUpperCase() || ''),
+  );
   const canDeleteComment = (comment: CommentItem) => isCommentAuthor(comment) || isCommentAdmin;
   const isPostAuthor = Boolean(
     userInfo?.email &&
     postAuthorEmail &&
-    userInfo.email.trim().toLowerCase() === postAuthorEmail.trim().toLowerCase()
+    userInfo.email.trim().toLowerCase() === postAuthorEmail.trim().toLowerCase(),
   );
   const canViewSecretComment = (comment: CommentItem) =>
     isCommentAuthor(comment) || isPostAuthor || isCommentAdmin;
@@ -127,11 +127,24 @@ export default function useCommentActions(postId: string | number, postAuthorEma
     }
   };
 
-
   return {
-    userInfo, contentMap, editContentMap, setEditContentMap, editModeMap, loadingMap, secretMap, setSecretMap,
-    isCommentAuthor, canDeleteComment, canViewSecretComment,
-    handleChange, handleSubmit, handleDelete, handleEditToggle, handleEditCancel, handleUpdate,
+    userInfo,
+    contentMap,
+    editContentMap,
+    setEditContentMap,
+    editModeMap,
+    loadingMap,
+    secretMap,
+    setSecretMap,
+    isCommentAuthor,
+    canDeleteComment,
+    canViewSecretComment,
+    handleChange,
+    handleSubmit,
+    handleDelete,
+    handleEditToggle,
+    handleEditCancel,
+    handleUpdate,
   };
 }
 export type CommentActions = ReturnType<typeof useCommentActions>;

@@ -52,7 +52,8 @@
   gap: 12px;
 }
 
-.retryBtn, .homeBtn {
+.retryBtn,
+.homeBtn {
   flex: 1;
   padding: 14px;
   font-size: 1rem;

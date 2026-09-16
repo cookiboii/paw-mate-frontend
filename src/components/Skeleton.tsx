@@ -9,7 +9,13 @@ interface SkeletonProps {
   style?: CSSProperties;
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({ type = 'text', width, height, className = '', style }) => {
+const Skeleton: React.FC<SkeletonProps> = ({
+  type = 'text',
+  width,
+  height,
+  className = '',
+  style,
+}) => {
   const inlineStyles: CSSProperties = { ...style };
   if (width) inlineStyles.width = typeof width === 'number' ? `${width}px` : width;
   if (height) inlineStyles.height = typeof height === 'number' ? `${height}px` : height;

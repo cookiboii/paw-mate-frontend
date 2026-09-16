@@ -1,16 +1,28 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
-import { clearAuthStorage, getAccessToken, getRefreshToken, saveAuthSession, updateAuthTokens } from './authStorage';
+import {
+  clearAuthStorage,
+  getAccessToken,
+  getRefreshToken,
+  saveAuthSession,
+  updateAuthTokens,
+} from './authStorage';
 
 describe('authStorage', () => {
   beforeEach(() => localStorage.clear());
 
   it('normalizes and stores one session', () => {
     localStorage.setItem('role', 'ADMIN');
-    saveAuthSession('Bearer access-token', { email: 'user@example.com', role: 'USER' }, 'refresh-token');
+    saveAuthSession(
+      'Bearer access-token',
+      { email: 'user@example.com', role: 'USER' },
+      'refresh-token',
+    );
     expect(getAccessToken()).toBe('access-token');
     expect(getRefreshToken()).toBe('refresh-token');
-    expect(JSON.parse(localStorage.getItem('paw_user_info') || '{}').email).toBe('user@example.com');
+    expect(JSON.parse(localStorage.getItem('paw_user_info') || '{}').email).toBe(
+      'user@example.com',
+    );
     expect(localStorage.getItem('role')).toBe('USER');
   });
 

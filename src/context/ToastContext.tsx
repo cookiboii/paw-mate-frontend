@@ -29,24 +29,23 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const addToast = useCallback((message: string, type: ToastType = 'info') => {
-    const id = Date.now().toString(36) + Math.random().toString(36).substring(2);
-    setToasts((prev) => [...prev, { id, message, type }]);
+  const addToast = useCallback(
+    (message: string, type: ToastType = 'info') => {
+      const id = Date.now().toString(36) + Math.random().toString(36).substring(2);
+      setToasts((prev) => [...prev, { id, message, type }]);
 
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-      removeToast(id);
-    }, 3000);
-  }, [removeToast]);
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        removeToast(id);
+      }, 3000);
+    },
+    [removeToast],
+  );
 
   const value = useMemo(
     () => ({ toasts, addToast, showToast: addToast, removeToast }),
-    [toasts, addToast, removeToast]
+    [toasts, addToast, removeToast],
   );
 
-  return (
-    <ToastContext.Provider value={value}>
-      {children}
-    </ToastContext.Provider>
-  );
+  return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;
 };

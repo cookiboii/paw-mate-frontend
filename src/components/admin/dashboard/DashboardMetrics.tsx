@@ -57,9 +57,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ stats }) => 
           >
             {stats.pendingCount}건
           </div>
-          <div className={styles.statSubtext}>
-            전체 신청 {stats.totalAdoptions}건 중
-          </div>
+          <div className={styles.statSubtext}>전체 신청 {stats.totalAdoptions}건 중</div>
         </div>
       </Link>
 

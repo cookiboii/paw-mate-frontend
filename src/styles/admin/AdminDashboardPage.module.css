@@ -80,7 +80,9 @@
 }
 
 @keyframes dashboardSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Stats Cards Grid */

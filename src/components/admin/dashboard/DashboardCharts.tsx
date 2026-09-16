@@ -39,9 +39,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               </div>
               <div>
                 <div>신규 보호 동물 등록</div>
-                <div className={styles.quickActionDesc}>
-                  사진 및 상세 정보 업로드
-                </div>
+                <div className={styles.quickActionDesc}>사진 및 상세 정보 업로드</div>
               </div>
             </Link>
 
@@ -51,9 +49,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               </div>
               <div>
                 <div>회원 및 관리자 권한 관리</div>
-                <div className={styles.quickActionDesc}>
-                  권한 부여 및 가입 현황
-                </div>
+                <div className={styles.quickActionDesc}>권한 부여 및 가입 현황</div>
               </div>
             </Link>
 
@@ -66,9 +62,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
               </div>
               <div>
                 <div className={styles.benchmarkQuickActionTitle}>성능 & 동시성 테스트 랩</div>
-                <div className={styles.quickActionDesc}>
-                  No-Offset 커서 속도 실시간 벤치마크
-                </div>
+                <div className={styles.quickActionDesc}>No-Offset 커서 속도 실시간 벤치마크</div>
               </div>
             </Link>
           </div>
@@ -85,9 +79,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
         </div>
         <div className={styles.sectionBody}>
           {stats.totalAnimals === 0 ? (
-            <p className={styles.chartEmptyText}>
-              등록된 동물이 없습니다.
-            </p>
+            <p className={styles.chartEmptyText}>등록된 동물이 없습니다.</p>
           ) : (
             <div>
               {/* SVG 원형 도넛 차트 */}
@@ -108,12 +100,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                   const etcOffset = -(dogStroke + catStroke);
 
                   return (
-                    <svg
-                      width="160"
-                      height="160"
-                      viewBox="0 0 160 160"
-                      className={styles.donutSvg}
-                    >
+                    <svg width="160" height="160" viewBox="0 0 160 160" className={styles.donutSvg}>
                       {/* 배경 서클 */}
                       <circle
                         cx="80"
@@ -183,7 +170,10 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                   </div>
                   <span className={styles.legendCount}>
                     {stats.dogCount}마리 (
-                    {stats.totalAnimals > 0 ? Math.round((stats.dogCount / stats.totalAnimals) * 100) : 0}%)
+                    {stats.totalAnimals > 0
+                      ? Math.round((stats.dogCount / stats.totalAnimals) * 100)
+                      : 0}
+                    %)
                   </span>
                 </div>
 
@@ -194,7 +184,10 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                   </div>
                   <span className={styles.legendCount}>
                     {stats.catCount}마리 (
-                    {stats.totalAnimals > 0 ? Math.round((stats.catCount / stats.totalAnimals) * 100) : 0}%)
+                    {stats.totalAnimals > 0
+                      ? Math.round((stats.catCount / stats.totalAnimals) * 100)
+                      : 0}
+                    %)
                   </span>
                 </div>
 
@@ -205,7 +198,8 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                       <span className={styles.legendName}>기타 동물 (ETC)</span>
                     </div>
                     <span className={styles.legendCount}>
-                      {stats.etcCount}마리 ({Math.round((stats.etcCount / stats.totalAnimals) * 100)}%)
+                      {stats.etcCount}마리 (
+                      {Math.round((stats.etcCount / stats.totalAnimals) * 100)}%)
                     </span>
                   </div>
                 )}
@@ -225,9 +219,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
         </div>
         <div className={styles.sectionBody}>
           {stats.totalAdoptions === 0 ? (
-            <p className={styles.chartEmptyText}>
-              접수된 입양 신청이 없습니다.
-            </p>
+            <p className={styles.chartEmptyText}>접수된 입양 신청이 없습니다.</p>
           ) : (
             <div className={styles.stackedBarWrapper}>
               {/* 스택 바 */}
@@ -235,27 +227,33 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ stats }) => {
                 {stats.approvedAdoptions > 0 && (
                   <div
                     className={`${styles.stackedSegment} ${styles.segmentApproved}`}
-                    style={{
-                      '--segment-width': `${(stats.approvedAdoptions / stats.totalAdoptions) * 100}%`,
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        '--segment-width': `${(stats.approvedAdoptions / stats.totalAdoptions) * 100}%`,
+                      } as React.CSSProperties
+                    }
                     title={`승인: ${stats.approvedAdoptions}건`}
                   />
                 )}
                 {stats.pendingCount > 0 && (
                   <div
                     className={`${styles.stackedSegment} ${styles.segmentWaiting}`}
-                    style={{
-                      '--segment-width': `${(stats.pendingCount / stats.totalAdoptions) * 100}%`,
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        '--segment-width': `${(stats.pendingCount / stats.totalAdoptions) * 100}%`,
+                      } as React.CSSProperties
+                    }
                     title={`대기: ${stats.pendingCount}건`}
                   />
                 )}
                 {stats.rejectedAdoptions > 0 && (
                   <div
                     className={`${styles.stackedSegment} ${styles.segmentRejected}`}
-                    style={{
-                      '--segment-width': `${(stats.rejectedAdoptions / stats.totalAdoptions) * 100}%`,
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        '--segment-width': `${(stats.rejectedAdoptions / stats.totalAdoptions) * 100}%`,
+                      } as React.CSSProperties
+                    }
                     title={`반려: ${stats.rejectedAdoptions}건`}
                   />
                 )}

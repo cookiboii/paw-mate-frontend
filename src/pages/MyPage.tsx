@@ -35,7 +35,7 @@ const MyPage: React.FC = () => {
 
   const tabParam = searchParams.get('tab') as TabType | null;
   const [activeTab, setActiveTab] = useState<TabType>(
-    tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'profile'
+    tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'profile',
   );
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
@@ -160,7 +160,9 @@ const MyPage: React.FC = () => {
           <div className={styles.userProfile}>
             <div className={styles.avatar}>{userInfo.name?.charAt(0) || 'U'}</div>
             <h4>{userInfo.name}</h4>
-            <span className={styles.roleBadge}>{userInfo.role === 'USER' ? '일반 회원' : userInfo.role}</span>
+            <span className={styles.roleBadge}>
+              {userInfo.role === 'USER' ? '일반 회원' : userInfo.role}
+            </span>
           </div>
           <nav className={styles.navMenu}>
             <button
@@ -216,12 +218,13 @@ const MyPage: React.FC = () => {
 
           {/* 입양 신청 내역 탭 */}
           {activeTab === 'bookmarks' && (
-            <MyPageBookmarksTab bookmarkedReviews={bookmarkedReviews} isBookmarksLoading={isBookmarksLoading} />
+            <MyPageBookmarksTab
+              bookmarkedReviews={bookmarkedReviews}
+              isBookmarksLoading={isBookmarksLoading}
+            />
           )}
 
-          {activeTab === 'adoptions' && (
-            <MyPageAdoptionsTab adoptionList={adoptionList} />
-          )}
+          {activeTab === 'adoptions' && <MyPageAdoptionsTab adoptionList={adoptionList} />}
 
           {/* 보안 설정 탭 */}
           {activeTab === 'password' && provider !== 'KAKAO' && (

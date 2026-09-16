@@ -38,7 +38,10 @@ export const logoutUser = async (): Promise<void> => {
  * Response: { token: string, refreshToken: string } (Refresh Token Rotation 적용)
  */
 export const refreshAccessToken = async (refreshToken: string) => {
-  return await axiosInstance.post<{ token: string; refreshToken: string }>('/adoptmate/refresh-token', { refreshToken });
+  return await axiosInstance.post<{ token: string; refreshToken: string }>(
+    '/adoptmate/refresh-token',
+    { refreshToken },
+  );
 };
 
 /**

@@ -9,17 +9,23 @@ export const useImagePreview = (initialUrl: string | null = null) => {
     objectUrlRef.current = null;
   }, []);
 
-  const setPreviewFromFile = useCallback((file: File) => {
-    releaseObjectUrl();
-    const nextUrl = URL.createObjectURL(file);
-    objectUrlRef.current = nextUrl;
-    setPreview(nextUrl);
-  }, [releaseObjectUrl]);
+  const setPreviewFromFile = useCallback(
+    (file: File) => {
+      releaseObjectUrl();
+      const nextUrl = URL.createObjectURL(file);
+      objectUrlRef.current = nextUrl;
+      setPreview(nextUrl);
+    },
+    [releaseObjectUrl],
+  );
 
-  const setPreviewUrl = useCallback((url: string | null) => {
-    releaseObjectUrl();
-    setPreview(url);
-  }, [releaseObjectUrl]);
+  const setPreviewUrl = useCallback(
+    (url: string | null) => {
+      releaseObjectUrl();
+      setPreview(url);
+    },
+    [releaseObjectUrl],
+  );
 
   const clearPreview = useCallback(() => setPreviewUrl(null), [setPreviewUrl]);
 

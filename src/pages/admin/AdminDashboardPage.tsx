@@ -16,7 +16,9 @@ import { Animal } from '../../types/animal';
 import { User } from '../../types/auth';
 import { AdoptionResponseDto } from '../../types/adoption';
 import { getErrorMessage } from '../../utils/error';
-import DashboardMetrics, { DashboardStats } from '../../components/admin/dashboard/DashboardMetrics';
+import DashboardMetrics, {
+  DashboardStats,
+} from '../../components/admin/dashboard/DashboardMetrics';
 import DashboardRecentAdoptions from '../../components/admin/dashboard/DashboardRecentAdoptions';
 import DashboardCharts from '../../components/admin/dashboard/DashboardCharts';
 
@@ -31,12 +33,16 @@ const AdminDashboardPage: React.FC = () => {
   const users = usersQuery.data || [];
   const adoptions = adoptionsQuery.data || [];
   const loading = animalsQuery.isLoading || usersQuery.isLoading || adoptionsQuery.isLoading;
-  const isRefreshing = animalsQuery.isFetching || usersQuery.isFetching || adoptionsQuery.isFetching;
-  const failures = [animalsQuery, usersQuery, adoptionsQuery].filter((query) => query.isError).length;
-  const loadError = failures ? `${failures}개의 대시보드 데이터를 불러오지 못했습니다. 다시 시도해 주세요.` : null;
-  const loadDashboardData = (_refresh = false) => Promise.all([
-    animalsQuery.refetch(), usersQuery.refetch(), adoptionsQuery.refetch(),
-  ]);
+  const isRefreshing =
+    animalsQuery.isFetching || usersQuery.isFetching || adoptionsQuery.isFetching;
+  const failures = [animalsQuery, usersQuery, adoptionsQuery].filter(
+    (query) => query.isError,
+  ).length;
+  const loadError = failures
+    ? `${failures}개의 대시보드 데이터를 불러오지 못했습니다. 다시 시도해 주세요.`
+    : null;
+  const loadDashboardData = (_refresh = false) =>
+    Promise.all([animalsQuery.refetch(), usersQuery.refetch(), adoptionsQuery.refetch()]);
 
   // 빠른 승인/반려 확인 모달
   const [confirmModal, setConfirmModal] = useState<{
@@ -54,9 +60,15 @@ const AdminDashboardPage: React.FC = () => {
   // 통계 계산
   const stats: DashboardStats = useMemo(() => {
     const totalAnimals = animals.length;
-    const protectedAnimals = animals.filter((a) => (a.status || '').toUpperCase() === 'PROTECTED').length;
-    const waitingAnimals = animals.filter((a) => (a.status || '').toUpperCase() === 'WAITING').length;
-    const adoptedAnimals = animals.filter((a) => (a.status || '').toUpperCase() === 'ADOPTED').length;
+    const protectedAnimals = animals.filter(
+      (a) => (a.status || '').toUpperCase() === 'PROTECTED',
+    ).length;
+    const waitingAnimals = animals.filter(
+      (a) => (a.status || '').toUpperCase() === 'WAITING',
+    ).length;
+    const adoptedAnimals = animals.filter(
+      (a) => (a.status || '').toUpperCase() === 'ADOPTED',
+    ).length;
 
     const dogCount = animals.filter((a) => (a.species || '').toUpperCase() === 'DOG').length;
     const catCount = animals.filter((a) => (a.species || '').toUpperCase() === 'CAT').length;
@@ -66,9 +78,15 @@ const AdminDashboardPage: React.FC = () => {
     const adminCount = users.filter((u) => u.role === 'ADMIN' || u.role === 'ROLE_ADMIN').length;
 
     const totalAdoptions = adoptions.length;
-    const pendingAdoptions = adoptions.filter((a) => (a.status || 'PENDING').toUpperCase() === 'PENDING');
-    const approvedAdoptions = adoptions.filter((a) => (a.status || '').toUpperCase() === 'APPROVED').length;
-    const rejectedAdoptions = adoptions.filter((a) => (a.status || '').toUpperCase() === 'REJECTED').length;
+    const pendingAdoptions = adoptions.filter(
+      (a) => (a.status || 'PENDING').toUpperCase() === 'PENDING',
+    );
+    const approvedAdoptions = adoptions.filter(
+      (a) => (a.status || '').toUpperCase() === 'APPROVED',
+    ).length;
+    const rejectedAdoptions = adoptions.filter(
+      (a) => (a.status || '').toUpperCase() === 'REJECTED',
+    ).length;
 
     return {
       totalAnimals,
@@ -88,12 +106,14 @@ const AdminDashboardPage: React.FC = () => {
   }, [animals, users, adoptions]);
 
   const pendingList = useMemo(() => {
-    return adoptions
-      .filter((a) => (a.status || 'PENDING').toUpperCase() === 'PENDING')
-      .slice(0, 5);
+    return adoptions.filter((a) => (a.status || 'PENDING').toUpperCase() === 'PENDING').slice(0, 5);
   }, [adoptions]);
 
-  const requestQuickStatus = (adoptionId: number | string, status: string, applicantName: string) => {
+  const requestQuickStatus = (
+    adoptionId: number | string,
+    status: string,
+    applicantName: string,
+  ) => {
     setConfirmModal({
       isOpen: true,
       adoptionId,
@@ -110,8 +130,10 @@ const AdminDashboardPage: React.FC = () => {
 
     try {
       await statusMutation.mutateAsync({ adoptionId, status });
-      showToast(`입양 신청이 성공적으로 ${status === 'APPROVED' ? '승인' : '반려'}되었습니다.`, 'success');
-
+      showToast(
+        `입양 신청이 성공적으로 ${status === 'APPROVED' ? '승인' : '반려'}되었습니다.`,
+        'success',
+      );
     } catch (err: unknown) {
       showToast('상태 변경 실패: ' + getErrorMessage(err, '상태 변경에 실패했습니다.'), 'error');
     }
@@ -136,7 +158,11 @@ const AdminDashboardPage: React.FC = () => {
 
       {/* 4가지 핵심 지표 카드 */}
       <div className={styles.dashboardToolbar}>
-        {loadError && <p className={styles.loadError} role="status">{loadError}</p>}
+        {loadError && (
+          <p className={styles.loadError} role="status">
+            {loadError}
+          </p>
+        )}
         <button
           type="button"
           className={styles.refreshButton}

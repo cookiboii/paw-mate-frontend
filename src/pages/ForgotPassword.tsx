@@ -122,7 +122,10 @@ const ForgotPassword: React.FC = () => {
     setLoading(true);
     try {
       await resetPassword(email, newPassword);
-      showToast('비밀번호가 성공적으로 재설정되었습니다! 새 비밀번호로 로그인해 주세요.', 'success');
+      showToast(
+        '비밀번호가 성공적으로 재설정되었습니다! 새 비밀번호로 로그인해 주세요.',
+        'success',
+      );
       navigate('/login');
     } catch (err: unknown) {
       const msg = getErrorMessage(err, '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.');
@@ -147,7 +150,11 @@ const ForgotPassword: React.FC = () => {
       <div className={styles.stepIndicator}>
         <div className={`${styles.stepDot} ${step >= 1 ? styles.stepActive : ''}`}>1</div>
         <div className={`${styles.stepLine} ${step >= 2 ? styles.stepLineActive : ''}`} />
-        <div className={`${styles.stepDot} ${step >= 2 ? styles.stepActive : ''} ${step > 2 ? styles.stepCompleted : ''}`}>2</div>
+        <div
+          className={`${styles.stepDot} ${step >= 2 ? styles.stepActive : ''} ${step > 2 ? styles.stepCompleted : ''}`}
+        >
+          2
+        </div>
         <div className={`${styles.stepLine} ${step >= 3 ? styles.stepLineActive : ''}`} />
         <div className={`${styles.stepDot} ${step === 3 ? styles.stepActive : ''}`}>3</div>
       </div>
@@ -215,7 +222,7 @@ const ForgotPassword: React.FC = () => {
         <form onSubmit={handleResetPassword} className={styles.form}>
           <div className={styles.inputRelative}>
             <FloatingInput
-                label="새 비밀번호 (6자 이상)"
+              label="새 비밀번호 (6자 이상)"
               type={showPassword ? 'text' : 'password'}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}

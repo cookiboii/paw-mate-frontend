@@ -45,7 +45,10 @@ const AdminPasswordPage: React.FC = () => {
       logout();
       navigate('/login');
     } catch (err: unknown) {
-      const errMsg = getErrorMessage(err, '비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.');
+      const errMsg = getErrorMessage(
+        err,
+        '비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.',
+      );
       showToast(errMsg, 'error');
     } finally {
       setLoading(false);

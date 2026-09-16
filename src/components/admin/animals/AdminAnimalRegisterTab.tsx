@@ -95,7 +95,8 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
       return;
     }
 
-    const ageNum = typeof animalForm.age === 'number' ? animalForm.age : parseInt(String(animalForm.age), 10);
+    const ageNum =
+      typeof animalForm.age === 'number' ? animalForm.age : parseInt(String(animalForm.age), 10);
     if (isNaN(ageNum) || ageNum < 0) {
       showToast('나이는 0 이상의 숫자로 입력해주세요.', 'error');
       return;
@@ -144,7 +145,9 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
               {/* 동물 종류 & 성별 선택창 */}
               <div className={styles.gridRow}>
                 <div className={styles.selectGroup}>
-                  <label className={styles.selectLabel}>동물 종류 <span aria-hidden="true">*</span></label>
+                  <label className={styles.selectLabel}>
+                    동물 종류 <span aria-hidden="true">*</span>
+                  </label>
                   <select
                     name="species"
                     value={animalForm.species}
@@ -152,7 +155,9 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                     className={styles.select}
                     required
                   >
-                    <option value="" disabled>동물 종류 선택</option>
+                    <option value="" disabled>
+                      동물 종류 선택
+                    </option>
                     {SPECIES_OPTIONS.map((option) => (
                       <option key={option.key} value={option.key}>
                         {option.label}
@@ -162,7 +167,9 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                 </div>
 
                 <div className={styles.selectGroup}>
-                  <label className={styles.selectLabel}>성별 <span aria-hidden="true">*</span></label>
+                  <label className={styles.selectLabel}>
+                    성별 <span aria-hidden="true">*</span>
+                  </label>
                   <select
                     name="gender"
                     value={animalForm.gender}
@@ -170,7 +177,9 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                     className={styles.select}
                     required
                   >
-                    <option value="" disabled>성별 선택</option>
+                    <option value="" disabled>
+                      성별 선택
+                    </option>
                     {GENDER_OPTIONS.map((option) => (
                       <option key={option.key} value={option.key}>
                         {option.label}
@@ -212,7 +221,9 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
               </div>
 
               <div className={styles.selectGroup}>
-                <label className={styles.selectLabel}>보호 상태 <span aria-hidden="true">*</span></label>
+                <label className={styles.selectLabel}>
+                  보호 상태 <span aria-hidden="true">*</span>
+                </label>
                 <select
                   name="status"
                   value={animalForm.status}
@@ -220,7 +231,9 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                   className={styles.select}
                   required
                 >
-                  <option value="" disabled>상태 선택</option>
+                  <option value="" disabled>
+                    상태 선택
+                  </option>
                   {STATUS_OPTIONS.map((option) => (
                     <option key={option.key} value={option.key}>
                       {option.label}
@@ -254,7 +267,12 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                 {preview ? (
                   <div className={styles.previewContainer}>
                     <img src={preview} alt="미리보기" className={styles.previewImage} />
-                    <button type="button" className={styles.removeBtn} onClick={removeImage} title="사진 제거">
+                    <button
+                      type="button"
+                      className={styles.removeBtn}
+                      onClick={removeImage}
+                      title="사진 제거"
+                    >
                       <X size={16} />
                     </button>
                   </div>
@@ -264,7 +282,8 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
                       <Camera size={36} />
                     </div>
                     <p>
-                      클릭하여 사진을 선택하거나<br />
+                      클릭하여 사진을 선택하거나
+                      <br />
                       여기로 이미지를 드래그하세요
                     </p>
                   </div>
@@ -274,12 +293,10 @@ export const AdminAnimalRegisterTab: React.FC<AdminAnimalRegisterTabProps> = ({ 
           </div>
 
           <div className={styles.formFooter}>
-            <p className={styles.requiredNotice}><span aria-hidden="true">*</span> 필수 입력 항목</p>
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={isSubmitting}
-            >
+            <p className={styles.requiredNotice}>
+              <span aria-hidden="true">*</span> 필수 입력 항목
+            </p>
+            <button type="submit" className="btn-primary" disabled={isSubmitting}>
               {isSubmitting ? '등록 처리 중...' : '신규 동물 등록 완료'}
             </button>
           </div>

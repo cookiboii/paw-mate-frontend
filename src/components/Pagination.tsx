@@ -43,7 +43,7 @@ const Pagination: React.FC<PaginationProps> = ({
       const rightItemCount = 3 + 2 * siblingCount;
       const rightRange = Array.from(
         { length: rightItemCount },
-        (_, i) => totalPages - rightItemCount + i + 1
+        (_, i) => totalPages - rightItemCount + i + 1,
       );
       return [1, '...', ...rightRange];
     }
@@ -51,7 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({
     if (shouldShowLeftDots && shouldShowRightDots) {
       const middleRange = Array.from(
         { length: rightSiblingIndex - leftSiblingIndex + 1 },
-        (_, i) => leftSiblingIndex + i
+        (_, i) => leftSiblingIndex + i,
       );
       return [1, '...', ...middleRange, '...', totalPages];
     }

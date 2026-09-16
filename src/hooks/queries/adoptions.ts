@@ -8,10 +8,12 @@ export const useMyAdoptionsQuery = (enabled = true) =>
 export function useAdoptionStatusMutation() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({ adoptionId, status }: { adoptionId: string | number; status: string }) => updateAdoptionStatus(adoptionId, status),
-    onSuccess: () => Promise.all([
-      client.invalidateQueries({ queryKey: queryKeys.adoptions.all }),
-      client.invalidateQueries({ queryKey: queryKeys.animals.all }),
-    ]),
+    mutationFn: ({ adoptionId, status }: { adoptionId: string | number; status: string }) =>
+      updateAdoptionStatus(adoptionId, status),
+    onSuccess: () =>
+      Promise.all([
+        client.invalidateQueries({ queryKey: queryKeys.adoptions.all }),
+        client.invalidateQueries({ queryKey: queryKeys.animals.all }),
+      ]),
   });
 }

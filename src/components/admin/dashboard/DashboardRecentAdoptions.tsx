@@ -8,7 +8,11 @@ import { formatDateTime } from '../../../utils/date';
 interface DashboardRecentAdoptionsProps {
   pendingList: AdoptionResponseDto[];
   pendingCount: number;
-  onRequestStatusChange: (adoptionId: number | string, status: string, applicantName: string) => void;
+  onRequestStatusChange: (
+    adoptionId: number | string,
+    status: string,
+    applicantName: string,
+  ) => void;
 }
 
 export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> = ({
@@ -33,9 +37,7 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
         {pendingList.length === 0 ? (
           <div className={styles.emptyAdoptions}>
             <CheckCircle2 size={40} className={styles.emptyCheckIcon} />
-            <p className={styles.emptyTitle}>
-              현재 처리 대기 중인 입양 신청이 없습니다!
-            </p>
+            <p className={styles.emptyTitle}>현재 처리 대기 중인 입양 신청이 없습니다!</p>
             <span className={styles.emptyDesc}>모든 신청서가 신속하게 검토되었습니다.</span>
           </div>
         ) : (
@@ -55,16 +57,12 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
                   <tr key={item.adoptionId}>
                     <td>
                       <strong>{item.memberName || item.userName || '신청자'}</strong>
-                      <div className={styles.applicantEmail}>
-                        {item.phone || '-'}
-                      </div>
+                      <div className={styles.applicantEmail}>{item.phone || '-'}</div>
                     </td>
                     <td>
                       <span className={styles.animalIdHighlight}>동물 #{item.animalId || '-'}</span>
                       {item.animalBreed && (
-                        <span className={styles.animalBreedSub}>
-                          ({item.animalBreed})
-                        </span>
+                        <span className={styles.animalBreedSub}>({item.animalBreed})</span>
                       )}
                     </td>
                     <td className={styles.applyDateCell}>
@@ -82,7 +80,7 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
                             onRequestStatusChange(
                               item.adoptionId,
                               'APPROVED',
-                              item.memberName || item.userName || '신청자'
+                              item.memberName || item.userName || '신청자',
                             )
                           }
                         >
@@ -95,7 +93,7 @@ export const DashboardRecentAdoptions: React.FC<DashboardRecentAdoptionsProps> =
                             onRequestStatusChange(
                               item.adoptionId,
                               'REJECTED',
-                              item.memberName || item.userName || '신청자'
+                              item.memberName || item.userName || '신청자',
                             )
                           }
                         >

@@ -51,10 +51,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       {actionLabel && (actionPath || onAction) && (
         <div className={styles.actionArea}>
           <p className={styles.actionHint}>{actionHint}</p>
-          <button
-            className={`btn-primary ${styles.actionBtn}`}
-            onClick={handleAction}
-          >
+          <button className={`btn-primary ${styles.actionBtn}`} onClick={handleAction}>
             {actionLabel}
           </button>
         </div>

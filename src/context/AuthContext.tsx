@@ -27,7 +27,14 @@ const AuthBootstrap = () => {
     }
     setUserLoading(profileQuery.isLoading || profileQuery.isFetching);
     if (profileQuery.data) setUser(profileQuery.data);
-  }, [isAuthenticated, profileQuery.data, profileQuery.isFetching, profileQuery.isLoading, setUser, setUserLoading]);
+  }, [
+    isAuthenticated,
+    profileQuery.data,
+    profileQuery.isFetching,
+    profileQuery.isLoading,
+    setUser,
+    setUserLoading,
+  ]);
 
   useEffect(() => {
     const handleUnauthorized = () => {
@@ -65,7 +72,9 @@ export const useAuth = (): AuthContextType => {
     isAuthenticated,
     isUserLoading,
     user,
-    isAdmin: Boolean(user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN'),
+    isAdmin: Boolean(
+      user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'ROLE_ADMIN',
+    ),
     login,
     logout,
   };

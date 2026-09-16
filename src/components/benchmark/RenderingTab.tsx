@@ -32,7 +32,6 @@ interface MockPet {
   status: 'PROTECTED' | 'ADOPTED';
 }
 
-
 export default function RenderingTab() {
   // ================= 2. React 19 Rendering Stress State =================
   const [isPending, startTransition] = useTransition();
@@ -43,7 +42,15 @@ export default function RenderingTab() {
 
   // Generate Mock Pets for rendering stress
   const mockPets: MockPet[] = useMemo(() => {
-    const breeds = ['골든 리트리버', '포메라니안', '코리안 숏헤어', '말티즈', '푸들', '비숑 프리제', '시바견'];
+    const breeds = [
+      '골든 리트리버',
+      '포메라니안',
+      '코리안 숏헤어',
+      '말티즈',
+      '푸들',
+      '비숑 프리제',
+      '시바견',
+    ];
     const speciesList: Array<'DOG' | 'CAT' | 'OTHER'> = ['DOG', 'CAT', 'OTHER'];
     return Array.from({ length: itemCount }, (_, i) => ({
       id: i + 1,
@@ -62,7 +69,7 @@ export default function RenderingTab() {
       (pet) =>
         pet.name.includes(query) ||
         pet.breed.includes(query) ||
-        pet.species.toLowerCase().includes(query.toLowerCase())
+        pet.species.toLowerCase().includes(query.toLowerCase()),
     );
     const duration = performance.now() - start;
     return { pets: result, duration: Math.round(duration * 100) / 100 };
@@ -81,15 +88,15 @@ export default function RenderingTab() {
     }
   };
 
-
   return (
     <div className={styles.card}>
       <h2 className={styles.cardTitle}>
         <Zap size={20} /> React 19 동시성 렌더링(Concurrent Mode) 스트레스
       </h2>
       <p className={styles.cardSubDesc}>
-        수천 개의 복잡한 DOM 요소를 실시간으로 필터링할 때, React 19의 <code>useTransition</code>을 켰을 때와
-        껐을 때의 <strong>입력 지연(Input Latency) 및 반응 속도 차이</strong>를 직접 비교해 보세요.
+        수천 개의 복잡한 DOM 요소를 실시간으로 필터링할 때, React 19의 <code>useTransition</code>을
+        켰을 때와 껐을 때의 <strong>입력 지연(Input Latency) 및 반응 속도 차이</strong>를 직접
+        비교해 보세요.
       </p>
 
       <div className={styles.stressControls}>
@@ -139,7 +146,9 @@ export default function RenderingTab() {
         <div className={styles.renderStatsItem}>
           <Activity size={16} />
           <span>필터링된 아이템:</span>
-          <strong>{filteredPets.length.toLocaleString()} / {mockPets.length.toLocaleString()}개</strong>
+          <strong>
+            {filteredPets.length.toLocaleString()} / {mockPets.length.toLocaleString()}개
+          </strong>
         </div>
 
         <div className={styles.renderStatsItem}>
@@ -156,7 +165,9 @@ export default function RenderingTab() {
           <div key={pet.id} className={styles.mockAnimalCard}>
             <div className={styles.mockPetName}>{pet.name}</div>
             <div className={styles.mockPetBreed}>{pet.breed}</div>
-            <div className={`${styles.mockPetStatus} ${pet.status === 'ADOPTED' ? styles.petStatusAdopted : styles.petStatusProtecting}`}>
+            <div
+              className={`${styles.mockPetStatus} ${pet.status === 'ADOPTED' ? styles.petStatusAdopted : styles.petStatusProtecting}`}
+            >
               {pet.status === 'ADOPTED' ? '입양 완료' : '보호 중'} ({pet.age}살)
             </div>
           </div>
@@ -164,7 +175,8 @@ export default function RenderingTab() {
       </div>
       {filteredPets.length > 100 && (
         <div className={styles.renderLimitNotice}>
-          * UI 과부하 방지를 위해 상위 100개 카드만 표시 중입니다. (전체 {filteredPets.length}개 연산 완료)
+          * UI 과부하 방지를 위해 상위 100개 카드만 표시 중입니다. (전체 {filteredPets.length}개
+          연산 완료)
         </div>
       )}
     </div>

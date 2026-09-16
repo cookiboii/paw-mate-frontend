@@ -14,12 +14,18 @@ export default function AdoptionReviewWrite() {
   const [params] = useSearchParams();
   const mutation = useCreateReviewMutation();
   const category = params.get('category');
-  const initialCategory: PostCategory = category === 'REPORT' || category === 'FREE_ADOPTION' ? category : 'REVIEW';
+  const initialCategory: PostCategory =
+    category === 'REPORT' || category === 'FREE_ADOPTION' ? category : 'REVIEW';
   if (isUserLoading) return null;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  return <ReviewForm initialCategory={initialCategory} onSave={async (payload) => {
-    await mutation.mutateAsync(payload);
-    showToast('게시글이 등록되었습니다!', 'success');
-    navigate(`/reviews?category=${payload.category}`);
-  }} />;
+  return (
+    <ReviewForm
+      initialCategory={initialCategory}
+      onSave={async (payload) => {
+        await mutation.mutateAsync(payload);
+        showToast('게시글이 등록되었습니다!', 'success');
+        navigate(`/reviews?category=${payload.category}`);
+      }}
+    />
+  );
 }

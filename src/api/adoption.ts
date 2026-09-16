@@ -8,7 +8,7 @@ import { unwrapResult } from './apiHelper';
  */
 export const submitAdoption = async (
   animalId: number | string,
-  payload: AdoptionCreateRequest
+  payload: AdoptionCreateRequest,
 ): Promise<AdoptionResponseDto> => {
   const response = await axiosInstance.post(`/adoptions/animals/${animalId}`, payload);
   return unwrapResult<AdoptionResponseDto>(response.data);
@@ -36,7 +36,7 @@ export const getAllAdoptions = async (): Promise<AdoptionResponseDto[]> => {
 export const getAdoptionsPaged = async (
   page = 0,
   size = 10,
-  sort = 'id,desc'
+  sort = 'id,desc',
 ): Promise<PageResponse<AdoptionResponseDto>> => {
   const response = await axiosInstance.get('/adoptions/list', {
     params: { page, size, sort },
@@ -50,7 +50,7 @@ export const getAdoptionsPaged = async (
  */
 export const updateAdoptionStatus = async (
   adoptionId: number | string,
-  status: string
+  status: string,
 ): Promise<AdoptionResponseDto> => {
   const response = await axiosInstance.put(`/adoptions/${adoptionId}/status`, {
     adoptionStatus: status,

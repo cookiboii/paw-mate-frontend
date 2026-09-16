@@ -322,7 +322,6 @@
   color: var(--text-muted);
 }
 
-
 @media (max-width: 768px) {
   .container {
     padding: 0 16px 80px;

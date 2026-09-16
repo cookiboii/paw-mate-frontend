@@ -337,7 +337,8 @@
   justify-content: flex-end;
 }
 
-.editButton, .deleteButton {
+.editButton,
+.deleteButton {
   padding: 10px 20px;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -415,11 +416,11 @@
   .imageContainer {
     height: 280px;
   }
-  
+
   .info {
     padding: 20px 16px;
   }
-  
+
   .breed {
     font-size: 1.55rem;
   }
@@ -464,7 +465,9 @@
     min-height: 56px;
     border: 1px solid rgba(255, 255, 255, 0.28);
     background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-    box-shadow: 0 12px 28px var(--primary-glow), var(--shadow-lg);
+    box-shadow:
+      0 12px 28px var(--primary-glow),
+      var(--shadow-lg);
     font-size: 1.05rem;
     font-weight: 800;
   }
