@@ -31,10 +31,12 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   useBodyScrollLock(isOpen);
   // ESC 키로 닫기
   useEffect(() => {
     if (!isOpen) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onCancel?.();
     };
@@ -44,13 +46,18 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    const focusTarget = variant === 'danger' ? cancelButtonRef.current : modalRef.current?.querySelector<HTMLElement>('button');
+    const focusTarget =
+      variant === 'danger'
+        ? cancelButtonRef.current
+        : modalRef.current?.querySelector<HTMLElement>('button');
     focusTarget?.focus();
 
     const trapFocus = (event: KeyboardEvent) => {
       if (event.key !== 'Tab' || !modalRef.current) return;
       const focusable = Array.from(
-        modalRef.current.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+        modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
       ).filter((element) => !element.hasAttribute('disabled'));
       if (focusable.length === 0) return;
       const first = focusable[0];
@@ -64,18 +71,31 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       }
     };
     window.addEventListener('keydown', trapFocus);
-    return () => window.removeEventListener('keydown', trapFocus);
+    return () => {
+      window.removeEventListener('keydown', trapFocus);
+      previousFocusRef.current?.focus();
+    };
   }, [isOpen, variant]);
 
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} onClick={onCancel} role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div
+      className={styles.overlay}
+      onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+    >
       <div ref={modalRef} className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`}>
+        <div
+          className={`${styles.iconWrapper} ${variant === 'danger' ? styles.iconDanger : styles.iconDefault}`}
+        >
           {variant === 'danger' ? <AlertTriangle size={24} /> : <Info size={24} />}
         </div>
-        <h3 id="confirm-title" className={styles.title}>{title}</h3>
+        <h3 id="confirm-title" className={styles.title}>
+          {title}
+        </h3>
         {message && <p className={styles.message}>{message}</p>}
         {children}
         <div className={styles.actions}>

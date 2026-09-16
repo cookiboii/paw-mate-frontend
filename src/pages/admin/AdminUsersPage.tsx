@@ -3,16 +3,7 @@ import styles from '../../styles/admin/AdminUsersPage.module.css';
 import usePageTitle from '../../hooks/usePageTitle';
 import useAdminUsers from '../../hooks/useAdminUsers';
 import ConfirmModal from '../../components/ConfirmModal';
-import {
-  Users,
-  Crown,
-  User as UserIcon,
-  Search,
-  BarChart3,
-  ShieldCheck,
-  Trash2,
-  X,
-} from 'lucide-react';
+import { Users, Crown, User as UserIcon, Search, BarChart3, Trash2, X } from 'lucide-react';
 
 const AdminUsersPage: React.FC = () => {
   usePageTitle('회원 관리 (Admin)');
@@ -25,12 +16,9 @@ const AdminUsersPage: React.FC = () => {
     setCurrentPage,
     deleteTargetUser,
     setDeleteTargetUser,
-    roleTargetUser,
-    setRoleTargetUser,
     stats,
     totalPages,
     paginatedUsers,
-    confirmRoleChange: handleConfirmRoleChange,
     confirmDelete: handleConfirmDelete,
   } = useAdminUsers();
   const handlePageChange = setCurrentPage;
@@ -160,14 +148,6 @@ const AdminUsersPage: React.FC = () => {
                   </td>
                   <td className={styles.textRight}>
                     <button
-                      className={styles.actionBtn}
-                      onClick={() => setRoleTargetUser(user)}
-                      title="권한 변경"
-                    >
-                      <ShieldCheck size={14} />
-                      <span>권한</span>
-                    </button>
-                    <button
                       className={`${styles.actionBtn} ${styles.dangerBtn}`}
                       onClick={() => setDeleteTargetUser(user)}
                       title="회원 강제 탈퇴"
@@ -215,26 +195,6 @@ const AdminUsersPage: React.FC = () => {
           </button>
         </div>
       )}
-
-      {/* 권한 변경 확인 모달 */}
-      <ConfirmModal
-        isOpen={!!roleTargetUser}
-        title="회원 권한 변경"
-        message={
-          roleTargetUser
-            ? `'${roleTargetUser.name || roleTargetUser.email}'님의 권한을 '${
-                roleTargetUser.role === 'ADMIN' || roleTargetUser.role === 'ROLE_ADMIN'
-                  ? 'USER(일반 회원)'
-                  : 'ADMIN(관리자)'
-              }'(으)로 변경하시겠습니까?`
-            : ''
-        }
-        confirmText="변경하기"
-        cancelText="취소"
-        variant="default"
-        onConfirm={handleConfirmRoleChange}
-        onCancel={() => setRoleTargetUser(null)}
-      />
 
       {/* 회원 삭제 확인 모달 */}
       <ConfirmModal

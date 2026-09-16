@@ -46,6 +46,8 @@ const PageLoader: React.FC = () => (
   </div>
 );
 
+const benchmarkEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_BENCHMARK === 'true';
+
 // 👇 사용자 및 관리자 라우트 구성
 const AppRoutes: React.FC = () => {
   const { isAdmin } = useAuth();
@@ -72,16 +74,18 @@ const AppRoutes: React.FC = () => {
         <Route path="/review" element={<AdoptionReviewWrite />} />
         <Route path="/reviews/:id" element={<AdoptionReviewDetail />} />
         <Route path="/reviews/:id/edit" element={<AdoptionReviewEdit />} />
-        
+
         {/* 🔐 관리자 전용 성능/동시성 테스트 랩 */}
-        <Route
-          path="/benchmark"
-          element={
-            <AdminRoute>
-              <BenchmarkPage />
-            </AdminRoute>
-          }
-        />
+        {benchmarkEnabled && (
+          <Route
+            path="/benchmark"
+            element={
+              <AdminRoute>
+                <BenchmarkPage />
+              </AdminRoute>
+            }
+          />
+        )}
 
         {/* 마이페이지: ADMIN이면 관리자 대시보드로 이동 */}
         <Route
@@ -106,8 +110,6 @@ const AppRoutes: React.FC = () => {
           <Route path="adoptions" element={<AdminAdoptionsPage />} />
           <Route path="password" element={<AdminPasswordPage />} />
         </Route>
-
-
 
         {/* Catch-all 404 Route */}
         <Route path="*" element={<NotFound />} />

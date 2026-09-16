@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../context/ToastContext';
 import { useAllUsersQuery, useDeleteUserMutation } from './queries/users';
-import { queryKeys } from './queries/keys';
 import type { User } from '../types/auth';
 import { getErrorMessage } from '../utils/error';
 
@@ -11,7 +9,6 @@ const EMPTY_USERS: User[] = [];
 export type UserRoleFilter = 'ALL' | 'ADMIN' | 'USER';
 
 export default function useAdminUsers() {
-  const queryClient = useQueryClient();
   const { showToast } = useToast();
   const usersQuery = useAllUsersQuery();
   const deleteUserMutation = useDeleteUserMutation();
@@ -20,7 +17,6 @@ export default function useAdminUsers() {
   const [roleFilter, setRoleFilter] = useState<UserRoleFilter>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteTargetUser, setDeleteTargetUser] = useState<User | null>(null);
-  const [roleTargetUser, setRoleTargetUser] = useState<User | null>(null);
 
   const stats = useMemo(
     () => ({
@@ -53,19 +49,6 @@ export default function useAdminUsers() {
 
   useEffect(() => setCurrentPage(1), [searchKeyword, roleFilter]);
 
-  const confirmRoleChange = () => {
-    if (!roleTargetUser) return;
-    const newRole = ['ADMIN', 'ROLE_ADMIN'].includes(roleTargetUser.role ?? '') ? 'USER' : 'ADMIN';
-    queryClient.setQueryData<User[]>(queryKeys.users.all, (previous = []) =>
-      previous.map((user) => (user.id === roleTargetUser.id ? { ...user, role: newRole } : user)),
-    );
-    showToast(
-      `'${roleTargetUser.name || roleTargetUser.email}'님의 권한이 '${newRole}'(으)로 변경되었습니다.`,
-      'success',
-    );
-    setRoleTargetUser(null);
-  };
-
   const confirmDelete = async () => {
     const target = deleteTargetUser;
     if (target?.id == null) return;
@@ -92,13 +75,10 @@ export default function useAdminUsers() {
     setCurrentPage,
     deleteTargetUser,
     setDeleteTargetUser,
-    roleTargetUser,
-    setRoleTargetUser,
     stats,
     filteredUsers,
     totalPages,
     paginatedUsers,
-    confirmRoleChange,
     confirmDelete,
   };
 }
