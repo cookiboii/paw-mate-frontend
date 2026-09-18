@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import FloatingInput from '../components/FloatingInput';
 import kakaoLoginImg from '../assets/kakao_login_medium_narrow.png';
-import axios from '../api/axiosInstance';
 import usePageTitle from '../hooks/usePageTitle';
 import { getErrorMessage } from '../utils/error';
 
@@ -80,7 +79,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const urlRole = searchParams.get('role') || 'USER';
     const urlEmail = searchParams.get('email') || searchParams.get('id') || undefined;
     const urlName = searchParams.get('name') || undefined;
-    const urlCode = searchParams.get('code');
 
     const urlRefreshToken = searchParams.get('refreshToken') || undefined;
 
@@ -92,49 +90,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       return;
     }
 
-    // OAuth callback and authorization-code exchange are handled by Spring Security.
-    if (urlCode && false) {
-      axios
-        .get(`/adoptmate/kakao?code=${encodeURIComponent(urlCode ?? '')}`)
-        .then((res) => {
-          let resData = res.data;
-          if (typeof resData === 'string') {
-            try {
-              resData = JSON.parse(resData);
-            } catch {
-              return;
-            }
-          }
-          const token =
-            resData?.token ||
-            resData?.accessToken ||
-            resData?.result?.token ||
-            resData?.result?.accessToken ||
-            resData?.data?.token ||
-            resData?.data?.accessToken;
-          const refreshToken =
-            resData?.refreshToken ||
-            resData?.refresh_token ||
-            resData?.result?.refreshToken ||
-            resData?.result?.refresh_token ||
-            resData?.data?.refreshToken ||
-            resData?.data?.refresh_token;
-          const role = resData?.role || resData?.result?.role || resData?.data?.role || 'USER';
-          const email =
-            resData?.email || resData?.result?.email || resData?.data?.email || resData?.id;
-          const name = resData?.name || resData?.result?.name;
-          if (token) {
-            login(token, { email, role, name, provider: 'KAKAO' }, refreshToken);
-            if (onLoginSuccess) onLoginSuccess();
-            navigate(redirectPath, { replace: true });
-          }
-        })
-        .catch((err) => {
-          console.error('Kakao code login error:', err);
-          setError('카카오 로그인 처리 중 오류가 발생했습니다.');
-          showToast('카카오 로그인 처리 중 오류가 발생했습니다.', 'error');
-        });
-    }
   }, [searchParams, login, navigate, onLoginSuccess, showToast, redirectPath]);
 
   // Window postMessage listener (e.g. popup callback)
