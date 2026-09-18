@@ -28,7 +28,6 @@ const MyPage = lazy(() => import('./pages/MyPage'));
 const AdoptionGuide = lazy(() => import('./pages/AdoptionGuide'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
-const KakaoCallback = lazy(() => import('./pages/KakaoCallback'));
 const BenchmarkPage = lazy(() => import('./pages/BenchmarkPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -63,8 +62,6 @@ const AppRoutes: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/adoptmate/kakao" element={<KakaoCallback />} />
-        <Route path="/oauth/kakao/callback" element={<KakaoCallback />} />
         <Route path="/animals" element={<AnimalListPage />} />
         <Route path="/animals/:id" element={<AnimalDetail />} />
         <Route path="/adopt/:animalId" element={<AdoptionForm />} />

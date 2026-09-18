@@ -13,7 +13,6 @@ export interface CommentResponseDto {
   id: number | string;
   authorName?: string;
   authorId?: number | string;
-  authorEmail?: string;
   content: string;
   secret?: boolean;
   createdAt?: string;

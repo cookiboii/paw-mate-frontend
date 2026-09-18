@@ -27,7 +27,7 @@ export default function CommentThread({
     handleEditCancel,
     handleUpdate,
   } = actions;
-  const renderComments = (commentList: CommentItem[]) =>
+  const renderComments = (commentList: CommentItem[], isChild = false) =>
     commentList.map((comment) => {
       const isAuthor = isCommentAuthor(comment);
       const isSecret = Boolean(comment.secret);
@@ -96,10 +96,16 @@ export default function CommentThread({
             )}
           </div>
 
-          {userInfo && <CommentComposer actions={actions} parentId={comment.id} />}
+          {!isChild && actions.canReplyToComment(comment) && (
+            <CommentComposer
+              actions={actions}
+              parentId={comment.id}
+              inheritedSecret={Boolean(comment.secret)}
+            />
+          )}
 
           {comment.children && comment.children.length > 0 && (
-            <div className={styles.childComments}>{renderComments(comment.children)}</div>
+            <div className={styles.childComments}>{renderComments(comment.children, true)}</div>
           )}
         </div>
       );

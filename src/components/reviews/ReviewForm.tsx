@@ -81,12 +81,21 @@ export default function ReviewForm({
       showToast('제목과 내용을 모두 입력해주세요.', 'error');
       return;
     }
+    const title = `${activeCat.prefix} ${form.title.trim()}`;
+    if (title.length > 200) {
+      showToast('게시글 제목은 분류 문구를 포함해 200자 이하로 작성해 주세요.', 'error');
+      return;
+    }
+    if (form.content.length > 20000) {
+      showToast('게시글 내용은 20,000자 이하로 작성해 주세요.', 'error');
+      return;
+    }
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
       const img = selectedFile ? await uploadImageToBlob(selectedFile) : removed ? '' : form.img;
       await onSave({
-        title: `${activeCat.prefix} ${form.title.trim()}`,
+        title,
         content: form.content,
         img,
         category: selectedCategory,
@@ -142,6 +151,7 @@ export default function ReviewForm({
               value={form.title}
               onChange={handleChange}
               required
+              maxLength={Math.max(1, 199 - activeCat.prefix.length)}
             />
           </div>
 
@@ -173,6 +183,7 @@ export default function ReviewForm({
               onChange={handleChange}
               rows={8}
               required
+              maxLength={20000}
             />
           </div>
 

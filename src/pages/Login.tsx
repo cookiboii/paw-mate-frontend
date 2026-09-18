@@ -92,7 +92,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       return;
     }
 
-    if (urlCode) {
+    // OAuth callback and authorization-code exchange are handled by Spring Security.
+    if (urlCode && false) {
       axios
         .get(`/adoptmate/kakao?code=${encodeURIComponent(urlCode)}`)
         .then((res) => {

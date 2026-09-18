@@ -28,8 +28,7 @@ export default function useCommentActions(postId: string | number, postAuthorEma
     if (userInfo.id != null && comment.authorId != null) {
       return String(userInfo.id) === String(comment.authorId);
     }
-    const email = userInfo.email?.trim().toLowerCase();
-    return Boolean(email) && email === comment.authorEmail?.trim().toLowerCase();
+    return false;
   };
 
   const isCommentAdmin = Boolean(
@@ -43,6 +42,8 @@ export default function useCommentActions(postId: string | number, postAuthorEma
   );
   const canViewSecretComment = (comment: CommentItem) =>
     isCommentAuthor(comment) || isPostAuthor || isCommentAdmin;
+  const canReplyToComment = (comment: CommentItem) =>
+    Boolean(userInfo) && (!comment.secret || canViewSecretComment(comment));
 
   const handleChange = (id: string | number, value: string) => {
     setContentMap((prev) => ({ ...prev, [id]: value }));
@@ -55,6 +56,10 @@ export default function useCommentActions(postId: string | number, postAuthorEma
     if (loadingMap[key]) return;
     const content = contentMap[key];
     if (!content?.trim()) return;
+    if (content.trim().length > 2000) {
+      showToast('댓글은 2,000자 이하로 작성해 주세요.', 'error');
+      return;
+    }
 
     setLoadingMap((prev) => ({ ...prev, [key]: true }));
 
@@ -139,6 +144,7 @@ export default function useCommentActions(postId: string | number, postAuthorEma
     isCommentAuthor,
     canDeleteComment,
     canViewSecretComment,
+    canReplyToComment,
     handleChange,
     handleSubmit,
     handleDelete,

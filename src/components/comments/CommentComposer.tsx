@@ -6,9 +6,11 @@ import styles from '../../styles/components/CommentSection.module.css';
 export default function CommentComposer({
   actions,
   parentId = null,
+  inheritedSecret = false,
 }: {
   actions: CommentActions;
   parentId?: string | number | null;
+  inheritedSecret?: boolean;
 }) {
   const key = parentId == null ? 'root' : String(parentId);
   const reply = parentId != null;
@@ -25,11 +27,13 @@ export default function CommentComposer({
         }
         value={actions.contentMap[key] || ''}
         onChange={(event) => actions.handleChange(key, event.target.value)}
+        maxLength={2000}
       />
       <label className={styles.secretToggle}>
         <input
           type="checkbox"
-          checked={Boolean(actions.secretMap[key])}
+          checked={inheritedSecret || Boolean(actions.secretMap[key])}
+          disabled={inheritedSecret}
           onChange={(event) =>
             actions.setSecretMap((prev) => ({ ...prev, [key]: event.target.checked }))
           }

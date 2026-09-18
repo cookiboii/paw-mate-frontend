@@ -176,12 +176,16 @@ const AdoptionForm: React.FC = () => {
                 value={hasPet}
                 onChange={(e) => setHasPet(e.target.value)}
                 className={styles.select}
+                aria-invalid={Boolean(validationErrors.hasPet)}
               >
                 <option value="없음">없음</option>
                 <option value="개 1마리 이상">개 1마리 이상</option>
                 <option value="고양이 1마리 이상">고양이 1마리 이상</option>
                 <option value="기타 동물">기타 동물</option>
               </select>
+              {validationErrors.hasPet && (
+                <p className={styles.fieldError}>{validationErrors.hasPet}</p>
+              )}
             </div>
           </div>
 
@@ -207,6 +211,7 @@ const AdoptionForm: React.FC = () => {
               rows={6}
               placeholder="1. 왜 이 아이를 입양하고 싶으신가요?&#13;&#10;2. 하루에 함께 보낼 수 있는 시간은 어느 정도인가요?&#13;&#10;3. 가족 구성원 모두 입양에 동의하셨나요?"
               className={styles.textarea}
+              maxLength={3000}
               disabled={isSubmitting}
               aria-invalid={Boolean(validationErrors.interview)}
               aria-describedby={validationErrors.interview ? 'adoption-interview-error' : undefined}

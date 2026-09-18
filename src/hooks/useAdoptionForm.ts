@@ -51,6 +51,10 @@ export default function useAdoptionForm() {
     if (interview.trim().length < 10)
       errors.interview = '입양 동기와 돌봄 계획을 10자 이상 작성해 주세요.';
     if (!agreed) errors.agreed = '입양 필수 동의 항목을 확인해 주세요.';
+    if (interview.trim().length > 3000)
+      errors.interview = '입양 동기와 향후 계획은 3,000자 이하로 작성해 주세요.';
+    if (hasPet.length > 50)
+      errors.hasPet = '반려동물 정보는 50자 이하로 입력해 주세요.';
     setValidationErrors(errors);
     if (Object.keys(errors).length > 0) {
       showToast('입력 내용을 확인해 주세요.', 'error');
