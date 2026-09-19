@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import styles from '../styles/pages/AdoptionReviewListPage.module.css';
-import { getReviewById, getReviewsCursor } from '../api/review';
+import { getReviewsCursor } from '../api/review';
 import { reviewDetailOptions } from '../hooks/queries/reviews';
 import { Link, useSearchParams } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
@@ -91,15 +91,11 @@ const AdoptionReviewListPage: React.FC = () => {
   const cursorFetcher = useCallback(
     async (lastId: string | number | undefined, pageSize: number) => {
       return getReviewsCursor(lastId, pageSize, {
-        category:
-          activeCategory === 'ALL'
-            ? undefined
-            : (activeCategory as 'REVIEW' | 'FREE_ADOPTION' | 'REPORT'),
         keyword: debouncedKeyword || undefined,
         sort,
       });
     },
-    [activeCategory, debouncedKeyword, sort],
+    [debouncedKeyword, sort],
   );
 
   // 3. No-Offset 커서 기반 고속 무한 스크롤 훅 적용
@@ -127,7 +123,7 @@ const AdoptionReviewListPage: React.FC = () => {
 
     if (activeCategory !== 'ALL') {
       list = list.filter(
-        (review) => (review.category || getCategoryFromTitle(review.title)) === activeCategory,
+        (review) => getCategoryFromTitle(review.title) === activeCategory,
       );
     }
 
@@ -195,7 +191,7 @@ const AdoptionReviewListPage: React.FC = () => {
       <div className={styles.grid}>
         {displayedReviews.length > 0 ? (
           displayedReviews.map((review, index) => {
-            const cat = review.category || getCategoryFromTitle(review.title);
+            const cat = getCategoryFromTitle(review.title);
             const cleanTitle = getCleanTitle(review.title);
             const catInfo = CATEGORIES.find((c) => c.key === cat) || CATEGORIES[1];
 
@@ -251,9 +247,9 @@ const AdoptionReviewListPage: React.FC = () => {
                     <span className={styles.authorName}>
                       <User size={13} /> {review.name || '익명'}
                     </span>
-                    {(review.createdAt || review.createAt) && (
+                    {review.createdAt && (
                       <span className={styles.cardDate}>
-                        작성일 {formatDate(review.createdAt || review.createAt)}
+                        작성일 {formatDate(review.createdAt)}
                       </span>
                     )}
                   </div>

@@ -32,17 +32,18 @@ export default function AdoptionReviewEdit() {
     <ReviewForm
       key={id}
       isEditing
-      initialCategory={review.category || getCategoryFromTitle(review.title)}
+      initialCategory={getCategoryFromTitle(review.title)}
       initialValues={{
         title: getCleanTitle(review.title),
         content: review.content || '',
-        img: review.img || review.image || '',
+        img: review.img || '',
       }}
       onSave={async (payload) => {
         if (!id) throw new Error('게시글 ID가 없습니다.');
         if (!isPostAuthor(review, user))
           throw new Error('본인이 작성한 게시글만 수정할 수 있습니다.');
-        await mutation.mutateAsync({ id, payload });
+        const { category: _category, ...request } = payload;
+        await mutation.mutateAsync({ id, payload: request });
         showToast('게시글이 성공적으로 수정되었습니다!', 'success');
         navigate(`/reviews/${id}`);
       }}

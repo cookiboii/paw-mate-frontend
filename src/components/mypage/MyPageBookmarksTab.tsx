@@ -40,7 +40,7 @@ export default function MyPageBookmarksTab({ bookmarkedReviews, isBookmarksLoadi
                 <Link to={`/reviews/${review.id}`} className={styles.bookmarkItem}>
                   <strong>{review.title}</strong>
                   <span>
-                    {review.name || '익명'} · {formatDate(review.createdAt || review.createAt)}
+                    {review.name || '익명'} · {formatDate(review.createdAt)}
                   </span>
                 </Link>
               </li>

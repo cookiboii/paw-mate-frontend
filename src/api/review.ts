@@ -28,7 +28,6 @@ export const getReviewsCursor = async (
   if (lastPostId !== undefined && lastPostId !== null && lastPostId !== '')
     params.append('lastPostId', String(lastPostId));
   params.append('size', String(size));
-  if (options.category) params.append('category', options.category);
   if (options.keyword?.trim()) params.append('keyword', options.keyword.trim());
   if (options.sort) params.append('sort', options.sort);
   const response = await axiosInstance.get('/api/v1/posts/cursor', { params });
@@ -69,8 +68,7 @@ export const createReview = async (payload: PostCreateRequestDto): Promise<PostR
   const body = {
     title: payload.title,
     content: payload.content,
-    img: payload.img || payload.image || '',
-    ...(payload.category ? { category: payload.category } : {}),
+    img: payload.img || null,
   };
   const response = await axiosInstance.post('/api/v1/posts', body);
   return unwrapResult<PostResponseDto>(response.data);
@@ -83,7 +81,7 @@ export const updateReview = async (
   const response = await axiosInstance.put(`/api/v1/posts/${id}`, {
     title: payload.title,
     content: payload.content,
-    img: payload.img || payload.image || '',
+    img: payload.img || null,
   });
   return unwrapResult<PostResponseDto>(response.data);
 };

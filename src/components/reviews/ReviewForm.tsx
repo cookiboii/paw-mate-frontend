@@ -14,15 +14,11 @@ import {
   HeartHandshake,
   Gift,
   AlertTriangle,
-  Camera,
-  X,
-  MapPin,
-  Calendar,
-  PawPrint,
-  Phone,
-  AlertCircle,
-  Heart,
 } from 'lucide-react';
+
+export interface ReviewFormSubmitData extends PostCreateRequestDto {
+  category: PostCategory;
+}
 
 const CATEGORY_OPTIONS = [
   {
@@ -52,7 +48,7 @@ interface Props {
   initialValues?: { title: string; content: string; img: string };
   initialCategory: PostCategory;
   isEditing?: boolean;
-  onSave: (payload: PostCreateRequestDto) => Promise<void>;
+  onSave: (payload: ReviewFormSubmitData) => Promise<void>;
 }
 
 export default function ReviewForm({
@@ -86,18 +82,19 @@ export default function ReviewForm({
       showToast('게시글 제목은 분류 문구를 포함해 200자 이하로 작성해 주세요.', 'error');
       return;
     }
-    if (form.content.length > 20000) {
+    const content = form.content.trim();
+    if (content.length > 20000) {
       showToast('게시글 내용은 20,000자 이하로 작성해 주세요.', 'error');
       return;
     }
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const img = selectedFile ? await uploadImageToBlob(selectedFile) : removed ? '' : form.img;
+      const img = selectedFile ? await uploadImageToBlob(selectedFile) : removed ? null : form.img;
       await onSave({
         title,
-        content: form.content,
-        img,
+        content,
+        img: img || null,
         category: selectedCategory,
       });
     } catch (error) {

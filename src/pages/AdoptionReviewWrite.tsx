@@ -22,9 +22,10 @@ export default function AdoptionReviewWrite() {
     <ReviewForm
       initialCategory={initialCategory}
       onSave={async (payload) => {
-        await mutation.mutateAsync(payload);
+        const { category: submittedCategory, ...request } = payload;
+        await mutation.mutateAsync(request);
         showToast('게시글이 등록되었습니다!', 'success');
-        navigate(`/reviews?category=${payload.category}`);
+        navigate(`/reviews?category=${submittedCategory}`);
       }}
     />
   );

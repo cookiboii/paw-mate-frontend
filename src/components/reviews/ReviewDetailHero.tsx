@@ -99,9 +99,9 @@ export default function ReviewDetailHero({
               <div className={styles.avatar}>{review.name?.charAt(0) || 'U'}</div>
               {review.name}
             </span>
-            {(review.createAt || review.createdAt) && (
+            {review.createdAt && (
               <span className={styles.dateText}>
-                {formatDate(review.createAt || review.createdAt, {
+                {formatDate(review.createdAt, {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
