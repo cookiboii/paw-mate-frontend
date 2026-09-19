@@ -41,18 +41,9 @@ const AdoptionReviewDetail: React.FC = () => {
   const likeMutation = useReviewLikeMutation();
   const bookmarkMutation = useReviewBookmarkMutation();
 
-  const review: ReviewDetailData | null = rawReview
-    ? {
-        ...rawReview,
-        email: (rawReview.email || '').trim().toLowerCase(),
-      }
-    : null;
+  const review: ReviewDetailData | null = rawReview ?? null;
 
-  const { isAuthenticated, user, isAdmin: hasAdminRole } = useAuth();
-  const isAuthor =
-    isAuthenticated &&
-    Boolean(user?.email?.trim()) &&
-    user?.email?.trim().toLowerCase() === review?.email;
+  const { isAuthenticated, isAdmin: hasAdminRole } = useAuth();
   const isAdmin = isAuthenticated && hasAdminRole;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -74,10 +65,6 @@ const AdoptionReviewDetail: React.FC = () => {
   const isLoaded = !isReviewLoading && !!review;
 
   const handleDelete = async () => {
-    if (!isAuthor && !isAdmin) {
-      showToast('작성자 또는 관리자만 삭제할 수 있습니다.', 'error');
-      return;
-    }
     if (!id) return;
     setIsDeleting(true);
     try {
@@ -200,25 +187,25 @@ const AdoptionReviewDetail: React.FC = () => {
               )}
             </button>
 
-            {(isAuthor || isAdmin) && (
+            {isAuthenticated && (
               <div className={styles.inlineActions}>
-                {isAuthor && (
+                <button
+                  className={styles.editBtn}
+                  onClick={() => navigate(`/reviews/${id}/edit`)}
+                >
+                  <Edit3 size={15} />
+                  <span>수정</span>
+                </button>
+                {isAdmin && (
                   <button
-                    className={styles.editBtn}
-                    onClick={() => navigate(`/reviews/${id}/edit`)}
+                    className={styles.deleteBtn}
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    disabled={isDeleting}
                   >
-                    <Edit3 size={15} />
-                    <span>수정</span>
+                    <Trash2 size={15} />
+                    <span>{isDeleting ? '삭제 중...' : '삭제'}</span>
                   </button>
                 )}
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => setIsDeleteModalOpen(true)}
-                  disabled={isDeleting}
-                >
-                  <Trash2 size={15} />
-                  <span>{isDeleting ? '삭제 중...' : '삭제'}</span>
-                </button>
               </div>
             )}
           </div>

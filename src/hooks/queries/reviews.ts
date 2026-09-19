@@ -36,7 +36,10 @@ export function useUpdateReviewMutation() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string | number; payload: PostUpdateRequestDto }) =>
       updateReview(id, payload),
-    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.reviews.all }),
+    onSuccess: (updatedReview, { id }) => {
+      client.setQueryData(queryKeys.reviews.detail(id), updatedReview);
+      return client.invalidateQueries({ queryKey: queryKeys.reviews.all });
+    },
   });
 }
 export function useDeleteReviewMutation() {

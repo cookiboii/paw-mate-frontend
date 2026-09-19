@@ -11,7 +11,7 @@ export default function AdoptionReviewEdit() {
   usePageTitle('게시글 수정');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated, isUserLoading, user } = useAuth();
+  const { isAuthenticated, isUserLoading } = useAuth();
   const { showToast } = useToast();
   const query = useReviewDetailQuery(id, isAuthenticated);
   const mutation = useUpdateReviewMutation();
@@ -25,9 +25,6 @@ export default function AdoptionReviewEdit() {
       </div>
     );
   const review = query.data;
-  const authorEmail = review.email?.trim().toLowerCase();
-  if (!authorEmail || user?.email?.trim().toLowerCase() !== authorEmail)
-    return <Navigate to={`/reviews/${id}`} replace />;
   return (
     <ReviewForm
       key={id}
@@ -39,8 +36,7 @@ export default function AdoptionReviewEdit() {
         img: review.img || review.image || '',
       }}
       onSave={async (payload) => {
-        if (!id || !authorEmail || user?.email?.trim().toLowerCase() !== authorEmail)
-          throw new Error('작성자만 수정할 수 있습니다.');
+        if (!id) throw new Error('게시글 ID가 없습니다.');
         await mutation.mutateAsync({ id, payload });
         showToast('게시글이 성공적으로 수정되었습니다!', 'success');
         navigate(`/reviews/${id}`);
