@@ -49,7 +49,6 @@ export interface PostResponseDto {
   authorId?: number | string;
   memberId?: number | string;
   writerId?: number | string;
-  isMine?: boolean;
   name?: string;
   createAt?: string;
   createdAt?: string;

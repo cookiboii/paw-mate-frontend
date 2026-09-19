@@ -11,11 +11,12 @@ const sameEmail = (left: unknown, right: unknown) =>
 
 export const isPostAuthor = (post: PostResponseDto | null | undefined, user: User | null) => {
   if (!post || !user) return false;
-  if (post.isMine === true) return true;
-  if (post.isMine === false) return false;
-
   const authorId = post.authorId ?? post.memberId ?? post.writerId;
   if (authorId != null) return sameValue(authorId, user.id);
 
-  return sameEmail(post.email, user.email);
+  if (post.email && user.email) return sameEmail(post.email, user.email);
+
+  // api.md exposes only the author's display name in PostResponse.
+  // This controls UI visibility only; the API verifies mutations using JWT member ID.
+  return sameValue(post.name, user.name);
 };
