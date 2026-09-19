@@ -168,6 +168,33 @@ flowchart LR
 
 댓글은 최상위 댓글과 1단계 대댓글까지만 허용합니다. 비밀 댓글의 대댓글은 자동으로 비밀 상태를 상속하며, 원댓글 작성자·게시글 작성자·관리자만 작성할 수 있습니다.
 
+### 유스케이스와 어노테이션 맵
+
+주요 사용자는 비회원, 회원, 관리자이며 회원은 공개 조회 기능을 함께 사용할 수 있습니다. Kakao OAuth2는 소셜 로그인에 필요한 사용자 정보를 제공하고, SMTP는 이메일 인증·비밀번호 재설정 코드를 발송합니다.
+
+```mermaid
+flowchart LR
+    Guest[비회원] --> Auth[회원가입 · 로그인 · 토큰 갱신]
+    Guest --> Verify[이메일 인증 · 비밀번호 재설정]
+    Guest --> PublicView[보호동물 · 게시글 공개 조회]
+    Member[회원] --> Favorite[관심 동물 관리]
+    Member --> Adoption[입양 신청 · 내 신청 조회]
+    Member --> Community[게시글 · 댓글 · 좋아요 · 북마크]
+    Admin[관리자] --> AdminAnimal[보호동물 관리]
+    Admin --> AdminAdoption[입양 신청 승인 · 거절]
+    Admin --> AdminMember[회원 조회 · 삭제]
+```
+
+| 영역 | 주요 어노테이션 | 용도 |
+| --- | --- | --- |
+| 웹·API | `@RestController`, `@RequestMapping`, `@Valid`, `@AuthenticationPrincipal` | 엔드포인트 선언, 요청 검증, 인증 주체 주입 |
+| 서비스·보안 | `@Service`, `@Transactional`, `@PreAuthorize` | 유스케이스·트랜잭션 경계와 역할 권한 적용 |
+| JPA | `@Entity`, `@ManyToOne`, `@Version`, `@EntityGraph`, `@Query` | 모델·연관관계·동시성·조회 전략 정의 |
+| 영속성 정책 | `@SQLDelete`, `@SQLRestriction`, `@CreatedDate`, `@LastModifiedDate` | soft delete와 생성·수정 시각 감사 |
+| 구성·문서화 | `@Configuration`, `@Bean`, `@Operation`, `@Schema` | 인프라 Bean과 OpenAPI 문서 구성 |
+
+전체 유스케이스, 실제 사용 위치, Hibernate 전용 `@NotFound` 사용 시 주의 사항은 [아키텍처 문서](docs/ARCHITECTURE.md)를 참고하세요.
+
 ## API 빠른 명세
 
 모든 성공 응답은 `CommonResponse` 형식입니다. 인증이 필요한 요청은 `Authorization: Bearer {accessToken}` 헤더를 포함해야 합니다. `공개`는 비로그인 요청이 가능한 API이고, `인증`은 로그인 사용자, `관리자`는 `ADMIN` 역할을 뜻합니다.
@@ -187,7 +214,7 @@ flowchart LR
 | GET | `/adoptmate/all` | 관리자 | - | 회원 목록 |
 | DELETE | `/adoptmate/admin/{memberId}` | 관리자 | - | `null` |
 | POST | `/adoptmate/verify-email` | 공개 | `email` | `null` |
-| POST | `/adoptmate/verify-code` | 공개 | `email`, `code` | 검증한 이메일·코드 |
+| POST | `/adoptmate/verify-code` | 공개 | `email`, `code` | `null` |
 | POST | `/adoptmate/send-reset-code` | 공개 | query: `email` | `null` |
 | POST | `/adoptmate/verify-reset-code` | 공개 | query: `email`, `code` | `null` |
 | PATCH | `/adoptmate/password` | 공개 | `email`, `password` | `null` |
@@ -695,7 +722,7 @@ erDiagram
 | DELETE | `/adoptmate/delete` | 인증 | 없음 | `null` |
 | DELETE | `/adoptmate/admin/{memberId}` | ADMIN | 경로: `memberId` | `null` |
 | POST | `/adoptmate/verify-email` | 공개 | `email` | `null` |
-| POST | `/adoptmate/verify-code` | 공개 | `email`, `code` | `email`, `code` |
+| POST | `/adoptmate/verify-code` | 공개 | `email`, `code` | `null` |
 | POST | `/adoptmate/send-reset-code?email={email}` | 공개 | 쿼리: `email` | `null` |
 | POST | `/adoptmate/verify-reset-code?email={email}&code={code}` | 공개 | 쿼리: `email`, `code` | `null` |
 | PATCH | `/adoptmate/password` | 공개 | `email`, `password`(6자 이상) | `null` |
@@ -736,7 +763,7 @@ erDiagram
 
 ### 게시글 · 댓글
 
-게시글 작성·수정은 `title`(최대 200자), `content`(최대 20,000자)가 필수이고 `img`(최대 7,000,000자), `category`는 선택입니다. `category`는 `REVIEW`, `FREE_ADOPTION`, `REPORT` 중 하나이며 생략 시 `REVIEW`입니다. 게시글 응답에는 `id`, `title`, `content`, `email`, `name`, `createdAt`, `img`, `likeCount`, `commentCount`, `likedByMe`, `bookmarkedByMe`가 포함됩니다. 비로그인 조회의 `likedByMe`, `bookmarkedByMe`는 항상 `false`입니다. 댓글 내용은 최대 2,000자이며 `parentId`는 1단계 대댓글을 작성할 때만 사용합니다. 댓글 응답의 `children`에는 해당 최상위 댓글의 대댓글 배열이 포함됩니다.
+게시글 작성·수정은 `title`(최대 200자), `content`(최대 20,000자)가 필수이고 `img`(최대 7,000,000자), `category`는 선택입니다. `category`는 `REVIEW`, `FREE_ADOPTION`, `REPORT` 중 하나이며 생략 시 `REVIEW`입니다. 게시글 응답에는 `id`, `title`, `content`, `name`, `createdAt`, `img`, `likeCount`, `commentCount`, `likedByMe`, `bookmarkedByMe`가 포함되며 작성자 이메일은 공개하지 않습니다. 비로그인 조회의 `likedByMe`, `bookmarkedByMe`는 항상 `false`입니다. 댓글 내용은 최대 2,000자이며 `parentId`는 1단계 대댓글을 작성할 때만 사용합니다. 댓글 응답의 `children`에는 해당 최상위 댓글의 대댓글 배열이 포함됩니다.
 
 | 메서드 | 경로 | 권한 | 요청 | `result` |
 | --- | --- | --- | --- | --- |
@@ -954,6 +981,14 @@ Content-Type: application/json
 비밀 댓글의 대댓글은 자동으로 비밀 상태를 상속하며, 원댓글 작성자·게시글 작성자·관리자만 작성할 수 있습니다.
 
 </details>
+
+### 보안 응답 및 삭제 정책
+
+- 공개 게시글 응답은 작성자 식별을 위해 `name`만 제공하며 이메일은 포함하지 않습니다.
+- 회원가입 이메일 인증 성공 응답은 인증 코드나 이메일을 다시 반환하지 않습니다.
+- 로그인 실패는 존재하지 않는 이메일과 잘못된 비밀번호에 동일한 오류를 반환합니다.
+- 게시글을 삭제하면 연결된 댓글도 soft delete되어 이후 댓글 조회·수정에 노출되지 않습니다.
+- H2는 테스트 런타임 의존성으로만 포함하며 운영 API에서 H2 콘솔을 공개하지 않습니다.
 
 ### 상태 코드 및 재시도
 

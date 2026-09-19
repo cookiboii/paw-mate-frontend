@@ -6,7 +6,7 @@ import { getErrorMessage } from '../utils/error';
 import type { CommentItem } from '../types/review';
 import { useCommentMutations } from './queries/comments';
 
-export default function useCommentActions(postId: string | number, postAuthorEmail?: string) {
+export default function useCommentActions(postId: string | number) {
   const mutations = useCommentMutations(postId);
   const { showToast } = useToast();
   const { isAuthenticated, user } = useAuth();
@@ -35,15 +35,10 @@ export default function useCommentActions(postId: string | number, postAuthorEma
     userInfo && ['ADMIN', 'ROLE_ADMIN'].includes(userInfo.role?.toUpperCase() || ''),
   );
   const canDeleteComment = (comment: CommentItem) => isCommentAuthor(comment) || isCommentAdmin;
-  const isPostAuthor = Boolean(
-    userInfo?.email &&
-    postAuthorEmail &&
-    userInfo.email.trim().toLowerCase() === postAuthorEmail.trim().toLowerCase(),
-  );
-  const canViewSecretComment = (comment: CommentItem) =>
-    isCommentAuthor(comment) || isPostAuthor || isCommentAdmin;
-  const canReplyToComment = (comment: CommentItem) =>
-    Boolean(userInfo) && (!comment.secret || canViewSecretComment(comment));
+  // The backend masks secret comments and enforces reply authorization.
+  // Post responses do not expose author email/id, so the client cannot safely
+  // reproduce that authorization decision.
+  const canReplyToComment = () => Boolean(userInfo);
 
   const handleChange = (id: string | number, value: string) => {
     setContentMap((prev) => ({ ...prev, [id]: value }));
@@ -143,7 +138,6 @@ export default function useCommentActions(postId: string | number, postAuthorEma
     setSecretMap,
     isCommentAuthor,
     canDeleteComment,
-    canViewSecretComment,
     canReplyToComment,
     handleChange,
     handleSubmit,

@@ -130,7 +130,6 @@ export const updateComment = async (
   content: string,
 ): Promise<CommentResponseDto> => {
   const response = await axiosInstance.put(`/comment/${commentId}`, {
-    commentId: Number(commentId),
     content,
   });
   return unwrapResult<CommentResponseDto>(response.data);

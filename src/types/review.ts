@@ -11,12 +11,12 @@ export interface CommentUpdateDto {
 
 export interface CommentResponseDto {
   id: number | string;
-  authorName?: string;
-  authorId?: number | string;
+  authorName: string;
+  authorId: number | string;
   content: string;
-  secret?: boolean;
-  createdAt?: string;
-  children?: CommentResponseDto[];
+  secret: boolean;
+  createdAt: string;
+  children: CommentResponseDto[];
 }
 
 export type CommentItem = CommentResponseDto;

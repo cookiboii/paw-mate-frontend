@@ -21,7 +21,6 @@ export default function CommentThread({
     loadingMap,
     isCommentAuthor,
     canDeleteComment,
-    canViewSecretComment,
     handleDelete,
     handleEditToggle,
     handleEditCancel,
@@ -31,7 +30,6 @@ export default function CommentThread({
     commentList.map((comment) => {
       const isAuthor = isCommentAuthor(comment);
       const isSecret = Boolean(comment.secret);
-      const canViewSecret = canViewSecretComment(comment);
       const commentBody = comment.content;
 
       return (
@@ -79,7 +77,7 @@ export default function CommentThread({
                   </button>
                 </div>
               </div>
-            ) : isSecret && !canViewSecret ? (
+            ) : isSecret && !commentBody ? (
               <div className={styles.secretCommentNotice}>
                 <LockKeyhole size={15} />
                 <span>비밀 댓글입니다.</span>
@@ -96,7 +94,7 @@ export default function CommentThread({
             )}
           </div>
 
-          {!isChild && actions.canReplyToComment(comment) && (
+          {!isChild && actions.canReplyToComment() && (
             <CommentComposer
               actions={actions}
               parentId={comment.id}

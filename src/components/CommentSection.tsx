@@ -8,11 +8,10 @@ import styles from '../styles/components/CommentSection.module.css';
 
 interface Props {
   postId: string | number;
-  postAuthorEmail?: string;
 }
-function CommentSectionContent({ postId, postAuthorEmail }: Props) {
+function CommentSectionContent({ postId }: Props) {
   const query = useCommentsQuery(postId);
-  const actions = useCommentActions(postId, postAuthorEmail);
+  const actions = useCommentActions(postId);
   const comments = query.data?.pages.flatMap((page) => page.content || []) || [];
   const totalCount = query.data?.pages[0]?.totalElements ?? comments.length;
   return (
