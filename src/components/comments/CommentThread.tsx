@@ -14,7 +14,6 @@ export default function CommentThread({
   actions: CommentActions;
 }) {
   const {
-    userInfo,
     editContentMap,
     setEditContentMap,
     editModeMap,

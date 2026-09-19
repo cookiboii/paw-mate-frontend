@@ -3,7 +3,6 @@ import ReviewReactionActions from '../components/reviews/ReviewReactionActions';
 import ReviewDetailHero from '../components/reviews/ReviewDetailHero';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getReviewById, deleteReview, setReviewBookmark, setReviewLike } from '../api/review';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/pages/AdoptionReviewDetail.module.css';
 import CommentSection from '../components/CommentSection';
@@ -22,9 +21,10 @@ import useShare from '../hooks/useShare';
 import { getErrorMessage } from '../utils/error';
 import { CATEGORIES } from '../components/ReviewCategoryTabs';
 import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
-import { ReviewDetailData, PostResponseDto } from '../types/review';
+import { ReviewDetailData } from '../types/review';
 import { ArrowLeft, Edit3, Trash2, Share2, Check } from 'lucide-react';
 import ImageLightboxModal from '../components/ImageLightboxModal';
+import { isPostAuthor } from '../utils/contentOwnership';
 
 const AdoptionReviewDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,8 +43,9 @@ const AdoptionReviewDetail: React.FC = () => {
 
   const review: ReviewDetailData | null = rawReview ?? null;
 
-  const { isAuthenticated, isAdmin: hasAdminRole } = useAuth();
-  const isAdmin = isAuthenticated && hasAdminRole;
+  const { isAuthenticated, user, isAdmin } = useAuth();
+  const isAuthor = isAuthenticated && isPostAuthor(review, user);
+  const canDelete = isAuthor || (isAuthenticated && isAdmin);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
@@ -65,6 +66,10 @@ const AdoptionReviewDetail: React.FC = () => {
   const isLoaded = !isReviewLoading && !!review;
 
   const handleDelete = async () => {
+    if (!canDelete) {
+      showToast('작성자 또는 관리자만 게시글을 삭제할 수 있습니다.', 'error');
+      return;
+    }
     if (!id) return;
     setIsDeleting(true);
     try {
@@ -187,16 +192,18 @@ const AdoptionReviewDetail: React.FC = () => {
               )}
             </button>
 
-            {isAuthenticated && (
+            {canDelete && (
               <div className={styles.inlineActions}>
-                <button
-                  className={styles.editBtn}
-                  onClick={() => navigate(`/reviews/${id}/edit`)}
-                >
-                  <Edit3 size={15} />
-                  <span>수정</span>
-                </button>
-                {isAdmin && (
+                {isAuthor && (
+                  <button
+                    className={styles.editBtn}
+                    onClick={() => navigate('/reviews/' + id + '/edit')}
+                  >
+                    <Edit3 size={15} />
+                    <span>수정</span>
+                  </button>
+                )}
+                {canDelete && (
                   <button
                     className={styles.deleteBtn}
                     onClick={() => setIsDeleteModalOpen(true)}
