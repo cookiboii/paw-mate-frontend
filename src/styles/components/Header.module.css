@@ -322,6 +322,12 @@
   justify-content: center;
 }
 
+.adminAvatar {
+  background: linear-gradient(135deg, #fff7d6, #fde68a);
+  color: #a16207;
+  border: 1px solid rgba(217, 119, 6, 0.24);
+}
+
 .userCardInfo {
   display: flex;
   flex-direction: column;
@@ -344,6 +350,26 @@
 
 .userCardRole svg {
   color: #f59e0b;
+}
+
+.adminArmband {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
+}
+
+.adminArmband svg {
+  color: #ffffff;
+  flex-shrink: 0;
 }
 
 .guestCardContent p {

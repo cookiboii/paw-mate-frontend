@@ -258,18 +258,20 @@ const Header: React.FC = () => {
         <div className={styles.drawerProfileCard}>
           {isAuthenticated ? (
             <div className={styles.userCardContent}>
-              <div className={styles.userCardAvatar}>{user?.name?.charAt(0) || 'U'}</div>
+              <div className={`${styles.userCardAvatar} ${isAdmin ? styles.adminAvatar : ''}`}>
+                {isAdmin ? <ShieldCheck size={22} aria-hidden="true" /> : user?.name?.charAt(0) || 'U'}
+              </div>
               <div className={styles.userCardInfo}>
-                <span className={styles.userCardName}>{user?.name || '회원'} 님</span>
-                <span className={styles.userCardRole}>
-                  {isAdmin ? (
-                    <>
-                      <Crown size={14} /> 관리자
-                    </>
-                  ) : (
-                    '일반 회원'
-                  )}
-                </span>
+                {isAdmin ? (
+                  <span className={styles.adminArmband} aria-label="관리자 계정">
+                    <Crown size={14} aria-hidden="true" /> 관리자
+                  </span>
+                ) : (
+                  <>
+                    <span className={styles.userCardName}>{user?.name || '회원'} 님</span>
+                    <span className={styles.userCardRole}>일반 회원</span>
+                  </>
+                )}
               </div>
             </div>
           ) : (
