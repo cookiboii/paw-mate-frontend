@@ -24,7 +24,7 @@ import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
 import { ReviewDetailData } from '../types/review';
 import { ArrowLeft, Edit3, Trash2, Share2, Check } from 'lucide-react';
 import ImageLightboxModal from '../components/ImageLightboxModal';
-import { isPostAuthor } from '../utils/contentOwnership';
+import { isAdminContentAuthor, isPostAuthor } from '../utils/contentOwnership';
 
 const AdoptionReviewDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,6 +46,7 @@ const AdoptionReviewDetail: React.FC = () => {
   const { isAuthenticated, user, isAdmin } = useAuth();
   const isAuthor = isAuthenticated && isPostAuthor(review, user);
   const canDelete = isAuthor || (isAuthenticated && isAdmin);
+  const isAdminAuthor = isAdminContentAuthor(review, user);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
@@ -160,6 +161,7 @@ const AdoptionReviewDetail: React.FC = () => {
         {/* Hero Section */}
         <ReviewDetailHero
           review={review}
+          isAdminAuthor={isAdminAuthor}
           cleanTitle={cleanTitle}
           isReport={isReport}
           isFreeAdoption={isFreeAdoption}

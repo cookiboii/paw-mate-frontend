@@ -20,9 +20,11 @@ import {
   PawPrint,
   Heart,
   MessageCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import { getCategoryFromTitle, getCleanTitle } from '../utils/reviewCategory';
 import useDebounce from '../hooks/useDebounce';
+import { isAdminContentAuthor } from '../utils/contentOwnership';
 
 const renderCategoryIcon = (cat: string, size = 16) => {
   switch (cat) {
@@ -38,7 +40,7 @@ const renderCategoryIcon = (cat: string, size = 16) => {
 
 const AdoptionReviewListPage: React.FC = () => {
   usePageTitle('따뜻한 입양 후기 & 제보');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -193,6 +195,7 @@ const AdoptionReviewListPage: React.FC = () => {
           displayedReviews.map((review, index) => {
             const cat = getCategoryFromTitle(review.title);
             const cleanTitle = getCleanTitle(review.title);
+            const isAdminAuthor = isAdminContentAuthor(review, user);
             const catInfo = CATEGORIES.find((c) => c.key === cat) || CATEGORIES[1];
 
             return (
@@ -246,6 +249,11 @@ const AdoptionReviewListPage: React.FC = () => {
                   <div className={styles.cardMeta}>
                     <span className={styles.authorName}>
                       <User size={13} /> {review.name || '익명'}
+                      {isAdminAuthor && (
+                        <span className={styles.adminAuthorBadge}>
+                          <ShieldCheck size={11} aria-hidden="true" /> 관리자
+                        </span>
+                      )}
                     </span>
                     {review.createdAt && (
                       <span className={styles.cardDate}>

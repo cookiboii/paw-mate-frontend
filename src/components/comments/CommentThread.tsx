@@ -1,4 +1,4 @@
-import { LockKeyhole } from 'lucide-react';
+import { LockKeyhole, ShieldCheck } from 'lucide-react';
 import Spinner from '../Spinner';
 import CommentComposer from './CommentComposer';
 import { formatDate } from '../../utils/date';
@@ -19,6 +19,7 @@ export default function CommentThread({
     editModeMap,
     loadingMap,
     isCommentAuthor,
+    isAdminCommentAuthor,
     canDeleteComment,
     handleDelete,
     handleEditToggle,
@@ -29,6 +30,7 @@ export default function CommentThread({
     commentList.map((comment) => {
       const isAuthor = isCommentAuthor(comment);
       const isSecret = Boolean(comment.secret);
+      const isAdminAuthor = isAdminCommentAuthor(comment);
       const commentBody = comment.content;
 
       return (
@@ -37,6 +39,11 @@ export default function CommentThread({
             <div className={styles.commentHeader}>
               <div className={styles.commentMeta}>
                 <strong className={styles.authorName}>{comment.authorName || '익명'}</strong>
+                {isAdminAuthor && (
+                  <span className={styles.adminAuthorBadge}>
+                    <ShieldCheck size={12} aria-hidden="true" /> 관리자
+                  </span>
+                )}
                 {comment.createdAt && (
                   <span className={styles.commentDate}>{formatDate(comment.createdAt)}</span>
                 )}

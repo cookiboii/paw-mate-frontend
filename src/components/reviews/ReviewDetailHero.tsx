@@ -1,5 +1,5 @@
 import styles from '../../styles/pages/AdoptionReviewDetail.module.css';
-import { AlertTriangle, Gift, HeartHandshake, Maximize2 } from 'lucide-react';
+import { AlertTriangle, Gift, HeartHandshake, Maximize2, ShieldCheck } from 'lucide-react';
 import { formatDate } from '../../utils/date';
 import type { ReviewDetailData } from '../../types/review';
 const renderCategoryIcon = (cat: string, size = 16) => {
@@ -16,6 +16,7 @@ const renderCategoryIcon = (cat: string, size = 16) => {
 
 interface Props {
   review: ReviewDetailData;
+  isAdminAuthor: boolean;
   cleanTitle: string;
   isReport: boolean;
   isFreeAdoption: boolean;
@@ -26,6 +27,7 @@ interface Props {
 
 export default function ReviewDetailHero({
   review,
+  isAdminAuthor,
   cleanTitle,
   isReport,
   isFreeAdoption,
@@ -98,6 +100,11 @@ export default function ReviewDetailHero({
             <span className={styles.author}>
               <div className={styles.avatar}>{review.name?.charAt(0) || 'U'}</div>
               {review.name}
+              {isAdminAuthor && (
+                <span className={styles.adminAuthorBadge}>
+                  <ShieldCheck size={13} aria-hidden="true" /> 관리자
+                </span>
+              )}
             </span>
             {review.createdAt && (
               <span className={styles.dateText}>

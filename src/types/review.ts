@@ -13,6 +13,8 @@ export interface CommentResponseDto {
   id: number | string;
   authorName: string;
   authorId: number | string;
+  authorRole?: string;
+  role?: string;
   content: string;
   secret: boolean;
   createdAt: string;
@@ -39,6 +41,8 @@ export interface PostUpdateRequestDto {
 export interface PostResponseDto {
   id: number | string;
   authorId: number | string | null;
+  authorRole?: string;
+  role?: string;
   title: string;
   content: string;
   name: string;

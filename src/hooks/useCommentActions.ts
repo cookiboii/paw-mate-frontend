@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/error';
 import type { CommentItem } from '../types/review';
+import { isAdminContentAuthor } from '../utils/contentOwnership';
 import { useCommentMutations } from './queries/comments';
 
 export default function useCommentActions(postId: string | number) {
@@ -34,6 +35,7 @@ export default function useCommentActions(postId: string | number) {
   const isCommentAdmin = Boolean(
     userInfo && ['ADMIN', 'ROLE_ADMIN'].includes(userInfo.role?.toUpperCase() || ''),
   );
+  const isAdminCommentAuthor = (comment: CommentItem) => isAdminContentAuthor(comment, userInfo);
   const canDeleteComment = (comment: CommentItem) => isCommentAuthor(comment) || isCommentAdmin;
   // The backend masks secret comments and enforces reply authorization.
   // Post responses do not expose author email/id, so the client cannot safely
@@ -137,6 +139,7 @@ export default function useCommentActions(postId: string | number) {
     secretMap,
     setSecretMap,
     isCommentAuthor,
+    isAdminCommentAuthor,
     canDeleteComment,
     canReplyToComment,
     handleChange,
