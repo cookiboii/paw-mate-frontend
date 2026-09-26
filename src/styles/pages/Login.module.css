@@ -130,7 +130,7 @@
   border: none;
   cursor: pointer;
   transition: transform var(--transition-fast);
-  width: 100%;
+  width: fit-content;
   min-height: 50px;
   padding: 0;
   border-radius: var(--radius-md);
@@ -143,9 +143,15 @@
 
 .kakaoLoginImg {
   width: 100%;
-  max-width: 300px;
+  max-width: 220px;
   border-radius: var(--radius-md);
   display: block;
+}
+
+@media (max-width: 480px) {
+  .kakaoLoginImg {
+    max-width: 200px;
+  }
 }
 
 .signupPrompt {
