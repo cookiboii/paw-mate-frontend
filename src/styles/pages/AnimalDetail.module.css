@@ -23,6 +23,7 @@
   align-items: center;
   gap: 8px;
   transition: color var(--transition-fast);
+  min-height: 40px;
 }
 
 .backLink:hover {
@@ -62,7 +63,7 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 20px 54px rgba(60, 50, 40, 0.1);
   display: flex;
   flex-direction: column;
 }
@@ -183,6 +184,12 @@
   gap: 16px;
   border: 1px solid var(--border-color);
   box-shadow: var(--surface-highlight);
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.infoCard:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
 }
 
 .cardIcon {
@@ -324,6 +331,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-height: 56px;
+  font-weight: 800;
 }
 
 .mobileAdoptCta {
@@ -400,6 +409,18 @@
 
   .info {
     padding: 30px 24px;
+  }
+
+  .card {
+    border-radius: var(--radius-lg);
+  }
+
+  .cardLabel {
+    font-size: 0.78rem;
+  }
+
+  .cardValue {
+    font-size: 1rem;
   }
 
   .breed {

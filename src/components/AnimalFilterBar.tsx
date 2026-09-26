@@ -75,6 +75,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             <span className={styles.filterLabel}>동물 종류:</span>
             <button
               type="button"
+              aria-pressed={speciesFilter === 'ALL'}
               className={`${styles.filterChip} ${speciesFilter === 'ALL' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('ALL')}
             >
@@ -82,6 +83,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             </button>
             <button
               type="button"
+              aria-pressed={speciesFilter === 'DOG'}
               className={`${styles.filterChip} ${speciesFilter === 'DOG' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('DOG')}
             >
@@ -90,6 +92,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             </button>
             <button
               type="button"
+              aria-pressed={speciesFilter === 'CAT'}
               className={`${styles.filterChip} ${speciesFilter === 'CAT' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('CAT')}
             >
@@ -98,6 +101,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             </button>
             <button
               type="button"
+              aria-pressed={speciesFilter === 'ETC'}
               className={`${styles.filterChip} ${speciesFilter === 'ETC' ? styles.activeChip : ''}`}
               onClick={() => onSpeciesChange('ETC')}
             >
@@ -111,6 +115,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             <span className={styles.filterLabel}>성별:</span>
             <button
               type="button"
+              aria-pressed={genderFilter === 'ALL'}
               className={`${styles.filterChip} ${genderFilter === 'ALL' ? styles.activeChip : ''}`}
               onClick={() => onGenderChange('ALL')}
             >
@@ -118,6 +123,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             </button>
             <button
               type="button"
+              aria-pressed={genderFilter === 'MALE'}
               className={`${styles.filterChip} ${genderFilter === 'MALE' ? styles.activeChip : ''}`}
               onClick={() => onGenderChange('MALE')}
             >
@@ -125,6 +131,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
             </button>
             <button
               type="button"
+              aria-pressed={genderFilter === 'FEMALE'}
               className={`${styles.filterChip} ${genderFilter === 'FEMALE' ? styles.activeChip : ''}`}
               onClick={() => onGenderChange('FEMALE')}
             >
@@ -187,6 +194,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
 
             <button
               type="button"
+              aria-pressed={viewMode === 'infinite'}
               onClick={onReset}
               className={`${styles.resetBtn} ${styles.resetBtnSmall}`}
             >
@@ -216,6 +224,7 @@ const AnimalFilterBar: React.FC<AnimalFilterBarProps> = ({
           <div className={styles.viewToggleGroup} role="group" aria-label="목록 보기 방식">
             <button
               type="button"
+              aria-pressed={viewMode === 'pagination'}
               className={`${styles.viewToggleBtn} ${viewMode === 'infinite' ? styles.activeToggle : ''}`}
               onClick={() => onViewModeChange('infinite')}
               title="스크롤하여 연속으로 둘러보기"

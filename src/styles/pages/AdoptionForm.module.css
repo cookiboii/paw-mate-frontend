@@ -91,7 +91,7 @@
   align-items: center;
   gap: 20px;
   padding: 24px 40px;
-  background-color: var(--surface-color);
+  background: linear-gradient(90deg, var(--primary-light), transparent);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -167,6 +167,7 @@
   font-size: 1rem;
   font-family: inherit;
   transition: all var(--transition-fast);
+  min-height: 50px;
 }
 
 .input:focus,
@@ -195,6 +196,12 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   margin-bottom: 32px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.agreementBox:focus-within {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
 }
 
 .checkboxLabel {
@@ -233,6 +240,7 @@
   font-size: 1.05rem;
   cursor: pointer;
   transition: all var(--transition-fast);
+  min-height: 52px;
 }
 
 .cancelBtn:hover {
@@ -244,6 +252,7 @@
   flex: 2;
   padding: 16px;
   font-size: 1.05rem;
+  min-height: 52px;
 }
 
 @media (max-width: 640px) {

@@ -7,6 +7,18 @@
   box-shadow: var(--shadow-lg), var(--surface-highlight);
   border: 1px solid var(--border-color);
   animation: slideUpFade var(--transition-normal);
+  position: relative;
+  isolation: isolate;
+}
+
+.loginContainer::before {
+  content: '';
+  position: absolute;
+  inset: -28px;
+  border-radius: 42px;
+  background: linear-gradient(145deg, var(--primary-light), var(--secondary-light));
+  z-index: -1;
+  transform: rotate(-1.5deg);
 }
 
 .title {
@@ -25,6 +37,8 @@
 }
 
 .input {
+  width: 100%;
+  min-height: 54px;
   padding: 16px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -42,6 +56,7 @@
 }
 
 .submitButton {
+  min-height: 52px;
   padding: 14px 20px;
   background: var(--primary-color);
   color: #ffffff;
@@ -126,6 +141,8 @@
   border: none;
   cursor: pointer;
   transition: transform var(--transition-fast);
+  width: 100%;
+  min-height: 50px;
 }
 
 .kakaoButton:hover {
@@ -166,6 +183,11 @@
     margin: 32px auto 60px;
     padding: 28px 20px;
     border-radius: var(--radius-lg);
+  }
+
+  .loginContainer::before {
+    inset: -8px;
+    border-radius: 26px;
   }
 
   .title {

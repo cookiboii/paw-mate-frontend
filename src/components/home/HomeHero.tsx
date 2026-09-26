@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play, ShieldCheck } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+  ShieldCheck,
+} from 'lucide-react';
 import styles from '../../styles/components/HomeHero.module.css';
 import dog1 from '../../assets/optimized/dog1.avif';
 import dog2 from '../../assets/optimized/dog2.avif';
@@ -75,8 +83,20 @@ export default function HomeHero() {
             입양 절차 및 원칙
           </Link>
         </div>
+        <div className={styles.trustList} aria-label="AdoptMate 서비스 특징">
+          <span>
+            <Check size={15} /> 건강 정보 확인
+          </span>
+          <span>
+            <Check size={15} /> 신중한 입양 절차
+          </span>
+          <span>
+            <Check size={15} /> 입양 후 커뮤니티
+          </span>
+        </div>
       </div>
       <div className={styles.heroVisual}>
+        <span className={styles.visualEyebrow}>MEET YOUR NEW FAMILY</span>
         <div
           className={styles.slider}
           onMouseEnter={() => setIsHovered(true)}

@@ -8,8 +8,12 @@
   font-weight: 800;
   letter-spacing: 0.15em;
   color: var(--secondary-color);
-  display: block;
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: var(--secondary-light);
 }
 
 .sectionSubTitle svg {
@@ -18,7 +22,7 @@
 }
 
 .sectionHeader h2 {
-  font-size: 2.2rem;
+  font-size: clamp(1.9rem, 3vw, 2.45rem);
   font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 14px;
@@ -36,7 +40,7 @@
 /* 3. New Arrivals Section */
 .principlesSection {
   background-color: var(--surface-secondary);
-  padding: 90px 24px;
+  padding: 112px 24px;
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
@@ -51,8 +55,8 @@
 
 .principleCard {
   background: var(--surface-color);
-  padding: 32px 24px;
-  border-radius: var(--radius-md);
+  padding: 34px 26px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-xs);
   transition:
@@ -63,6 +67,7 @@
 .principleCard:hover {
   transform: var(--interaction-card-lift);
   border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
 }
 
 .principleIcon {
@@ -96,19 +101,20 @@
 .howItWorks {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 90px 24px;
+  padding: 112px 24px;
 }
 
 .stepsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
+  counter-reset: steps;
 }
 
 .stepCard {
   background: var(--surface-color);
   padding: 36px 28px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-xs);
   position: relative;
@@ -121,7 +127,14 @@
 }
 
 .stepIcon {
-  font-size: 1.4rem;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--secondary-light);
+  border: 1px solid rgba(201, 147, 104, 0.24);
+  font-size: 1rem;
   font-weight: 800;
   color: var(--secondary-color);
   margin-bottom: 20px;
@@ -143,11 +156,16 @@
 
 /* 6. CTA Section */
 .ctaSection {
-  background: linear-gradient(135deg, var(--primary-color) 0%, #475c46 100%);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 15% 90%, rgba(201, 147, 104, 0.35), transparent 30%),
+    linear-gradient(135deg, var(--primary-color) 0%, #40523f 100%);
   padding: 90px 24px;
   text-align: center;
   color: #ffffff;
-  border-radius: var(--radius-xl);
+  border-radius: 36px;
   max-width: 1200px;
   margin: 0 auto 90px;
   box-shadow: var(--shadow-md);

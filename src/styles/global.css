@@ -147,6 +147,11 @@ body {
   overflow-wrap: break-word;
 }
 
+::selection {
+  color: var(--text-primary);
+  background: var(--secondary-light);
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -176,6 +181,12 @@ select {
   font-family: inherit;
   font-size: inherit;
   letter-spacing: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-light);
+  opacity: 1;
 }
 
 h1,
@@ -265,6 +276,11 @@ select:focus-visible {
   a,
   button {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  [role='button'] {
+    min-height: 44px;
   }
 }
 

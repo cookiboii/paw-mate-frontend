@@ -1,5 +1,6 @@
 .homeContainer {
   width: 100%;
+  overflow: clip;
 }
 
 /* 1. Hero Section */
@@ -13,8 +14,13 @@
   font-weight: 800;
   letter-spacing: 0.15em;
   color: var(--secondary-color);
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   margin-bottom: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: var(--secondary-light);
 }
 
 .sectionSubTitle svg {
@@ -23,7 +29,7 @@
 }
 
 .sectionHeader h2 {
-  font-size: 2.2rem;
+  font-size: clamp(1.9rem, 3vw, 2.45rem);
   font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 14px;
@@ -40,9 +46,13 @@
 
 /* 3. New Arrivals Section */
 .newArrivalsSection {
-  padding: 50px 24px 100px;
-  max-width: 1240px;
-  margin: 0 auto;
+  padding: 88px 32px 96px;
+  max-width: 1280px;
+  margin: 20px auto 0;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 36px;
+  box-shadow: var(--shadow-sm);
 }
 
 /* 🐾 종별 필터 탭 바 */
@@ -92,7 +102,7 @@
 .animalGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  gap: 24px;
 }
 
 .gridFullWidth {
@@ -180,7 +190,11 @@
 
 @media (max-width: 640px) {
   .newArrivalsSection {
-    padding: 30px 16px 50px;
+    padding: 52px 16px 56px;
+    margin: 0;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
   }
   .sectionHeader {
     margin-bottom: 28px;

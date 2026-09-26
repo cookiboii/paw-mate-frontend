@@ -7,6 +7,18 @@
   box-shadow: var(--shadow-lg), var(--surface-highlight);
   border: 1px solid var(--border-color);
   animation: slideUpFade var(--transition-normal);
+  position: relative;
+  isolation: isolate;
+}
+
+.registerContainer::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  border-radius: 40px;
+  background: linear-gradient(145deg, var(--secondary-light), var(--primary-light));
+  z-index: -1;
+  transform: rotate(1deg);
 }
 
 .header {
@@ -76,6 +88,7 @@
   transition: all var(--transition-fast);
   background: var(--bg-color);
   color: var(--text-primary);
+  min-height: 52px;
 }
 
 .input:focus {
@@ -109,7 +122,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  width: 40px;
+  height: 40px;
   transition: color var(--transition-fast);
   z-index: 3;
 }
@@ -138,6 +152,7 @@
   cursor: pointer;
   white-space: nowrap;
   transition: all var(--transition-fast);
+  min-height: 52px;
 }
 
 .verifyRowButton:hover:not(:disabled) {
@@ -241,6 +256,7 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
+  min-height: 52px;
 }
 
 .submitButton:hover:not(:disabled) {
@@ -302,6 +318,15 @@
     margin: 24px auto 60px;
     padding: 28px 18px;
     border-radius: var(--radius-lg);
+  }
+
+  .registerContainer::before {
+    inset: -8px;
+    border-radius: 26px;
+  }
+
+  .verifyRowButton {
+    padding-inline: 12px;
   }
 
   .title {
