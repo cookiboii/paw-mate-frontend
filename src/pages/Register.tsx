@@ -4,6 +4,7 @@ import FloatingInput from '../components/FloatingInput';
 import usePageTitle from '../hooks/usePageTitle';
 import useRegistrationForm from '../hooks/useRegistrationForm';
 import { User, Mail, Lock, Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
+import AuthLayout from '../components/AuthLayout';
 
 const Register: React.FC = () => {
   usePageTitle('회원가입');
@@ -43,13 +44,35 @@ const Register: React.FC = () => {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
+  const currentStep = emailVerified ? 3 : emailSent ? 2 : 1;
+
   return (
-    <div className={styles.registerContainer}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>가족이 되어주세요</h2>
-        <p className={styles.subtitle}>
-          Paw Mate의 회원이 되어 반려동물에게 따뜻한 가족을 선물하세요.
+    <AuthLayout
+      title="가족이 되어주세요"
+      description="Paw Mate의 회원이 되어 반려동물에게 따뜻한 가족을 선물하세요."
+      wide
+      footer={
+        <p className={styles.loginPrompt}>
+          이미 계정이 있으신가요?
+          <button type="button" className={styles.loginLink} onClick={goToLogin}>
+            로그인
+          </button>
         </p>
+      }
+    >
+      <div className={styles.progress} aria-label={`회원가입 3단계 중 ${currentStep}단계`}>
+        {['정보 입력', '이메일 인증', '가입 완료'].map((label, index) => {
+          const stepNumber = index + 1;
+          return (
+            <div
+              key={label}
+              className={`${styles.progressStep} ${currentStep >= stepNumber ? styles.progressActive : ''}`}
+            >
+              <span>{currentStep > stepNumber ? <Check size={13} /> : stepNumber}</span>
+              <small>{label}</small>
+            </div>
+          );
+        })}
       </div>
 
       <form onSubmit={handleSubmit} className={styles.form}>
@@ -218,7 +241,7 @@ const Register: React.FC = () => {
 
         {/* API 에러 및 메시지 */}
         {error && (
-          <p className={`${styles.helperText} ${styles.error}`}>
+          <p className={`${styles.helperText} ${styles.error} ${styles.formMessage}`} role="alert">
             <AlertCircle size={14} /> {error}
           </p>
         )}
@@ -253,14 +276,7 @@ const Register: React.FC = () => {
           )}
         </button>
       </form>
-
-      <p className={styles.loginPrompt}>
-        이미 계정이 있으신가요?
-        <button type="button" className={styles.loginLink} onClick={goToLogin}>
-          로그인
-        </button>
-      </p>
-    </div>
+    </AuthLayout>
   );
 };
 

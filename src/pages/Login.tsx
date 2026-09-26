@@ -8,6 +8,7 @@ import FloatingInput from '../components/FloatingInput';
 import kakaoLoginImg from '../assets/kakao_login_medium_narrow.png';
 import usePageTitle from '../hooks/usePageTitle';
 import { getErrorMessage } from '../utils/error';
+import AuthLayout from '../components/AuthLayout';
 
 interface LoginProps {
   onLoginSuccess?: () => void;
@@ -89,7 +90,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       navigate(redirectPath, { replace: true });
       return;
     }
-
   }, [searchParams, login, navigate, onLoginSuccess, showToast, redirectPath]);
 
   // Window postMessage listener (e.g. popup callback)
@@ -153,8 +153,18 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <h2 className={styles.title}>로그인</h2>
+    <AuthLayout
+      title="다시 만나 반가워요"
+      description="로그인하고 관심 동물 저장과 입양 신청을 이어가세요."
+      footer={
+        <p className={styles.signupPrompt}>
+          아직 계정이 없으신가요?{' '}
+          <button type="button" className={styles.signupLink} onClick={() => navigate('/register')}>
+            회원가입
+          </button>
+        </p>
+      }
+    >
       <form onSubmit={handleSubmit} className={styles.form}>
         <FloatingInput
           label="이메일"
@@ -172,7 +182,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           onChange={handleChange}
           required
         />
-        {error && <p className={styles.error}>{error}</p>}
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
         <button
           type="submit"
           className={styles.submitButton}
@@ -192,18 +206,19 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       <div className={styles.divider}>또는</div>
 
       <div className={styles.kakaoLoginWrapper}>
-        <button type="button" onClick={handleKakaoLogin} className={styles.kakaoButton}>
+        <button
+          type="button"
+          onClick={handleKakaoLogin}
+          className={styles.kakaoButton}
+          aria-describedby="kakao-login-help"
+        >
           <img src={kakaoLoginImg} alt="카카오 로그인" className={styles.kakaoLoginImg} />
         </button>
+        <span id="kakao-login-help" className={styles.srOnly}>
+          새 창에서 카카오 계정으로 안전하게 로그인합니다.
+        </span>
       </div>
-
-      <p className={styles.signupPrompt}>
-        아직 계정이 없으신가요?{' '}
-        <button type="button" className={styles.signupLink} onClick={() => navigate('/register')}>
-          회원가입
-        </button>
-      </p>
-    </div>
+    </AuthLayout>
   );
 };
 

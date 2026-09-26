@@ -1,47 +1,7 @@
-.loginContainer {
-  width: calc(100% - 32px);
-  max-width: 480px;
-  margin: 72px auto 96px;
-  padding: 48px 40px;
-  background: var(--surface-color);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg), var(--surface-highlight);
-  border: 1px solid var(--border-color);
-  animation: slideUpFade var(--transition-normal);
-}
-
-.title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 36px;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
-}
-
 .form {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.input {
-  width: 100%;
-  min-height: 54px;
-  padding: 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  font-size: 1.05rem;
-  transition: all var(--transition-fast);
-  background: var(--bg-color);
-  color: var(--text-primary);
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: var(--input-focus-ring);
-  background: var(--surface-color);
 }
 
 .submitButton {
@@ -69,8 +29,12 @@
   color: var(--danger-color);
   font-size: 0.95rem;
   font-weight: 500;
-  margin-top: -10px;
-  text-align: center;
+  margin-top: 0;
+  padding: 11px 13px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  background: var(--danger-light);
+  border: 1px solid color-mix(in srgb, var(--danger-color) 28%, transparent);
 }
 
 .extraActions {
@@ -155,10 +119,22 @@
 }
 
 .signupPrompt {
-  margin-top: 32px;
+  margin: 0;
   font-size: 0.95rem;
   text-align: center;
   color: var(--text-muted);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .signupLink {
@@ -174,17 +150,4 @@
 }
 .signupLink:hover {
   text-decoration: underline;
-}
-
-@media (max-width: 480px) {
-  .loginContainer {
-    margin: 32px auto 60px;
-    padding: 32px 20px;
-    border-radius: var(--radius-lg);
-  }
-
-  .title {
-    font-size: 1.6rem;
-    margin-bottom: 24px;
-  }
 }

@@ -7,6 +7,7 @@ import FloatingInput from '../components/FloatingInput';
 import { useToast } from '../context/ToastContext';
 import usePageTitle from '../hooks/usePageTitle';
 import { getErrorMessage } from '../utils/error';
+import AuthLayout from '../components/AuthLayout';
 
 const ForgotPassword: React.FC = () => {
   usePageTitle('비밀번호 찾기');
@@ -136,16 +137,34 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>비밀번호 찾기</h2>
-        <p className={styles.subtitle}>
+    <AuthLayout
+      title="비밀번호 찾기"
+      description={
+        <>
           {step === 1 && '가입 시 사용한 이메일 주소를 입력하시면 인증 코드를 보내드립니다.'}
           {step === 2 && '이메일로 전송된 6자리 인증 코드를 입력해 주세요.'}
           {step === 3 && '새로운 비밀번호를 입력해 주세요.'}
-        </p>
-      </div>
-
+        </>
+      }
+      footer={
+        <div className={styles.footerActions}>
+          {step > 1 ? (
+            <button
+              type="button"
+              className={styles.backBtn}
+              onClick={() => setStep((prev) => prev - 1)}
+            >
+              <ArrowLeft size={16} /> 이전 단계
+            </button>
+          ) : (
+            <span />
+          )}
+          <Link to="/login" className={styles.loginLink}>
+            로그인으로 돌아가기
+          </Link>
+        </div>
+      }
+    >
       {/* 진행 단계 표시 */}
       <div className={styles.stepIndicator}>
         <div className={`${styles.stepDot} ${step >= 1 ? styles.stepActive : ''}`}>1</div>
@@ -263,20 +282,7 @@ const ForgotPassword: React.FC = () => {
           </button>
         </form>
       )}
-
-      <div className={styles.footerActions}>
-        {step > 1 ? (
-          <button className={styles.backBtn} onClick={() => setStep((prev) => prev - 1)}>
-            <ArrowLeft size={16} /> 이전 단계
-          </button>
-        ) : (
-          <span />
-        )}
-        <Link to="/login" className={styles.loginLink}>
-          로그인으로 돌아가기
-        </Link>
-      </div>
-    </div>
+    </AuthLayout>
   );
 };
 
