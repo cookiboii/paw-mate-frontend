@@ -9,6 +9,7 @@
 .inputWrapper {
   position: relative;
   width: 100%;
+  min-width: 0;
 }
 
 /* ==================
@@ -17,7 +18,7 @@
 .input {
   width: 100%;
   height: 56px;
-  padding: 18px 16px 6px 16px;
+  padding: 20px 16px 7px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   font-size: 1rem;
@@ -44,9 +45,10 @@
 }
 
 .input:disabled {
-  opacity: 0.6;
+  opacity: 1;
   cursor: not-allowed;
-  background: var(--bg-color);
+  background: var(--surface-secondary);
+  color: var(--text-muted);
 }
 
 /* ==================
@@ -97,7 +99,7 @@
 
 /* 활성(플로팅) 상태 */
 .label.floating {
-  top: 10px;
+  top: 9px;
   transform: translateY(0);
   font-size: 0.72rem;
   color: var(--primary-color);
